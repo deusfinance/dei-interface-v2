@@ -29,10 +29,14 @@ const Wrapper = styled.div<{ isOutput?: boolean }>`
 `
 
 const InputWrapper = styled.div`
-  padding-top: 8px;
+  /* padding-top: 8px;
   padding-right: 16px;
-  position: absolute;
-  right: 10px;
+  position: absolute; */
+  /* right: 10px; */
+
+  & > * {
+    width: 100%;
+  }
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
     right: 0;
@@ -68,12 +72,13 @@ const RightWrapper = styled.div`
   padding: 6px;
   height: 100%;
   position: relative;
+  flex-direction: column;
 `
 
 const InfoWrapper = styled.div`
   display: flex;
-  flex-direction: column;
-  justify-content: space-around;
+  flex-direction: row;
+  justify-content: space-between;
 `
 
 const LogoWrapper = styled.div<{ isOutput?: boolean }>`
@@ -81,7 +86,7 @@ const LogoWrapper = styled.div<{ isOutput?: boolean }>`
   padding-left: 10px;
   display: flex;
   align-items: center;
-  min-width: 38px;
+  min-width: 48px;
 `
 
 const Balance = styled(Row)<{ isOutput?: boolean }>`
@@ -165,7 +170,9 @@ export default function InputBox({
     return isMobile ? 35 : 38
   }
 
-  const isOutput = useMemo(() => type === 'to', [type])
+  // const isOutput = useMemo(() => type === 'to', [type])
+  // TODO: refactor all parts with isOutput
+  const isOutput = false
 
   return (
     <>
@@ -221,7 +228,7 @@ export default function InputBox({
                 placeholder="0.0"
                 autoFocus
                 disabled={disabled}
-                style={{ textAlign: 'right', height: '50px', fontSize: '1.3rem' }}
+                style={{ textAlign: 'left', height: '50px', fontSize: '24px', marginLeft: '5px' }}
               />
             </InputWrapper>
           </RightWrapper>
