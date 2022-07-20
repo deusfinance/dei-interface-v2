@@ -81,6 +81,7 @@ function colors(themeName: SupportedThemes): Colors {
       // borders
       border1: '#B8B8BE',
       border2: 'rgba(99, 126, 161, 0.2)',
+      border3: 'rgba(99, 126, 161, 0.2)',
 
       //specialty colors
       specialBG1:
@@ -125,22 +126,23 @@ function colors(themeName: SupportedThemes): Colors {
       black,
 
       // text
-      text1: '#FFFFFF',
-      text2: '#545454',
-      text3: '#8F96AC',
+      text1: '#EBEBEC',
+      text2: '#6F7380',
+      text3: '#55575F',
       text4: '#B2B9D2',
 
       // backgrounds / greys
-      bg0: 'rgba(20, 20, 20, 1)',
-      bg1: 'rgba(20, 20, 20, 0.9)',
-      bg2: '#2F2F2F',
-      bg3: '#262B35',
-      bg4: '#232323',
-      bg5: '#181818',
+      bg0: '#101116',
+      bg1: '#14161C',
+      bg2: '#181A1F',
+      bg3: '#1B1D24',
+      bg4: '#23252C',
+      bg5: '#181818', //TEST
 
       // borders
-      border1: '#545454',
-      border2: 'rgba(99, 126, 161, 0.2)',
+      border1: '#23252C',
+      border2: '#101116',
+      border3: '#2E2F33',
 
       //specialty colors
       specialBG1: 'linear-gradient(180deg, #464646 0%, rgba(0, 0, 0, 0) 84.03%)',

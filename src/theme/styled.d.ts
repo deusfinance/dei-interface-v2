@@ -26,6 +26,7 @@ export interface Colors {
   // borders
   border1: Color
   border2: Color
+  border3: Color
 
   specialBG1: Color
   specialBG2: Color

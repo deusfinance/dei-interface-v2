@@ -9,21 +9,9 @@ import useWeb3React from './useWeb3'
 import ERC20_ABI from 'constants/abi/ERC20.json'
 import ERC20_BYTES32_ABI from 'constants/abi/ERC20'
 import MULTICALL2_ABI from 'constants/abi/MULTICALL2.json'
-import GENERAL_LENDER_ABI from 'constants/abi/GENERAL_LENDER.json'
-import GENERAL_LENDER_V2_ABI from 'constants/abi/GENERAL_LENDER_V2.json'
-import LENDER_MANAGER_ABI from 'constants/abi/LENDER_MANAGER.json'
-import LENDER_ORACLE_ABI from 'constants/abi/LENDER_ORACLE.json'
-import SOLIDEX_LP_DEPOSITOR_ABI from 'constants/abi/SOLIDEX_LP_DEPOSITOR.json'
 import VEDEUS_ABI from 'constants/abi/VEDEUS.json'
 import VDEUS_ABI from 'constants/abi/VDEUS.json'
 import VE_DIST_ABI from 'constants/abi/VE_DIST.json'
-import REIMBURSE_ABI from 'constants/abi/REIMBURSE.json'
-import BASE_V1_FACTORY_ABI from 'constants/abi/BASE_V1_FACTORY.json'
-import BASE_V1_PAIR_ABI from 'constants/abi/BASE_V1_PAIR.json'
-import BASE_V1_VOTER_ABI from 'constants/abi/BASE_V1_VOTER.json'
-import BASE_V1_GAUGE_ABI from 'constants/abi/BASE_V1_GAUGE.json'
-import BASE_V1_BRIBE_ABI from 'constants/abi/BASE_V1_BRIBE.json'
-import BASE_V1_MINTER_ABI from 'constants/abi/BASE_V1_MINTER.json'
 import DYNAMIC_REDEEMER_ABI from 'constants/abi/DYNAMIC_REDEEMER.json'
 import DEI_BONDER_ABI from 'constants/abi/DEI_Bonder.json'
 import SWAP_ABI from 'constants/abi/SWAP_ABI.json'
@@ -33,15 +21,9 @@ import VDEUS_STAKING_ABI from 'constants/abi/VDEUS_STAKING.json'
 
 import { Providers } from 'constants/providers'
 import {
-  LenderManager,
   Multicall2,
-  SolidexLpDepositor,
-  Reimburse,
   veDEUS,
-  BaseV1Factory,
-  BaseV1Voter,
   ZERO_ADDRESS,
-  BaseV1Minter,
   DynamicRedeemer,
   DeiBonder,
   veDist,
@@ -51,7 +33,6 @@ import {
   vDeusStaking,
   vDeusMasterChefV2,
 } from 'constants/addresses'
-import { BorrowPool, LenderVersion } from 'state/borrow/reducer'
 
 export function useContract<T extends Contract = Contract>(
   addressOrAddressMap: string | null | undefined,
@@ -112,47 +93,6 @@ export function useBytes32TokenContract(tokenAddress?: string, withSignerIfPossi
   return useContract(tokenAddress, ERC20_BYTES32_ABI, withSignerIfPossible)
 }
 
-export function useGeneralLenderContract(pool: BorrowPool) {
-  const ABI = pool.version == LenderVersion.V1 ? GENERAL_LENDER_ABI : GENERAL_LENDER_V2_ABI
-  return useContract(pool.generalLender, ABI)
-}
-
-export function useBaseV1FactoryContract() {
-  const { chainId } = useWeb3React()
-  const address = useMemo(() => (chainId ? BaseV1Factory[chainId] : undefined), [chainId])
-  return useContract(address, BASE_V1_FACTORY_ABI)
-}
-
-export function useBaseV1MinterContract() {
-  const { chainId } = useWeb3React()
-  const address = useMemo(() => (chainId ? BaseV1Minter[chainId] : undefined), [chainId])
-  return useContract(address, BASE_V1_MINTER_ABI)
-}
-
-export function useBaseV1VoterContract() {
-  const { chainId } = useWeb3React()
-  const address = useMemo(() => (chainId ? BaseV1Voter[chainId] : undefined), [chainId])
-  return useContract(address, BASE_V1_VOTER_ABI)
-}
-
-export function useBaseV1PairContract(address: string) {
-  return useContract(address, BASE_V1_PAIR_ABI)
-}
-
-export function useBaseV1GaugeContract(address: string) {
-  return useContract(address, BASE_V1_GAUGE_ABI)
-}
-
-export function useBaseV1BribeContract(address: string) {
-  return useContract(address, BASE_V1_BRIBE_ABI)
-}
-
-export function useReimburseContract() {
-  const { chainId } = useWeb3React()
-  const address = useMemo(() => (chainId ? Reimburse[chainId] : undefined), [chainId])
-  return useContract(address, REIMBURSE_ABI)
-}
-
 export function useVeDeusContract() {
   const { chainId } = useWeb3React()
   const address = useMemo(() => (chainId ? veDEUS[chainId] : undefined), [chainId])
@@ -169,22 +109,6 @@ export function useVeDistContract() {
   const { chainId } = useWeb3React()
   const address = useMemo(() => (chainId ? veDist[chainId] : undefined), [chainId])
   return useContract(address, VE_DIST_ABI)
-}
-
-export function useOracleContract(pool: BorrowPool) {
-  return useContract(pool.oracle, LENDER_ORACLE_ABI)
-}
-
-export function useSolidexLpDepositor() {
-  const { chainId } = useWeb3React()
-  const address = useMemo(() => (chainId ? SolidexLpDepositor[chainId] : undefined), [chainId])
-  return useContract(address, SOLIDEX_LP_DEPOSITOR_ABI)
-}
-
-export function useLenderManagerContract() {
-  const { chainId } = useWeb3React()
-  const address = useMemo(() => (chainId ? LenderManager[chainId] : undefined), [chainId])
-  return useContract(address, LENDER_MANAGER_ABI)
 }
 
 export function useMulticall2Contract() {

@@ -16,7 +16,6 @@ import {
   Lock as LockIcon,
   Redeem as RedeemIcon,
   Gift as GiftIcon,
-  Portfolio as PortfolioIcon,
   Trade as TradeIcon,
 } from 'components/Icons'
 import { Card } from 'components/Card'
@@ -103,35 +102,11 @@ export default function Menu() {
               </IconWrapper>
             </Row>
           </Link>
-          <Link href="/deibonds/pools" passHref>
-            <Row active={router.route === '/deibonds/pools'}>
-              <div>Pools</div>
-              <IconWrapper>
-                <PortfolioIcon size={20} />
-              </IconWrapper>
-            </Row>
-          </Link>
-          <Link href="/deibonds/liquidity" passHref>
-            <Row active={router.route === '/deibonds/liquidity'}>
-              <div>Liquidity</div>
-              <IconWrapper>
-                <PortfolioIcon size={20} />
-              </IconWrapper>
-            </Row>
-          </Link>
           <Link href="/vdeus" passHref>
             <Row active={router.route === '/vdeus'}>
               <div>vDEUS</div>
               <IconWrapper>
                 <GiftIcon size={20} />
-              </IconWrapper>
-            </Row>
-          </Link>
-          <Link href="/borrow" passHref>
-            <Row active={router.route === '/borrow'}>
-              <div>Borrow</div>
-              <IconWrapper>
-                <CreditCardIcon size={20} />
               </IconWrapper>
             </Row>
           </Link>
