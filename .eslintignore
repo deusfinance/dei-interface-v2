@@ -1,0 +1,7 @@
+node_modules/
+public/
+src/assets
+.next/
+.eslintrc.js
+next.config.js
+
