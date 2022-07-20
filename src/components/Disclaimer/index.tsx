@@ -3,19 +3,15 @@ import Image from 'next/image'
 import styled from 'styled-components'
 
 import { ExternalLink } from 'components/Link'
-import Discord from '/public/images/Discord.svg'
-import Twitter from '/public/images/Twitter.svg'
-import Github from '/public/images/Github.svg'
-import Telegram from '/public/images/Telegram.svg'
-import { RowEnd } from 'components/Row'
+import Discord from '/public/static/images/footer/Discord.svg'
+import Twitter from '/public/static/images/footer/Twitter.svg'
+import Github from '/public/static/images/footer/Github.svg'
+import Telegram from '/public/static/images/footer/Telegram.svg'
+import { RowCenter, RowEnd } from 'components/Row'
 import { isMobile } from 'react-device-detect'
 
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: row;
+const Wrapper = styled(RowCenter)`
   flex-wrap: nowrap;
-  justify-content: center;
-  align-items: center;
   font-size: 13px;
   color: ${({ theme }) => theme.text2};
   gap: 20px;
