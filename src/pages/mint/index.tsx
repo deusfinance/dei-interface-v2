@@ -17,12 +17,13 @@ import Mint_IMG from '../../../public/static/images/pages/migration/TableauBackg
 
 import { PrimaryButton } from 'components/Button'
 import { DotFlashing, Loader } from 'components/Icons'
-import Hero, { HeroSubtext } from 'components/Hero'
+import Hero from 'components/Hero'
 import Disclaimer from 'components/Disclaimer'
 import InputBox from 'components/App/Migration/InputBox'
 import { RowBetween, RowEnd } from 'components/Row'
 import Image from 'next/image'
 import AdvancedOptions from 'components/App/Swap/AdvancedOptions'
+import DashboardHeader from 'components/DashboardHeader'
 
 const Container = styled.div`
   display: flex;
@@ -204,11 +205,19 @@ export default function Migration() {
     return <MigrationButton onClick={() => handleMint()}>Mint {deiv2Currency?.symbol}</MigrationButton>
   }
 
+  // TODO: move items to use memo
+  const items = [
+    { name: 'DEI Price', value: '$0.5' },
+    { name: 'Global Dei Borrowed', value: '0.77m' },
+    { name: 'Total Supply', value: '72.53m' },
+    { name: 'Total Protocol Holdings', value: '24.64m' },
+    { name: 'Total DEI Bonded', value: '18.88m' },
+  ]
   return (
     <Container>
       <Hero>
         <div>Mint DEIv2</div>
-        <HeroSubtext>Happy mint, Happy mint, Happy mint</HeroSubtext>
+        <DashboardHeader items={items} />
       </Hero>
 
       <TopTableau>
