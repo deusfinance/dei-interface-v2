@@ -10,19 +10,30 @@ import { maxAmountSpend } from 'utils/currency'
 
 import ImageWithFallback from 'components/ImageWithFallback'
 import { NumericalInput } from 'components/Input'
-import { RowBetween } from '../../Row/index'
 
 const Wrapper = styled.div`
-  background: rgb(28 28 28);
-  border-radius: 15px;
+  background: ${({ theme }) => theme.bg2};
+  border-radius: 12px;
   color: ${({ theme }) => theme.text2};
   white-space: nowrap;
   height: 80px;
   gap: 10px;
-  padding: 0.6rem;
+  border: 1px solid #444444;
+  border-color: ${({ theme }) => theme.border1};
 
-  ${({ theme }) => theme.mediaWidth.upToSmall`
-    padding: 0.5rem;
+  align-items: center;
+  vertical-align: middle;
+  display: flex;
+  flex-direction: row;
+`
+
+const InputWrapper = styled.div`
+  & > * {
+    width: 100%;
+  }
+
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    right: 0;
   `}
 `
 
@@ -33,9 +44,43 @@ const Row = styled.div`
   gap: 10px;
   font-size: 1.5rem;
   align-items: center;
+
   ${({ theme }) => theme.mediaWidth.upToMedium`
     gap: 3px;
   `}
+`
+
+const CurrencySymbol = styled.div`
+  font-family: 'IBM Plex Mono';
+  font-weight: 600;
+  font-size: 16px;
+  margin-left: 5px;
+  color: #ccc;
+`
+
+const RightWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  border-left: 1px solid ${({ theme }) => theme.border1};
+  padding: 6px;
+  height: 100%;
+  position: relative;
+  flex-direction: column;
+`
+
+const InfoWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+`
+
+const LogoWrapper = styled.div`
+  height: 100%;
+  padding-left: 10px;
+  display: flex;
+  align-items: center;
+  min-width: 48px;
 `
 
 const Balance = styled(Row)`
@@ -45,6 +90,14 @@ const Balance = styled(Row)`
   margin-left: 4px;
   gap: 5px;
   color: ${({ theme }) => theme.text2};
+
+  font-family: 'IBM Plex Mono';
+  font-weight: 500;
+  font-size: 10px;
+
+  display: flex;
+  align-items: center;
+  text-align: right;
 
   & > span {
     background: ${({ theme }) => theme.bg2};
@@ -91,44 +144,41 @@ export default function InputBox({
   }, [balanceExact, onChange])
 
   function getImageSize() {
-    return isMobile ? 22 : 30
+    return isMobile ? 35 : 38
   }
 
   return (
     <>
       <Wrapper>
-        <RowBetween alignItems={'center'}>
-          <div style={{ fontSize: '0.75rem' }}>{title}</div>
-          {currency?.symbol != 'DEUS' ? (
+        <LogoWrapper>
+          <ImageWithFallback
+            src={logo}
+            width={getImageSize()}
+            height={getImageSize()}
+            alt={`${currency?.symbol} Logo`}
+            round
+          />
+        </LogoWrapper>
+
+        <RightWrapper>
+          <InfoWrapper>
+            <CurrencySymbol>{currency?.symbol}</CurrencySymbol>
             <Balance onClick={handleClick}>
-              {balanceDisplay ? balanceDisplay : '0.00'}
+              balance: {balanceDisplay ? balanceDisplay : '0.00'}
               {!disabled && <span>MAX</span>}
             </Balance>
-          ) : null}
-        </RowBetween>
-        <RowBetween>
-          <NumericalInput
-            value={value || ''}
-            onUserInput={onChange}
-            placeholder="0.0"
-            autoFocus
-            disabled={disabled}
-            style={{ textAlign: 'left', height: '50px', fontSize: '1.3rem' }}
-          />
-          <Row style={{ width: currency?.symbol != 'DEI' ? '110px' : 'unset' }}>
-            <ImageWithFallback
-              src={logo}
-              width={getImageSize()}
-              height={getImageSize()}
-              alt={`${currency?.symbol} Logo`}
-              round
+          </InfoWrapper>
+          <InputWrapper>
+            <NumericalInput
+              value={value || ''}
+              onUserInput={onChange}
+              placeholder="0.0"
+              autoFocus
+              disabled={disabled}
+              style={{ textAlign: 'left', height: '50px', fontSize: '24px', marginLeft: '5px' }}
             />
-            <p style={{ marginLeft: '5px', fontSize: '1.5rem', color: '#ccc' }}>
-              {currency?.symbol == 'DEUS' && 'v'}
-              {currency?.symbol}
-            </p>
-          </Row>
-        </RowBetween>
+          </InputWrapper>
+        </RightWrapper>
       </Wrapper>
     </>
   )

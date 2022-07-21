@@ -12,15 +12,14 @@ import ImageWithFallback from 'components/ImageWithFallback'
 import { NumericalInput } from 'components/Input'
 
 const Wrapper = styled.div`
-  background: ${({ theme }) => theme.bg4};
+  background: ${({ theme }) => theme.bg2};
   border-radius: 12px;
   color: ${({ theme }) => theme.text2};
   white-space: nowrap;
   height: 80px;
   gap: 10px;
   border: 1px solid #444444;
-  border-color: ${({ theme }) => theme.text2};
-  border-right-color: unset;
+  border-color: ${({ theme }) => theme.border1};
 
   align-items: center;
   vertical-align: middle;
@@ -63,7 +62,7 @@ const RightWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   width: 100%;
-  border-left: 1px solid #444444;
+  border-left: 1px solid ${({ theme }) => theme.border1};
   padding: 6px;
   height: 100%;
   position: relative;
@@ -118,34 +117,17 @@ const Balance = styled(Row)`
   }
 `
 
-const TopBorderWrap = styled.div`
-  background: ${({ theme }) => theme.primary4};
-  padding: 1px;
-  border-radius: 0px 12px 12px 0px;
-  height: 80px;
-  width: 100%;
-`
-
-const TopBorder = styled.div`
-  border-radius: 0px 12px 12px 0px;
-  background: ${({ theme }) => theme.bg0};
-  height: 100%;
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-`
-
 export default function InputBox({
   currency,
   value,
   onChange,
-  type,
+  title,
   disabled,
 }: {
   currency: Currency
   value: string
   onChange(values: string): void
-  type: string
+  title: string
   disabled?: boolean
 }) {
   const { account } = useWeb3React()

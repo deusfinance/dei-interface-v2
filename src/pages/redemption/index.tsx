@@ -2,6 +2,7 @@ import React, { useState, useMemo, useCallback } from 'react'
 import styled from 'styled-components'
 import { darken } from 'polished'
 import { ArrowDown, Plus } from 'react-feather'
+import Image from 'next/image'
 
 import { useCurrencyBalance } from 'state/wallet/hooks'
 import { useWalletModalToggle } from 'state/application/hooks'
@@ -15,37 +16,29 @@ import { tryParseAmount } from 'utils/parse'
 import { getRemainingTime } from 'utils/time'
 import { DEI_TOKEN, DEUS_TOKEN, USDC_TOKEN } from 'constants/tokens'
 import { DynamicRedeemer } from 'constants/addresses'
+import REDEEM_IMG from '../../../public/static/images/pages/redemption/TableauBackground.svg'
+import DEUS_LOGO from '../../../public/static/images/pages/redemption/DEUS_Logo.svg'
 
 import { PrimaryButton } from 'components/Button'
 import { DotFlashing, Info } from 'components/Icons'
-import { Row } from 'components/Row'
-import Hero, { HeroSubtext } from 'components/Hero'
+import { Row, RowEnd } from 'components/Row'
+import Hero from 'components/Hero'
 import Disclaimer from 'components/Disclaimer'
 import InputBox from 'components/App/Redemption/InputBox'
-import RedemptionInfoBox from 'components/App/Redemption/RedemptionInfoBox'
+import DashboardHeader from 'components/DashboardHeader'
+import {
+  BottomWrapper,
+  Container,
+  InputWrapper,
+  TableauTitle,
+  Title,
+  TopTableau,
+  Wrapper,
+} from 'components/App/StableCoin'
+import InformationWrapper from 'components/App/StableCoin/InformationWrapper'
 
-const Container = styled.div`
-  display: flex;
-  flex-flow: column nowrap;
-  overflow: visible;
-  margin: 0 auto;
-`
-
-const Wrapper = styled(Container)`
-  margin: 0 auto;
-  margin-top: 50px;
-  width: clamp(250px, 90%, 500px);
-  background-color: rgb(13 13 13);
-  padding: 20px 15px;
-  border: 1px solid rgb(0, 0, 0);
+const TitleIMGWrap = styled(RowEnd)`
   border-radius: 15px;
-  justify-content: center;
-
-  & > * {
-    &:nth-child(2) {
-      margin: 15px auto;
-    }
-  }
 `
 
 const Description = styled.div`
@@ -57,11 +50,13 @@ const Description = styled.div`
 
 const PlusIcon = styled(Plus)`
   margin: -14px auto;
+  margin-left: 14px;
   z-index: 1000;
   padding: 3px;
-  border: 1px solid black;
-  border-radius: 15px;
-  background-color: rgb(0 0 0);
+  border: 1px solid ${({ theme }) => theme.bg4};
+  border-radius: 4px;
+  background-color: ${({ theme }) => theme.bg4};
+  color: ${({ theme }) => theme.text2};
 `
 
 const RedeemButton = styled(PrimaryButton)`
@@ -199,48 +194,69 @@ export default function Redemption() {
 
     return <RedeemButton onClick={() => handleRedeem()}>Redeem DEI</RedeemButton>
   }
-
+  const items = [
+    { name: 'DEI Price', value: '$0.5' },
+    { name: 'Global Dei Borrowed', value: '0.77m' },
+    { name: 'Total Supply', value: '72.53m' },
+    { name: 'Total Protocol Holdings', value: '24.64m' },
+    { name: 'Total DEI Bonded', value: '18.88m' },
+  ]
   return (
     <Container>
       <Hero>
-        <div>Redemption</div>
-        <HeroSubtext>redeem your dei</HeroSubtext>
+        <Image src={DEUS_LOGO} height={'90px'} alt="Logo" />
+        <Title>Redemption</Title>
+        <DashboardHeader items={items} />
       </Hero>
       <Wrapper>
-        <InputBox
-          currency={deiCurrency}
-          value={amountIn}
-          onChange={(value: string) => setAmountIn(value)}
-          title={'From'}
-        />
-        <ArrowDown />
+        <TopTableau>
+          <TitleIMGWrap>
+            <Image src={REDEEM_IMG} height={'90px'} alt="nft" />
+          </TitleIMGWrap>
 
-        <InputBox
-          currency={usdcCurrency}
-          value={amountOut1}
-          onChange={(value: string) => console.log(value)}
-          title={'To'}
-          disabled={true}
-        />
-        <PlusIcon size={'30px'} />
-        <InputBox
-          currency={deusCurrency}
-          value={amountOut2}
-          onChange={(value: string) => console.log(value)}
-          title={'To ($)'}
-          disabled={true}
-        />
-        {
-          <Row mt={'8px'}>
-            <Info data-for="id" data-tip={'Tool tip for hint client'} size={15} />
-            <Description>you will get an NFT {`"DEUS voucher"`} that will let you claim DEUS later .</Description>
-          </Row>
-        }
-        <div style={{ marginTop: '20px' }}></div>
-        {getApproveButton()}
-        {getActionButton()}
+          <TableauTitle>Redeem DEI</TableauTitle>
+        </TopTableau>
+        <InputWrapper>
+          <InputBox
+            currency={deiCurrency}
+            value={amountIn}
+            onChange={(value: string) => setAmountIn(value)}
+            title={'From'}
+          />
+          <ArrowDown />
+
+          <InputBox
+            currency={usdcCurrency}
+            value={amountOut1}
+            onChange={(value: string) => console.log(value)}
+            title={'To'}
+            disabled={true}
+          />
+          <PlusIcon size={'30px'} />
+          <InputBox
+            currency={deusCurrency}
+            value={amountOut2}
+            onChange={(value: string) => console.log(value)}
+            title={'To ($)'}
+            disabled={true}
+          />
+          <div style={{ marginTop: '20px' }}></div>
+          {getApproveButton()}
+          {getActionButton()}
+          <div style={{ marginTop: '20px' }}></div>
+
+          {
+            <Row mt={'8px'}>
+              <Info data-for="id" data-tip={'Tool tip for hint client'} size={15} />
+              <Description>you will get an NFT {`"DEUS voucher"`} that will let you claim DEUS later .</Description>
+            </Row>
+          }
+        </InputWrapper>
+        <BottomWrapper>
+          <InformationWrapper name={'USDC Ratio'} value={'0.1???'} />
+          <InformationWrapper name={'DEUS Ratio'} value={'0.9???'} />
+        </BottomWrapper>
       </Wrapper>
-      <RedemptionInfoBox />
       <Disclaimer />
     </Container>
   )

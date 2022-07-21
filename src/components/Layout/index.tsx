@@ -17,7 +17,8 @@ const Content = styled.div`
   position: relative;
   height: calc(100vh - 55px);
   overflow: scroll;
-  padding-bottom: 20px;
+  /* TODO */
+  /* padding-bottom: 20px; */
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
     padding-bottom: 40px;

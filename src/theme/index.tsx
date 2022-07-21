@@ -315,7 +315,7 @@ export const ThemedGlobalStyle = createGlobalStyle`
 
   body {
     font-family: 'IBM Plex Mono', monospace;
-    background: ${({ theme }) => theme.specialBG1};
+    background: ${({ theme }) => theme.bg4};
   }
 
   button {

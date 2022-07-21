@@ -11,17 +11,23 @@ import { RowCenter, RowEnd } from 'components/Row'
 import { isMobile } from 'react-device-detect'
 
 const Wrapper = styled(RowCenter)`
+  height: calc(100vh - 35px);
+  min-height: 80px;
+  max-height: 90px;
+  /* position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0; */
+
   flex-wrap: nowrap;
   font-size: 13px;
-  color: ${({ theme }) => theme.text2};
+  color: ${({ theme }) => theme.text3};
   gap: 20px;
   padding: 20px 100px;
   text-align: center;
-  margin-top: 40px;
-  position: relative;
-
-  /* TODO: edit background color */
-  background: #181a1f;
+  /* margin-top: 71px; */
+  /* position: relative; */
+  background: ${({ theme }) => theme.bg2};
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
     margin-top: 20px;

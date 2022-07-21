@@ -10,7 +10,7 @@ const Hero = styled.div`
   text-align: center;
   font-size: 60px;
   font-weight: bold;
-  background: ${({ theme }) => theme.bg1};
+  background: ${({ theme }) => theme.bg0};
   gap: 10px;
   padding: 20px;
 

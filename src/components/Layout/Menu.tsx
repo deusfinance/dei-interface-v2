@@ -19,7 +19,6 @@ import {
   Trade as TradeIcon,
 } from 'components/Icons'
 import { Card } from 'components/Card'
-import { NavButton } from 'components/Button'
 import { ExternalLink } from 'components/Link'
 
 const Container = styled.div`
@@ -57,7 +56,7 @@ const Row = styled.div<{
 
   ${({ active, theme }) =>
     active &&
-    ` color: ${theme.text1};
+    ` color: ${theme.yellow4};
       pointer-events: none;
   `};
 `
@@ -73,9 +72,7 @@ export default function Menu() {
 
   return (
     <Container ref={ref}>
-      <NavButton onClick={() => toggle()}>
-        <NavToggle />
-      </NavButton>
+      <NavToggle onClick={() => toggle()} />
       <div>
         <InlineModal isOpen={isOpen}>
           <Link href="/dashboard" passHref>
