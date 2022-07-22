@@ -1,18 +1,34 @@
 import React from 'react'
 import styled from 'styled-components'
 
+import { ToolTip } from 'components/ToolTip'
+import { Info } from 'components/Icons'
+
 const Wrapper = styled.div`
   width: 100%;
   overflow-x: auto;
   white-space: nowrap;
   margin-top: 18px;
   -webkit-overflow-scrolling: touch;
+  position: relative;
 `
 
 const Item = styled.div<{ rightBorder?: boolean }>`
   display: inline-block;
   padding: 0 24px;
-  border-right: ${({ theme, rightBorder }) => (rightBorder ? `1px solid ${theme.border1}` : 'unset')}; ;
+  border-right: ${({ theme, rightBorder }) => (rightBorder ? `1px solid ${theme.border1}` : 'unset')};
+`
+
+const ItemBox = styled.div`
+  display: inline-block;
+  margin: 0;
+  position: absolute;
+  bottom: 18%;
+  padding: 8px 10px;
+  margin: 0 24px;
+  background: ${({ theme }) => theme.bg4};
+  border: 2px solid ${({ theme }) => theme.text3};
+  border-radius: 8px;
 `
 
 const Name = styled.div`
@@ -31,15 +47,48 @@ const Value = styled.div`
   margin-top: 10px;
 `
 
-export default function StatsHeader({ items }: { items: { name: string; value: string }[] }) {
+const CustomTooltip = styled(ToolTip)`
+  max-width: 380px !important;
+`
+
+const InfoIcon = styled(Info)`
+  color: ${({ theme }) => theme.yellow2};
+`
+
+const AprWrapper = styled.a`
+  align-items: center;
+  text-decoration: none;
+  justify-content: center;
+  color: ${({ theme }) => theme.text1};
+  display: flex;
+
+  :hover {
+    opacity: 0.7;
+    text-decoration: underline;
+    color: ${({ theme }) => theme.yellow2};
+  }
+  :focus {
+    outline: none;
+  }
+`
+
+export default function StatsHeader({ items, hasBox }: { items: { name: string; value: string }[]; hasBox?: boolean }) {
   return (
     <Wrapper>
       {items.map((item, index) => (
-        <Item key={index} rightBorder={index < items.length - 1}>
+        <Item key={index} rightBorder={index < items.length - 1 || hasBox}>
           <Name>{item.name}</Name>
           <Value>{item.value}</Value>
         </Item>
       ))}
+      {hasBox && (
+        <ItemBox data-for="id" data-tip={'veDEUS rewards are fully accruing in the Background'}>
+          <CustomTooltip id="id" />
+          <AprWrapper target={'target'} href={'https://lafayettetabor.medium.com/vedeus-dynamics-40a4a5489ae1'}>
+            <p style={{ marginRight: '10px', fontSize: '14px' }}>APR</p> <InfoIcon size={20} />
+          </AprWrapper>
+        </ItemBox>
+      )}
     </Wrapper>
   )
 }

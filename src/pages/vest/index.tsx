@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import styled from 'styled-components'
+import Image from 'next/image'
 
 import useOwnedNfts from 'hooks/useOwnedNfts'
 import { useDeusPrice } from 'hooks/useCoingeckoPrice'
@@ -9,23 +10,16 @@ import { useVestedAPY } from 'hooks/useVested'
 
 import { formatAmount, formatDollarAmount } from 'utils/numbers'
 import { getMaximumDate } from 'utils/vest'
+import veDEUS_LOGO from '/public/static/images/pages/veDEUS/veDEUS.svg'
 
-import Hero, { HeroSubtext } from 'components/Hero'
-import { Table } from 'components/App/Vest'
-import { PrimaryButton } from 'components/Button'
+import Hero from 'components/Hero'
+import { useSearch, SearchField, Table } from 'components/App/Vest'
+import { PrimaryButtonWide } from 'components/Button'
 import LockManager from 'components/App/Vest/LockManager'
 import APYManager from 'components/App/Vest/APYManager'
-import { RowEnd } from 'components/Row'
-import Box from 'components/Box'
-import { Info } from 'components/Icons'
-import { ToolTip } from 'components/ToolTip'
-
-const Container = styled.div`
-  display: flex;
-  flex-flow: column nowrap;
-  overflow: visible;
-  margin: 0 auto;
-`
+import { RowFixed, RowBetween } from 'components/Row'
+import StatsHeader from 'components/StatsHeader'
+import { Container, Title } from 'components/App/StableCoin'
 
 const Wrapper = styled(Container)`
   margin: 0 auto;
@@ -52,54 +46,70 @@ const Wrapper = styled(Container)`
   `}
 `
 
-const UpperRow = styled(RowEnd)`
-  gap: 10px;
-  margin-bottom: 10px;
-  height: 50px;
+const UpperRow = styled(RowBetween)`
+  background: ${({ theme }) => theme.bg0};
+  border-top-right-radius: 12px;
+  border-top-left-radius: 12px;
+  flex-wrap: wrap;
+
   & > * {
-    height: 100%;
-    max-width: fit-content;
-    &:first-child {
-      max-width: 200px;
-      margin-right: auto;
+    margin: 10px 10px;
+  }
+`
+
+const ButtonWrapper = styled(RowFixed)`
+  gap: 10px;
+  & > * {
+    height: 50px;
+    /* &:first-child {
+      ${({ theme }) => theme.mediaWidth.upToSmall`
+        order: 2;
+      `};
     }
-
-    ${({ theme }) => theme.mediaWidth.upToMedium`
-      &:nth-child(2) {
-        display: none;
-      }
-    `}
-    ${({ theme }) => theme.mediaWidth.upToSmall`
-      &:nth-child(3) {
-        display: none;
-      }
-      flex: 1;
-      max-width: none;
-    `}
+    &:last-child {
+      ${({ theme }) => theme.mediaWidth.upToSmall`
+        order: 1;
+      `};
+    } */
   }
 `
 
-const InfoIcon = styled(Info)`
-  color: ${({ theme }) => theme.yellow2};
-`
-const CustomTooltip = styled(ToolTip)`
-  max-width: 380px !important;
+const ButtonText = styled.span<{ disabled?: boolean }>`
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 17px;
+
+  ${({ disabled }) =>
+    disabled &&
+    `
+    background: -webkit-linear-gradient(92.33deg, #e29d52 -10.26%, #de4a7b 80%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  `}
 `
 
-const AprWrapper = styled.a`
-  align-items: center;
-  text-decoration: none;
-  justify-content: center;
-  color: ${({ theme }) => theme.text2};
+const TopBorderWrap = styled.div<{ active?: any }>`
+  background: ${({ theme }) => theme.primary2};
+  padding: 1px;
+  border-radius: 8px;
+  margin-right: 4px;
+  margin-left: 3px;
+  border: 1px solid ${({ theme }) => theme.bg0};
+  flex: 1;
+
+  &:hover {
+    border: 1px solid ${({ theme, active }) => (active ? theme.bg0 : theme.warning)};
+  }
+`
+
+const TopBorder = styled.div`
+  background: ${({ theme }) => theme.bg0};
+  border-radius: 6px;
+  height: 100%;
+  width: 100%;
   display: flex;
-  :hover {
-    opacity: 0.7;
-    text-decoration: underline;
-    color: ${({ theme }) => theme.yellow2};
-  }
-  :focus {
-    outline: none;
-  }
 `
 
 export default function Vest() {
@@ -110,6 +120,8 @@ export default function Vest() {
   const nftIds = useOwnedNfts()
   const { lockedVeDEUS } = useVestedAPY(undefined, getMaximumDate())
   const deusPrice = useDeusPrice()
+
+  // const { snapshot, searchProps } = useSearch()
 
   useEffect(() => {
     setShowLockManager(false)
@@ -128,26 +140,45 @@ export default function Vest() {
     setNftId(nftId)
   }
 
+  // TODO: move items to use memo
+  const items = [
+    { name: 'DEUS Price', value: formatDollarAmount(parseFloat(deusPrice), 2) },
+    { name: 'Total veDEUS Locked', value: formatAmount(parseFloat(lockedVeDEUS), 0) },
+  ]
+  const ClaimableAmount = 0.063
+
   return (
     <Container>
       <Hero>
-        <div>veDEUS</div>
-        <HeroSubtext>Happy dilution protection!</HeroSubtext>
+        <Image src={veDEUS_LOGO} height={'90px'} alt="Logo" />
+        <Title>veDEUS</Title>
+        <StatsHeader items={items} hasBox />
       </Hero>
+
       <Wrapper>
         <UpperRow>
-          <Link href="/vest/create" passHref>
-            <PrimaryButton>Create Lock</PrimaryButton>
-          </Link>
-          <Box>DEUS Price: {formatDollarAmount(parseFloat(deusPrice), 2)}</Box>
-          <Box>veDEUS Locked: {formatAmount(parseFloat(lockedVeDEUS), 0)}</Box>
-          <Box data-for="id" data-tip={'veDEUS rewards are fully accruing in the Background'}>
-            <CustomTooltip id="id" />
-            <AprWrapper target={'target'} href={'https://lafayettetabor.medium.com/vedeus-dynamics-40a4a5489ae1'}>
-              <p style={{ marginRight: '10px' }}>APR</p> <InfoIcon size={15} />
-            </AprWrapper>
-          </Box>
+          <div>
+            {/* searchProps={searchProps} */}
+            <SearchField />
+          </div>
+
+          <ButtonWrapper>
+            <PrimaryButtonWide>
+              <ButtonText>Claim all ${ClaimableAmount} veDEUS</ButtonText>
+            </PrimaryButtonWide>
+
+            <TopBorderWrap>
+              <TopBorder>
+                <Link href="/vest/create" passHref>
+                  <PrimaryButtonWide disabled>
+                    <ButtonText disabled>Create Lock</ButtonText>
+                  </PrimaryButtonWide>
+                </Link>
+              </TopBorder>
+            </TopBorderWrap>
+          </ButtonWrapper>
         </UpperRow>
+        {/* options={snapshot.options} */}
         <Table nftIds={nftIds} toggleLockManager={toggleLockManager} toggleAPYManager={toggleAPYManager} />
       </Wrapper>
       <LockManager isOpen={showLockManager} onDismiss={() => setShowLockManager(false)} nftId={nftId} />

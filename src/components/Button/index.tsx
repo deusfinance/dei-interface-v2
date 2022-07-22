@@ -83,3 +83,32 @@ export const PrimaryButton = styled(BaseButton)`
       }
   `}
 `
+
+export const PrimaryButtonWide = styled(BaseButton)`
+  background: ${({ theme }) => theme.primary2};
+  white-space: nowrap;
+  border-radius: 8px;
+
+  color: ${({ theme }) => theme.text1};
+  z-index: 0;
+
+  &:focus {
+    box-shadow: 0 0 0 1pt ${({ theme }) => theme.primary2};
+    background: ${({ theme }) => theme.primary5};
+  }
+  &:hover {
+    background: ${({ theme }) => theme.primary5};
+  }
+
+  ${({ theme, disabled }) =>
+    disabled &&
+    `
+      background: ${theme.bg2};
+      border: 1px solid ${theme.border1};
+
+      &:focus,
+      &:hover {
+        background: inherit;
+      }
+  `}
+`

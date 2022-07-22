@@ -94,6 +94,7 @@ function colors(themeName: SupportedThemes): Colors {
       primary2: 'linear-gradient(90deg, #FFBA35 1.54%, #FFA76A 50%)',
       primary3: '#FFBA35',
       primary4: 'linear-gradient(92.33deg, #DE4A7B -10.26%, #E29D52 80%)',
+      primary5: 'linear-gradient(92.33deg, #DE4A7B -10.26%, #E29D52 100%)',
 
       // color text
       primaryText1: '#FFB463', // TODO check if we want these values
@@ -153,6 +154,7 @@ function colors(themeName: SupportedThemes): Colors {
       primary2: 'linear-gradient(92.33deg, #E29D52 -10.26%, #DE4A7B 80%)',
       primary3: '#FFBA35',
       primary4: 'linear-gradient(92.33deg, #DE4A7B -10.26%, #E29D52 80%)',
+      primary5: 'linear-gradient(92.33deg, #DE4A7B -10.26%, #E29D52 100%)',
 
       // color text
       primaryText1: '#1749FA', // TODO check if we want these values

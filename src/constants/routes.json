@@ -29,10 +29,8 @@
   {
     "id": "51",
     "text": "veDEUS",
-    "children": [
-      { "id": "51", "text": "Lock", "path": "/vest" },
-      { "id": "52", "text": "Rewards", "path": "/rewards" }
-    ]
+    "path": "/vest",
+    "exact": true
   },
   {
     "id": "6",
