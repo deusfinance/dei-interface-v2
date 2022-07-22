@@ -11,15 +11,7 @@ const ItemValue = styled.div`
   color: ${({ theme }) => theme.text1};
 `
 
-export default function InformationWrapper({
-  loading = false,
-  name,
-  value,
-}: {
-  loading?: boolean
-  name: string
-  value: string
-}) {
+export default function InfoItem({ loading = false, name, value }: { loading?: boolean; name: string; value: string }) {
   return (
     <>
       <InfoWrapper>

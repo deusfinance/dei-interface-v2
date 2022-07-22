@@ -16,30 +16,17 @@ import { tryParseAmount } from 'utils/parse'
 import { getRemainingTime } from 'utils/time'
 import { DEI_TOKEN, DEUS_TOKEN, USDC_TOKEN } from 'constants/tokens'
 import { DynamicRedeemer } from 'constants/addresses'
-import REDEEM_IMG from '../../../public/static/images/pages/redemption/TableauBackground.svg'
-import DEUS_LOGO from '../../../public/static/images/pages/redemption/DEUS_Logo.svg'
+import REDEEM_IMG from '/public/static/images/pages/redemption/TableauBackground.svg'
+import DEUS_LOGO from '/public/static/images/pages/redemption/DEUS_Logo.svg'
 
-import { PrimaryButton } from 'components/Button'
 import { DotFlashing, Info } from 'components/Icons'
-import { Row, RowEnd } from 'components/Row'
+import { Row } from 'components/Row'
 import Hero from 'components/Hero'
-import Disclaimer from 'components/Disclaimer'
 import InputBox from 'components/App/Redemption/InputBox'
 import DashboardHeader from 'components/DashboardHeader'
-import {
-  BottomWrapper,
-  Container,
-  InputWrapper,
-  TableauTitle,
-  Title,
-  TopTableau,
-  Wrapper,
-} from 'components/App/StableCoin'
-import InformationWrapper from 'components/App/StableCoin/InformationWrapper'
-
-const TitleIMGWrap = styled(RowEnd)`
-  border-radius: 15px;
-`
+import { BottomWrapper, Container, InputWrapper, Title, Wrapper, MainButton } from 'components/App/StableCoin'
+import InfoItem from 'components/App/StableCoin/InfoItem'
+import Tableau from 'components/App/StableCoin/Tableau'
 
 const Description = styled.div`
   font-size: 0.85rem;
@@ -57,10 +44,6 @@ const PlusIcon = styled(Plus)`
   border-radius: 4px;
   background-color: ${({ theme }) => theme.bg4};
   color: ${({ theme }) => theme.text2};
-`
-
-const RedeemButton = styled(PrimaryButton)`
-  border-radius: 15px;
 `
 
 export default function Redemption() {
@@ -144,55 +127,55 @@ export default function Redemption() {
     }
     if (awaitingApproveConfirmation) {
       return (
-        <RedeemButton active>
+        <MainButton active>
           Awaiting Confirmation <DotFlashing style={{ marginLeft: '10px' }} />
-        </RedeemButton>
+        </MainButton>
       )
     }
     if (showApproveLoader) {
       return (
-        <RedeemButton active>
+        <MainButton active>
           Approving <DotFlashing style={{ marginLeft: '10px' }} />
-        </RedeemButton>
+        </MainButton>
       )
     }
     if (showApprove) {
-      return <RedeemButton onClick={handleApprove}>Allow us to spend {deiCurrency?.symbol}</RedeemButton>
+      return <MainButton onClick={handleApprove}>Allow us to spend {deiCurrency?.symbol}</MainButton>
     }
     return null
   }
 
   function getActionButton(): JSX.Element | null {
     if (!chainId || !account) {
-      return <RedeemButton onClick={toggleWalletModal}>Connect Wallet</RedeemButton>
+      return <MainButton onClick={toggleWalletModal}>Connect Wallet</MainButton>
     }
     if (showApprove) {
       return null
     }
     if (redeemPaused) {
-      return <RedeemButton disabled>Redeem Paused</RedeemButton>
+      return <MainButton disabled>Redeem Paused</MainButton>
     }
 
     if (diff < 0 && redeemTranche.trancheId != null) {
-      return <RedeemButton disabled>Tranche Ended</RedeemButton>
+      return <MainButton disabled>Tranche Ended</MainButton>
     }
 
     if (Number(amountOut1) > redeemTranche.amountRemaining) {
-      return <RedeemButton disabled>Exceeds Available Amount</RedeemButton>
+      return <MainButton disabled>Exceeds Available Amount</MainButton>
     }
 
     if (insufficientBalance) {
-      return <RedeemButton disabled>Insufficient {deiCurrency?.symbol} Balance</RedeemButton>
+      return <MainButton disabled>Insufficient {deiCurrency?.symbol} Balance</MainButton>
     }
     if (awaitingRedeemConfirmation) {
       return (
-        <RedeemButton>
+        <MainButton>
           Redeeming DEI <DotFlashing style={{ marginLeft: '10px' }} />
-        </RedeemButton>
+        </MainButton>
       )
     }
 
-    return <RedeemButton onClick={() => handleRedeem()}>Redeem DEI</RedeemButton>
+    return <MainButton onClick={() => handleRedeem()}>Redeem DEI</MainButton>
   }
   const items = [
     { name: 'DEI Price', value: '$0.5' },
@@ -209,13 +192,7 @@ export default function Redemption() {
         <DashboardHeader items={items} />
       </Hero>
       <Wrapper>
-        <TopTableau>
-          <TitleIMGWrap>
-            <Image src={REDEEM_IMG} height={'90px'} alt="nft" />
-          </TitleIMGWrap>
-
-          <TableauTitle>Redeem DEI</TableauTitle>
-        </TopTableau>
+        <Tableau title={'Redeem DEI'} imgSrc={REDEEM_IMG} />
         <InputWrapper>
           <InputBox
             currency={deiCurrency}
@@ -253,11 +230,10 @@ export default function Redemption() {
           }
         </InputWrapper>
         <BottomWrapper>
-          <InformationWrapper name={'USDC Ratio'} value={'0.1???'} />
-          <InformationWrapper name={'DEUS Ratio'} value={'0.9???'} />
+          <InfoItem name={'USDC Ratio'} value={'0.1???'} />
+          <InfoItem name={'DEUS Ratio'} value={'0.9???'} />
         </BottomWrapper>
       </Wrapper>
-      <Disclaimer />
     </Container>
   )
 }

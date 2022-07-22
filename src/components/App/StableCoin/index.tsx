@@ -1,8 +1,9 @@
-import { RowBetween } from 'components/Row'
 import styled from 'styled-components'
 
-export const Container = styled.div`
-  display: flex;
+import { PrimaryButton } from 'components/Button'
+import { Row, RowBetween, RowEnd } from 'components/Row'
+
+export const Container = styled(Row)`
   flex-flow: column nowrap;
   overflow: visible;
   margin: 0 auto;
@@ -14,7 +15,6 @@ export const Wrapper = styled(Container)`
   background: ${({ theme }) => theme.bg0};
   border: 1px solid ${({ theme }) => theme.bg0};
   border-radius: 15px;
-  justify-content: center;
 `
 
 export const InputWrapper = styled(Container)`
@@ -77,4 +77,12 @@ export const Title = styled.div`
   font-weight: 700;
   font-size: 32px;
   color: ${({ theme }) => theme.white};
+`
+
+export const TitleIMGWrap = styled(RowEnd)`
+  border-radius: 15px;
+`
+
+export const MainButton = styled(PrimaryButton)`
+  border-radius: 15px;
 `

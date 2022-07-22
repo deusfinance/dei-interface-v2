@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react'
 import styled from 'styled-components'
 import { ArrowDown } from 'react-feather'
+import Image from 'next/image'
 
 import { useCurrencyBalance } from 'state/wallet/hooks'
 import { useWalletModalToggle } from 'state/application/hooks'
@@ -13,41 +14,21 @@ import { useRedeemAmountsOut } from 'hooks/useRedemptionPage'
 import { tryParseAmount } from 'utils/parse'
 import { DEIv2_TOKEN, USDC_TOKEN } from 'constants/tokens'
 import { DynamicRedeemer } from 'constants/addresses'
-import MINT_IMG from '../../../public/static/images/pages/mint/TableauBackground.svg'
-import DEI_LOGO from '../../../public/static/images/pages/mint/DEI_Logo.svg'
+import MINT_IMG from '/public/static/images/pages/mint/TableauBackground.svg'
+import DEI_LOGO from '/public/static/images/pages/mint/DEI_Logo.svg'
 
-import { PrimaryButton } from 'components/Button'
 import { DotFlashing } from 'components/Icons'
 import Hero from 'components/Hero'
-import Disclaimer from 'components/Disclaimer'
 import InputBox from 'components/App/Migration/InputBox'
-import { RowEnd } from 'components/Row'
-import Image from 'next/image'
+import { RowBetween } from 'components/Row'
 import AdvancedOptions from 'components/App/Swap/AdvancedOptions'
 import DashboardHeader from 'components/DashboardHeader'
-import {
-  BottomWrapper,
-  Container,
-  InputWrapper,
-  TableauTitle,
-  Title,
-  TopTableau,
-  Wrapper,
-} from 'components/App/StableCoin'
-import InformationWrapper from 'components/App/StableCoin/InformationWrapper'
+import { BottomWrapper, Container, InputWrapper, Title, Wrapper, MainButton } from 'components/App/StableCoin'
+import InfoItem from 'components/App/StableCoin/InfoItem'
+import Tableau from 'components/App/StableCoin/Tableau'
 
-const MigrationButton = styled(PrimaryButton)`
-  border-radius: 15px;
-`
-
-const TitleIMGWrap = styled(RowEnd)`
-  border-radius: 15px;
-`
-
-const SlippageWrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
+const SlippageWrapper = styled(RowBetween)`
+  margin-top: 10px;
 `
 
 export default function Migration() {
@@ -120,40 +101,38 @@ export default function Migration() {
 
     if (awaitingApproveConfirmation) {
       return (
-        <MigrationButton active>
+        <MainButton active>
           Awaiting Confirmation <DotFlashing style={{ marginLeft: '10px' }} />
-        </MigrationButton>
+        </MainButton>
       )
     }
     if (showApproveLoader) {
       return (
-        <MigrationButton active>
+        <MainButton active>
           Approving <DotFlashing style={{ marginLeft: '10px' }} />
-        </MigrationButton>
+        </MainButton>
       )
     }
-    if (showApprove)
-      return <MigrationButton onClick={handleApprove}>Allow us to spend {usdcCurrency?.symbol}</MigrationButton>
+    if (showApprove) return <MainButton onClick={handleApprove}>Allow us to spend {usdcCurrency?.symbol}</MainButton>
 
     return null
   }
 
   function getActionButton(): JSX.Element | null {
-    if (!chainId || !account) return <MigrationButton onClick={toggleWalletModal}>Connect Wallet</MigrationButton>
+    if (!chainId || !account) return <MainButton onClick={toggleWalletModal}>Connect Wallet</MainButton>
 
     if (showApprove) return null
 
-    if (insufficientBalance)
-      return <MigrationButton disabled>Insufficient {usdcCurrency?.symbol} Balance</MigrationButton>
+    if (insufficientBalance) return <MainButton disabled>Insufficient {usdcCurrency?.symbol} Balance</MainButton>
 
     if (awaitingRedeemConfirmation) {
       return (
-        <MigrationButton>
+        <MainButton>
           Migrating to {deiv2Currency?.symbol} <DotFlashing style={{ marginLeft: '10px' }} />
-        </MigrationButton>
+        </MainButton>
       )
     }
-    return <MigrationButton onClick={() => handleMint()}>Mint {deiv2Currency?.symbol}</MigrationButton>
+    return <MainButton onClick={() => handleMint()}>Mint {deiv2Currency?.symbol}</MainButton>
   }
 
   // TODO: move items to use memo
@@ -173,13 +152,8 @@ export default function Migration() {
       </Hero>
 
       <Wrapper>
-        <TopTableau>
-          <TitleIMGWrap>
-            <Image src={MINT_IMG} height={'90px'} alt="nft" />
-          </TitleIMGWrap>
+        <Tableau title={'Mint DEI'} imgSrc={MINT_IMG} />
 
-          <TableauTitle>Mint DEI</TableauTitle>
-        </TopTableau>
         <InputWrapper>
           <InputBox
             currency={usdcCurrency}
@@ -203,11 +177,10 @@ export default function Migration() {
           <SlippageWrapper>
             <AdvancedOptions slippage={slippage} setSlippage={setSlippage} />
           </SlippageWrapper>
-          <InformationWrapper name={'Minter Contract'} value={'Proxy'} />
-          <InformationWrapper name={'Minting Fee'} value={'Zero'} />
+          <InfoItem name={'Minter Contract'} value={'Proxy'} />
+          <InfoItem name={'Minting Fee'} value={'Zero'} />
         </BottomWrapper>
       </Wrapper>
-      <Disclaimer />
     </Container>
   )
 }

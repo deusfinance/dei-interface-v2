@@ -3,7 +3,6 @@ import React from 'react'
 import styled from 'styled-components'
 
 const Wrapper = styled(Row)`
-  flex-direction: row;
   width: 50%;
   ${({ theme }) => theme.mediaWidth.upToMedium`
     // TODO : add style for mobile
