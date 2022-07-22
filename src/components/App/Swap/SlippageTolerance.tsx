@@ -103,6 +103,7 @@ const InputSlippage = styled.input.attrs({ type: 'number', min: 0.1 })`
 
 const TitleSpan = styled.span`
   font-size: 12px;
+  margin-right: 2px;
   color: ${({ theme }) => theme.text2};
 `
 
@@ -143,7 +144,7 @@ export default function SlippageTolerance({
   return useMemo(() => {
     return (
       <>
-        <TitleSpan>Slippage Tolerance</TitleSpan>
+        <TitleSpan>Slippage</TitleSpan>
         <DefaultAmountsWrap>
           {defaultAmounts.map((amount) => {
             return (

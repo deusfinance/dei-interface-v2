@@ -64,12 +64,10 @@ export const TableauTitle = styled.span`
 `
 
 export const InfoWrapper = styled(RowBetween)`
-  align-items: center;
   white-space: nowrap;
   font-size: 0.75rem;
   margin-top: 6px;
   height: 30px;
-  width: 97%;
 `
 
 export const Title = styled.div`

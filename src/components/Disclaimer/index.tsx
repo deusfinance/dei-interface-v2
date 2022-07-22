@@ -11,50 +11,35 @@ import { RowCenter, RowEnd } from 'components/Row'
 import { isMobile } from 'react-device-detect'
 
 const Wrapper = styled(RowCenter)`
-  height: calc(100vh - 35px);
-  min-height: 80px;
-  max-height: 90px;
-  /* position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0; */
-
-  flex-wrap: nowrap;
-  font-size: 13px;
   color: ${({ theme }) => theme.text3};
-  gap: 20px;
-  padding: 20px 100px;
-  text-align: center;
-  /* margin-top: 71px; */
-  /* position: relative; */
   background: ${({ theme }) => theme.bg2};
+  text-align: center;
+  gap: 20px;
+  font-size: 13px;
+  padding: 20px 100px;
 
-  ${({ theme }) => theme.mediaWidth.upToSmall`
-    margin-top: 20px;
+  ${({ theme }) => theme.mediaWidth.upToMedium`
     flex-direction: column;
-    padding-left: 20px;
-    padding-right:20px;
-
+    margin-top: 20px;
+    padding: 20px;
   `}
 `
 
 const Text = styled.div`
   position: absolute;
 
-  ${({ theme }) => theme.mediaWidth.upToSmall`
+  ${({ theme }) => theme.mediaWidth.upToMedium`
     position: relative;
 
   `}
 `
 
 const Logos = styled(RowEnd)`
-  align-items: center;
   gap: 28px;
 
-  ${({ theme }) => theme.mediaWidth.upToSmall`
-    justify-content:center;
-    gap:30px;
-
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    justify-content: center;
+    gap: 30px;
   `}
 `
 

@@ -191,7 +191,7 @@ export default function NavBar() {
                   {item.text}
                   <ChevronDown
                     color={isSubItemChosen(item.children) ? '#FF8F00' : 'white'}
-                    disable
+                    disable={true}
                     style={{ position: 'absolute' }}
                   />
                 </TitleSpan>

@@ -1,8 +1,9 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import NavBar from './NavBar'
 import { useInjectedAddress } from 'hooks/useInjectedAddress'
+
+import NavBar from './NavBar'
 import Warning from './Warning'
 import Footer from 'components/Disclaimer'
 
@@ -14,20 +15,21 @@ const Wrapper = styled.div`
 
 // Scroll content so we can use a semi transparent navbar.
 const Content = styled.div`
-  display: block;
   position: relative;
-  height: calc(100vh - 55px);
+  height: calc(100vh - 55px - 70px);
+  min-height: calc(970px - 55px - 70px);
   overflow: scroll;
-  /* TODO */
-  /* padding-bottom: 20px; */
+  padding-bottom: 20px;
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
-    padding-bottom: 40px;
+    padding-bottom: 30px;
+    height:100%;
   `}
 `
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const hasInjected = useInjectedAddress()
+
   return (
     <Wrapper>
       <NavBar />
