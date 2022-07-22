@@ -2,7 +2,6 @@ import React from 'react'
 import styled from 'styled-components'
 
 import Hero, { HeroSubtext } from 'components/Hero'
-import Disclaimer from 'components/Disclaimer'
 import { vDeusStakingPools } from 'constants/stakings'
 import PoolStake from 'components/App/NFT/PoolStake'
 
@@ -47,7 +46,6 @@ export default function NFT() {
           <PoolStake key={pool.name} pool={pool}></PoolStake>
         ))}
       </TopWrapper>
-      <Disclaimer />
     </Container>
   )
 }

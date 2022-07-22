@@ -17,7 +17,7 @@ const Wrapper = styled.div`
   padding: 0px 2rem;
   height: 55px;
   align-items: center;
-  background: ${({ theme }) => theme.bg1};
+  background: ${({ theme }) => theme.bg0};
   gap: 5px;
   z-index: ${Z_INDEX.fixed};
 

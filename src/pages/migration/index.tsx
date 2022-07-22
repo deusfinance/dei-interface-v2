@@ -13,12 +13,11 @@ import { useRedeemAmountsOut } from 'hooks/useRedemptionPage'
 import { tryParseAmount } from 'utils/parse'
 import { DEI_TOKEN, DEIv2_TOKEN, USDC_TOKEN } from 'constants/tokens'
 import { DynamicRedeemer } from 'constants/addresses'
-import Migration_IMG from '../../../public/static/images/pages/migration/TableauBackground.svg'
+import Migration_IMG from '/public/static/images/pages/mint/TableauBackground.svg'
 
 import { PrimaryButton } from 'components/Button'
 import { DotFlashing } from 'components/Icons'
 import Hero, { HeroSubtext } from 'components/Hero'
-import Disclaimer from 'components/Disclaimer'
 import InputBox from 'components/App/Migration/InputBox'
 import { RowEnd } from 'components/Row'
 import Image from 'next/image'
@@ -206,21 +205,20 @@ export default function Migration() {
           currency={deiCurrency}
           value={amountIn}
           onChange={(value: string) => setAmountIn(value)}
-          type={'from'}
+          title={'from'}
         />
         <ArrowDown color={'#d87466'} />
         <InputBox
           currency={deiv2Currency}
           value={amountOut1}
           onChange={(value: string) => console.log(value)}
-          type={'to'}
+          title={'to'}
           disabled={true}
         />
         <div style={{ marginTop: '30px' }}></div>
         {getApproveButton()}
         {getActionButton()}
       </Wrapper>
-      <Disclaimer />
     </Container>
   )
 }

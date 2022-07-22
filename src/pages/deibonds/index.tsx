@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 
 import Hero, { HeroSubtext } from 'components/Hero'
-import Disclaimer from 'components/Disclaimer'
 import { Navigation, NavigationTypes } from 'components/StableCoin'
 import Mint from 'components/App/Bonds/mint'
 import Redeem from 'components/App/Bonds/redeem'
@@ -52,8 +51,6 @@ export default function Bonds() {
       </SelectorContainer>
 
       {getAppComponent()}
-
-      <Disclaimer />
     </Container>
   )
 }

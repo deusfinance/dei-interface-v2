@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import NavBar from './NavBar'
 import { useInjectedAddress } from 'hooks/useInjectedAddress'
 import Warning from './Warning'
+import Footer from 'components/Disclaimer'
 
 const Wrapper = styled.div`
   display: flex;
@@ -17,7 +18,8 @@ const Content = styled.div`
   position: relative;
   height: calc(100vh - 55px);
   overflow: scroll;
-  padding-bottom: 20px;
+  /* TODO */
+  /* padding-bottom: 20px; */
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
     padding-bottom: 40px;
@@ -33,6 +35,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <Warning message={`❌ You are in "READ-ONLY" mode. Please do not confirm any transactions! ❌ `} />
       )}
       <Content>{children}</Content>
+      <Footer />
     </Wrapper>
   )
 }

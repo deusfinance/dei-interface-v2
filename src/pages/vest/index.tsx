@@ -11,7 +11,6 @@ import { formatAmount, formatDollarAmount } from 'utils/numbers'
 import { getMaximumDate } from 'utils/vest'
 
 import Hero, { HeroSubtext } from 'components/Hero'
-import Disclaimer from 'components/Disclaimer'
 import { Table } from 'components/App/Vest'
 import { PrimaryButton } from 'components/Button'
 import LockManager from 'components/App/Vest/LockManager'
@@ -158,7 +157,6 @@ export default function Vest() {
         nftId={nftId}
         toggleLockManager={toggleLockManager}
       />
-      <Disclaimer />
     </Container>
   )
 }

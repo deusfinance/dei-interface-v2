@@ -14,7 +14,6 @@ import { formatAmount, formatDollarAmount } from 'utils/numbers'
 import { DefaultHandlerError } from 'utils/parseError'
 
 import Hero, { HeroSubtext } from 'components/Hero'
-import Disclaimer from 'components/Disclaimer'
 import { Table } from 'components/App/Reward'
 import { RowEnd } from 'components/Row'
 import Box from 'components/Box'
@@ -167,7 +166,6 @@ export default function Rewards() {
         </UpperRow>
         <Table nftIds={nftIds} rewards={rewards} />
       </Wrapper>
-      <Disclaimer />
     </Container>
   )
 }

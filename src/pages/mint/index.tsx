@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react'
 import styled from 'styled-components'
 import { ArrowDown } from 'react-feather'
+import Image from 'next/image'
 
 import { useCurrencyBalance } from 'state/wallet/hooks'
 import { useWalletModalToggle } from 'state/application/hooks'
@@ -13,90 +14,21 @@ import { useRedeemAmountsOut } from 'hooks/useRedemptionPage'
 import { tryParseAmount } from 'utils/parse'
 import { DEIv2_TOKEN, USDC_TOKEN } from 'constants/tokens'
 import { DynamicRedeemer } from 'constants/addresses'
-import Mint_IMG from '../../../public/static/images/pages/migration/TableauBackground.svg'
+import MINT_IMG from '/public/static/images/pages/mint/TableauBackground.svg'
+import DEI_LOGO from '/public/static/images/pages/mint/DEI_Logo.svg'
 
-import { PrimaryButton } from 'components/Button'
-import { DotFlashing, Loader } from 'components/Icons'
+import { DotFlashing } from 'components/Icons'
 import Hero from 'components/Hero'
-import Disclaimer from 'components/Disclaimer'
 import InputBox from 'components/App/Migration/InputBox'
-import { RowBetween, RowEnd } from 'components/Row'
-import Image from 'next/image'
+import { RowBetween } from 'components/Row'
 import AdvancedOptions from 'components/App/Swap/AdvancedOptions'
 import DashboardHeader from 'components/DashboardHeader'
+import { BottomWrapper, Container, InputWrapper, Title, Wrapper, MainButton } from 'components/App/StableCoin'
+import InfoItem from 'components/App/StableCoin/InfoItem'
+import Tableau from 'components/App/StableCoin/Tableau'
 
-const Container = styled.div`
-  display: flex;
-  flex-flow: column nowrap;
-  overflow: visible;
-  margin: 0 auto;
-`
-
-const Wrapper = styled(Container)`
-  margin: 0 auto;
-  width: clamp(250px, 90%, 500px);
-  background-color: rgb(13 13 13);
-  padding: 20px 15px;
-  border: 1px solid #444444;
-  border-radius: 15px;
-  justify-content: center;
-  border-top-right-radius: 0;
-  border-top-left-radius: 0;
-
-  & > * {
-    &:nth-child(2) {
-      margin: 15px auto;
-    }
-  }
-`
-
-const MigrationButton = styled(PrimaryButton)`
-  border-radius: 15px;
-`
-
-const TopTableau = styled(Wrapper)`
-  margin-top: 50px;
-  border-radius: 12px;
-  border-bottom-right-radius: 0;
-  border-bottom-left-radius: 0;
-  position: relative;
-  padding: 0;
-  border-radius: 12px 12px 0px 0px;
-  height: 72px;
-  background: #1b1b1b;
-`
-
-const TableauTitle = styled.span`
-  font-family: 'IBM Plex Mono';
-  font-weight: 600;
-  font-size: 24px;
-  text-align: center;
-  position: absolute;
-  left: 0;
-  right: 0;
-`
-
-const TitleIMGWrap = styled(RowEnd)`
-  border-radius: 15px;
-`
-
-const InfoWrapper = styled(RowBetween)`
-  align-items: center;
-  white-space: nowrap;
-  font-size: 0.75rem;
-  margin-top: 6px;
-  height: 30px;
-  width: 97%;
-`
-
-const ItemValue = styled.div`
-  color: ${({ theme }) => theme.yellow4};
-`
-
-const SlippageWrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
+const SlippageWrapper = styled(RowBetween)`
+  margin-top: 10px;
 `
 
 export default function Migration() {
@@ -169,40 +101,38 @@ export default function Migration() {
 
     if (awaitingApproveConfirmation) {
       return (
-        <MigrationButton active>
+        <MainButton active>
           Awaiting Confirmation <DotFlashing style={{ marginLeft: '10px' }} />
-        </MigrationButton>
+        </MainButton>
       )
     }
     if (showApproveLoader) {
       return (
-        <MigrationButton active>
+        <MainButton active>
           Approving <DotFlashing style={{ marginLeft: '10px' }} />
-        </MigrationButton>
+        </MainButton>
       )
     }
-    if (showApprove)
-      return <MigrationButton onClick={handleApprove}>Allow us to spend {usdcCurrency?.symbol}</MigrationButton>
+    if (showApprove) return <MainButton onClick={handleApprove}>Allow us to spend {usdcCurrency?.symbol}</MainButton>
 
     return null
   }
 
   function getActionButton(): JSX.Element | null {
-    if (!chainId || !account) return <MigrationButton onClick={toggleWalletModal}>Connect Wallet</MigrationButton>
+    if (!chainId || !account) return <MainButton onClick={toggleWalletModal}>Connect Wallet</MainButton>
 
     if (showApprove) return null
 
-    if (insufficientBalance)
-      return <MigrationButton disabled>Insufficient {usdcCurrency?.symbol} Balance</MigrationButton>
+    if (insufficientBalance) return <MainButton disabled>Insufficient {usdcCurrency?.symbol} Balance</MainButton>
 
     if (awaitingRedeemConfirmation) {
       return (
-        <MigrationButton>
+        <MainButton>
           Migrating to {deiv2Currency?.symbol} <DotFlashing style={{ marginLeft: '10px' }} />
-        </MigrationButton>
+        </MainButton>
       )
     }
-    return <MigrationButton onClick={() => handleMint()}>Mint {deiv2Currency?.symbol}</MigrationButton>
+    return <MainButton onClick={() => handleMint()}>Mint {deiv2Currency?.symbol}</MainButton>
   }
 
   // TODO: move items to use memo
@@ -216,51 +146,41 @@ export default function Migration() {
   return (
     <Container>
       <Hero>
-        <div>Mint DEIv2</div>
+        <Image src={DEI_LOGO} height={'90px'} alt="Logo" />
+        <Title>Mint</Title>
         <DashboardHeader items={items} />
       </Hero>
 
-      <TopTableau>
-        <TitleIMGWrap>
-          <Image src={Mint_IMG} height={'90px'} alt="nft" />
-        </TitleIMGWrap>
-
-        <TableauTitle>Mint</TableauTitle>
-      </TopTableau>
       <Wrapper>
-        <InputBox
-          currency={usdcCurrency}
-          value={amountIn}
-          onChange={(value: string) => setAmountIn(value)}
-          type={'from'}
-        />
-        <ArrowDown color={'#d87466'} />
-        <InputBox
-          currency={deiv2Currency}
-          value={amountOut1}
-          onChange={(value: string) => console.log(value)}
-          type={'to'}
-          disabled={true}
-        />
-        <div style={{ marginTop: '30px' }}></div>
-        {getApproveButton()}
-        {getActionButton()}
+        <Tableau title={'Mint DEI'} imgSrc={MINT_IMG} />
 
-        <SlippageWrapper>
-          <AdvancedOptions slippage={slippage} setSlippage={setSlippage} />
-        </SlippageWrapper>
-
-        <InfoWrapper>
-          <p>Minter Contract</p>
-          <ItemValue> Proxy </ItemValue>
-        </InfoWrapper>
-
-        <InfoWrapper>
-          <p>Minting Fee</p>
-          {false ? <Loader /> : <ItemValue> Zero </ItemValue>}
-        </InfoWrapper>
+        <InputWrapper>
+          <InputBox
+            currency={usdcCurrency}
+            value={amountIn}
+            onChange={(value: string) => setAmountIn(value)}
+            title={'from'}
+          />
+          <ArrowDown />
+          <InputBox
+            currency={deiv2Currency}
+            value={amountOut1}
+            onChange={(value: string) => console.log(value)}
+            title={'to'}
+            disabled={true}
+          />
+          <div style={{ marginTop: '30px' }}></div>
+          {getApproveButton()}
+          {getActionButton()}
+        </InputWrapper>
+        <BottomWrapper>
+          <SlippageWrapper>
+            <AdvancedOptions slippage={slippage} setSlippage={setSlippage} />
+          </SlippageWrapper>
+          <InfoItem name={'Minter Contract'} value={'Proxy'} />
+          <InfoItem name={'Minting Fee'} value={'Zero'} />
+        </BottomWrapper>
       </Wrapper>
-      <Disclaimer />
     </Container>
   )
 }

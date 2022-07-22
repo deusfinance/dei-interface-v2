@@ -103,6 +103,7 @@ const InputSlippage = styled.input.attrs({ type: 'number', min: 0.1 })`
 
 const TitleSpan = styled.span`
   font-size: 12px;
+  color: ${({ theme }) => theme.text2};
 `
 
 const defaultAmounts = [0.1, 0.5, 1]
