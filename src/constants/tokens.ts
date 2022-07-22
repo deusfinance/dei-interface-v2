@@ -4,13 +4,7 @@ import { USDC_ADDRESS, DEUS_ADDRESS, DEI_ADDRESS, BDEI_ADDRESS } from './address
 
 export const DEI_TOKEN = new Token(SupportedChainId.FANTOM, DEI_ADDRESS[SupportedChainId.FANTOM], 18, 'DEI', 'DEI')
 
-export const DEIv2_TOKEN = new Token(
-  SupportedChainId.FANTOM,
-  DEI_ADDRESS[SupportedChainId.FANTOM],
-  18,
-  'DEIv2',
-  'DEIv2'
-)
+export const DEIv2_TOKEN = new Token(SupportedChainId.FANTOM, DEI_ADDRESS[SupportedChainId.FANTOM], 18, 'DEI', 'DEI')
 
 export const USDC_TOKEN = new Token(SupportedChainId.FANTOM, USDC_ADDRESS[SupportedChainId.FANTOM], 6, 'USDC', 'USDC')
 

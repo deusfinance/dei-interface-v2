@@ -1,19 +1,17 @@
-import { Row } from 'components/Row'
 import React from 'react'
 import styled from 'styled-components'
 
-const Wrapper = styled(Row)`
-  width: 50%;
-  ${({ theme }) => theme.mediaWidth.upToMedium`
-    // TODO : add style for mobile
-    // flex-direction: column;
-  `}
+const Wrapper = styled.div`
+  width: 100%;
+  overflow-x: auto;
+  white-space: nowrap;
+  margin-top: 18px;
+  -webkit-overflow-scrolling: touch;
 `
 
-const Item = styled(Row)<{ rightBorder?: boolean }>`
-  flex-direction: column;
-  padding-right: 24px;
-  padding-left: 24px;
+const Item = styled.div<{ rightBorder?: boolean }>`
+  display: inline-block;
+  padding: 0 24px;
   border-right: ${({ theme, rightBorder }) => (rightBorder ? `1px solid ${theme.border1}` : 'unset')}; ;
 `
 
@@ -33,7 +31,7 @@ const Value = styled.div`
   margin-top: 10px;
 `
 
-export default function DashboardHeader({ items }: { items: { name: string; value: string }[] }) {
+export default function StatsHeader({ items }: { items: { name: string; value: string }[] }) {
   return (
     <Wrapper>
       {items.map((item, index) => (

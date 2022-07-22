@@ -13,6 +13,7 @@ const Hero = styled.div`
   background: ${({ theme }) => theme.bg0};
   gap: 10px;
   padding: 20px;
+  padding-bottom: 10px;
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
     min-height: 100px;

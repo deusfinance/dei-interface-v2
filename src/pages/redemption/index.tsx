@@ -23,7 +23,7 @@ import { DotFlashing, Info } from 'components/Icons'
 import { Row } from 'components/Row'
 import Hero from 'components/Hero'
 import InputBox from 'components/App/Redemption/InputBox'
-import DashboardHeader from 'components/DashboardHeader'
+import StatsHeader from 'components/StatsHeader'
 import { BottomWrapper, Container, InputWrapper, Title, Wrapper, MainButton } from 'components/App/StableCoin'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
@@ -189,7 +189,7 @@ export default function Redemption() {
       <Hero>
         <Image src={DEUS_LOGO} height={'90px'} alt="Logo" />
         <Title>Redemption</Title>
-        <DashboardHeader items={items} />
+        <StatsHeader items={items} />
       </Hero>
       <Wrapper>
         <Tableau title={'Redeem DEI'} imgSrc={REDEEM_IMG} />
