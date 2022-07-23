@@ -16,8 +16,8 @@ import { tryParseAmount } from 'utils/parse'
 import { getRemainingTime } from 'utils/time'
 import { DEI_TOKEN, DEUS_TOKEN, USDC_TOKEN } from 'constants/tokens'
 import { DynamicRedeemer } from 'constants/addresses'
-import REDEEM_IMG from '/public/static/images/pages/redemption/TableauBackground.svg'
-import DEUS_LOGO from '/public/static/images/pages/redemption/DEUS_Logo.svg'
+import REDEEM_IMG from '/public/static/images/pages/bdei/TableauBackground.svg'
+import DEI_LOGO from '/public/static/images/pages/bdei/DEI_logo.svg'
 
 import { DotFlashing, Info } from 'components/Icons'
 import { Row } from 'components/Row'
@@ -27,6 +27,18 @@ import StatsHeader from 'components/StatsHeader'
 import { BottomWrapper, Container, InputWrapper, Title, Wrapper, MainButton } from 'components/App/StableCoin'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
+
+const RWrapper = styled(InputWrapper)`
+  & > * {
+    &:nth-child(4) {
+      margin: 15px auto;
+    }
+    &:nth-child(2) {
+      margin: -11px auto;
+      margin-left: 17px;
+    }
+  }
+`
 
 const Description = styled.div`
   font-size: 0.85rem;
@@ -188,21 +200,13 @@ export default function Redemption() {
   return (
     <Container>
       <Hero>
-        <Image src={DEUS_LOGO} height={'90px'} alt="Logo" />
-        <Title>Redemption</Title>
+        <Image src={DEI_LOGO} height={'90px'} alt="Logo" />
+        <Title>DEI Bond</Title>
         <StatsHeader items={items} />
       </Hero>
       <Wrapper>
-        <Tableau title={'Redeem DEI'} imgSrc={REDEEM_IMG} />
-        <InputWrapper>
-          <InputBox
-            currency={deiCurrency}
-            value={amountIn}
-            onChange={(value: string) => setAmountIn(value)}
-            title={'From'}
-          />
-          <ArrowDown />
-
+        <Tableau title={'Redemption'} imgSrc={REDEEM_IMG} />
+        <RWrapper>
           <InputBox
             currency={usdcCurrency}
             value={amountOut1}
@@ -210,7 +214,7 @@ export default function Redemption() {
             title={'To'}
             disabled={true}
           />
-          <PlusIcon size={'30px'} />
+          <PlusIcon size={'24px'} />
           <InputBox
             currency={deusCurrency}
             value={amountOut2}
@@ -218,6 +222,14 @@ export default function Redemption() {
             title={'To ($)'}
             disabled={true}
           />
+          <ArrowDown />
+          <InputBox
+            currency={deiCurrency}
+            value={amountIn}
+            onChange={(value: string) => setAmountIn(value)}
+            title={'From'}
+          />
+
           <div style={{ marginTop: '20px' }}></div>
           {getApproveButton()}
           {getActionButton()}
@@ -229,7 +241,7 @@ export default function Redemption() {
               <Description>you will get an NFT {`"DEUS voucher"`} that will let you claim DEUS later .</Description>
             </Row>
           }
-        </InputWrapper>
+        </RWrapper>
         <BottomWrapper>
           <InfoItem name={'USDC Ratio'} value={'0.1???'} />
           <InfoItem name={'DEUS Ratio'} value={'0.9???'} />

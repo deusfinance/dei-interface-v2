@@ -17,7 +17,7 @@ import { getRemainingTime } from 'utils/time'
 import { DEI_TOKEN, DEUS_TOKEN, USDC_TOKEN } from 'constants/tokens'
 import { DynamicRedeemer } from 'constants/addresses'
 import REDEEM_IMG from '/public/static/images/pages/redemption/TableauBackground.svg'
-import DEUS_LOGO from '/public/static/images/pages/redemption/DEUS_Logo.svg'
+import DEUS_LOGO from '/public/static/images/pages/redemption/DEUS_logo.svg'
 
 import { DotFlashing, Info } from 'components/Icons'
 import { Row } from 'components/Row'
@@ -36,8 +36,8 @@ const Description = styled.div`
 `
 
 const PlusIcon = styled(Plus)`
-  margin: -14px auto;
-  margin-left: 14px;
+  margin: -11px auto;
+  margin-left: 17px;
   z-index: 1000;
   padding: 3px;
   border: 1px solid ${({ theme }) => theme.bg4};
@@ -209,7 +209,7 @@ export default function Redemption() {
             title={'To'}
             disabled={true}
           />
-          <PlusIcon size={'30px'} />
+          <PlusIcon size={'24px'} />
           <InputBox
             currency={deusCurrency}
             value={amountOut2}
