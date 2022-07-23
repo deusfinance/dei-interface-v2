@@ -2,9 +2,9 @@ import React, { useMemo } from 'react'
 import Fuse from 'fuse.js'
 import { useSelect, SelectSearchOption } from 'react-select-search'
 
-// import { useBorrowPools } from 'state/vest/hooks'
 import { Search as SearchIcon } from 'components/Icons'
 import { InputWrapper, InputField } from 'components/Input'
+import useOwnedNfts from 'hooks/useOwnedNfts'
 
 function fuzzySearch(options: SelectSearchOption[]): any {
   const config = {
@@ -25,10 +25,10 @@ function fuzzySearch(options: SelectSearchOption[]): any {
 }
 
 export function useSearch() {
-  const borrowList = [] // useBorrowPools()
+  const nftIdsList = useOwnedNfts()
   const list: SelectSearchOption[] = useMemo(() => {
-    return borrowList.map((o) => ({ ...o, name: o.composition, value: o.contract.address }))
-  }, [borrowList])
+    return nftIdsList.map((o) => ({ ...o, name: o.composition, value: o.contract.address }))
+  }, [nftIdsList])
 
   const [snapshot, searchProps, optionProps] = useSelect({
     options: list,

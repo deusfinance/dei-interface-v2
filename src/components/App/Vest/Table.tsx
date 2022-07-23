@@ -34,16 +34,17 @@ const TableWrapper = styled.table`
   overflow: hidden;
   table-layout: fixed;
   border-collapse: collapse;
+  background: ${({ theme }) => theme.bg1};
 `
 
-const Head = styled.thead`
-  & > tr {
-    height: 56px;
-    font-size: 0.9rem;
-    color: ${({ theme }) => theme.text1};
-    background: ${({ theme }) => theme.bg0};
-  }
-`
+// const Head = styled.thead`
+//   & > tr {
+//     height: 56px;
+//     font-size: 0.9rem;
+//     color: ${({ theme }) => theme.text1};
+//     background: ${({ theme }) => theme.bg0};
+//   }
+// `
 
 const Row = styled.tr`
   align-items: center;
@@ -55,10 +56,10 @@ const Row = styled.tr`
 const Cell = styled.td<{
   justify?: boolean
 }>`
-  text-align: center;
+  /* text-align: center; */
   align-items: center;
   padding: 5px;
-  border: 1px solid ${({ theme }) => theme.border1};
+  /* border: 1px solid ${({ theme }) => theme.border1}; */
   height: 90px;
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
@@ -88,8 +89,11 @@ const CellRow = styled(RowCenter)`
 `
 
 const CellAmount = styled.div`
-  font-size: 0.8rem;
-  color: ${({ theme }) => theme.text1};
+  font-size: 0.85rem;
+  background: linear-gradient(90deg, #0badf4 0%, #30efe4 93.4%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 `
 
 const CellDescription = styled.div`
@@ -97,7 +101,26 @@ const CellDescription = styled.div`
   color: ${({ theme }) => theme.text2};
 `
 
+const Name = styled.div`
+  font-weight: 400;
+  font-size: 12px;
+  color: ${({ theme }) => theme.text2};
+  white-space: nowrap;
+`
+
+const Value = styled.div`
+  font-weight: 500;
+  font-size: 14px;
+  color: ${({ theme }) => theme.text1};
+  margin-top: 10px;
+`
+
+const ZebraStripesRow = styled(Row)<{ isOdd?: boolean }>`
+  background: ${({ isOdd, theme }) => (isOdd ? theme.bg2 : theme.bg1)};
+`
+
 const itemsPerPage = 10
+
 export default function Table({
   nftIds,
   toggleLockManager,
@@ -125,21 +148,21 @@ export default function Table({
     <>
       <Wrapper>
         <TableWrapper>
-          <Head>
+          {/* <Head>
             <tr>
               <Cell>Token ID</Cell>
               <Cell>Vest Amount</Cell>
               <Cell>Vest Value</Cell>
               <Cell>Vest Expiration</Cell>
-              {/* <Cell>APR</Cell> */}
               <Cell>Actions</Cell>
             </tr>
-          </Head>
+          </Head> */}
           <tbody>
             {paginatedItems.length > 0 &&
               paginatedItems.map((nftId: number, index) => (
                 <TableRow
                   key={index}
+                  index={index}
                   nftId={nftId}
                   toggleLockManager={toggleLockManager}
                   toggleAPYManager={toggleAPYManager}
@@ -158,10 +181,12 @@ function TableRow({
   nftId,
   toggleLockManager,
   toggleAPYManager,
+  index,
 }: {
   nftId: number
   toggleLockManager: (nftId: number) => void
   toggleAPYManager: (nftId: number) => void
+  index: number
 }) {
   const [awaitingConfirmation, setAwaitingConfirmation] = useState(false)
   const [pendingTxHash, setPendingTxHash] = useState('')
@@ -191,10 +216,11 @@ function TableRow({
   function getExpirationCell() {
     if (!lockHasEnded) {
       return (
-        <CellWrap>
-          <CellAmount>{dayjs.utc(lockEnd).format('LLL')}</CellAmount>
-          <CellDescription>Expires in {dayjs.utc(lockEnd).fromNow(true)}</CellDescription>
-        </CellWrap>
+        <>
+          <Name>Expiration</Name>
+          <Value>{dayjs.utc(lockEnd).format('LLL')}</Value>
+          {/* <CellDescription>Expires in {dayjs.utc(lockEnd).fromNow(true)}</CellDescription> */}
+        </>
       )
     }
     if (awaitingConfirmation) {
@@ -215,18 +241,24 @@ function TableRow({
   }
 
   return (
-    <Row>
+    <ZebraStripesRow isOdd={index % 2 === 0}>
       <Cell>
         <RowCenter>
           <ImageWithFallback src={DEUS_LOGO} alt={`veDeus logo`} width={30} height={30} />
           <NFTWrap>
-            <CellAmount>#{nftId}</CellAmount>
-            <CellDescription>veDEUS ID</CellDescription>
+            <CellAmount>veDEUS #{nftId}</CellAmount>
+            {/* <CellDescription>veDEUS ID</CellDescription> */}
           </NFTWrap>
         </RowCenter>
       </Cell>
-      <Cell>{deusAmount} DEUS</Cell>
-      <Cell>{formatAmount(parseFloat(veDEUSAmount))} veDEUS</Cell>
+      <Cell>
+        <Name>Vest Amount</Name>
+        <Value>{formatAmount(parseFloat(deusAmount), 8)} DEUS</Value>
+      </Cell>
+      <Cell>
+        <Name>Vest Value</Name>
+        <Value>{formatAmount(parseFloat(veDEUSAmount), 6)} veDEUS</Value>
+      </Cell>
       <Cell style={{ padding: '5px 10px' }}>{getExpirationCell()}</Cell>
       {/* <Cell>
         <CellRow>
@@ -237,6 +269,6 @@ function TableRow({
       <Cell style={{ padding: '5px 10px' }}>
         <PrimaryButton onClick={() => toggleLockManager(nftId)}>Update Lock</PrimaryButton>
       </Cell>
-    </Row>
+    </ZebraStripesRow>
   )
 }

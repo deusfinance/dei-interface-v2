@@ -121,6 +121,8 @@ export default function Vest() {
   const { lockedVeDEUS } = useVestedAPY(undefined, getMaximumDate())
   const deusPrice = useDeusPrice()
 
+  // console.log(nftIds)
+
   // const { snapshot, searchProps } = useSearch()
 
   useEffect(() => {
@@ -158,7 +160,6 @@ export default function Vest() {
       <Wrapper>
         <UpperRow>
           <div>
-            {/* searchProps={searchProps} */}
             <SearchField />
           </div>
 
@@ -178,7 +179,6 @@ export default function Vest() {
             </TopBorderWrap>
           </ButtonWrapper>
         </UpperRow>
-        {/* options={snapshot.options} */}
         <Table nftIds={nftIds} toggleLockManager={toggleLockManager} toggleAPYManager={toggleAPYManager} />
       </Wrapper>
       <LockManager isOpen={showLockManager} onDismiss={() => setShowLockManager(false)} nftId={nftId} />
