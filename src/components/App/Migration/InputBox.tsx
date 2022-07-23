@@ -65,7 +65,7 @@ const RowWrap = styled(RowEnd)`
   `}
 `
 
-const Balance = styled(RowWrap)`
+const Balance = styled(RowWrap)<{ disabled?: boolean }>`
   font-family: 'IBM Plex Mono';
   font-weight: 500;
   font-size: 10px;
@@ -82,12 +82,12 @@ const Balance = styled(RowWrap)`
 
     &:hover {
       background: ${({ theme }) => theme.secondary2};
-      cursor: pointer;
+      cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
     }
   }
 
   &:hover {
-    cursor: pointer;
+    cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
   }
 `
 
@@ -137,7 +137,7 @@ export default function InputBox({
         <RightWrapper>
           <RowBetween>
             <CurrencySymbol>{currency?.symbol}</CurrencySymbol>
-            <Balance onClick={handleClick}>
+            <Balance onClick={handleClick} disabled={disabled}>
               balance: {balanceDisplay ? balanceDisplay : '0.00'}
               {!disabled && <span>MAX</span>}
             </Balance>

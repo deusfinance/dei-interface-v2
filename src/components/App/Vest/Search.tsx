@@ -8,9 +8,9 @@ import useOwnedNfts from 'hooks/useOwnedNfts'
 
 function fuzzySearch(options: SelectSearchOption[]): any {
   const config = {
-    keys: ['contract', 'composition.name'],
+    keys: ['name', 'value', 'nftId'],
     isCaseSensitive: false,
-    threshold: 0.2,
+    threshold: 0.15,
   }
 
   const fuse = new Fuse(options, config)
@@ -25,9 +25,17 @@ function fuzzySearch(options: SelectSearchOption[]): any {
 }
 
 export function useSearch() {
-  const nftIdsList = useOwnedNfts()
+  const nftIds = useOwnedNfts()
+  const nftIdsList = useMemo(() => {
+    return [
+      ...nftIds.map((id) => {
+        return { nftId: id }
+      }),
+    ]
+  }, [nftIds])
+
   const list: SelectSearchOption[] = useMemo(() => {
-    return nftIdsList.map((o) => ({ ...o, name: o.composition, value: o.contract.address }))
+    return nftIdsList.map((o) => ({ ...o, name: 'veDEUS #' + o.nftId.toString(), value: o.nftId }))
   }, [nftIdsList])
 
   const [snapshot, searchProps, optionProps] = useSelect({

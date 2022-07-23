@@ -44,6 +44,15 @@ const TopBorderWrap = styled.div<{ theme?: any; active?: any }>`
   }
 `
 
+const TopBorder = styled.div`
+  border-radius: 4px;
+  background: ${({ theme }) => theme.bg0};
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+`
+
 export const Option = styled(Base)<{ theme?: any; active?: any; bgColor?: string }>`
   display: inline-flex;
   height: 25px;
@@ -63,15 +72,6 @@ export const Option = styled(Base)<{ theme?: any; active?: any; bgColor?: string
 
 const DefaultAmountsWrap = styled.div`
   display: flex;
-`
-
-const TopBorder = styled.div`
-  border-radius: 4px;
-  background: ${({ theme }) => theme.bg0};
-  height: 100%;
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
 `
 
 export const CustomOption = styled.div<{ active?: any }>`
