@@ -43,7 +43,6 @@ export const TopTableau = styled.div`
   padding: 0;
   border-radius: 13px 13px 0px 0px;
   height: 72px;
-
   background: ${({ theme }) => theme.bg0};
 `
 
@@ -59,7 +58,6 @@ export const TableauTitle = styled.span`
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
     top: 13px;
-
   `}
 `
 

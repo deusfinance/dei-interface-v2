@@ -55,7 +55,7 @@ export enum SupportedThemes {
 }
 
 function colors(themeName: SupportedThemes): Colors {
-  // define colour scheme for each supported theme
+  // define color scheme for each supported theme
   const themeColors = {
     [SupportedThemes.LIGHT]: {
       themeName: SupportedThemes.LIGHT,

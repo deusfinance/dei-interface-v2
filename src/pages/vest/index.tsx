@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import styled from 'styled-components'
 import Image from 'next/image'
@@ -74,8 +74,8 @@ const ButtonWrapper = styled(RowFixed)`
   }
 `
 
-const ButtonText = styled.span<{ disabled?: boolean }>`
-  font-family: 'Inter';
+export const ButtonText = styled.span<{ disabled?: boolean }>`
+  /* font-family: 'Inter'; */
   font-style: normal;
   font-weight: 600;
   font-size: 14px;
@@ -121,9 +121,12 @@ export default function Vest() {
   const { lockedVeDEUS } = useVestedAPY(undefined, getMaximumDate())
   const deusPrice = useDeusPrice()
 
-  // console.log(nftIds)
-
-  // const { snapshot, searchProps } = useSearch()
+  const { snapshot, searchProps } = useSearch()
+  const snapshotList = useMemo(() => {
+    return snapshot.options.map((obj) => {
+      return obj.value
+    })
+  }, [snapshot])
 
   useEffect(() => {
     setShowLockManager(false)
@@ -160,7 +163,7 @@ export default function Vest() {
       <Wrapper>
         <UpperRow>
           <div>
-            <SearchField />
+            <SearchField searchProps={searchProps} />
           </div>
 
           <ButtonWrapper>
@@ -179,7 +182,11 @@ export default function Vest() {
             </TopBorderWrap>
           </ButtonWrapper>
         </UpperRow>
-        <Table nftIds={nftIds} toggleLockManager={toggleLockManager} toggleAPYManager={toggleAPYManager} />
+        <Table
+          nftIds={snapshotList as number[]}
+          toggleLockManager={toggleLockManager}
+          toggleAPYManager={toggleAPYManager}
+        />
       </Wrapper>
       <LockManager isOpen={showLockManager} onDismiss={() => setShowLockManager(false)} nftId={nftId} />
       <APYManager
