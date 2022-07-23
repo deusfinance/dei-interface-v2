@@ -184,9 +184,9 @@ export default function NavBar() {
       <DefaultWrapper>
         <NavLogo />
         <Routes>
-          {routes.map((item) => {
+          {routes.map((item, i) => {
             return item.children ? (
-              <NavbarContentWrap key={item.id}>
+              <NavbarContentWrap key={i}>
                 <TitleSpan active={isSubItemChosen(item.children)}>
                   {item.text}
                   <ChevronDown
@@ -196,8 +196,8 @@ export default function NavBar() {
                   />
                 </TitleSpan>
                 <SubNavbarContentWrap>
-                  {item.children.map((subItem) => (
-                    <li key={subItem.id}>
+                  {item.children.map((subItem, j) => (
+                    <li key={`${i}-${j}`}>
                       <Link href={subItem.path} passHref>
                         <NavLink active={router.route === subItem.path}>{subItem.text}</NavLink>
                       </Link>
@@ -206,7 +206,7 @@ export default function NavBar() {
                 </SubNavbarContentWrap>
               </NavbarContentWrap>
             ) : (
-              <SimpleLinkWrapper key={item.id}>
+              <SimpleLinkWrapper key={i}>
                 <Link href={item.path} passHref>
                   <NavLink active={router.route === item.path}>{item.text}</NavLink>
                 </Link>

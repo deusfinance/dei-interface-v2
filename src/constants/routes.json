@@ -1,39 +1,34 @@
 [
   {
-    "id": "1",
     "text": "Dashboard",
     "path": "/dashboard",
     "exact": true
   },
   {
-    "id": "2",
     "text": "Mint",
     "path": "/mint",
     "exact": true
   },
   {
-    "id": "21",
     "text": "Redeem",
     "path": "/redemption",
     "exact": true
   },
   {
-    "id": "3",
     "text": "Bonds",
+    "exact": false,
     "children": [
-      { "id": "31", "text": "Bonds", "path": "/deibonds" },
-      { "id": "32", "text": "Pools", "path": "/deibonds/pools" },
-      { "id": "33", "text": "Liquidity", "path": "/deibonds/liquidity" }
+      { "text": "Bonds", "path": "/deibonds" },
+      { "text": "Pools", "path": "/deibonds/pools" },
+      { "text": "Liquidity", "path": "/deibonds/liquidity" }
     ]
   },
   {
-    "id": "51",
     "text": "veDEUS",
     "path": "/vest",
     "exact": true
   },
   {
-    "id": "6",
     "text": "Analytics",
     "path": "/analytics",
     "exact": true
