@@ -2,7 +2,6 @@ import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import DatePicker from 'react-datepicker'
 import { Calendar } from 'react-feather'
-import { darken, lighten } from 'polished'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import Box from 'components/Box'
@@ -49,12 +48,12 @@ const Wrapper = styled(Box)`
     width: 200px;
   }
 
-  // dont touch this
+  // don't touch this
   .react-datepicker__navigation-icon {
     width: 20px;
   }
 
-  // dont touch this
+  // don't touch this
   .react-datepicker__navigation-icon::before {
     border-color: black !important;
   }
@@ -79,32 +78,49 @@ const ExpirationWrapper = styled(Box)`
   gap: 5px;
   justify-content: space-between;
   align-items: center;
-  background: ${({ theme }) => theme.bg1};
+  background: ${({ theme }) => theme.bg0};
+  border: 0;
   padding: 5px;
 `
 
 const Label = styled.div`
+  align-self: flex-start;
+  margin-top: 20px;
   font-size: 0.8rem;
   ${({ theme }) => theme.mediaWidth.upToSmall`
     font-size: 0.6rem;
   `}
 `
 
-const Toggle = styled.div<{
-  selected: boolean
-}>`
+const TopBorderWrap = styled.div<{ active?: any }>`
+  background: ${({ theme, active }) => (active ? theme.primary4 : theme.text2)};
+  padding: 1px;
+  border-radius: 8px;
+  border: 1px solid ${({ theme }) => theme.bg0};
+
+  &:hover {
+    border: 1px solid ${({ theme, active }) => (active ? theme.bg0 : theme.warning)};
+  }
+`
+
+const TopBorder = styled.div`
+  border-radius: 6px;
+  background: ${({ theme }) => theme.bg0};
+`
+
+const Toggle = styled.div<{ active?: any }>`
   flex: 1;
-  background: ${({ selected, theme }) => (selected ? lighten(0.1, theme.bg3) : darken(0.05, theme.bg3))};
-  height: 1.5rem;
-  line-height: 1.5rem;
-  border-radius: 5px;
+  line-height: 1.85rem;
   text-align: center;
   font-size: 0.8rem;
+  width: 68px;
   max-width: 85px;
-  color: ${({ theme }) => theme.text3};
+  color: ${({ theme }) => theme.text1};
+  background: ${({ theme, active }) => (active ? theme.bg0 : theme.bg3)};
+  border-radius: 6px;
+
   &:hover {
     cursor: pointer;
-    background: ${({ theme }) => lighten(0.08, theme.bg3)};
   }
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
@@ -189,21 +205,54 @@ export function SelectDatePresets({
   }
 
   return (
-    <ExpirationWrapper>
+    <>
       <Label>Expiration:</Label>
-      <Toggle selected={dayjs.utc(selectedDate).isSame(minimumDate, 'day')} onClick={() => onSelect(VestOptions.MIN)}>
-        1 Week
-      </Toggle>
-      <Toggle selected={dayjs.utc(selectedDate).isSame(addMonth(), 'day')} onClick={() => onSelect(VestOptions.MONTH)}>
-        1 Month
-      </Toggle>
-      <Toggle selected={dayjs.utc(selectedDate).isSame(addYear(), 'day')} onClick={() => onSelect(VestOptions.YEAR)}>
-        1 Year
-      </Toggle>
-      <Toggle selected={dayjs.utc(selectedDate).isSame(maximumDate, 'day')} onClick={() => onSelect(VestOptions.MAX)}>
-        4 Years
-      </Toggle>
-    </ExpirationWrapper>
+      <ExpirationWrapper>
+        <TopBorderWrap active={dayjs.utc(selectedDate).isSame(minimumDate, 'day')}>
+          <TopBorder>
+            <Toggle
+              active={dayjs.utc(selectedDate).isSame(minimumDate, 'day')}
+              onClick={() => onSelect(VestOptions.MIN)}
+            >
+              1 Week
+            </Toggle>
+          </TopBorder>
+        </TopBorderWrap>
+
+        <TopBorderWrap active={dayjs.utc(selectedDate).isSame(addMonth(), 'day')}>
+          <TopBorder>
+            <Toggle
+              active={dayjs.utc(selectedDate).isSame(addMonth(), 'day')}
+              onClick={() => onSelect(VestOptions.MONTH)}
+            >
+              1 Month
+            </Toggle>
+          </TopBorder>
+        </TopBorderWrap>
+
+        <TopBorderWrap active={dayjs.utc(selectedDate).isSame(addYear(), 'day')}>
+          <TopBorder>
+            <Toggle
+              active={dayjs.utc(selectedDate).isSame(addYear(), 'day')}
+              onClick={() => onSelect(VestOptions.YEAR)}
+            >
+              1 Year
+            </Toggle>
+          </TopBorder>
+        </TopBorderWrap>
+
+        <TopBorderWrap active={dayjs.utc(selectedDate).isSame(maximumDate, 'day')}>
+          <TopBorder>
+            <Toggle
+              active={dayjs.utc(selectedDate).isSame(maximumDate, 'day')}
+              onClick={() => onSelect(VestOptions.MAX)}
+            >
+              4 Years
+            </Toggle>
+          </TopBorder>
+        </TopBorderWrap>
+      </ExpirationWrapper>
+    </>
   )
 }
 
@@ -246,13 +295,13 @@ export function IncreaseDatePresets({
     <ExpirationWrapper>
       <Label>Add Expiration:</Label>
       {showMinimum && (
-        <Toggle selected={dayjs.utc(selectedDate).isSame(minimumDate, 'day')} onClick={() => onSelect(VestOptions.MIN)}>
+        <Toggle active={dayjs.utc(selectedDate).isSame(minimumDate, 'day')} onClick={() => onSelect(VestOptions.MIN)}>
           {dayjs.utc(addWeek(lockEnd)).fromNow(true)}
         </Toggle>
       )}
       {showMonth && (
         <Toggle
-          selected={dayjs.utc(selectedDate).isSame(addMonth(lockEnd), 'day')}
+          active={dayjs.utc(selectedDate).isSame(addMonth(lockEnd), 'day')}
           onClick={() => onSelect(VestOptions.MONTH)}
         >
           1 Month
@@ -260,14 +309,14 @@ export function IncreaseDatePresets({
       )}
       {showYear && (
         <Toggle
-          selected={dayjs.utc(selectedDate).isSame(addYear(lockEnd), 'day')}
+          active={dayjs.utc(selectedDate).isSame(addYear(lockEnd), 'day')}
           onClick={() => onSelect(VestOptions.YEAR)}
         >
           1 Year
         </Toggle>
       )}
       {showMax && (
-        <Toggle selected={dayjs.utc(selectedDate).isSame(maximumDate, 'day')} onClick={() => onSelect(VestOptions.MAX)}>
+        <Toggle active={dayjs.utc(selectedDate).isSame(maximumDate, 'day')} onClick={() => onSelect(VestOptions.MAX)}>
           Max
         </Toggle>
       )}

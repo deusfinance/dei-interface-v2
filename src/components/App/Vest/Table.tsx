@@ -244,7 +244,7 @@ function TableRow({
       if (!hasClaimable) return null
       return (
         <PrimaryButtonWide onClick={onWithdraw}>
-          <ButtonText>Claim XX</ButtonText>
+          <ButtonText>Claim</ButtonText>
         </PrimaryButtonWide>
       )
     }
@@ -268,7 +268,7 @@ function TableRow({
     }
     return (
       <PrimaryButtonWide onClick={onWithdraw}>
-        <ButtonText>Withdraw and Claim XX</ButtonText>
+        <ButtonText>Withdraw and Claim</ButtonText>
       </PrimaryButtonWide>
     )
   }
