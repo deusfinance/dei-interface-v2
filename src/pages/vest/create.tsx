@@ -16,6 +16,7 @@ import { useHasPendingVest, useTransactionAdder } from 'state/transactions/hooks
 import { useVeDeusContract } from 'hooks/useContract'
 import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
 
+import veDEUS_LOGO from '/public/static/images/pages/veDEUS/veDEUS.svg'
 import { DEUS_TOKEN } from 'constants/vest'
 import { SupportedChainId } from 'constants/chains'
 import { veDEUS } from 'constants/addresses'
@@ -34,6 +35,12 @@ import { PrimaryButton } from 'components/Button'
 import { Card } from 'components/Card'
 import { ArrowBubble, DotFlashing } from 'components/Icons'
 import Disclaimer from 'components/Disclaimer'
+import Image from 'next/image'
+import { Title } from 'components/App/StableCoin'
+import StatsHeader from 'components/StatsHeader'
+import { formatAmount, formatDollarAmount } from 'utils/numbers'
+import { useVestedAPY } from 'hooks/useVested'
+import { useDeusPrice } from 'hooks/useCoingeckoPrice'
 
 dayjs.extend(utc)
 
@@ -107,6 +114,9 @@ export default function Create() {
   const [pendingTxHash, setPendingTxHash] = useState('')
   const addTransaction = useTransactionAdder()
   const showTransactionPending = useHasPendingVest(pendingTxHash)
+
+  const { lockedVeDEUS } = useVestedAPY(undefined, getMaximumDate())
+  const deusPrice = useDeusPrice()
 
   const deusCurrency = useCurrency(DEUS_TOKEN.address)
   const deusBalance = useCurrencyBalance(account ?? undefined, deusCurrency ?? undefined)
@@ -248,12 +258,21 @@ export default function Create() {
     )
   }
 
+  // TODO: move items to use memo
+  const items = [
+    { name: 'DEUS Price', value: formatDollarAmount(parseFloat(deusPrice), 2) },
+    { name: 'Total veDEUS Locked', value: formatAmount(parseFloat(lockedVeDEUS), 0) },
+  ]
+
   return (
     <Container>
       <Hero>
-        <div>Create Lock</div>
+        <Image src={veDEUS_LOGO} height={'90px'} alt="Logo" />
+        <Title>Create Lock</Title>
         <HeroSubtext>Vest your DEUS for a period of your liking.</HeroSubtext>
+        <StatsHeader items={items} hasBox />
       </Hero>
+
       <Wrapper>
         <ReturnWrapper onClick={onReturnClick}>
           <ArrowBubble size={20} />
@@ -261,7 +280,6 @@ export default function Create() {
         </ReturnWrapper>
         {getMainContent()}
       </Wrapper>
-      <Disclaimer />
     </Container>
   )
 }

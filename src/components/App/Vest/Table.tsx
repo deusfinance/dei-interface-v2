@@ -13,11 +13,12 @@ import Pagination from 'components/Pagination'
 import ImageWithFallback from 'components/ImageWithFallback'
 import { RowCenter } from 'components/Row'
 import Column from 'components/Column'
-import { PrimaryButton } from 'components/Button'
+import { PrimaryButtonWhite, PrimaryButtonWide } from 'components/Button'
 import { DotFlashing } from 'components/Icons'
 
 import DEUS_LOGO from '/public/static/images/tokens/deus.svg'
 import { formatAmount } from 'utils/numbers'
+import { ButtonText } from 'pages/vest'
 
 dayjs.extend(utc)
 dayjs.extend(relativeTime)
@@ -115,8 +116,14 @@ const Value = styled.div`
   margin-top: 10px;
 `
 
-const ZebraStripesRow = styled(Row)<{ isOdd?: boolean }>`
-  background: ${({ isOdd, theme }) => (isOdd ? theme.bg2 : theme.bg1)};
+const ZebraStripesRow = styled(Row)<{ isEven?: boolean }>`
+  background: ${({ isEven, theme }) => (isEven ? theme.bg2 : theme.bg1)};
+`
+
+const ExpirationPassed = styled.div`
+  & > * {
+    color: ${({ theme }) => theme.yellow4};
+  }
 `
 
 const itemsPerPage = 10
@@ -214,7 +221,7 @@ function TableRow({
   }, [veDEUSContract, lockHasEnded, nftId, addTransaction])
 
   function getExpirationCell() {
-    if (!lockHasEnded) {
+    if (!lockHasEnded)
       return (
         <>
           <Name>Expiration</Name>
@@ -222,26 +229,52 @@ function TableRow({
           {/* <CellDescription>Expires in {dayjs.utc(lockEnd).fromNow(true)}</CellDescription> */}
         </>
       )
+    return (
+      <ExpirationPassed>
+        <Name>Expired in</Name>
+        <Value>{dayjs.utc(lockEnd).format('LLL')}</Value>
+      </ExpirationPassed>
+    )
+  }
+
+  function getClaimWithdrawCell() {
+    const hasClaimable = true
+
+    if (!lockHasEnded) {
+      if (!hasClaimable) return null
+      return (
+        <PrimaryButtonWide onClick={onWithdraw}>
+          <ButtonText>Claim XX</ButtonText>
+        </PrimaryButtonWide>
+      )
     }
     if (awaitingConfirmation) {
       return (
-        <PrimaryButton active>
-          Confirming <DotFlashing style={{ marginLeft: '10px' }} />
-        </PrimaryButton>
+        <PrimaryButtonWide active>
+          <ButtonText>
+            Confirming <DotFlashing style={{ marginLeft: '10px' }} />
+          </ButtonText>
+        </PrimaryButtonWide>
       )
     }
     if (showTransactionPending) {
       return (
-        <PrimaryButton active>
-          Withdrawing <DotFlashing style={{ marginLeft: '10px' }} />
-        </PrimaryButton>
+        <PrimaryButtonWide active>
+          <ButtonText>
+            Withdrawing <DotFlashing style={{ marginLeft: '10px' }} />
+          </ButtonText>
+        </PrimaryButtonWide>
       )
     }
-    return <PrimaryButton onClick={onWithdraw}>Withdraw</PrimaryButton>
+    return (
+      <PrimaryButtonWide onClick={onWithdraw}>
+        <ButtonText>Withdraw and Claim XX</ButtonText>
+      </PrimaryButtonWide>
+    )
   }
 
   return (
-    <ZebraStripesRow isOdd={index % 2 === 0}>
+    <ZebraStripesRow isEven={index % 2 === 0}>
       <Cell>
         <RowCenter>
           <ImageWithFallback src={DEUS_LOGO} alt={`veDeus logo`} width={30} height={30} />
@@ -260,6 +293,7 @@ function TableRow({
         <Value>{formatAmount(parseFloat(veDEUSAmount), 6)} veDEUS</Value>
       </Cell>
       <Cell style={{ padding: '5px 10px' }}>{getExpirationCell()}</Cell>
+      <Cell style={{ padding: '5px 10px' }}>{getClaimWithdrawCell()}</Cell>
       {/* <Cell>
         <CellRow>
           {formatAmount(parseFloat(userAPY), 0)}%
@@ -267,7 +301,9 @@ function TableRow({
         </CellRow>
       </Cell> */}
       <Cell style={{ padding: '5px 10px' }}>
-        <PrimaryButton onClick={() => toggleLockManager(nftId)}>Update Lock</PrimaryButton>
+        <PrimaryButtonWhite disabled onClick={() => toggleLockManager(nftId)}>
+          <ButtonText>Update Lock</ButtonText>
+        </PrimaryButtonWhite>
       </Cell>
     </ZebraStripesRow>
   )

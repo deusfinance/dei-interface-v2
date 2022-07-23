@@ -112,3 +112,33 @@ export const PrimaryButtonWide = styled(BaseButton)`
       }
   `}
 `
+
+export const PrimaryButtonWhite = styled(BaseButton)`
+  background: ${({ theme }) => theme.primary2};
+  white-space: nowrap;
+  border-radius: 8px;
+
+  color: ${({ theme }) => theme.text1};
+  z-index: 0;
+
+  &:focus {
+    box-shadow: 0 0 0 1pt ${({ theme }) => theme.primary2};
+    background: ${({ theme }) => theme.bg0};
+  }
+  &:hover {
+    background: ${({ theme }) => theme.bg0};
+    border: 3px solid ${({ theme }) => theme.text1};
+  }
+
+  ${({ theme, disabled }) =>
+    disabled &&
+    `
+      background: ${theme.bg2};
+      border: 2px solid ${theme.text1};
+
+      &:focus,
+      &:hover {
+        background: ${theme.bg0};
+      }
+  `}
+`

@@ -74,8 +74,8 @@ const ButtonWrapper = styled(RowFixed)`
   }
 `
 
-const ButtonText = styled.span<{ disabled?: boolean }>`
-  font-family: 'Inter';
+export const ButtonText = styled.span<{ disabled?: boolean }>`
+  /* font-family: 'Inter'; */
   font-style: normal;
   font-weight: 600;
   font-size: 14px;

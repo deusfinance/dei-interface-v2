@@ -8,9 +8,15 @@ const Wrapper = styled.div`
   width: 100%;
   overflow-x: auto;
   white-space: nowrap;
-  margin-top: 18px;
   -webkit-overflow-scrolling: touch;
-  position: relative;
+  margin: 18px 2px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    display: block;
+  `};
 `
 
 const Item = styled.div<{ rightBorder?: boolean }>`
@@ -21,9 +27,6 @@ const Item = styled.div<{ rightBorder?: boolean }>`
 
 const ItemBox = styled.div`
   display: inline-block;
-  margin: 0;
-  position: absolute;
-  bottom: 18%;
   padding: 8px 10px;
   margin: 0 24px;
   background: ${({ theme }) => theme.bg4};
