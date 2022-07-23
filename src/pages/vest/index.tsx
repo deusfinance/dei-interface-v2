@@ -143,7 +143,7 @@ export default function Vest() {
     setNftId(nftId)
   }
 
-  // TODO: move items to use memo
+  // TODO: #M move items to use memo
   const items = [
     { name: 'DEUS Price', value: formatDollarAmount(parseFloat(deusPrice), 2) },
     { name: 'Total veDEUS Locked', value: formatAmount(parseFloat(lockedVeDEUS), 0) },

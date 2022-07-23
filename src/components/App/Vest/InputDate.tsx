@@ -146,7 +146,7 @@ export default function InputDate({
   return (
     <Wrapper>
       <DatePickerWrapper>
-        {/* TODO: add some style to this ugly datePicker */}
+        {/* TODO: #M add some style to this ugly datePicker */}
         <DatePicker
           selected={selectedDate}
           className="styled-date-picker"

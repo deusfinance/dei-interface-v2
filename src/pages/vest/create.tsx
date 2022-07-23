@@ -26,7 +26,7 @@ import { getMaximumDate, getMinimumDate } from 'utils/vest'
 import InputBox from 'components/App/Migration/InputBox'
 import { SelectDatePresets, UserLockInformation } from 'components/App/Vest'
 import Hero, { HeroSubtext } from 'components/Hero'
-import { PrimaryButton } from 'components/Button'
+import { PrimaryButton, PrimaryButtonWide } from 'components/Button'
 import { Card } from 'components/Card'
 import { ArrowBubble, DotFlashing } from 'components/Icons'
 import Image from 'next/image'
@@ -96,7 +96,7 @@ const CardWrapper = styled(Card)`
   `}
 `
 
-const ActionButton = styled(PrimaryButton)`
+const ActionButton = styled(PrimaryButtonWide)`
   margin-top: 15px;
 `
 
@@ -271,7 +271,7 @@ export default function Create() {
     )
   }
 
-  // TODO: move items to use memo
+  // TODO: #M move items to use memo
   const items = [
     { name: 'DEUS Price', value: formatDollarAmount(parseFloat(deusPrice), 2) },
     { name: 'Total veDEUS Locked', value: formatAmount(parseFloat(lockedVeDEUS), 0) },

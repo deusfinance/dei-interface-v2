@@ -13,7 +13,7 @@ import { NumericalInput } from 'components/Input'
 import { Row, RowBetween, RowCenter, RowEnd } from 'components/Row'
 import { ChevronDown as ChevronDownIcon } from 'components/Icons'
 
-const Wrapper = styled(Row)`
+export const Wrapper = styled(Row)`
   background: ${({ theme }) => theme.bg2};
   border-radius: 12px;
   color: ${({ theme }) => theme.text2};
@@ -24,7 +24,7 @@ const Wrapper = styled(Row)`
   border-color: ${({ theme }) => theme.border1};
 `
 
-const InputWrapper = styled.div`
+export const InputWrapper = styled.div`
   & > * {
     width: 100%;
   }
@@ -34,7 +34,7 @@ const InputWrapper = styled.div`
   `}
 `
 
-const CurrencySymbol = styled.div<{ active?: any }>`
+export const CurrencySymbol = styled.div<{ active?: any }>`
   font-family: 'IBM Plex Mono';
   font-weight: 600;
   font-size: 16px;
@@ -43,7 +43,7 @@ const CurrencySymbol = styled.div<{ active?: any }>`
   cursor: ${({ active }) => active && 'pointer'};
 `
 
-const RightWrapper = styled.div`
+export const RightWrapper = styled.div`
   width: 100%;
   border-left: 1px solid ${({ theme }) => theme.border1};
   padding: 6px;
@@ -51,14 +51,14 @@ const RightWrapper = styled.div`
   position: relative;
 `
 
-const LogoWrapper = styled(RowCenter)<{ active?: any }>`
+export const LogoWrapper = styled(RowCenter)<{ active?: any }>`
   height: 100%;
   padding-left: 10px;
   width: 80px;
   cursor: ${({ active }) => active && 'pointer'};
 `
 
-const ChevronDown = styled(ChevronDownIcon)`
+export const ChevronDown = styled(ChevronDownIcon)`
   margin-left: 7px;
   width: 16px;
   color: ${({ theme }) => theme.text1};
@@ -68,7 +68,7 @@ const ChevronDown = styled(ChevronDownIcon)`
   `}
 `
 
-const RowWrap = styled(RowEnd)`
+export const RowWrap = styled(RowEnd)`
   gap: 10px;
   font-size: 1.5rem;
 
@@ -77,7 +77,7 @@ const RowWrap = styled(RowEnd)`
   `}
 `
 
-const Balance = styled(RowWrap)<{ disabled?: boolean }>`
+export const Balance = styled(RowWrap)<{ disabled?: boolean }>`
   font-family: 'IBM Plex Mono';
   font-weight: 500;
   font-size: 10px;
