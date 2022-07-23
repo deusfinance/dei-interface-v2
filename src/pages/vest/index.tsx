@@ -165,19 +165,29 @@ export default function Vest() {
           </div>
 
           <ButtonWrapper>
-            <PrimaryButtonWide>
-              <ButtonText>Claim all ${ClaimableAmount} veDEUS</ButtonText>
-            </PrimaryButtonWide>
+            {!!ClaimableAmount && (
+              <PrimaryButtonWide>
+                <ButtonText>Claim all ${ClaimableAmount} veDEUS</ButtonText>
+              </PrimaryButtonWide>
+            )}
 
-            <TopBorderWrap>
-              <TopBorder>
+            {!!snapshotList.length ? (
+              <TopBorderWrap>
+                <TopBorder>
+                  <Link href="/vest/create" passHref>
+                    <PrimaryButtonWide disabled>
+                      <ButtonText disabled>Create Lock</ButtonText>
+                    </PrimaryButtonWide>
+                  </Link>
+                </TopBorder>
+              </TopBorderWrap>
+            ) : (
+              <PrimaryButtonWide>
                 <Link href="/vest/create" passHref>
-                  <PrimaryButtonWide disabled>
-                    <ButtonText disabled>Create Lock</ButtonText>
-                  </PrimaryButtonWide>
+                  <ButtonText>Create New Lock</ButtonText>
                 </Link>
-              </TopBorder>
-            </TopBorderWrap>
+              </PrimaryButtonWide>
+            )}
           </ButtonWrapper>
         </UpperRow>
         <Table

@@ -222,7 +222,7 @@ export default function Create() {
     if (!isSupportedChainId) {
       return (
         <>
-          <div>You are not connected to the Fantom Opera Network.</div>
+          <div style={{ marginBottom: '30px' }}>You are not connected to the Fantom Opera Network.</div>
           <PrimaryButton onClick={() => rpcChangerCallback(SupportedChainId.FANTOM)}>Switch to Fantom</PrimaryButton>
         </>
       )
@@ -237,34 +237,37 @@ export default function Create() {
     }
 
     return (
-      <CardWrapper>
-        <InputBox
-          currency={deusCurrency}
-          value={typedValue}
-          onChange={(value: string) => setTypedValue(value)}
-          title={'from'}
-        />
+      <>
+        <Tableau title={'Create lock'} />
+        <CardWrapper>
+          <InputBox
+            currency={deusCurrency}
+            value={typedValue}
+            onChange={(value: string) => setTypedValue(value)}
+            title={'from'}
+          />
 
-        <SelectDatePresets
-          selectedDate={selectedDate}
-          minimumDate={getMinimumDate()}
-          maximumDate={getMaximumDate()}
-          onDateSelect={setSelectedDate}
-        />
-        <ArrowDown />
-        <StaticInputBox
-          currency={deusCurrency}
-          name={'veDEUS'}
-          value={typedValue}
-          selectedDate={selectedDate}
-          onChange={(value: string) => console.log(value)}
-          disabled={true}
-        />
+          <SelectDatePresets
+            selectedDate={selectedDate}
+            minimumDate={getMinimumDate()}
+            maximumDate={getMaximumDate()}
+            onDateSelect={setSelectedDate}
+          />
+          <ArrowDown />
+          <StaticInputBox
+            currency={deusCurrency}
+            name={'veDEUS'}
+            value={typedValue}
+            selectedDate={selectedDate}
+            onChange={(value: string) => console.log(value)}
+            disabled={true}
+          />
 
-        {getActionButton()}
-        <UserLockInformation amount={typedValue} selectedDate={selectedDate} />
-        {/* <GeneralLockInformation /> */}
-      </CardWrapper>
+          {getActionButton()}
+          <UserLockInformation amount={typedValue} selectedDate={selectedDate} />
+          {/* <GeneralLockInformation /> */}
+        </CardWrapper>
+      </>
     )
   }
 
@@ -288,7 +291,6 @@ export default function Create() {
           <ArrowBubble size={20} />
           Lock Overview
         </ReturnWrapper>
-        <Tableau title={'Create lock'} />
         {getMainContent()}
       </Wrapper>
     </Container>
