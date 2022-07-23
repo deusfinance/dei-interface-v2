@@ -26,6 +26,8 @@ import StatsHeader from 'components/StatsHeader'
 import { BottomWrapper, Container, InputWrapper, Title, Wrapper, MainButton } from 'components/App/StableCoin'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
+import TokensModal from 'components/App/StableCoin/TokensModal'
+import { Currency } from '@sushiswap/core-sdk'
 
 const SlippageWrapper = styled(RowBetween)`
   margin-top: 10px;
@@ -40,6 +42,8 @@ export default function Migration() {
   const deiv2Currency = DEIv2_TOKEN
   const usdcCurrency = USDC_TOKEN
   const usdcCurrencyBalance = useCurrencyBalance(account ?? undefined, usdcCurrency)
+  const [isOpenTokensModal, toggleTokensModal] = useState(false)
+  const [inputToken, setInputToken] = useState<Currency>(usdcCurrency)
 
   const [slippage, setSlippage] = useState(0.5)
 
@@ -156,10 +160,13 @@ export default function Migration() {
 
         <InputWrapper>
           <InputBox
-            currency={usdcCurrency}
+            currency={inputToken}
             value={amountIn}
             onChange={(value: string) => setAmountIn(value)}
             title={'from'}
+            onTokenSelect={() => {
+              toggleTokensModal(true)
+            }}
           />
           <ArrowDown />
           <InputBox
@@ -181,6 +188,12 @@ export default function Migration() {
           <InfoItem name={'Minting Fee'} value={'Zero'} />
         </BottomWrapper>
       </Wrapper>
+      <TokensModal
+        isOpen={isOpenTokensModal}
+        toggleModal={(action: boolean) => toggleTokensModal(action)}
+        selectedToken={inputToken}
+        setToken={setInputToken}
+      />
     </Container>
   )
 }
