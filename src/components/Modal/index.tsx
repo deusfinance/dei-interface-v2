@@ -29,6 +29,7 @@ export const MobileModal = styled(BaseModal)`
 export const Modal = styled(BaseModal)<{
   width?: string
 }>`
+  background: ${({ theme }) => theme.bg0};
   width: clamp(200px, 85%, ${({ width }: { width?: string }) => width ?? '420px'});
 `
 
