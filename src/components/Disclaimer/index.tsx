@@ -1,14 +1,15 @@
 import React from 'react'
 import Image from 'next/image'
+import { isMobile } from 'react-device-detect'
 import styled from 'styled-components'
 
 import { ExternalLink } from 'components/Link'
+import { RowCenter, RowEnd } from 'components/Row'
+
 import Discord from '/public/static/images/footer/Discord.svg'
 import Twitter from '/public/static/images/footer/Twitter.svg'
 import Github from '/public/static/images/footer/Github.svg'
 import Telegram from '/public/static/images/footer/Telegram.svg'
-import { RowCenter, RowEnd } from 'components/Row'
-import { isMobile } from 'react-device-detect'
 
 const Wrapper = styled(RowCenter)`
   color: ${({ theme }) => theme.text3};
@@ -36,11 +37,15 @@ const Text = styled.div`
 
 const Logos = styled(RowEnd)`
   gap: 28px;
-
+  img {
+    &:hover {
+      filter: brightness(1.5);
+    }
+  }
   ${({ theme }) => theme.mediaWidth.upToMedium`
     justify-content: center;
     gap: 30px;
-  `}
+  `};
 `
 
 export default function Disclaimer() {
@@ -55,10 +60,18 @@ export default function Disclaimer() {
         </ExternalLink>
       </Text>
       <Logos>
-        <Image src={Discord} alt="DEI Logo" width={getImageSize()} height={getImageSize()} />
-        <Image src={Twitter} alt="DEI Logo" width={getImageSize()} height={getImageSize()} />
-        <Image src={Github} alt="DEI Logo" width={getImageSize()} height={getImageSize()} />
-        <Image src={Telegram} alt="DEI Logo" width={getImageSize()} height={getImageSize()} />
+        <ExternalLink href="https://discord.gg/xTTaBBAMgG">
+          <Image src={Discord} alt="Discord Logo" width={getImageSize()} height={getImageSize()} />
+        </ExternalLink>
+        <ExternalLink href="https://twitter.com/DeusDao">
+          <Image src={Twitter} alt="Twitter Logo" width={getImageSize()} height={getImageSize()} />
+        </ExternalLink>
+        <ExternalLink href="http://github.com/deusfinance">
+          <Image src={Github} alt="Github Logo" width={getImageSize()} height={getImageSize()} />
+        </ExternalLink>
+        <ExternalLink href="https://t.me/deusfinance">
+          <Image src={Telegram} alt="Telegram Logo" width={getImageSize()} height={getImageSize()} />
+        </ExternalLink>
       </Logos>
     </Wrapper>
   )
