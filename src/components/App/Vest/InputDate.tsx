@@ -5,7 +5,6 @@ import { Calendar } from 'react-feather'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import Box from 'components/Box'
-import { RowCenter } from 'components/Row'
 
 import 'react-datepicker/dist/react-datepicker.css'
 import { addMonth, addWeek, addYear, VestOptions } from 'utils/vest'
@@ -15,7 +14,10 @@ dayjs.extend(utc)
 const Wrapper = styled(Box)`
   justify-content: flex-start;
   align-items: center;
-  height: 70px;
+  height: 33px;
+  width: 140px;
+  border: 2px solid ${({ theme }) => theme.text2};
+  border-radius: 8px;
   gap: 10px;
   padding: 0.6rem;
 
@@ -25,27 +27,31 @@ const Wrapper = styled(Box)`
 
   & > {
     &:last-child {
-      margin-left: auto;
+      /* margin-left: auto; */
     }
   }
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
-    padding: 0.5rem;
+    // padding: 0.5rem;
   `}
 
   .react-datepicker-wrapper {
-    margin-left: auto;
+    /* margin-left: auto; */
+    /* background: red; */
   }
 
   .styled-date-picker {
-    text-align: right;
-    font-size: 1.5rem;
+    /* text-align: left; */
+    margin-bottom: 6px;
+    margin-left: -4px;
+    margin-right: -5px;
+    font-size: 13px;
     border: none;
-    align-items: flex-end;
+    /* align-items: flex-end; */
     background: transparent;
     outline: none;
     color: ${({ theme }) => theme.text2};
-    width: 200px;
+    width: 100px;
   }
 
   // don't touch this
@@ -62,14 +68,7 @@ const Wrapper = styled(Box)`
 const Column = styled.div`
   display: flex;
   flex-flow: column nowrap;
-  justify-content: flex-start;
-`
-
-const LogoWrap = styled(RowCenter)`
-  border-radius: 50%;
-  border: 1px solid #afafd6;
-  width: 50px;
-  height: 50px;
+  cursor: default;
 `
 
 const ExpirationWrapper = styled(Box)`
@@ -87,6 +86,7 @@ const Label = styled.div`
   align-self: flex-start;
   margin-top: 20px;
   font-size: 0.8rem;
+
   ${({ theme }) => theme.mediaWidth.upToSmall`
     font-size: 0.6rem;
   `}
@@ -105,7 +105,7 @@ const TopBorderWrap = styled.div<{ active?: any }>`
 
 const TopBorder = styled.div`
   border-radius: 6px;
-  background: ${({ theme }) => theme.bg0};
+  /* background: ${({ theme }) => theme.bg0}; */
 `
 
 const Toggle = styled.div<{ active?: any }>`
@@ -128,6 +128,10 @@ const Toggle = styled.div<{ active?: any }>`
   `}
 `
 
+const DatePickerWrapper = styled.div`
+  cursor: pointer;
+`
+
 export default function InputDate({
   selectedDate,
   minimumDate,
@@ -140,41 +144,38 @@ export default function InputDate({
   onDateSelect(x: Date): void
 }) {
   return (
-    <>
-      <Wrapper>
-        <Column>
-          <LogoWrap>
-            <Calendar color="#31dbea" size={'30px'} />
-          </LogoWrap>
-        </Column>
-        <div>
-          <DatePicker
-            selected={selectedDate}
-            className="styled-date-picker"
-            dateFormat="MMMM d, yyyy"
-            onChange={(value: Date) => {
-              /**
-               * This date is the user's locale => set it to 23:59 and then return the UTC value.
-               * If the UTC is > 23:59 the 'lastThursday' function will correct it
-               * If the UTC is < 23:59 we're already on the right day.
-               */
-              const correctedDate = value
-              correctedDate.setHours(23, 59)
+    <Wrapper>
+      <DatePickerWrapper>
+        {/* TODO: add some style to this ugly datePicker */}
+        <DatePicker
+          selected={selectedDate}
+          className="styled-date-picker"
+          dateFormat="MMMM d, yyyy"
+          onChange={(value: Date) => {
+            /**
+             * This date is the user's locale => set it to 23:59 and then return the UTC value.
+             * If the UTC is > 23:59 the 'lastThursday' function will correct it
+             * If the UTC is < 23:59 we're already on the right day.
+             */
+            const correctedDate = value
+            correctedDate.setHours(23, 59)
 
-              // check if the 7-day minimum applies
-              if (correctedDate.getTime() < minimumDate.getTime()) {
-                return onDateSelect(minimumDate)
-              }
-              return onDateSelect(correctedDate)
-            }}
-            minDate={minimumDate}
-            maxDate={maximumDate}
-            showMonthDropdown
-            showWeekNumbers
-          />
-        </div>
-      </Wrapper>
-    </>
+            // check if the 7-day minimum applies
+            if (correctedDate.getTime() < minimumDate.getTime()) {
+              return onDateSelect(minimumDate)
+            }
+            return onDateSelect(correctedDate)
+          }}
+          minDate={minimumDate}
+          maxDate={maximumDate}
+          showMonthDropdown
+          showWeekNumbers
+        />
+      </DatePickerWrapper>
+      <Column>
+        <Calendar color="#FFBA93" size={'20px'} />
+      </Column>
+    </Wrapper>
   )
 }
 
@@ -251,6 +252,12 @@ export function SelectDatePresets({
             </Toggle>
           </TopBorder>
         </TopBorderWrap>
+        <InputDate
+          selectedDate={selectedDate}
+          minimumDate={minimumDate}
+          maximumDate={minimumDate}
+          onDateSelect={onDateSelect}
+        />
       </ExpirationWrapper>
     </>
   )

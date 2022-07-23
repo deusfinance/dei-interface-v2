@@ -17,14 +17,14 @@ import { useVeDeusContract } from 'hooks/useContract'
 import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
 
 import veDEUS_LOGO from '/public/static/images/pages/veDEUS/veDEUS.svg'
-import { DEUS_TOKEN, VEDEUS_TOKEN } from 'constants/vest'
+import { DEUS_TOKEN } from 'constants/vest'
 import { SupportedChainId } from 'constants/chains'
 import { veDEUS } from 'constants/addresses'
 import { getDurationSeconds, RoundMode } from 'utils/time'
 import { getMaximumDate, getMinimumDate } from 'utils/vest'
 
 import InputBox from 'components/App/Migration/InputBox'
-import { SelectDatePresets, GeneralLockInformation, UserLockInformation } from 'components/App/Vest'
+import { SelectDatePresets, UserLockInformation } from 'components/App/Vest'
 import Hero, { HeroSubtext } from 'components/Hero'
 import { PrimaryButton } from 'components/Button'
 import { Card } from 'components/Card'
@@ -37,6 +37,7 @@ import { useVestedAPY } from 'hooks/useVested'
 import { useDeusPrice } from 'hooks/useCoingeckoPrice'
 import { ArrowDown } from 'react-feather'
 import Tableau from 'components/App/StableCoin/Tableau'
+import StaticInputBox from 'components/App/Vest/StaticInputBox'
 
 dayjs.extend(utc)
 
@@ -51,7 +52,6 @@ const Wrapper = styled(Container)`
   margin: 0 auto;
   margin-top: 50px;
   width: clamp(250px, 90%, 540px);
-  /* gap: 10px; */
 `
 
 const ReturnWrapper = styled.div`
@@ -118,7 +118,6 @@ export default function Create() {
   const deusPrice = useDeusPrice()
 
   const deusCurrency = useCurrency(DEUS_TOKEN.address)
-  const veDeusCurrency = useCurrency(VEDEUS_TOKEN.address)
 
   const deusBalance = useCurrencyBalance(account ?? undefined, deusCurrency ?? undefined)
   const veDEUSContract = useVeDeusContract()
@@ -228,7 +227,7 @@ export default function Create() {
         </>
       )
     }
-    if (!deusCurrency || !veDeusCurrency) {
+    if (!deusCurrency) {
       return (
         <div>
           Experiencing issues with the Fantom RPC, unable to load this page. If this issue persist, try to refresh the
@@ -246,32 +245,25 @@ export default function Create() {
           title={'from'}
         />
 
-        {/* <InputDate
-          selectedDate={selectedDate}
-          minimumDate={getMinimumDate()}
-          maximumDate={getMaximumDate()}
-          onDateSelect={setSelectedDate}
-        /> */}
         <SelectDatePresets
           selectedDate={selectedDate}
           minimumDate={getMinimumDate()}
           maximumDate={getMaximumDate()}
           onDateSelect={setSelectedDate}
         />
-
         <ArrowDown />
-
-        <InputBox
-          currency={veDeusCurrency}
-          value={typedValue} // TODO: calculate amountOut
+        <StaticInputBox
+          currency={deusCurrency}
+          name={'veDEUS'}
+          value={typedValue}
+          selectedDate={selectedDate}
           onChange={(value: string) => console.log(value)}
-          title={'to'}
           disabled={true}
         />
 
         {getActionButton()}
         <UserLockInformation amount={typedValue} selectedDate={selectedDate} />
-        <GeneralLockInformation />
+        {/* <GeneralLockInformation /> */}
       </CardWrapper>
     )
   }

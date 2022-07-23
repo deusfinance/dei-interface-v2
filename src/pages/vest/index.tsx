@@ -3,7 +3,6 @@ import Link from 'next/link'
 import styled from 'styled-components'
 import Image from 'next/image'
 
-import useOwnedNfts from 'hooks/useOwnedNfts'
 import { useDeusPrice } from 'hooks/useCoingeckoPrice'
 import useWeb3React from 'hooks/useWeb3'
 import { useVestedAPY } from 'hooks/useVested'
@@ -117,7 +116,6 @@ export default function Vest() {
   const [showLockManager, setShowLockManager] = useState(false)
   const [showAPYManager, setShowAPYManager] = useState(false)
   const [nftId, setNftId] = useState(0)
-  const nftIds = useOwnedNfts()
   const { lockedVeDEUS } = useVestedAPY(undefined, getMaximumDate())
   const deusPrice = useDeusPrice()
 
