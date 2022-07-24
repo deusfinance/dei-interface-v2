@@ -212,19 +212,13 @@ export default function Mint({ onSwitch }: { onSwitch: any }) {
   return (
     <>
       <Wrapper>
-        <InputBox
-          currency={deiCurrency}
-          value={amountIn}
-          onChange={(value: string) => setAmountIn(value)}
-          title={'From'}
-        />
+        <InputBox currency={deiCurrency} value={amountIn} onChange={(value: string) => setAmountIn(value)} />
         <ArrowDown style={{ cursor: 'pointer' }} onClick={() => onSwitch(NavigationTypes.SWAP)} />
 
         <InputBox
           currency={bDeiCurrency}
           value={amountOut}
           onChange={(value: string) => console.log(value)}
-          title={'To'}
           disabled={true}
         />
         <PlusIcon size={'30px'} />

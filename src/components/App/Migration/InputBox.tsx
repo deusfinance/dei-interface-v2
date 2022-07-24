@@ -112,14 +112,12 @@ export default function InputBox({
   currency,
   value,
   onChange,
-  title,
   onTokenSelect,
   disabled,
 }: {
   currency: Currency
   value: string
   onChange(values: string): void
-  title?: string
   onTokenSelect?: () => void
   disabled?: boolean
 }) {

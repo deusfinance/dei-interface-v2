@@ -268,18 +268,12 @@ export default function Redemption() {
             />
           </DropdownWrapper>
           <PlusIcon size={'24px'} />
-          <InputBox
-            currency={bdeiCurrency}
-            value={amountOut2}
-            onChange={(value: string) => console.log(value)}
-            title={'From'}
-          />
+          <InputBox currency={bdeiCurrency} value={amountOut2} onChange={(value: string) => console.log(value)} />
           <ArrowDown />
           <InputBox
             currency={deiCurrency}
             value={amountIn}
             onChange={(value: string) => setAmountIn(value)}
-            title={'To'}
             disabled={true}
           />
           <div style={{ marginTop: '20px' }}></div>
