@@ -149,3 +149,7 @@ export const vDeusMasterChefV2: AddressMap = {
 export const vDeusStaking: AddressMap = {
   [SupportedChainId.FANTOM]: '0x978b5d59DeE843C99B205A81ca82F66F35B1Ba35',
 }
+
+export const bDeiRedeemer: AddressMap = {
+  [SupportedChainId.FANTOM]: '0x978b5d59DeE843C99B205A81ca82F66F35B1Ba35',
+}
