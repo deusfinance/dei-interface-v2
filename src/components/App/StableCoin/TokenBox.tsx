@@ -25,7 +25,7 @@ const Wrapper = styled(RowBetween).attrs({
   background: ${({ theme }) => theme.bg1};
 
   &:hover {
-    background: ${({ theme }) => theme.bg1};
+    background: ${({ theme }) => theme.bg3};
     cursor: pointer;
   }
 
