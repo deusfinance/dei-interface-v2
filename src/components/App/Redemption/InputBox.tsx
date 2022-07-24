@@ -21,6 +21,10 @@ const Wrapper = styled(Row)`
   gap: 10px;
   border: 1px solid #444444;
   border-color: ${({ theme }) => theme.border1};
+
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    height: 60px;
+  `}
 `
 
 const InputWrapper = styled.div`
