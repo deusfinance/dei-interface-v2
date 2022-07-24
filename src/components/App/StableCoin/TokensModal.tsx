@@ -13,12 +13,12 @@ const Wrapper = styled.div`
   flex-flow: column nowrap;
   justify-content: flex-start;
   gap: 0.8rem;
-  padding: 1.5rem 0;
+  padding: 0px 0px 28px 0px;
 
   & > * {
     &:first-child {
       width: unset;
-      margin: 0 1rem;
+      margin: 0 9px;
     }
   }
 

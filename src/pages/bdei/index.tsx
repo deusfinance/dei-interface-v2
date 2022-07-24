@@ -27,6 +27,7 @@ import StatsHeader from 'components/StatsHeader'
 import { BottomWrapper, Container, InputWrapper, Title, Wrapper, MainButton } from 'components/App/StableCoin'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
+import NFTModal from 'components/App/bdei/NFTsModal'
 
 const RWrapper = styled(InputWrapper)`
   & > * {
@@ -68,6 +69,8 @@ export default function Redemption() {
   const usdcCurrency = USDC_TOKEN
   const deusCurrency = DEUS_TOKEN
   const deiCurrencyBalance = useCurrencyBalance(account ?? undefined, deiCurrency)
+  const [isOpenNFTsModal, toggleNFTsModal] = useState(false)
+  const [inputNFT, setInputNFT] = useState<number>(10)
 
   /* const { amountIn, amountOut1, amountOut2, onUserInput, onUserOutput1, onUserOutput2 } = useRedeemAmounts() */
   const { amountOut1, amountOut2 } = useRedeemAmountsOut(debouncedAmountIn, deiCurrency)
@@ -200,7 +203,7 @@ export default function Redemption() {
   return (
     <Container>
       <Hero>
-        <Image src={DEI_LOGO} height={'90px'} alt="Logo" />
+        <Image src={DEI_LOGO} height={'90px'} alt="Logo" onClick={() => toggleNFTsModal(true)} />
         <Title>DEI Bond</Title>
         <StatsHeader items={items} />
       </Hero>
@@ -229,12 +232,10 @@ export default function Redemption() {
             onChange={(value: string) => setAmountIn(value)}
             title={'From'}
           />
-
           <div style={{ marginTop: '20px' }}></div>
           {getApproveButton()}
           {getActionButton()}
           <div style={{ marginTop: '20px' }}></div>
-
           {
             <Row mt={'8px'}>
               <Info data-for="id" data-tip={'Tool tip for hint client'} size={15} />
@@ -247,6 +248,12 @@ export default function Redemption() {
           <InfoItem name={'DEUS Ratio'} value={'0.9???'} />
         </BottomWrapper>
       </Wrapper>
+      <NFTModal
+        isOpen={isOpenNFTsModal}
+        toggleModal={(action: boolean) => toggleNFTsModal(action)}
+        selectedNFT={inputNFT}
+        setNFT={setInputNFT}
+      />
     </Container>
   )
 }
