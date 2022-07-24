@@ -44,6 +44,10 @@ export const TopTableau = styled.div`
   border-radius: 13px 13px 0px 0px;
   height: 72px;
   background: ${({ theme }) => theme.bg0};
+
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    height: 50px;
+  `}
 `
 
 export const TableauTitle = styled.span`
@@ -61,8 +65,8 @@ export const TableauTitle = styled.span`
   `}
 
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    margin-top: 6px;
-    font-size: 24px;
+    margin-top: -4px;
+    font-size: 23px;
   `}
 `
 

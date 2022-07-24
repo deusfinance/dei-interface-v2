@@ -32,10 +32,10 @@ const Wrapper = styled(Box)`
     }
   } */
 
-  ${({ theme }) => theme.mediaWidth.upToSmall`
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     margin-top: 6px;
     margin-left: auto;
-    width: 200px;
+    width: 190px;
   `}
 
   .react-datepicker-wrapper {
@@ -56,8 +56,8 @@ const Wrapper = styled(Box)`
     color: ${({ theme }) => theme.text2};
     width: 100px;
 
-    ${({ theme }) => theme.mediaWidth.upToSmall`
-      width: 160px;
+    ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+      width: 90px;
     `}
   }
 
@@ -145,6 +145,18 @@ const Toggle = styled.div<{ active?: any }>`
 
 const DatePickerWrapper = styled.div`
   cursor: pointer;
+
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    margin-top: 2px;
+  `}
+`
+
+const MaxButton = styled.span`
+  color: white;
+  cursor: pointer;
+  z-index: 10;
+  margin-left: 18px;
+  margin-top: -2px;
 `
 
 export default function InputDate({
@@ -160,6 +172,11 @@ export default function InputDate({
 }) {
   return (
     <Wrapper>
+      {isMobile && (
+        <Column>
+          <Calendar color="#FFBA93" size={'20px'} />
+        </Column>
+      )}
       <DatePickerWrapper>
         {/* TODO: #M add some style to this ugly datePicker */}
         <DatePicker
@@ -187,9 +204,13 @@ export default function InputDate({
           showWeekNumbers
         />
       </DatePickerWrapper>
-      <Column>
-        <Calendar color="#FFBA93" size={'20px'} />
-      </Column>
+      {isMobile ? (
+        <MaxButton onClick={() => onDateSelect(maximumDate)}>Max</MaxButton>
+      ) : (
+        <Column>
+          <Calendar color="#FFBA93" size={'20px'} />
+        </Column>
+      )}
     </Wrapper>
   )
 }
@@ -275,11 +296,10 @@ export function SelectDatePresets({
             </TopBorder>
           </TopBorderWrap>
         )}
-        {/* TODO: add max button for mobile */}
         <InputDate
           selectedDate={selectedDate}
           minimumDate={minimumDate}
-          maximumDate={minimumDate}
+          maximumDate={maximumDate}
           onDateSelect={onDateSelect}
         />
       </ExpirationWrapper>
