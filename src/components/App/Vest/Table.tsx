@@ -4,6 +4,7 @@ import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import utc from 'dayjs/plugin/utc'
+import Image from 'next/image'
 
 import { useVeDeusContract } from 'hooks/useContract'
 import { useHasPendingVest, useTransactionAdder } from 'state/transactions/hooks'
@@ -17,6 +18,8 @@ import { PrimaryButtonWhite, PrimaryButtonWide } from 'components/Button'
 import { DotFlashing } from 'components/Icons'
 
 import DEUS_LOGO from '/public/static/images/tokens/deus.svg'
+import EMPTY_LOCK from '/public/static/images/pages/veDEUS/emptyLock.svg'
+import EMPTY_LOCK_MOBILE from '/public/static/images/pages/veDEUS/emptyLockMobile.svg'
 import { formatAmount } from 'utils/numbers'
 import { ButtonText } from 'pages/vest'
 
@@ -36,16 +39,9 @@ const TableWrapper = styled.table`
   table-layout: fixed;
   border-collapse: collapse;
   background: ${({ theme }) => theme.bg1};
+  border-bottom-right-radius: 12px;
+  border-bottom-left-radius: 12px;
 `
-
-// const Head = styled.thead`
-//   & > tr {
-//     height: 56px;
-//     font-size: 0.9rem;
-//     color: ${({ theme }) => theme.text1};
-//     background: ${({ theme }) => theme.bg0};
-//   }
-// `
 
 const Row = styled.tr`
   align-items: center;
@@ -57,10 +53,8 @@ const Row = styled.tr`
 const Cell = styled.td<{
   justify?: boolean
 }>`
-  /* text-align: center; */
   align-items: center;
   padding: 5px;
-  /* border: 1px solid ${({ theme }) => theme.border1}; */
   height: 90px;
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
@@ -81,13 +75,13 @@ const NFTWrap = styled(Column)`
   align-items: flex-start;
 `
 
-const CellWrap = styled(Column)`
-  gap: 5px;
-`
+// const CellWrap = styled(Column)`
+//   gap: 5px;
+// `
 
-const CellRow = styled(RowCenter)`
-  gap: 5px;
-`
+// const CellRow = styled(RowCenter)`
+//   gap: 5px;
+// `
 
 const CellAmount = styled.div`
   font-size: 0.85rem;
@@ -97,10 +91,10 @@ const CellAmount = styled.div`
   background-clip: text;
 `
 
-const CellDescription = styled.div`
-  font-size: 0.6rem;
-  color: ${({ theme }) => theme.text2};
-`
+// const CellDescription = styled.div`
+//   font-size: 0.6rem;
+//   color: ${({ theme }) => theme.text2};
+// `
 
 const Name = styled.div`
   font-weight: 400;
@@ -132,10 +126,12 @@ export default function Table({
   nftIds,
   toggleLockManager,
   toggleAPYManager,
+  isMobile,
 }: {
   nftIds: number[]
   toggleLockManager: (nftId: number) => void
   toggleAPYManager: (nftId: number) => void
+  isMobile?: boolean
 }) {
   const [offset, setOffset] = useState(0)
 
@@ -155,15 +151,6 @@ export default function Table({
     <>
       <Wrapper>
         <TableWrapper>
-          {/* <Head>
-            <tr>
-              <Cell>Token ID</Cell>
-              <Cell>Vest Amount</Cell>
-              <Cell>Vest Value</Cell>
-              <Cell>Vest Expiration</Cell>
-              <Cell>Actions</Cell>
-            </tr>
-          </Head> */}
           <tbody>
             {paginatedItems.length > 0 &&
               paginatedItems.map((nftId: number, index) => (
@@ -176,8 +163,19 @@ export default function Table({
                 />
               ))}
           </tbody>
+          {paginatedItems.length == 0 && (
+            <>
+              <div style={{ marginLeft: '15px', marginRight: '15px' }}>
+                {isMobile ? (
+                  <Image src={EMPTY_LOCK_MOBILE} alt="empty-lock-mobile" />
+                ) : (
+                  <Image src={EMPTY_LOCK} height={'90px'} alt="empty-lock" />
+                )}
+              </div>
+              <NoResults>You have no lock!</NoResults>
+            </>
+          )}
         </TableWrapper>
-        {paginatedItems.length == 0 && <NoResults>No Results Found</NoResults>}
         {paginatedItems.length > 0 && <Pagination pageCount={pageCount} onPageChange={onPageChange} />}
       </Wrapper>
     </>

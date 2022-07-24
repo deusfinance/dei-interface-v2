@@ -111,6 +111,12 @@ export const PrimaryButtonWide = styled(BaseButton)`
         background: inherit;
       }
   `}
+
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    & > * {
+      margin: -4px;
+    }
+  `}
 `
 
 export const PrimaryButtonWhite = styled(BaseButton)`

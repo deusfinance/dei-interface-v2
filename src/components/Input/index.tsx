@@ -16,12 +16,14 @@ export const InputField = styled.input<{
   background: transparent;
   font-size: 1.1rem;
   color: ${({ theme }) => theme.text1};
+
   &:focus,
   &:hover {
     outline: none;
   }
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     font-size: 0.9rem !important;
+    width: 85px;
   `}
 `
 

@@ -17,16 +17,16 @@ import { useVeDeusContract } from 'hooks/useContract'
 import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
 
 import veDEUS_LOGO from '/public/static/images/pages/veDEUS/veDEUS.svg'
-import { DEUS_TOKEN, VEDEUS_TOKEN } from 'constants/vest'
+import { DEUS_TOKEN } from 'constants/vest'
 import { SupportedChainId } from 'constants/chains'
 import { veDEUS } from 'constants/addresses'
 import { getDurationSeconds, RoundMode } from 'utils/time'
 import { getMaximumDate, getMinimumDate } from 'utils/vest'
 
 import InputBox from 'components/App/Migration/InputBox'
-import { SelectDatePresets, GeneralLockInformation, UserLockInformation } from 'components/App/Vest'
+import { SelectDatePresets, UserLockInformation } from 'components/App/Vest'
 import Hero, { HeroSubtext } from 'components/Hero'
-import { PrimaryButton } from 'components/Button'
+import { PrimaryButton, PrimaryButtonWide } from 'components/Button'
 import { Card } from 'components/Card'
 import { ArrowBubble, DotFlashing } from 'components/Icons'
 import Image from 'next/image'
@@ -37,6 +37,7 @@ import { useVestedAPY } from 'hooks/useVested'
 import { useDeusPrice } from 'hooks/useCoingeckoPrice'
 import { ArrowDown } from 'react-feather'
 import Tableau from 'components/App/StableCoin/Tableau'
+import StaticInputBox from 'components/App/Vest/StaticInputBox'
 
 dayjs.extend(utc)
 
@@ -51,7 +52,6 @@ const Wrapper = styled(Container)`
   margin: 0 auto;
   margin-top: 50px;
   width: clamp(250px, 90%, 540px);
-  /* gap: 10px; */
 `
 
 const ReturnWrapper = styled.div`
@@ -96,7 +96,7 @@ const CardWrapper = styled(Card)`
   `}
 `
 
-const ActionButton = styled(PrimaryButton)`
+const ActionButton = styled(PrimaryButtonWide)`
   margin-top: 15px;
 `
 
@@ -118,7 +118,6 @@ export default function Create() {
   const deusPrice = useDeusPrice()
 
   const deusCurrency = useCurrency(DEUS_TOKEN.address)
-  const veDeusCurrency = useCurrency(VEDEUS_TOKEN.address)
 
   const deusBalance = useCurrencyBalance(account ?? undefined, deusCurrency ?? undefined)
   const veDEUSContract = useVeDeusContract()
@@ -223,12 +222,12 @@ export default function Create() {
     if (!isSupportedChainId) {
       return (
         <>
-          <div>You are not connected to the Fantom Opera Network.</div>
+          <div style={{ marginBottom: '30px' }}>You are not connected to the Fantom Opera Network.</div>
           <PrimaryButton onClick={() => rpcChangerCallback(SupportedChainId.FANTOM)}>Switch to Fantom</PrimaryButton>
         </>
       )
     }
-    if (!deusCurrency || !veDeusCurrency) {
+    if (!deusCurrency) {
       return (
         <div>
           Experiencing issues with the Fantom RPC, unable to load this page. If this issue persist, try to refresh the
@@ -238,45 +237,41 @@ export default function Create() {
     }
 
     return (
-      <CardWrapper>
-        <InputBox
-          currency={deusCurrency}
-          value={typedValue}
-          onChange={(value: string) => setTypedValue(value)}
-          title={'from'}
-        />
+      <>
+        <Tableau title={'Create lock'} />
+        <CardWrapper>
+          <InputBox
+            currency={deusCurrency}
+            value={typedValue}
+            onChange={(value: string) => setTypedValue(value)}
+            title={'from'}
+          />
 
-        {/* <InputDate
-          selectedDate={selectedDate}
-          minimumDate={getMinimumDate()}
-          maximumDate={getMaximumDate()}
-          onDateSelect={setSelectedDate}
-        /> */}
-        <SelectDatePresets
-          selectedDate={selectedDate}
-          minimumDate={getMinimumDate()}
-          maximumDate={getMaximumDate()}
-          onDateSelect={setSelectedDate}
-        />
+          <SelectDatePresets
+            selectedDate={selectedDate}
+            minimumDate={getMinimumDate()}
+            maximumDate={getMaximumDate()}
+            onDateSelect={setSelectedDate}
+          />
+          <ArrowDown />
+          <StaticInputBox
+            currency={deusCurrency}
+            name={'veDEUS'}
+            value={typedValue}
+            selectedDate={selectedDate}
+            onChange={(value: string) => console.log(value)}
+            disabled={true}
+          />
 
-        <ArrowDown />
-
-        <InputBox
-          currency={veDeusCurrency}
-          value={typedValue} // TODO: calculate amountOut
-          onChange={(value: string) => console.log(value)}
-          title={'to'}
-          disabled={true}
-        />
-
-        {getActionButton()}
-        <UserLockInformation amount={typedValue} selectedDate={selectedDate} />
-        <GeneralLockInformation />
-      </CardWrapper>
+          {getActionButton()}
+          <UserLockInformation amount={typedValue} selectedDate={selectedDate} />
+          {/* <GeneralLockInformation /> */}
+        </CardWrapper>
+      </>
     )
   }
 
-  // TODO: move items to use memo
+  // TODO: #M move items to use memo
   const items = [
     { name: 'DEUS Price', value: formatDollarAmount(parseFloat(deusPrice), 2) },
     { name: 'Total veDEUS Locked', value: formatAmount(parseFloat(lockedVeDEUS), 0) },
@@ -296,7 +291,6 @@ export default function Create() {
           <ArrowBubble size={20} />
           Lock Overview
         </ReturnWrapper>
-        <Tableau title={'Create lock'} />
         {getMainContent()}
       </Wrapper>
     </Container>

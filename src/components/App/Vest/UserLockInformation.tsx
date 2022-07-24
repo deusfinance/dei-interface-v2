@@ -19,7 +19,8 @@ const Wrapper = styled.div`
   display: flex;
   flex-flow: column nowrap;
   width: 100%;
-  gap: 0px;
+  margin-top: 20px;
+  gap: 10px;
 `
 
 const Row = styled.div`
@@ -30,9 +31,9 @@ const Row = styled.div`
   font-size: 0.8rem;
 
   & > * {
-    color: ${({ theme }) => theme.text1};
+    color: ${({ theme }) => theme.text2};
     &:last-child {
-      color: ${({ theme }) => theme.text2};
+      color: ${({ theme }) => theme.text1};
     }
   }
 `
@@ -43,6 +44,12 @@ const Title = styled.div`
   margin-bottom: 5px;
   padding-bottom: 5px;
   font-weight: bold;
+`
+
+const TotalVP = styled.div`
+  background: -webkit-linear-gradient(1deg, #0badf4, #30efe4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 `
 
 export default function UserLockInformation({
@@ -62,8 +69,6 @@ export default function UserLockInformation({
     return lastThursday(selectedDate)
   }, [selectedDate])
 
-  const lockHasEnded = useMemo(() => dayjs.utc(effectiveDate).isBefore(dayjs.utc()), [effectiveDate])
-
   const computedVotingPower: BigNumber = useMemo(() => {
     if (!account || !chainId || !amount) return new BigNumber(0)
     const effectiveWeek = Math.floor(dayjs.utc(effectiveDate).diff(dayjs.utc(), 'week', true))
@@ -77,25 +82,25 @@ export default function UserLockInformation({
 
   const { userAPY } = useVestedAPY(undefined, effectiveDate)
 
-  const durationUntilTarget: string = useMemo(() => {
-    return dayjs.utc(effectiveDate).fromNow(true)
-  }, [effectiveDate])
+  // const durationUntilTarget: string = useMemo(() => {
+  //   return dayjs.utc(effectiveDate).fromNow(true)
+  // }, [effectiveDate])
 
   return (
     <Wrapper>
       {title && <Title>{title}</Title>}
       <Row>
-        <div>Voting Power:</div>
-        <div>{totalVotingPower} veDEUS</div>
+        <div>Total voting Power:</div>
+        <TotalVP>{totalVotingPower} veDEUS</TotalVP>
       </Row>
       <Row>
         <div>Est. APR</div>
         <div>{formatAmount(parseFloat(userAPY), 0)}%</div>
       </Row>
-      <Row>
+      {/* <Row>
         <div>Expiration in: </div>
         {lockHasEnded ? <div>Expired</div> : <div>~ {durationUntilTarget}</div>}
-      </Row>
+      </Row> */}
       <Row>
         <div>Locked until: (UTC)</div>
         <div>{dayjs.utc(effectiveDate).format('LL')}</div>

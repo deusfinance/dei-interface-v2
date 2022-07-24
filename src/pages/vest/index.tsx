@@ -2,8 +2,8 @@ import React, { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import styled from 'styled-components'
 import Image from 'next/image'
+import { isMobile } from 'react-device-detect'
 
-import useOwnedNfts from 'hooks/useOwnedNfts'
 import { useDeusPrice } from 'hooks/useCoingeckoPrice'
 import useWeb3React from 'hooks/useWeb3'
 import { useVestedAPY } from 'hooks/useVested'
@@ -61,16 +61,6 @@ const ButtonWrapper = styled(RowFixed)`
   gap: 10px;
   & > * {
     height: 50px;
-    /* &:first-child {
-      ${({ theme }) => theme.mediaWidth.upToSmall`
-        order: 2;
-      `};
-    }
-    &:last-child {
-      ${({ theme }) => theme.mediaWidth.upToSmall`
-        order: 1;
-      `};
-    } */
   }
 `
 
@@ -112,12 +102,23 @@ const TopBorder = styled.div`
   display: flex;
 `
 
+const FirstRowWrapper = styled.div`
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  width: 100%;
+  gap: 10px;
+`
+
+const UpperRowMobile = styled(UpperRow)<{ hasSecondRow?: boolean }>`
+  /* margin-bottom: ${({ hasSecondRow }) => (hasSecondRow ? '0' : '-20px')}; */
+`
+
 export default function Vest() {
   const { chainId, account } = useWeb3React()
   const [showLockManager, setShowLockManager] = useState(false)
   const [showAPYManager, setShowAPYManager] = useState(false)
   const [nftId, setNftId] = useState(0)
-  const nftIds = useOwnedNfts()
   const { lockedVeDEUS } = useVestedAPY(undefined, getMaximumDate())
   const deusPrice = useDeusPrice()
 
@@ -145,12 +146,85 @@ export default function Vest() {
     setNftId(nftId)
   }
 
-  // TODO: move items to use memo
+  function getUpperRow() {
+    return (
+      <UpperRow>
+        <div>
+          <SearchField searchProps={searchProps} />
+        </div>
+
+        <ButtonWrapper>
+          {hasClaimAll && (
+            <PrimaryButtonWide>
+              <ButtonText>Claim all ${ClaimableAmount} veDEUS</ButtonText>
+            </PrimaryButtonWide>
+          )}
+
+          {!!snapshotList.length ? (
+            <TopBorderWrap>
+              <TopBorder>
+                <Link href="/vest/create" passHref>
+                  <PrimaryButtonWide disabled>
+                    <ButtonText disabled>Create Lock</ButtonText>
+                  </PrimaryButtonWide>
+                </Link>
+              </TopBorder>
+            </TopBorderWrap>
+          ) : (
+            <PrimaryButtonWide>
+              <Link href="/vest/create" passHref>
+                <ButtonText>Create New Lock</ButtonText>
+              </Link>
+            </PrimaryButtonWide>
+          )}
+        </ButtonWrapper>
+      </UpperRow>
+    )
+  }
+
+  function getUpperRowMobile() {
+    return (
+      <UpperRowMobile hasSecondRow={!!snapshotList.length}>
+        <FirstRowWrapper>
+          <SearchField searchProps={searchProps} />
+
+          {!!snapshotList.length ? (
+            <TopBorderWrap>
+              <TopBorder>
+                <Link href="/vest/create" passHref>
+                  <PrimaryButtonWide disabled>
+                    <ButtonText disabled>Create Lock</ButtonText>
+                  </PrimaryButtonWide>
+                </Link>
+              </TopBorder>
+            </TopBorderWrap>
+          ) : (
+            <PrimaryButtonWide>
+              <Link href="/vest/create" passHref>
+                <ButtonText>Create New Lock</ButtonText>
+              </Link>
+            </PrimaryButtonWide>
+          )}
+        </FirstRowWrapper>
+
+        {hasClaimAll && (
+          <PrimaryButtonWide style={{ marginTop: '2px', marginBottom: '12px' }}>
+            <ButtonText>Claim all ${ClaimableAmount} veDEUS</ButtonText>
+          </PrimaryButtonWide>
+        )}
+      </UpperRowMobile>
+    )
+  }
+
+  // TODO: #M move items to use memo
   const items = [
     { name: 'DEUS Price', value: formatDollarAmount(parseFloat(deusPrice), 2) },
     { name: 'Total veDEUS Locked', value: formatAmount(parseFloat(lockedVeDEUS), 0) },
   ]
-  const ClaimableAmount = 0.063
+  const ClaimableAmount = 1
+  const hasClaimAll: boolean = useMemo(() => {
+    return !!snapshotList.length && !!ClaimableAmount
+  }, [ClaimableAmount, snapshotList.length])
 
   return (
     <Container>
@@ -161,33 +235,16 @@ export default function Vest() {
       </Hero>
 
       <Wrapper>
-        <UpperRow>
-          <div>
-            <SearchField searchProps={searchProps} />
-          </div>
+        {isMobile ? getUpperRowMobile() : getUpperRow()}
 
-          <ButtonWrapper>
-            <PrimaryButtonWide>
-              <ButtonText>Claim all ${ClaimableAmount} veDEUS</ButtonText>
-            </PrimaryButtonWide>
-
-            <TopBorderWrap>
-              <TopBorder>
-                <Link href="/vest/create" passHref>
-                  <PrimaryButtonWide disabled>
-                    <ButtonText disabled>Create Lock</ButtonText>
-                  </PrimaryButtonWide>
-                </Link>
-              </TopBorder>
-            </TopBorderWrap>
-          </ButtonWrapper>
-        </UpperRow>
         <Table
           nftIds={snapshotList as number[]}
           toggleLockManager={toggleLockManager}
           toggleAPYManager={toggleAPYManager}
+          isMobile={isMobile}
         />
       </Wrapper>
+
       <LockManager isOpen={showLockManager} onDismiss={() => setShowLockManager(false)} nftId={nftId} />
       <APYManager
         isOpen={showAPYManager}
