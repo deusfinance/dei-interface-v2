@@ -12,10 +12,9 @@ const Wrapper = styled.div`
   margin: 18px 2px;
   display: flex;
   justify-content: center;
-  align-items: center;
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
-    display: block;
+    justify-content: stretch;
   `};
 `
 

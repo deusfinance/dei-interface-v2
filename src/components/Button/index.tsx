@@ -150,7 +150,7 @@ export const PrimaryButtonWhite = styled(BaseButton)`
     disabled &&
     `
       background: ${theme.bg2};
-      border: 2px solid ${theme.text1};
+      border: 1.5px solid ${theme.text1};
 
       &:focus,
       &:hover {

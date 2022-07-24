@@ -16,7 +16,7 @@ const Wrapper = styled(Box)<{ isMobileSize?: boolean }>`
   justify-content: flex-start;
   align-items: center;
   height: 33px;
-  width: 140px;
+  width: 152px;
   border: 2px solid ${({ theme }) => theme.text2};
   border-radius: 8px;
   gap: 10px;
@@ -26,15 +26,10 @@ const Wrapper = styled(Box)<{ isMobileSize?: boolean }>`
     cursor: pointer;
   }
 
-  /* & > {
-    &:last-child {
-      margin-left: auto;
-    }
-  } */
-
-  ${({ isMobileSize }) =>
+  ${({ isMobileSize, theme }) =>
     isMobileSize &&
     `
+    border: 1px solid ${theme.text2};
     margin-top: 6px;
     margin-left: auto;
     width: 190px;
@@ -46,23 +41,17 @@ const Wrapper = styled(Box)<{ isMobileSize?: boolean }>`
   }
 
   .styled-date-picker {
-    /* text-align: left; */
     margin-bottom: 6px;
     margin-left: -4px;
     margin-right: -5px;
     font-size: 13px;
     border: none;
-    /* align-items: flex-end; */
     background: transparent;
     outline: none;
     color: ${({ theme }) => theme.text2};
-    width: 100px;
-
-    ${({ isMobileSize }) =>
-      isMobileSize &&
-      `
-      width: 90px;
-    `}
+    width: 113px;
+    /* align-items: flex-end; */
+    /* text-align: left; */
   }
 
   // don't touch this
@@ -133,7 +122,6 @@ const TopBorderWrap = styled.div<{ active?: any }>`
 
 const TopBorder = styled.div`
   border-radius: 6px;
-  /* background: ${({ theme }) => theme.bg0}; */
 `
 
 const Toggle = styled.div<{ active?: any }>`
@@ -169,9 +157,8 @@ const DatePickerWrapper = styled.div<{ isMobileSize?: boolean }>`
 const MaxButton = styled.span`
   color: white;
   cursor: pointer;
-  z-index: 10;
-  margin-left: 18px;
-  margin-top: -2px;
+  z-index: 2;
+  margin-top: -4px;
 `
 
 export default function InputDate({
