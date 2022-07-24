@@ -12,7 +12,7 @@ import { isMobile } from 'react-device-detect'
 
 dayjs.extend(utc)
 
-const Wrapper = styled(Box)`
+const Wrapper = styled(Box)<{ isMobileSize?: boolean }>`
   justify-content: flex-start;
   align-items: center;
   height: 33px;
@@ -32,7 +32,9 @@ const Wrapper = styled(Box)`
     }
   } */
 
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+  ${({ isMobileSize }) =>
+    isMobileSize &&
+    `
     margin-top: 6px;
     margin-left: auto;
     width: 190px;
@@ -56,7 +58,9 @@ const Wrapper = styled(Box)`
     color: ${({ theme }) => theme.text2};
     width: 100px;
 
-    ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    ${({ isMobileSize }) =>
+      isMobileSize &&
+      `
       width: 90px;
     `}
   }
@@ -72,8 +76,10 @@ const Wrapper = styled(Box)`
   }
 `
 
-const TimePeriodWrapper = styled.div`
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+const TimePeriodWrapper = styled.div<{ isMobileSize?: boolean }>`
+  ${({ isMobileSize }) =>
+    isMobileSize &&
+    `
     display: flex;
     justify-content: space-between;
     width: 100%;
@@ -95,15 +101,22 @@ const ExpirationWrapper = styled(Box)`
   background: ${({ theme }) => theme.bg0};
   border: 0;
   padding: 5px;
+
+  & > * {
+    margin-left: auto;
+  }
 `
 
-const Label = styled.div`
+const Label = styled.div<{ isMobileSize?: boolean }>`
   align-self: flex-start;
-  margin-top: 20px;
-  font-size: 0.8rem;
+  margin-top: 18px;
+  margin-bottom: 8px;
+  font-size: 0.85rem;
 
-  ${({ theme }) => theme.mediaWidth.upToSmall`
-    font-size: 0.6rem;
+  ${({ isMobileSize }) =>
+    isMobileSize &&
+    `
+    font-size: 0.75rem;
   `}
 `
 
@@ -143,10 +156,12 @@ const Toggle = styled.div<{ active?: any }>`
   `}
 `
 
-const DatePickerWrapper = styled.div`
+const DatePickerWrapper = styled.div<{ isMobileSize?: boolean }>`
   cursor: pointer;
 
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+  ${({ isMobileSize }) =>
+    isMobileSize &&
+    `
     margin-top: 2px;
   `}
 `
@@ -164,15 +179,19 @@ export default function InputDate({
   minimumDate,
   maximumDate,
   onDateSelect,
+  isMobileSize,
 }: {
   selectedDate: Date
   minimumDate: Date
   maximumDate: Date
   onDateSelect(x: Date): void
+  isMobileSize?: boolean
 }) {
+  const MobileSize = isMobileSize || isMobile
+
   return (
-    <Wrapper>
-      {isMobile && (
+    <Wrapper isMobileSize={MobileSize}>
+      {MobileSize && (
         <Column>
           <Calendar color="#FFBA93" size={'20px'} />
         </Column>
@@ -204,7 +223,7 @@ export default function InputDate({
           showWeekNumbers
         />
       </DatePickerWrapper>
-      {isMobile ? (
+      {MobileSize ? (
         <MaxButton onClick={() => onDateSelect(maximumDate)}>Max</MaxButton>
       ) : (
         <Column>
@@ -220,11 +239,13 @@ export function SelectDatePresets({
   minimumDate,
   maximumDate,
   onDateSelect,
+  isMobileSize,
 }: {
   selectedDate: Date
   minimumDate: Date
   maximumDate: Date
   onDateSelect: (x: Date) => void
+  isMobileSize?: boolean
 }) {
   const onSelect = (checked: VestOptions) => {
     if (checked === VestOptions.MIN) {
@@ -241,11 +262,13 @@ export function SelectDatePresets({
     }
   }
 
+  const MobileSize = isMobileSize || isMobile
+
   return (
-    <TimePeriodWrapper>
-      <Label>Expiration:</Label>
+    <TimePeriodWrapper isMobileSize={MobileSize}>
+      <Label isMobileSize={MobileSize}>Expiration:</Label>
       <ExpirationWrapper>
-        {!isMobile && (
+        {!MobileSize && (
           <TopBorderWrap active={dayjs.utc(selectedDate).isSame(minimumDate, 'day')}>
             <TopBorder>
               <Toggle
@@ -258,7 +281,7 @@ export function SelectDatePresets({
           </TopBorderWrap>
         )}
 
-        {!isMobile && (
+        {!MobileSize && (
           <TopBorderWrap active={dayjs.utc(selectedDate).isSame(addMonth(), 'day')}>
             <TopBorder>
               <Toggle
@@ -271,7 +294,7 @@ export function SelectDatePresets({
           </TopBorderWrap>
         )}
 
-        {!isMobile && (
+        {!MobileSize && (
           <TopBorderWrap active={dayjs.utc(selectedDate).isSame(addYear(), 'day')}>
             <TopBorder>
               <Toggle
@@ -284,7 +307,7 @@ export function SelectDatePresets({
           </TopBorderWrap>
         )}
 
-        {!isMobile && (
+        {!MobileSize && (
           <TopBorderWrap active={dayjs.utc(selectedDate).isSame(maximumDate, 'day')}>
             <TopBorder>
               <Toggle
@@ -301,6 +324,7 @@ export function SelectDatePresets({
           minimumDate={minimumDate}
           maximumDate={maximumDate}
           onDateSelect={onDateSelect}
+          isMobileSize={MobileSize}
         />
       </ExpirationWrapper>
     </TimePeriodWrapper>
@@ -344,7 +368,7 @@ export function IncreaseDatePresets({
 
   return (
     <ExpirationWrapper>
-      <Label>Add Expiration:</Label>
+      <Label isMobileSize={isMobile}>Add Expiration:</Label>
       {showMinimum && (
         <Toggle active={dayjs.utc(selectedDate).isSame(minimumDate, 'day')} onClick={() => onSelect(VestOptions.MIN)}>
           {dayjs.utc(addWeek(lockEnd)).fromNow(true)}
