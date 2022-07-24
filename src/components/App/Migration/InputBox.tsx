@@ -115,7 +115,7 @@ export default function InputBox({
   currency: Currency
   value: string
   onChange(values: string): void
-  title: string
+  title?: string
   onTokenSelect?: () => void
   disabled?: boolean
 }) {
