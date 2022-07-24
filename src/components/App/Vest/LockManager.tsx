@@ -22,7 +22,7 @@ import { PrimaryButton } from 'components/Button'
 import { DotFlashing } from 'components/Icons'
 import { SelectDatePresets } from './InputDate'
 import UserLockInformation from './UserLockInformation'
-import InputBox from '../Migration/InputBox'
+import InputBox from '../Redemption/InputBox'
 
 dayjs.extend(utc)
 

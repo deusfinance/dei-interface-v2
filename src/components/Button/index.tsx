@@ -88,6 +88,7 @@ export const PrimaryButtonWide = styled(BaseButton)<{ IsSmall?: boolean }>`
   background: ${({ theme }) => theme.primary6};
   white-space: nowrap;
   border-radius: 8px;
+  height: 54%;
 
   color: ${({ theme }) => theme.text1};
   z-index: 0;
@@ -103,6 +104,7 @@ export const PrimaryButtonWide = styled(BaseButton)<{ IsSmall?: boolean }>`
   ${({ theme, disabled }) =>
     disabled &&
     `
+      height: 100%;
       background: ${theme.bg2};
       border: 1px solid ${theme.border1};
 
@@ -130,6 +132,7 @@ export const PrimaryButtonWhite = styled(BaseButton)`
   background: ${({ theme }) => theme.primary2};
   white-space: nowrap;
   border-radius: 8px;
+  height: 53%;
 
   color: ${({ theme }) => theme.text1};
   z-index: 0;

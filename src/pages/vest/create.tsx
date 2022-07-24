@@ -23,7 +23,7 @@ import { veDEUS } from 'constants/addresses'
 import { getDurationSeconds, RoundMode } from 'utils/time'
 import { getMaximumDate, getMinimumDate } from 'utils/vest'
 
-import InputBox from 'components/App/Migration/InputBox'
+import InputBox from 'components/App/Redemption/InputBox'
 import { SelectDatePresets, UserLockInformation } from 'components/App/Vest'
 import Hero, { HeroSubtext } from 'components/Hero'
 import { PrimaryButton, PrimaryButtonWide } from 'components/Button'

@@ -12,7 +12,7 @@ import ImageWithFallback from 'components/ImageWithFallback'
 import { NumericalInput } from 'components/Input'
 import { Row, RowBetween, RowEnd } from 'components/Row'
 
-const Wrapper = styled(Row)`
+export const Wrapper = styled(Row)`
   background: ${({ theme }) => theme.bg2};
   border-radius: 12px;
   color: ${({ theme }) => theme.text2};
@@ -27,7 +27,7 @@ const Wrapper = styled(Row)`
   `}
 `
 
-const InputWrapper = styled.div`
+export const InputWrapper = styled.div`
   & > * {
     width: 100%;
   }
@@ -37,7 +37,7 @@ const InputWrapper = styled.div`
   `}
 `
 
-const CurrencySymbol = styled.div`
+export const CurrencySymbol = styled.div`
   font-family: 'IBM Plex Mono';
   font-weight: 600;
   font-size: 16px;
@@ -45,7 +45,7 @@ const CurrencySymbol = styled.div`
   color: ${({ theme }) => theme.text1};
 `
 
-const RightWrapper = styled.div`
+export const RightWrapper = styled.div`
   width: 100%;
   border-left: 1px solid ${({ theme }) => theme.border1};
   padding: 6px;
@@ -53,14 +53,14 @@ const RightWrapper = styled.div`
   position: relative;
 `
 
-const LogoWrapper = styled(Row)`
+export const LogoWrapper = styled(Row)`
   height: 100%;
   padding-left: 10px;
   min-width: 48px;
   max-width: 50px;
 `
 
-const RowWrap = styled(RowEnd)`
+export const RowWrap = styled(RowEnd)`
   gap: 10px;
   font-size: 1.5rem;
 
