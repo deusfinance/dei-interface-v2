@@ -19,6 +19,7 @@ import { DotFlashing } from 'components/Icons'
 
 import DEUS_LOGO from '/public/static/images/tokens/deus.svg'
 import EMPTY_LOCK from '/public/static/images/pages/veDEUS/emptyLock.svg'
+import EMPTY_LOCK_MOBILE from '/public/static/images/pages/veDEUS/emptyLockMobile.svg'
 import { formatAmount } from 'utils/numbers'
 import { ButtonText } from 'pages/vest'
 
@@ -125,10 +126,12 @@ export default function Table({
   nftIds,
   toggleLockManager,
   toggleAPYManager,
+  isMobile,
 }: {
   nftIds: number[]
   toggleLockManager: (nftId: number) => void
   toggleAPYManager: (nftId: number) => void
+  isMobile?: boolean
 }) {
   const [offset, setOffset] = useState(0)
 
@@ -162,8 +165,12 @@ export default function Table({
           </tbody>
           {paginatedItems.length == 0 && (
             <>
-              <div style={{ marginLeft: '15px' }}>
-                <Image src={EMPTY_LOCK} width={'1170px'} height={'90px'} alt="empty-lock" />
+              <div style={{ marginLeft: '15px', marginRight: '15px' }}>
+                {isMobile ? (
+                  <Image src={EMPTY_LOCK_MOBILE} alt="empty-lock-mobile" />
+                ) : (
+                  <Image src={EMPTY_LOCK} height={'90px'} alt="empty-lock" />
+                )}
               </div>
               <NoResults>You have no lock!</NoResults>
             </>
