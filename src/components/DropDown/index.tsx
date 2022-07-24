@@ -8,13 +8,15 @@ import Box from 'components/Box'
 
 const Wrapper = styled.div<{
   width: string
+  isOpen?: boolean
 }>`
   display: block;
-  overflow: hidden;
+  overflow: ${({ isOpen }) => !isOpen && 'hidden'};
   color: ${({ theme }) => theme.text3};
   max-width: ${({ width }) => width};
   width: 100%;
   margin: 4px auto;
+  position: relative;
 `
 
 const Header = styled(Box)<{
@@ -152,7 +154,7 @@ export default function Dropdown({
   }
 
   return (
-    <Wrapper ref={ref} width={width}>
+    <Wrapper ref={ref} width={width} isOpen={isOpen}>
       <Header onClick={toggle} isOpen={isOpen}>
         {header}
         {!disabled && <StyledChevron isOpen={isOpen} />}
