@@ -105,7 +105,7 @@ export default function InputBox({
   currency: Currency
   value: string
   onChange(values: string): void
-  title: string
+  title?: string
   disabled?: boolean
 }) {
   const { account } = useWeb3React()
@@ -153,7 +153,7 @@ export default function InputBox({
               placeholder="0.0"
               autoFocus
               disabled={disabled}
-              style={{ textAlign: 'left', height: '50px', fontSize: '24px', marginLeft: '5px' }}
+              style={{ textAlign: 'left', fontSize: '24px', marginLeft: '5px' }}
             />
           </InputWrapper>
         </RightWrapper>
