@@ -84,8 +84,8 @@ export const PrimaryButton = styled(BaseButton)`
   `}
 `
 
-export const PrimaryButtonWide = styled(BaseButton)`
-  background: ${({ theme }) => theme.primary2};
+export const PrimaryButtonWide = styled(BaseButton)<{ IsSmall?: boolean }>`
+  background: ${({ theme }) => theme.primary6};
   white-space: nowrap;
   border-radius: 8px;
 
@@ -94,10 +94,10 @@ export const PrimaryButtonWide = styled(BaseButton)`
 
   &:focus {
     box-shadow: 0 0 0 1pt ${({ theme }) => theme.primary2};
-    background: ${({ theme }) => theme.primary5};
+    background: ${({ theme }) => theme.primary7};
   }
   &:hover {
-    background: ${({ theme }) => theme.primary5};
+    background: ${({ theme }) => theme.primary7};
   }
 
   ${({ theme, disabled }) =>
@@ -116,6 +116,13 @@ export const PrimaryButtonWide = styled(BaseButton)`
     & > * {
       margin: -4px;
     }
+  `}
+
+  ${({ IsSmall, theme }) =>
+    IsSmall &&
+    theme.mediaWidth.upToExtraSmall`
+      padding-top: 12px;
+      padding-bottom: 12px;
   `}
 `
 
@@ -146,5 +153,14 @@ export const PrimaryButtonWhite = styled(BaseButton)`
       &:hover {
         background: ${theme.bg0};
       }
+  `}
+
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    width: 110%;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    & > * {
+      margin: -5px;
+    }
   `}
 `
