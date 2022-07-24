@@ -42,8 +42,9 @@ export const TopTableau = styled.div`
   position: relative;
   padding: 0;
   border-radius: 13px 13px 0px 0px;
-  height: 72px;
+  height: 60px;
   background: ${({ theme }) => theme.bg0};
+  overflow: hidden;
 `
 
 export const TableauTitle = styled.span`

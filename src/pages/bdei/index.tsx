@@ -29,7 +29,7 @@ import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
 import NFTModal from 'components/App/bdei/NFTsModal'
 
-const RWrapper = styled(InputWrapper)`
+const NFTsWrapper = styled(InputWrapper)`
   & > * {
     &:nth-child(4) {
       margin: 15px auto;
@@ -209,7 +209,7 @@ export default function Redemption() {
       </Hero>
       <Wrapper>
         <Tableau title={'Redemption'} imgSrc={REDEEM_IMG} />
-        <RWrapper>
+        <NFTsWrapper>
           <InputBox
             currency={usdcCurrency}
             value={amountOut1}
@@ -242,7 +242,7 @@ export default function Redemption() {
               <Description>you will get an NFT {`"DEUS voucher"`} that will let you claim DEUS later .</Description>
             </Row>
           }
-        </RWrapper>
+        </NFTsWrapper>
         <BottomWrapper>
           <InfoItem name={'USDC Ratio'} value={'0.1???'} />
           <InfoItem name={'DEUS Ratio'} value={'0.9???'} />
