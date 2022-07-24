@@ -52,6 +52,10 @@ const Wrapper = styled(Container)`
   margin: 0 auto;
   margin-top: 50px;
   width: clamp(250px, 90%, 540px);
+
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    margin-top: 30px;
+  `}
 `
 
 const ReturnWrapper = styled.div`

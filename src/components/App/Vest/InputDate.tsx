@@ -8,6 +8,7 @@ import Box from 'components/Box'
 
 import 'react-datepicker/dist/react-datepicker.css'
 import { addMonth, addWeek, addYear, VestOptions } from 'utils/vest'
+import { isMobile } from 'react-device-detect'
 
 dayjs.extend(utc)
 
@@ -25,14 +26,16 @@ const Wrapper = styled(Box)`
     cursor: pointer;
   }
 
-  & > {
+  /* & > {
     &:last-child {
-      /* margin-left: auto; */
+      margin-left: auto;
     }
-  }
+  } */
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
-    // padding: 0.5rem;
+    margin-top: 6px;
+    margin-left: auto;
+    width: 200px;
   `}
 
   .react-datepicker-wrapper {
@@ -52,6 +55,10 @@ const Wrapper = styled(Box)`
     outline: none;
     color: ${({ theme }) => theme.text2};
     width: 100px;
+
+    ${({ theme }) => theme.mediaWidth.upToSmall`
+      width: 160px;
+    `}
   }
 
   // don't touch this
@@ -63,6 +70,14 @@ const Wrapper = styled(Box)`
   .react-datepicker__navigation-icon::before {
     border-color: black !important;
   }
+`
+
+const TimePeriodWrapper = styled.div`
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  `}
 `
 
 const Column = styled.div`
@@ -206,52 +221,61 @@ export function SelectDatePresets({
   }
 
   return (
-    <>
+    <TimePeriodWrapper>
       <Label>Expiration:</Label>
       <ExpirationWrapper>
-        <TopBorderWrap active={dayjs.utc(selectedDate).isSame(minimumDate, 'day')}>
-          <TopBorder>
-            <Toggle
-              active={dayjs.utc(selectedDate).isSame(minimumDate, 'day')}
-              onClick={() => onSelect(VestOptions.MIN)}
-            >
-              1 Week
-            </Toggle>
-          </TopBorder>
-        </TopBorderWrap>
+        {!isMobile && (
+          <TopBorderWrap active={dayjs.utc(selectedDate).isSame(minimumDate, 'day')}>
+            <TopBorder>
+              <Toggle
+                active={dayjs.utc(selectedDate).isSame(minimumDate, 'day')}
+                onClick={() => onSelect(VestOptions.MIN)}
+              >
+                1 Week
+              </Toggle>
+            </TopBorder>
+          </TopBorderWrap>
+        )}
 
-        <TopBorderWrap active={dayjs.utc(selectedDate).isSame(addMonth(), 'day')}>
-          <TopBorder>
-            <Toggle
-              active={dayjs.utc(selectedDate).isSame(addMonth(), 'day')}
-              onClick={() => onSelect(VestOptions.MONTH)}
-            >
-              1 Month
-            </Toggle>
-          </TopBorder>
-        </TopBorderWrap>
+        {!isMobile && (
+          <TopBorderWrap active={dayjs.utc(selectedDate).isSame(addMonth(), 'day')}>
+            <TopBorder>
+              <Toggle
+                active={dayjs.utc(selectedDate).isSame(addMonth(), 'day')}
+                onClick={() => onSelect(VestOptions.MONTH)}
+              >
+                1 Month
+              </Toggle>
+            </TopBorder>
+          </TopBorderWrap>
+        )}
 
-        <TopBorderWrap active={dayjs.utc(selectedDate).isSame(addYear(), 'day')}>
-          <TopBorder>
-            <Toggle
-              active={dayjs.utc(selectedDate).isSame(addYear(), 'day')}
-              onClick={() => onSelect(VestOptions.YEAR)}
-            >
-              1 Year
-            </Toggle>
-          </TopBorder>
-        </TopBorderWrap>
+        {!isMobile && (
+          <TopBorderWrap active={dayjs.utc(selectedDate).isSame(addYear(), 'day')}>
+            <TopBorder>
+              <Toggle
+                active={dayjs.utc(selectedDate).isSame(addYear(), 'day')}
+                onClick={() => onSelect(VestOptions.YEAR)}
+              >
+                1 Year
+              </Toggle>
+            </TopBorder>
+          </TopBorderWrap>
+        )}
 
-        <TopBorderWrap active={dayjs.utc(selectedDate).isSame(maximumDate, 'day')}>
-          <TopBorder>
-            <Toggle
-              active={dayjs.utc(selectedDate).isSame(maximumDate, 'day')}
-              onClick={() => onSelect(VestOptions.MAX)}
-            >
-              4 Years
-            </Toggle>
-          </TopBorder>
-        </TopBorderWrap>
+        {!isMobile && (
+          <TopBorderWrap active={dayjs.utc(selectedDate).isSame(maximumDate, 'day')}>
+            <TopBorder>
+              <Toggle
+                active={dayjs.utc(selectedDate).isSame(maximumDate, 'day')}
+                onClick={() => onSelect(VestOptions.MAX)}
+              >
+                4 Years
+              </Toggle>
+            </TopBorder>
+          </TopBorderWrap>
+        )}
+        {/* TODO: add max button for mobile */}
         <InputDate
           selectedDate={selectedDate}
           minimumDate={minimumDate}
@@ -259,7 +283,7 @@ export function SelectDatePresets({
           onDateSelect={onDateSelect}
         />
       </ExpirationWrapper>
-    </>
+    </TimePeriodWrapper>
   )
 }
 

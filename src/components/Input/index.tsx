@@ -3,8 +3,9 @@ import styled from 'styled-components'
 
 import Box from 'components/Box'
 
-export const InputWrapper = styled(Box)`
+export const InputWrapper = styled(Box)<{ ModalSearch?: boolean }>`
   padding: 0 20px;
+  border-radius: ${({ ModalSearch }) => (ModalSearch ? '12px' : '8px')};
 `
 
 export const InputField = styled.input<{

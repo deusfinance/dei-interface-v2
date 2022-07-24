@@ -59,6 +59,11 @@ export const TableauTitle = styled.span`
   ${({ theme }) => theme.mediaWidth.upToMedium`
     top: 13px;
   `}
+
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    margin-top: 6px;
+    font-size: 24px;
+  `}
 `
 
 export const InfoWrapper = styled(RowBetween)`

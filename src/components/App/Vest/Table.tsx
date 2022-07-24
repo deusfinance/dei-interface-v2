@@ -273,7 +273,7 @@ function TableRow({
   }
 
   function getClaimWithdrawCell(IsSmall?: boolean) {
-    const hasClaimable = false
+    const hasClaimable = true
 
     if (!lockHasEnded) {
       if (!hasClaimable) return null
