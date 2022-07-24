@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import styled from 'styled-components'
 
 import { Modal, ModalHeader } from 'components/Modal'
-import { SearchField, useSearch } from 'components/App/Vest/Search'
+// import { SearchField, useSearch } from 'components/App/Vest/Search'
 import Column from 'components/Column'
 import NFTBox from 'components/App/bdei/NFTBox'
 

@@ -45,6 +45,10 @@ export const TopTableau = styled.div`
   height: 60px;
   background: ${({ theme }) => theme.bg0};
   overflow: hidden;
+
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    height: 50px;
+  `}
 `
 
 export const TableauTitle = styled.span`
@@ -59,6 +63,11 @@ export const TableauTitle = styled.span`
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
     top: 13px;
+  `}
+
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    margin-top: -4px;
+    font-size: 23px;
   `}
 `
 

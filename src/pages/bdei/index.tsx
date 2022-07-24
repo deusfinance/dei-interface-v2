@@ -12,22 +12,26 @@ import { useSupportedChainId } from 'hooks/useSupportedChainId'
 import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
 import useRedemptionCallback from 'hooks/useRedemptionCallback'
 import { useRedeemAmountsOut, useRedeemData } from 'hooks/useRedemptionPage'
+import { useERC721ApproveAllCallback } from 'hooks/useApproveNftCallback2'
+import { useVDeusStats } from 'hooks/useVDeusStats'
+
 import { tryParseAmount } from 'utils/parse'
 import { getRemainingTime } from 'utils/time'
-import { DEI_TOKEN, DEUS_TOKEN, USDC_TOKEN } from 'constants/tokens'
-import { DynamicRedeemer } from 'constants/addresses'
-import REDEEM_IMG from '/public/static/images/pages/bdei/TableauBackground.svg'
-import DEI_LOGO from '/public/static/images/pages/bdei/DEI_logo.svg'
+import { BDEI_TOKEN, DEI_TOKEN, DEUS_TOKEN, USDC_TOKEN } from 'constants/tokens'
+import { vDeus, bDeiRedeemer } from 'constants/addresses'
 
 import { DotFlashing, Info } from 'components/Icons'
 import { Row } from 'components/Row'
 import Hero from 'components/Hero'
-import InputBox from 'components/App/Redemption/InputBox'
 import StatsHeader from 'components/StatsHeader'
+import Dropdown from 'components/DropDown'
 import { BottomWrapper, Container, InputWrapper, Title, Wrapper, MainButton } from 'components/App/StableCoin'
+import InputBox from 'components/App/Redemption/InputBox'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
 import NFTModal from 'components/App/bdei/NFTsModal'
+import REDEEM_IMG from '/public/static/images/pages/bdei/TableauBackground.svg'
+import DEI_LOGO from '/public/static/images/pages/bdei/DEI_logo.svg'
 
 const NFTsWrapper = styled(InputWrapper)`
   & > * {
@@ -58,6 +62,17 @@ const PlusIcon = styled(Plus)`
   background-color: ${({ theme }) => theme.bg4};
   color: ${({ theme }) => theme.text2};
 `
+const DropdownWrapper = styled.div`
+  margin: 0 auto;
+  margin-top: 15px;
+  height: 60px;
+  width: 100%;
+  border-radius: 10px;
+
+  & > * {
+    height: 100%;
+  }
+`
 
 export default function Redemption() {
   const { chainId, account } = useWeb3React()
@@ -66,26 +81,43 @@ export default function Redemption() {
   const [amountIn, setAmountIn] = useState('')
   const debouncedAmountIn = useDebounce(amountIn, 500)
   const deiCurrency = DEI_TOKEN
+  const bdeiCurrency = BDEI_TOKEN
   const usdcCurrency = USDC_TOKEN
   const deusCurrency = DEUS_TOKEN
+  const bdeiCurrencyBalance = useCurrencyBalance(account ?? undefined, bdeiCurrency)
   const deiCurrencyBalance = useCurrencyBalance(account ?? undefined, deiCurrency)
   const [isOpenNFTsModal, toggleNFTsModal] = useState(false)
   const [inputNFT, setInputNFT] = useState<number>(10)
 
   /* const { amountIn, amountOut1, amountOut2, onUserInput, onUserOutput1, onUserOutput2 } = useRedeemAmounts() */
-  const { amountOut1, amountOut2 } = useRedeemAmountsOut(debouncedAmountIn, deiCurrency)
+  const { amountOut1, amountOut2 } = useRedeemAmountsOut(debouncedAmountIn, bdeiCurrency)
   const { redeemPaused, redeemTranche } = useRedeemData()
   // console.log({ redeemPaused, rest })
+  const [selectedNftId, setSelectedNftId] = useState('0')
+  const [dropDownDefaultValue, setDropDownDefaultValue] = useState<string | undefined>('0')
+  const { listOfVouchers, numberOfVouchers } = useVDeusStats()
+
+  const dropdownOnSelect = useCallback((val: string) => {
+    setSelectedNftId(val)
+    setDropDownDefaultValue(val)
+    // console.log('draw down on select', { val })
+    return
+  }, [])
+
+  const dropdownOptions = listOfVouchers.map((tokenId: number) => ({
+    label: `vDEUS #${tokenId}`,
+    value: `${tokenId}`,
+  }))
 
   // Amount typed in either fields
-  const deiAmount = useMemo(() => {
-    return tryParseAmount(amountIn, deiCurrency || undefined)
-  }, [amountIn, deiCurrency])
+  const bdeiAmount = useMemo(() => {
+    return tryParseAmount(amountIn, bdeiCurrency || undefined)
+  }, [amountIn, bdeiCurrency])
 
   const insufficientBalance = useMemo(() => {
-    if (!deiAmount) return false
-    return deiCurrencyBalance?.lessThan(deiAmount)
-  }, [deiCurrencyBalance, deiAmount])
+    if (!bdeiAmount) return false
+    return bdeiCurrencyBalance?.lessThan(bdeiAmount)
+  }, [bdeiCurrencyBalance, bdeiAmount])
 
   const usdcAmount = useMemo(() => {
     return tryParseAmount(amountOut1, usdcCurrency || undefined)
@@ -95,22 +127,35 @@ export default function Redemption() {
     state: redeemCallbackState,
     callback: redeemCallback,
     error: redeemCallbackError,
-  } = useRedemptionCallback(deiCurrency, usdcCurrency, deiAmount, usdcAmount, amountOut2)
+  } = useRedemptionCallback(bdeiCurrency, usdcCurrency, bdeiAmount, usdcAmount, amountOut2)
 
   const [awaitingApproveConfirmation, setAwaitingApproveConfirmation] = useState<boolean>(false)
   const [awaitingRedeemConfirmation, setAwaitingRedeemConfirmation] = useState<boolean>(false)
-  const spender = useMemo(() => (chainId ? DynamicRedeemer[chainId] : undefined), [chainId])
-  const [approvalState, approveCallback] = useApproveCallback(deiCurrency ?? undefined, spender)
-  const [showApprove, showApproveLoader] = useMemo(() => {
-    const show = deiCurrency && approvalState !== ApprovalState.APPROVED && !!amountIn
-    return [show, show && approvalState === ApprovalState.PENDING]
-  }, [deiCurrency, approvalState, amountIn])
+
+  const spender = useMemo(() => (chainId ? bDeiRedeemer[chainId] : undefined), [chainId])
+  const [approvalStateERC721, approveCallbackERC721] = useERC721ApproveAllCallback(
+    chainId ? vDeus[chainId] : undefined,
+    spender
+  )
+  const showApproveERC721 = useMemo(() => approvalStateERC721 !== ApprovalState.APPROVED, [approvalStateERC721])
+
+  const [approvalStateERC20, approveCallbackERC20] = useApproveCallback(bdeiCurrency ?? undefined, spender)
+
+  const [showApproveERC20, showApproveLoaderERC20] = useMemo(() => {
+    const show = bdeiCurrency && approvalStateERC20 !== ApprovalState.APPROVED && !!amountIn
+    return [show, show && approvalStateERC20 === ApprovalState.PENDING]
+  }, [bdeiCurrency, approvalStateERC20, amountIn])
 
   const { diff } = getRemainingTime(redeemTranche.endTime)
 
-  const handleApprove = async () => {
+  const handleApproveERC20 = async () => {
     setAwaitingApproveConfirmation(true)
-    await approveCallback()
+    await approveCallbackERC20()
+    setAwaitingApproveConfirmation(false)
+  }
+  const handleApproveERC721 = async () => {
+    setAwaitingApproveConfirmation(true)
+    await approveCallbackERC721()
     setAwaitingApproveConfirmation(false)
   }
 
@@ -147,15 +192,18 @@ export default function Redemption() {
         </MainButton>
       )
     }
-    if (showApproveLoader) {
+    if (showApproveLoaderERC20) {
       return (
         <MainButton active>
           Approving <DotFlashing style={{ marginLeft: '10px' }} />
         </MainButton>
       )
     }
-    if (showApprove) {
-      return <MainButton onClick={handleApprove}>Allow us to spend {deiCurrency?.symbol}</MainButton>
+    if (showApproveERC721) {
+      return <MainButton onClick={handleApproveERC721}>Approve NFT</MainButton>
+    }
+    if (showApproveERC20) {
+      return <MainButton onClick={handleApproveERC20}>Approve {bdeiCurrency?.symbol}</MainButton>
     }
     return null
   }
@@ -164,7 +212,7 @@ export default function Redemption() {
     if (!chainId || !account) {
       return <MainButton onClick={toggleWalletModal}>Connect Wallet</MainButton>
     }
-    if (showApprove) {
+    if (showApproveERC20 || showApproveERC721) {
       return null
     }
     if (redeemPaused) {
@@ -210,27 +258,29 @@ export default function Redemption() {
       <Wrapper>
         <Tableau title={'Redemption'} imgSrc={REDEEM_IMG} />
         <NFTsWrapper>
-          <InputBox
-            currency={usdcCurrency}
-            value={amountOut1}
-            onChange={(value: string) => console.log(value)}
-            title={'To'}
-            disabled={true}
-          />
+          <DropdownWrapper>
+            <Dropdown
+              options={dropdownOptions}
+              placeholder="select an NFT"
+              defaultValue={dropDownDefaultValue}
+              onSelect={(v) => dropdownOnSelect(v)}
+              width="100%"
+            />
+          </DropdownWrapper>
           <PlusIcon size={'24px'} />
           <InputBox
-            currency={deusCurrency}
+            currency={bdeiCurrency}
             value={amountOut2}
             onChange={(value: string) => console.log(value)}
-            title={'To ($)'}
-            disabled={true}
+            title={'From'}
           />
           <ArrowDown />
           <InputBox
             currency={deiCurrency}
             value={amountIn}
             onChange={(value: string) => setAmountIn(value)}
-            title={'From'}
+            title={'To'}
+            disabled={true}
           />
           <div style={{ marginTop: '20px' }}></div>
           {getApproveButton()}
@@ -239,7 +289,7 @@ export default function Redemption() {
           {
             <Row mt={'8px'}>
               <Info data-for="id" data-tip={'Tool tip for hint client'} size={15} />
-              <Description>you will get an NFT {`"DEUS voucher"`} that will let you claim DEUS later .</Description>
+              <Description>you will spend an {`"Time Reduction NFT"`} to redeem your bDEI .</Description>
             </Row>
           }
         </NFTsWrapper>
