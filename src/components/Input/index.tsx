@@ -11,7 +11,7 @@ export const InputWrapper = styled(Box)<{ ModalSearch?: boolean }>`
 export const InputField = styled.input<{
   [x: string]: any
 }>`
-  height: 40px;
+  height: 50px;
   flex: 1;
   border: none;
   background: transparent;
@@ -25,6 +25,7 @@ export const InputField = styled.input<{
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     font-size: 0.9rem !important;
     width: 85px;
+    height: 30px;
   `}
 `
 
