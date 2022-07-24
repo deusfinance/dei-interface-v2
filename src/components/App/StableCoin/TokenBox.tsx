@@ -22,7 +22,7 @@ const Wrapper = styled(RowBetween).attrs({
   padding: 0px 1rem;
   margin: 0 auto;
   border: 1px solid ${({ theme }) => theme.border3};
-  background: ${({ theme }) => theme.bg2};
+  background: ${({ theme }) => theme.bg1};
 
   &:hover {
     background: ${({ theme }) => theme.bg1};

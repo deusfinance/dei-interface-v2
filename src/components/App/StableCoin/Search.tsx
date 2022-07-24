@@ -11,6 +11,7 @@ const SearchWrapper = styled(InputWrapper)`
   height: 60px;
   background: ${({ theme }) => theme.bg0};
   border: 1px solid ${({ theme }) => theme.border3};
+  border-radius: 12px;
   & > * {
     &:last-child {
       font-size: 1rem;
