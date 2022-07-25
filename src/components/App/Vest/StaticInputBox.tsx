@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { Currency, Token } from '@sushiswap/core-sdk'
 import { isMobile } from 'react-device-detect'
 
@@ -6,7 +6,6 @@ import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import utc from 'dayjs/plugin/utc'
-import BigNumber from 'bignumber.js'
 import useWeb3React from 'hooks/useWeb3'
 import useCurrencyLogo from 'hooks/useCurrencyLogo'
 
@@ -14,8 +13,8 @@ import ImageWithFallback from 'components/ImageWithFallback'
 import { NumericalInput } from 'components/Input'
 import { RowBetween } from 'components/Row'
 import { lastThursday } from 'utils/vest'
-import { formatAmount } from 'utils/numbers'
 import { CurrencySymbol, InputWrapper, LogoWrapper, RightWrapper, Wrapper } from '../Redemption/InputBox'
+import { computedVotingPowerFunc } from './UserLockInformation'
 
 dayjs.extend(utc)
 dayjs.extend(relativeTime)
@@ -50,11 +49,8 @@ export default function StaticInputBox({
     return lastThursday(selectedDate)
   }, [selectedDate])
 
-  // TODO: #M add this to utils.ts file
-  const computedVotingPower: BigNumber = useMemo(() => {
-    if (!account || !chainId || !value) return new BigNumber(0)
-    const effectiveWeek = Math.floor(dayjs.utc(effectiveDate).diff(dayjs.utc(), 'week', true))
-    return new BigNumber(value).times(effectiveWeek).div(208).abs() // 208 = 4 years in weeks
+  const computedVotingPower = useCallback(() => {
+    return computedVotingPowerFunc({ account, chainId, amount: value, effectiveDate })
   }, [account, chainId, value, effectiveDate])
 
   return (
@@ -75,7 +71,7 @@ export default function StaticInputBox({
         </RowBetween>
         <InputWrapper>
           <NumericalInput
-            value={formatAmount(parseFloat(computedVotingPower.toString()), 6) || ''}
+            value={parseFloat(computedVotingPower().toString()) || ''}
             onUserInput={onChange}
             placeholder="0.0"
             autoFocus
