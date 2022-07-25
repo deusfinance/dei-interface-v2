@@ -17,21 +17,22 @@ import { useVDeusStats } from 'hooks/useVDeusStats'
 
 import { tryParseAmount } from 'utils/parse'
 import { getRemainingTime } from 'utils/time'
-import { BDEI_TOKEN, DEI_TOKEN, DEUS_TOKEN, USDC_TOKEN } from 'constants/tokens'
+import { BDEI_TOKEN, DEI_TOKEN, USDC_TOKEN } from 'constants/tokens'
 import { vDeus, bDeiRedeemer } from 'constants/addresses'
+
+import REDEEM_IMG from '/public/static/images/pages/bdei/TableauBackground.svg'
+import DEI_LOGO from '/public/static/images/pages/bdei/DEI_logo.svg'
+import BOND_NFT_LOGO from '/public/static/images/pages/bdei/BondNFT.svg'
 
 import { DotFlashing, Info } from 'components/Icons'
 import { Row } from 'components/Row'
 import Hero from 'components/Hero'
 import StatsHeader from 'components/StatsHeader'
-import Dropdown from 'components/DropDown'
+import SelectBox from 'components/SelectBox'
 import { BottomWrapper, Container, InputWrapper, Title, Wrapper, MainButton } from 'components/App/StableCoin'
 import InputBox from 'components/App/Redemption/InputBox'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
-
-import REDEEM_IMG from '/public/static/images/pages/bdei/TableauBackground.svg'
-import DEI_LOGO from '/public/static/images/pages/bdei/DEI_logo.svg'
 
 const RWrapper = styled(InputWrapper)`
   & > * {
@@ -62,17 +63,6 @@ const PlusIcon = styled(Plus)`
   background-color: ${({ theme }) => theme.bg4};
   color: ${({ theme }) => theme.text2};
 `
-const DropdownWrapper = styled.div`
-  margin: 0 auto;
-  margin-top: 15px;
-  height: 60px;
-  width: 100%;
-  border-radius: 10px;
-
-  & > * {
-    height: 100%;
-  }
-`
 
 export default function Redemption() {
   const { chainId, account } = useWeb3React()
@@ -83,7 +73,6 @@ export default function Redemption() {
   const deiCurrency = DEI_TOKEN
   const bdeiCurrency = BDEI_TOKEN
   const usdcCurrency = USDC_TOKEN
-  const deusCurrency = DEUS_TOKEN
   const bdeiCurrencyBalance = useCurrencyBalance(account ?? undefined, bdeiCurrency)
   const deiCurrencyBalance = useCurrencyBalance(account ?? undefined, deiCurrency)
 
@@ -92,20 +81,12 @@ export default function Redemption() {
   const { redeemPaused, redeemTranche } = useRedeemData()
   // console.log({ redeemPaused, rest })
   const [selectedNftId, setSelectedNftId] = useState('0')
-  const [dropDownDefaultValue, setDropDownDefaultValue] = useState<string | undefined>('0')
   const { listOfVouchers, numberOfVouchers } = useVDeusStats()
 
-  const dropdownOnSelect = useCallback((val: string) => {
-    setSelectedNftId(val)
-    setDropDownDefaultValue(val)
-    // console.log('draw down on select', { val })
-    return
-  }, [])
-
-  const dropdownOptions = listOfVouchers.map((tokenId: number) => ({
-    label: `vDEUS #${tokenId}`,
-    value: `${tokenId}`,
-  }))
+  // const dropdownOptions = listOfVouchers.map((tokenId: number) => ({
+  //   label: `vDEUS #${tokenId}`,
+  //   value: `${tokenId}`,
+  // }))
 
   // Amount typed in either fields
   const bdeiAmount = useMemo(() => {
@@ -256,15 +237,7 @@ export default function Redemption() {
       <Wrapper>
         <Tableau title={'Redemption'} imgSrc={REDEEM_IMG} />
         <RWrapper>
-          <DropdownWrapper>
-            <Dropdown
-              options={dropdownOptions}
-              placeholder="select an NFT"
-              defaultValue={dropDownDefaultValue}
-              onSelect={(v) => dropdownOnSelect(v)}
-              width="100%"
-            />
-          </DropdownWrapper>
+          <SelectBox icon={BOND_NFT_LOGO} placeholder="Select an NFT" value="" />
           <PlusIcon size={'24px'} />
           <InputBox
             currency={bdeiCurrency}
@@ -289,7 +262,7 @@ export default function Redemption() {
           {
             <Row mt={'8px'}>
               <Info data-for="id" data-tip={'Tool tip for hint client'} size={15} />
-              <Description>you will spend an {`"Time Reduction NFT"`} to redeem your bDEI .</Description>
+              <Description>you will spend an {`"Time Reduction NFT"`} to redeem your bDEI.</Description>
             </Row>
           }
         </RWrapper>

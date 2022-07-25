@@ -3,11 +3,12 @@ import styled from 'styled-components'
 import { Currency } from '@sushiswap/core-sdk'
 import { isMobile } from 'react-device-detect'
 
-import { useCurrencyBalance } from 'state/wallet/hooks'
 import useCurrencyLogo from 'hooks/useCurrencyLogo'
 import useWeb3React from 'hooks/useWeb3'
+import { useCurrencyBalance } from 'state/wallet/hooks'
 import { maxAmountSpend } from 'utils/currency'
 
+import { ChevronDown } from 'components/Icons'
 import ImageWithFallback from 'components/ImageWithFallback'
 import { NumericalInput } from 'components/Input'
 import { Row, RowBetween, RowEnd } from 'components/Row'
@@ -21,6 +22,7 @@ const Wrapper = styled(Row)`
   gap: 10px;
   border: 1px solid #444444;
   border-color: ${({ theme }) => theme.border1};
+  position: relative;
 `
 
 const InputWrapper = styled.div`
@@ -43,17 +45,16 @@ const CurrencySymbol = styled.div`
 
 const RightWrapper = styled.div`
   width: 100%;
-  border-left: 1px solid ${({ theme }) => theme.border1};
   padding: 6px;
-  height: 100%;
   position: relative;
 `
 
 export const LogoWrapper = styled(Row)`
   height: 100%;
+  border-right: 1px solid ${({ theme }) => theme.border1};
   padding-left: 10px;
   min-width: 48px;
-  max-width: 50px;
+  max-width: 61px; //because of border-right
 `
 
 const RowWrap = styled(RowEnd)`
@@ -89,6 +90,12 @@ const Balance = styled(RowWrap)`
   &:hover {
     cursor: pointer;
   }
+`
+
+const StyledChevron = styled(ChevronDown)`
+  size: 20px;
+  position: absolute;
+  right: 16px;
 `
 
 export const getImageSize = () => {
@@ -153,6 +160,69 @@ export default function InputBox({
             />
           </InputWrapper>
         </RightWrapper>
+      </Wrapper>
+    </>
+  )
+}
+
+export function CustomInputBox({
+  symbol,
+  value,
+  onChange,
+  icon,
+  balance,
+  placeholder,
+  disabled,
+}: {
+  symbol: string
+  value: string
+  onChange(values: string): void
+  icon: string | StaticImageData
+  balance?: string
+  placeholder?: string
+  disabled?: boolean
+}) {
+  const handleClick = useCallback(() => {
+    if (!balance || !onChange) return
+    onChange(balance)
+  }, [balance, onChange])
+
+  return (
+    <>
+      <Wrapper style={{ cursor: 'pointer' }}>
+        <LogoWrapper>
+          <ImageWithFallback
+            src={icon}
+            value=""
+            width={getImageSize()}
+            height={getImageSize()}
+            alt={`${symbol} Logo`}
+            round
+          />
+        </LogoWrapper>
+
+        <RightWrapper>
+          <RowBetween>
+            <CurrencySymbol>{symbol}</CurrencySymbol>
+            {balance && (
+              <Balance onClick={handleClick}>
+                balance: {balance || '0.00'}
+                {!disabled && <span>MAX</span>}
+              </Balance>
+            )}
+          </RowBetween>
+          <InputWrapper>
+            <NumericalInput
+              value={value || ''}
+              onUserInput={onChange}
+              placeholder={placeholder || '0.0'}
+              autoFocus
+              disabled={disabled}
+              style={{ textAlign: 'left', height: '50px', fontSize: '16px', marginLeft: '-3px' }}
+            />
+          </InputWrapper>
+        </RightWrapper>
+        <StyledChevron />
       </Wrapper>
     </>
   )

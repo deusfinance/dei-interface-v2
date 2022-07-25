@@ -8,7 +8,7 @@ export default function Tableau({ title, imgSrc }: { title: string; imgSrc?: str
     <TopTableau>
       {imgSrc && (
         <TitleIMGWrap>
-          <Image src={imgSrc} height={'90px'} alt="img" />
+          <Image src={imgSrc} height={'60px'} objectFit={'cover'} objectPosition={'right'} alt="img" />
         </TitleIMGWrap>
       )}
 

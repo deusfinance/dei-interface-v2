@@ -15,6 +15,7 @@ export const Wrapper = styled(Container)`
   background: ${({ theme }) => theme.bg0};
   border: 1px solid ${({ theme }) => theme.bg0};
   border-radius: 15px;
+  overflow: hidden;
 `
 
 export const InputWrapper = styled(Container)`
@@ -41,7 +42,7 @@ export const TopTableau = styled.div`
   width: 100%;
   position: relative;
   padding: 0;
-  border-radius: 13px 13px 0px 0px;
+  /* border-radius: 13px 13px 0px 0px; */
   height: 72px;
   background: ${({ theme }) => theme.bg0};
 `
