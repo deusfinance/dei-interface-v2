@@ -18,7 +18,7 @@ import { getMaximumDate, getMinimumDateByLockEnd } from 'utils/vest'
 import { Modal, ModalHeader } from 'components/Modal'
 import { TabWrapper, TabButton } from 'components/Tab'
 import { ContextError, InvalidContext, useInvalidContext } from 'components/InvalidContext'
-import { PrimaryButton } from 'components/Button'
+import { PrimaryButton, PrimaryButtonWide } from 'components/Button'
 import { DotFlashing } from 'components/Icons'
 import { SelectDatePresets } from './InputDate'
 import UserLockInformation from './UserLockInformation'
@@ -183,7 +183,9 @@ function IncreaseAmount({ nftId }: { nftId: number }) {
           Increasing <DotFlashing style={{ marginLeft: '10px' }} />
         </PrimaryButton>
       ) : (
-        <PrimaryButton onClick={onLock}>Increase Lock Amount</PrimaryButton>
+        <PrimaryButtonWide width={'338px'} onClick={onLock}>
+          Increase Lock Amount
+        </PrimaryButtonWide>
       )}
     </>
   )
@@ -253,17 +255,19 @@ function IncreaseDuration({ nftId }: { nftId: number }) {
         isModal={true}
       />
       {awaitingConfirmation ? (
-        <PrimaryButton active>
+        <PrimaryButtonWide active>
           Awaiting Confirmation <DotFlashing style={{ marginLeft: '10px' }} />
-        </PrimaryButton>
+        </PrimaryButtonWide>
       ) : showTransactionPending ? (
-        <PrimaryButton active>
+        <PrimaryButtonWide active>
           Increasing <DotFlashing style={{ marginLeft: '10px' }} />
-        </PrimaryButton>
+        </PrimaryButtonWide>
       ) : !lockCanIncrease ? (
-        <PrimaryButton disabled>Maximum Lock Reached</PrimaryButton>
+        <PrimaryButtonWide disabled>Maximum Lock Reached</PrimaryButtonWide>
       ) : (
-        <PrimaryButton onClick={onLock}>Increase Duration</PrimaryButton>
+        <PrimaryButtonWide width={'338px'} onClick={onLock}>
+          Increase Duration
+        </PrimaryButtonWide>
       )}
     </>
   )

@@ -1,8 +1,9 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import styled from 'styled-components'
 import Image from 'next/image'
 import { isMobile } from 'react-device-detect'
+import toast from 'react-hot-toast'
 
 import { useDeusPrice } from 'hooks/useCoingeckoPrice'
 import useWeb3React from 'hooks/useWeb3'
@@ -20,6 +21,15 @@ import APYManager from 'components/App/Vest/APYManager'
 import { RowFixed, RowBetween } from 'components/Row'
 import StatsHeader from 'components/StatsHeader'
 import { Container, Title } from 'components/App/StableCoin'
+
+import { useVeDistContract } from 'hooks/useContract'
+import useOwnedNfts from 'hooks/useOwnedNfts'
+import { useSupportedChainId } from 'hooks/useSupportedChainId'
+import useDistRewards from 'hooks/useDistRewards'
+
+import { DefaultHandlerError } from 'utils/parseError'
+import { useIsTransactionPending, useTransactionAdder } from 'state/transactions/hooks'
+import { DotFlashing } from 'components/Icons'
 
 const Wrapper = styled(Container)`
   margin: 0 auto;
@@ -71,9 +81,9 @@ export const ButtonText = styled.span<{ disabled?: boolean }>`
   font-size: 14px;
   line-height: 17px;
 
-  /* ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    font-size: 14px;
-  `} */
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    font-size: 13px;
+  `}
 
   ${({ disabled }) =>
     disabled &&
@@ -125,6 +135,14 @@ export default function Vest() {
   const [nftId, setNftId] = useState(0)
   const { lockedVeDEUS } = useVestedAPY(undefined, getMaximumDate())
   const deusPrice = useDeusPrice()
+  const addTransaction = useTransactionAdder()
+  const [awaitingConfirmation, setAwaitingConfirmation] = useState(false)
+  const [pendingTxHash, setPendingTxHash] = useState('')
+  const showTransactionPending = useIsTransactionPending(pendingTxHash)
+  const isSupportedChainId = useSupportedChainId()
+  const veDistContract = useVeDistContract()
+  const nftIds = useOwnedNfts()
+  const rewards = useDistRewards()
 
   const { snapshot, searchProps } = useSearch()
   const snapshotList = useMemo(() => {
@@ -150,6 +168,91 @@ export default function Vest() {
     setNftId(nftId)
   }
 
+  //pass just unclaimed tokenIds to claimAll method
+  const [unClaimedIds, totalRewards] = useMemo(() => {
+    if (!nftIds.length || !rewards.length) return [[], 0]
+    let total = 0
+    return [
+      rewards.reduce((acc: number[], value: number, index: number) => {
+        if (!value) return acc
+        acc.push(nftIds[index])
+        total += value
+        return acc
+      }, []),
+      total,
+    ]
+  }, [nftIds, rewards])
+
+  const onClaimAll = useCallback(async () => {
+    try {
+      if (!veDistContract || !account || !isSupportedChainId || !unClaimedIds.length) return
+      setAwaitingConfirmation(true)
+      const response = await veDistContract.claimAll(unClaimedIds)
+      addTransaction(response, { summary: `Claim All veDEUS rewards`, vest: { hash: response.hash } })
+      setAwaitingConfirmation(false)
+      setPendingTxHash(response.hash)
+    } catch (err) {
+      console.log(err)
+      toast.error(DefaultHandlerError(err))
+      setAwaitingConfirmation(false)
+      setPendingTxHash('')
+    }
+  }, [veDistContract, unClaimedIds, addTransaction, account, isSupportedChainId])
+
+  function getClaimAllButton() {
+    if (awaitingConfirmation) {
+      return (
+        <PrimaryButtonWide active>
+          <ButtonText>
+            Confirming <DotFlashing style={{ marginLeft: '10px' }} />
+          </ButtonText>
+        </PrimaryButtonWide>
+      )
+    } else if (showTransactionPending) {
+      return (
+        <PrimaryButtonWide active>
+          <ButtonText>
+            Claiming <DotFlashing style={{ marginLeft: '10px' }} />
+          </ButtonText>
+        </PrimaryButtonWide>
+      )
+    } else if (totalRewards) {
+      return (
+        <PrimaryButtonWide onClick={onClaimAll}>
+          <ButtonText>Claim all {formatAmount(totalRewards)} veDEUS</ButtonText>
+        </PrimaryButtonWide>
+      )
+    }
+    return null
+  }
+
+  function getClaimAllButtonMobile() {
+    if (awaitingConfirmation) {
+      return (
+        <PrimaryButtonWide width={'100%'} active style={{ marginTop: '2px', marginBottom: '12px' }}>
+          <ButtonText>
+            Confirming <DotFlashing style={{ marginLeft: '10px' }} />
+          </ButtonText>
+        </PrimaryButtonWide>
+      )
+    } else if (showTransactionPending) {
+      return (
+        <PrimaryButtonWide width={'100%'} active style={{ marginTop: '2px', marginBottom: '12px' }}>
+          <ButtonText>
+            Claiming <DotFlashing style={{ marginLeft: '10px' }} />
+          </ButtonText>
+        </PrimaryButtonWide>
+      )
+    } else if (totalRewards) {
+      return (
+        <PrimaryButtonWide width={'100%'} onClick={onClaimAll} style={{ marginTop: '2px', marginBottom: '12px' }}>
+          <ButtonText>Claim all {formatAmount(totalRewards)} veDEUS</ButtonText>
+        </PrimaryButtonWide>
+      )
+    }
+    return null
+  }
+
   function getUpperRow() {
     return (
       <UpperRow>
@@ -158,12 +261,7 @@ export default function Vest() {
         </div>
 
         <ButtonWrapper>
-          {hasClaimAll && (
-            <PrimaryButtonWide>
-              <ButtonText>Claim all ${ClaimableAmount} veDEUS</ButtonText>
-            </PrimaryButtonWide>
-          )}
-
+          {hasClaimAll && getClaimAllButton()}
           {!!snapshotList.length ? (
             <TopBorderWrap>
               <TopBorder>
@@ -211,11 +309,7 @@ export default function Vest() {
           )}
         </FirstRowWrapper>
 
-        {hasClaimAll && (
-          <PrimaryButtonWide style={{ marginTop: '2px', marginBottom: '12px' }}>
-            <ButtonText>Claim all ${ClaimableAmount} veDEUS</ButtonText>
-          </PrimaryButtonWide>
-        )}
+        {hasClaimAll && getClaimAllButtonMobile()}
       </UpperRowMobile>
     )
   }
@@ -225,10 +319,9 @@ export default function Vest() {
     { name: 'DEUS Price', value: formatDollarAmount(parseFloat(deusPrice), 2) },
     { name: 'Total veDEUS Locked', value: formatAmount(parseFloat(lockedVeDEUS), 0) },
   ]
-  const ClaimableAmount = 1
   const hasClaimAll: boolean = useMemo(() => {
-    return !!snapshotList.length && !!ClaimableAmount
-  }, [ClaimableAmount, snapshotList.length])
+    return !!snapshotList.length && !!totalRewards
+  }, [totalRewards, snapshotList.length])
 
   return (
     <Container>
@@ -246,6 +339,7 @@ export default function Vest() {
           toggleLockManager={toggleLockManager}
           toggleAPYManager={toggleAPYManager}
           isMobile={isMobile}
+          rewards={rewards}
         />
       </Wrapper>
 
