@@ -84,11 +84,12 @@ export const PrimaryButton = styled(BaseButton)`
   `}
 `
 
-export const PrimaryButtonWide = styled(BaseButton)<{ IsSmall?: boolean }>`
+export const PrimaryButtonWide = styled(BaseButton)<{ isSmall?: boolean; width?: string }>`
   background: ${({ theme }) => theme.primary6};
   white-space: nowrap;
   border-radius: 8px;
   height: 54%;
+  width: ${({ width }) => (width ? width : 'auto')};
 
   color: ${({ theme }) => theme.text1};
   z-index: 0;
@@ -120,8 +121,8 @@ export const PrimaryButtonWide = styled(BaseButton)<{ IsSmall?: boolean }>`
     }
   `}
 
-  ${({ IsSmall, theme }) =>
-    IsSmall &&
+  ${({ isSmall, theme }) =>
+    isSmall &&
     theme.mediaWidth.upToExtraSmall`
       padding-top: 12px;
       padding-bottom: 12px;
