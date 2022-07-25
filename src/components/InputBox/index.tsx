@@ -19,7 +19,6 @@ const Wrapper = styled(Row)`
   color: ${({ theme }) => theme.text2};
   white-space: nowrap;
   height: 80px;
-  gap: 10px;
   border: 1px solid #444444;
   border-color: ${({ theme }) => theme.border1};
   position: relative;
@@ -45,8 +44,9 @@ const CurrencySymbol = styled.div`
 
 const RightWrapper = styled.div`
   width: 100%;
-  padding: 6px;
+  padding: 8px;
   position: relative;
+  height: 100%;
 `
 
 export const LogoWrapper = styled(Row)`
@@ -112,7 +112,7 @@ export default function InputBox({
   currency: Currency
   value: string
   onChange(values: string): void
-  title: string
+  title?: string
   disabled?: boolean
 }) {
   const { account } = useWeb3React()

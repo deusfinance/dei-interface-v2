@@ -13,7 +13,7 @@ export const Wrapper = styled(Container)`
   margin-top: 28px;
   width: clamp(250px, 90%, 500px);
   background: ${({ theme }) => theme.bg0};
-  border: 1px solid ${({ theme }) => theme.bg0};
+  /* border: 1px solid ${({ theme }) => theme.bg0}; */
   border-radius: 15px;
   overflow: hidden;
 `
@@ -43,7 +43,7 @@ export const TopTableau = styled.div`
   position: relative;
   padding: 0;
   height: 60px;
-  background: ${({ theme }) => theme.bg0};
+  background: ${({ theme }) => theme.bg2};
   overflow: hidden;
 
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
@@ -59,15 +59,10 @@ export const TableauTitle = styled.span`
   position: absolute;
   left: 0;
   right: 0;
-  top: 21px;
-
-  ${({ theme }) => theme.mediaWidth.upToMedium`
-    top: 13px;
-  `}
-
+  top: calc(50% - 18px);
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    margin-top: -4px;
     font-size: 23px;
+    top: calc(50% - 14px);
   `}
 `
 

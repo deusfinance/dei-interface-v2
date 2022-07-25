@@ -89,7 +89,7 @@ export default function NFTsModal({
                 <NFTBox
                   key={index}
                   toggleModal={toggleModal}
-                  tokenId={nft.value}
+                  tokenId={nft.value as number}
                   setNFT={setNFT}
                   disabled={index < 2}
                 />

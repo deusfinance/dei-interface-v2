@@ -16,7 +16,6 @@ import { useERC721ApproveAllCallback } from 'hooks/useApproveNftCallback2'
 import { useVDeusStats } from 'hooks/useVDeusStats'
 
 import { tryParseAmount } from 'utils/parse'
-import { getRemainingTime } from 'utils/time'
 import { BDEI_TOKEN, DEI_TOKEN, USDC_TOKEN } from 'constants/tokens'
 import { vDeus, bDeiRedeemer } from 'constants/addresses'
 
@@ -30,19 +29,28 @@ import Hero from 'components/Hero'
 import StatsHeader from 'components/StatsHeader'
 import SelectBox from 'components/SelectBox'
 import { BottomWrapper, Container, InputWrapper, Title, Wrapper, MainButton } from 'components/App/StableCoin'
-import InputBox from 'components/App/Redemption/InputBox'
+import InputBox from 'components/InputBox'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
 import NFTsModal from 'components/App/bdei/NFTsModal'
 
 const NFTsWrapper = styled(InputWrapper)`
   & > * {
+    &:nth-child(1) {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+    &:nth-child(3) {
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
+
     &:nth-child(4) {
       margin: 15px auto;
     }
     &:nth-child(2) {
-      margin: -11px auto;
-      margin-left: 17px;
+      margin: -12.5px auto;
+      margin-left: 49px;
     }
   }
 `
@@ -128,8 +136,6 @@ export default function Redemption() {
     return [show, show && approvalStateERC20 === ApprovalState.PENDING]
   }, [bdeiCurrency, approvalStateERC20, amountIn])
 
-  const { diff } = getRemainingTime(redeemTranche.endTime)
-
   const handleApproveERC20 = async () => {
     setAwaitingApproveConfirmation(true)
     await approveCallbackERC20()
@@ -201,10 +207,6 @@ export default function Redemption() {
       return <MainButton disabled>Redeem Paused</MainButton>
     }
 
-    if (diff < 0 && redeemTranche.trancheId != null) {
-      return <MainButton disabled>Tranche Ended</MainButton>
-    }
-
     if (Number(amountOut1) > redeemTranche.amountRemaining) {
       return <MainButton disabled>Exceeds Available Amount</MainButton>
     }
@@ -222,6 +224,7 @@ export default function Redemption() {
 
     return <MainButton onClick={() => handleRedeem()}>Redeem DEI</MainButton>
   }
+
   const items = [
     { name: 'DEI Price', value: '$0.5' },
     { name: 'Global Dei Borrowed', value: '0.77m' },
@@ -233,7 +236,7 @@ export default function Redemption() {
   return (
     <Container>
       <Hero>
-        <Image src={DEI_LOGO} height={'90px'} alt="Logo" onClick={() => toggleNFTsModal(true)} />
+        <Image src={DEI_LOGO} height={'90px'} alt="DEI logo" onClick={() => toggleNFTsModal(true)} />
         <Title>DEI Bond</Title>
         <StatsHeader items={items} />
       </Hero>
