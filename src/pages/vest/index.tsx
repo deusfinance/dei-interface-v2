@@ -34,7 +34,7 @@ import { DotFlashing } from 'components/Icons'
 const Wrapper = styled(Container)`
   margin: 0 auto;
   margin-top: 50px;
-  width: clamp(250px, 90%, 1200px);
+  width: clamp(250px, 90%, 1168px);
 
   & > * {
     &:nth-child(3) {
@@ -75,14 +75,14 @@ const ButtonWrapper = styled(RowFixed)`
 `
 
 export const ButtonText = styled.span<{ disabled?: boolean }>`
-  /* font-family: 'Inter'; */
+  font-family: 'Inter';
   font-style: normal;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 15px;
   line-height: 17px;
 
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    font-size: 13px;
+    font-size: 14px;
   `}
 
   ${({ disabled }) =>

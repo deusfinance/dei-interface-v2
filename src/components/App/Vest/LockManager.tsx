@@ -23,6 +23,7 @@ import { DotFlashing } from 'components/Icons'
 import { SelectDatePresets } from './InputDate'
 import UserLockInformation from './UserLockInformation'
 import InputBox from '../Redemption/InputBox'
+import { ButtonText } from 'pages/vest'
 
 dayjs.extend(utc)
 
@@ -173,18 +174,24 @@ function IncreaseAmount({ nftId }: { nftId: number }) {
         isModal={true}
       />
       {INSUFFICIENT_BALANCE ? (
-        <PrimaryButton disabled>INSUFFICIENT BALANCE</PrimaryButton>
+        <PrimaryButton disabled>
+          <ButtonText>INSUFFICIENT BALANCE</ButtonText>
+        </PrimaryButton>
       ) : awaitingConfirmation ? (
         <PrimaryButton active>
-          Awaiting Confirmation <DotFlashing style={{ marginLeft: '10px' }} />
+          <ButtonText>
+            Awaiting Confirmation <DotFlashing style={{ marginLeft: '10px' }} />
+          </ButtonText>
         </PrimaryButton>
       ) : showTransactionPending ? (
         <PrimaryButton active>
-          Increasing <DotFlashing style={{ marginLeft: '10px' }} />
+          <ButtonText>
+            Increasing <DotFlashing style={{ marginLeft: '10px' }} />
+          </ButtonText>
         </PrimaryButton>
       ) : (
-        <PrimaryButtonWide width={'338px'} onClick={onLock}>
-          Increase Lock Amount
+        <PrimaryButtonWide width={'325px'} onClick={onLock}>
+          <ButtonText>Increase Lock Amount</ButtonText>
         </PrimaryButtonWide>
       )}
     </>
@@ -256,17 +263,23 @@ function IncreaseDuration({ nftId }: { nftId: number }) {
       />
       {awaitingConfirmation ? (
         <PrimaryButtonWide active>
-          Awaiting Confirmation <DotFlashing style={{ marginLeft: '10px' }} />
+          <ButtonText>
+            Awaiting Confirmation <DotFlashing style={{ marginLeft: '10px' }} />
+          </ButtonText>
         </PrimaryButtonWide>
       ) : showTransactionPending ? (
         <PrimaryButtonWide active>
-          Increasing <DotFlashing style={{ marginLeft: '10px' }} />
+          <ButtonText>
+            Increasing <DotFlashing style={{ marginLeft: '10px' }} />
+          </ButtonText>
         </PrimaryButtonWide>
       ) : !lockCanIncrease ? (
-        <PrimaryButtonWide disabled>Maximum Lock Reached</PrimaryButtonWide>
+        <PrimaryButtonWide disabled>
+          <ButtonText>Maximum Lock Reached</ButtonText>
+        </PrimaryButtonWide>
       ) : (
-        <PrimaryButtonWide width={'338px'} onClick={onLock}>
-          Increase Duration
+        <PrimaryButtonWide width={'325px'} onClick={onLock}>
+          <ButtonText>Increase Duration</ButtonText>
         </PrimaryButtonWide>
       )}
     </>

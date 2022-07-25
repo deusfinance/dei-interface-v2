@@ -5,10 +5,12 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import utc from 'dayjs/plugin/utc'
 import Image from 'next/image'
+import toast from 'react-hot-toast'
 
 import { useVeDeusContract } from 'hooks/useContract'
 import { useHasPendingVest, useTransactionAdder } from 'state/transactions/hooks'
 import { useVestedInformation } from 'hooks/useVested'
+import { useVeDistContract } from 'hooks/useContract'
 
 import Pagination from 'components/Pagination'
 import ImageWithFallback from 'components/ImageWithFallback'
@@ -22,9 +24,6 @@ import EMPTY_LOCK from '/public/static/images/pages/veDEUS/emptyLock.svg'
 import EMPTY_LOCK_MOBILE from '/public/static/images/pages/veDEUS/emptyLockMobile.svg'
 import { ButtonText } from 'pages/vest'
 import { formatAmount } from 'utils/numbers'
-
-import { useVeDistContract } from 'hooks/useContract'
-import toast from 'react-hot-toast'
 import { DefaultHandlerError } from 'utils/parseError'
 
 dayjs.extend(utc)
@@ -206,11 +205,11 @@ export default function Table({
           </tbody>
           {paginatedItems.length == 0 && (
             <>
-              <div style={{ marginLeft: '15px', marginRight: '15px' }}>
+              <div style={{ margin: '0 auto' }}>
                 {isMobile ? (
                   <Image src={EMPTY_LOCK_MOBILE} alt="empty-lock-mobile" />
                 ) : (
-                  <Image src={EMPTY_LOCK} height={'90px'} alt="empty-lock" />
+                  <Image src={EMPTY_LOCK} alt="empty-lock" />
                 )}
               </div>
               <NoResults>You have no lock!</NoResults>
@@ -239,9 +238,9 @@ function TableRow({
   reward: number
 }) {
   const [awaitingConfirmation, setAwaitingConfirmation] = useState(false)
+  const [ClaimAwaitingConfirmation, setClaimAwaitingConfirmation] = useState(false)
   const [pendingTxHash, setPendingTxHash] = useState('')
   const { deusAmount, veDEUSAmount, lockEnd } = useVestedInformation(nftId)
-  // const { userAPY } = useVestedAPY(nftId)
   const veDEUSContract = useVeDeusContract()
   const addTransaction = useTransactionAdder()
   const showTransactionPending = useHasPendingVest(pendingTxHash)
@@ -253,14 +252,14 @@ function TableRow({
   const onClaim = useCallback(async () => {
     try {
       if (!veDistContract) return
-      setAwaitingConfirmation(true)
+      setClaimAwaitingConfirmation(true)
       const response = await veDistContract.claim(nftId)
       addTransaction(response, { summary: `Claim #${nftId} reward`, vest: { hash: response.hash } })
       setPendingTxHash(response.hash)
-      setAwaitingConfirmation(false)
+      setClaimAwaitingConfirmation(false)
     } catch (err) {
       console.log(DefaultHandlerError(err))
-      setAwaitingConfirmation(false)
+      setClaimAwaitingConfirmation(false)
       setPendingTxHash('')
       if (err?.code === 4001) {
         toast.error('Transaction rejected.')
@@ -301,7 +300,7 @@ function TableRow({
   }
 
   function getClaimButton() {
-    if (awaitingConfirmation) {
+    if (ClaimAwaitingConfirmation) {
       return (
         <PrimaryButtonWide isSmall={true} active>
           <ButtonText>
@@ -361,7 +360,6 @@ function TableRow({
             <ImageWithFallback src={DEUS_LOGO} alt={`veDeus logo`} width={30} height={30} />
             <NFTWrap>
               <CellAmount>veDEUS #{nftId}</CellAmount>
-              {/* <CellDescription>veDEUS ID</CellDescription> */}
             </NFTWrap>
           </RowCenter>
         </Cell>

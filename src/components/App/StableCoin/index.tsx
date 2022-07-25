@@ -45,6 +45,8 @@ export const TopTableau = styled.div`
   height: 60px;
   background: ${({ theme }) => theme.bg2};
   overflow: hidden;
+  border-top-right-radius: 12px;
+  border-top-left-radius: 12px;
 
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     height: 50px;

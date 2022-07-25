@@ -16,6 +16,7 @@ dayjs.extend(relativeTime)
 dayjs.extend(localizedFormat)
 
 const Wrapper = styled.div`
+  font-family: 'Inter';
   display: flex;
   flex-flow: column nowrap;
   width: 100%;
