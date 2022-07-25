@@ -19,7 +19,7 @@ import DEI_LOGO from '/public/static/images/pages/mint/DEI_Logo.svg'
 
 import { DotFlashing } from 'components/Icons'
 import Hero from 'components/Hero'
-import InputBox from 'components/App/Redemption/InputBox'
+import InputBox from 'components/App/Migration/InputBox'
 import { RowBetween } from 'components/Row'
 import AdvancedOptions from 'components/App/Swap/AdvancedOptions'
 import StatsHeader from 'components/StatsHeader'
@@ -141,11 +141,11 @@ export default function Migration() {
 
   // TODO: move items to use memo
   const items = [
-    { name: 'DEI Price', value: '$0.5' },
-    { name: 'Global Dei Borrowed', value: '0.77m' },
-    { name: 'Total Supply', value: '72.53m' },
-    { name: 'Total Protocol Holdings', value: '24.64m' },
-    { name: 'Total DEI Bonded', value: '18.88m' },
+    { name: 'DEI Price', value: '$0.5?' },
+    { name: 'Collateral Ratio', value: '43.00%?' },
+    { name: 'Available to Mint', value: '72.53m?' },
+    { name: 'Pool Balance', value: '24.64m?' },
+    { name: 'Ceiling', value: '18.88m?' },
   ]
   return (
     <Container>

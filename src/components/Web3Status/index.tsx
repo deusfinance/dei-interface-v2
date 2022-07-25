@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import { UnsupportedChainIdError } from '@web3-react/core'
-import { Activity } from 'react-feather'
 
 import useWeb3React from 'hooks/useWeb3'
 import { useWalletModalToggle } from 'state/application/hooks'
@@ -14,8 +13,35 @@ import { NavButton } from 'components/Button'
 import { Connected as ConnectedIcon } from 'components/Icons'
 import { FALLBACK_CHAIN_ID, SolidlyChains } from 'constants/chains'
 import useRpcChangerCallback from 'hooks/useRpcChangerCallback'
+import { RowCenter } from 'components/Row'
 
-const ConnectButton = styled(NavButton)``
+const ConnectButtonWrap = styled.div`
+  border: none;
+  background: ${({ theme }) => theme.specialBG1};
+  padding: 1px;
+  border-radius: 8px;
+  width: 148px;
+
+  &:hover,
+  &:focus {
+    border: none;
+    cursor: pointer;
+  }
+`
+
+const ConnectButton = styled(RowCenter)`
+  border-radius: 8px;
+  background: ${({ theme }) => theme.bg2};
+  height: 100%;
+  width: 100%;
+  white-space: nowrap;
+`
+
+const ConnectButtonText = styled.span`
+  background: -webkit-linear-gradient(92.33deg, #e29d52 -10.26%, #de4a7b 80%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+`
 
 const ConnectedButton = styled(NavButton)`
   & > * {
@@ -27,7 +53,14 @@ const ConnectedButton = styled(NavButton)`
 
 const ErrorButton = styled(NavButton)`
   background: ${({ theme }) => theme.red1};
+  border-color: ${({ theme }) => theme.text1};
   color: white;
+
+  &:hover,
+  &:focus {
+    cursor: pointer;
+    border: 1px solid ${({ theme }) => theme.text1};
+  }
 `
 
 const Text = styled.p`
@@ -55,7 +88,6 @@ function Web3StatusInner() {
   if (showCallbackError) {
     return (
       <ErrorButton onClick={() => rpcChangerCallback(FALLBACK_CHAIN_ID)}>
-        <Activity />
         <Text>Wrong Network</Text>
       </ErrorButton>
     )
@@ -69,15 +101,16 @@ function Web3StatusInner() {
   } else if (error) {
     return (
       <ErrorButton onClick={toggleWalletModal}>
-        <Activity />
         <Text>{error instanceof UnsupportedChainIdError ? 'Wrong Network' : 'Error'}</Text>
       </ErrorButton>
     )
   } else {
     return (
-      <ConnectButton onClick={toggleWalletModal}>
-        <Text>Connect Wallet</Text>
-      </ConnectButton>
+      <ConnectButtonWrap onClick={toggleWalletModal}>
+        <ConnectButton>
+          <ConnectButtonText>Connect Wallet</ConnectButtonText>
+        </ConnectButton>
+      </ConnectButtonWrap>
     )
   }
 }

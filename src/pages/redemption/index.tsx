@@ -39,7 +39,7 @@ const Description = styled.div`
 
 const PlusIcon = styled(Plus)`
   margin: -11px auto;
-  margin-left: 17px;
+  margin-left: 27px;
   z-index: 1000;
   padding: 3px;
   border: 1px solid ${({ theme }) => theme.bg4};
@@ -179,13 +179,8 @@ export default function Redemption() {
 
     return <MainButton onClick={() => handleRedeem()}>Redeem DEI</MainButton>
   }
-  const items = [
-    { name: 'DEI Price', value: '$0.5' },
-    { name: 'Global Dei Borrowed', value: '0.77m' },
-    { name: 'Total Supply', value: '72.53m' },
-    { name: 'Total Protocol Holdings', value: '24.64m' },
-    { name: 'Total DEI Bonded', value: '18.88m' },
-  ]
+  // TODO: use useMemo for items
+  const items = [{ name: 'Total DEI Redeemed ', value: '$0.5?' }]
   return (
     <Container>
       <Hero>

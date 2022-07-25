@@ -116,8 +116,8 @@ export default function Menu() {
             </Row>
           </Link>
           <Link href="/rewards" passHref>
-            <Row active={router.route === '/rewards'}>
-              <div>Rewards</div>
+            <Row active={router.route === '/analytics'}>
+              <div>Analytics</div>
               <IconWrapper>
                 <GiftIcon size={20} />
               </IconWrapper>
@@ -126,25 +126,16 @@ export default function Menu() {
           <ExternalLink href="https://twitter.com/deusdao">
             <Row onClick={() => toggle()}>
               <div>Twitter</div>
-              <IconWrapper>
-                <TwitterIcon size={15} />
-              </IconWrapper>
             </Row>
           </ExternalLink>
           <ExternalLink href="https://t.me/deusfinance">
             <Row onClick={() => toggle()}>
               <div>Community</div>
-              <IconWrapper>
-                <TelegramIcon size={15} />
-              </IconWrapper>
             </Row>
           </ExternalLink>
           <ExternalLink href="https://github.com/deusfinance">
             <Row onClick={() => toggle()}>
               <div>Github</div>
-              <IconWrapper>
-                <GithubIcon size={15} />
-              </IconWrapper>
             </Row>
           </ExternalLink>
         </InlineModal>

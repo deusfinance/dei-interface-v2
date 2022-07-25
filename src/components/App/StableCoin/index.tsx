@@ -90,5 +90,11 @@ export const TitleIMGWrap = styled(RowEnd)`
 `
 
 export const MainButton = styled(PrimaryButton)`
-  border-radius: 15px;
+  border-radius: 12px;
+  width: 100%;
+  height: 72px;
+
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    height: 60px;
+  `}
 `

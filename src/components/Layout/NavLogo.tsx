@@ -32,23 +32,17 @@ const Wrapper = styled.div`
 export default function NavLogo() {
   const darkMode = useIsDarkMode()
 
+  function getImageSize() {
+    return isMobile ? 30 : 45
+  }
+
   return (
     <Container>
       <ExternalLink href="https://dei.finance" target="_self" passHref>
         <Wrapper>
           <div>
-            <Image src={'/static/images/DeiLogo.svg'} alt="App Logo" width={30} height={30} />
+            <Image src={'/static/images/DeiLogo.svg'} alt="App Logo" width={getImageSize()} height={getImageSize()} />
           </div>
-          {!isMobile && (
-            <div>
-              <Image
-                src={darkMode ? '/static/images/DeiText.svg' : '/static/images/DeiText.svg'}
-                width={55}
-                height={30}
-                alt="App Logo"
-              />
-            </div>
-          )}
         </Wrapper>
       </ExternalLink>
     </Container>

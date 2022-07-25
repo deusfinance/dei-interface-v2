@@ -84,8 +84,7 @@ function colors(themeName: SupportedThemes): Colors {
       border3: 'rgba(99, 126, 161, 0.2)',
 
       //specialty colors
-      specialBG1:
-        'radial-gradient(95.21% 95.21% at 50% 4.79%, rgba(138, 148, 220, 0.2) 0%, rgba(255, 255, 255, 0.2) 100%)',
+      specialBG1: 'linear-gradient(90deg, #ffb56c 0%, #ff538f 100%)',
       specialBG2:
         'linear-gradient(90deg, rgba(81, 171, 255, 0.1) 0%, rgba(22, 72, 250, 0.1) 100%), linear-gradient(0deg, #FFFFFF, #FFFFFF)',
 
@@ -106,7 +105,7 @@ function colors(themeName: SupportedThemes): Colors {
       secondary2: 'rgba(23, 73, 250, 0.2)',
 
       // other
-      red1: '#DA2D2B',
+      red1: '#DD5D5D',
       red2: '#DF1F38',
       red3: '#D60000',
       green1: '#007D35',
@@ -148,7 +147,7 @@ function colors(themeName: SupportedThemes): Colors {
       border3: '#2E2F33',
 
       //specialty colors
-      specialBG1: 'linear-gradient(180deg, #464646 0%, rgba(0, 0, 0, 0) 84.03%)',
+      specialBG1: 'linear-gradient(90deg, #ffb56c 0%, #ff538f 100%)',
       specialBG2: '#14181E',
 
       // primary colors
@@ -158,8 +157,7 @@ function colors(themeName: SupportedThemes): Colors {
       primary4: 'linear-gradient(92.33deg, #DE4A7B -10.26%, #E29D52 80%)',
       primary5: 'linear-gradient(92.33deg, #DE4A7B -10.26%, #E29D52 100%)',
       primary6: 'linear-gradient(-90deg, #B63562 10%, #CF8D49 90%)',
-      primary7: 'linear-gradient(90deg, #B63562 10%, #CF8D49 90%)',
-
+      primary7: 'linear-gradient(90deg, #ff538f 10%, #ffb56c 90%)',
       // color text
       primaryText1: '#1749FA', // TODO check if we want these values
 
@@ -168,7 +166,7 @@ function colors(themeName: SupportedThemes): Colors {
       secondary2: 'rgba(23, 73, 250, 0.2)',
 
       // other
-      red1: '#FF4343',
+      red1: '#DD5D5D',
       red2: '#F82D3A',
       red3: '#D60000',
       green1: '#27AE60',

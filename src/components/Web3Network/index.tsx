@@ -18,6 +18,14 @@ const Button = styled(NavButton)`
     cursor: default;
     border: 1px solid ${({ theme }) => theme.border2};
   }
+
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    & > * {
+      &:nth-child(2) {
+        display: none;
+      }
+    }
+  `};
 `
 
 const Text = styled.p`
