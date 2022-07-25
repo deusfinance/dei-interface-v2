@@ -23,7 +23,7 @@ const Wrapper = styled.div`
   gap: 10px;
 `
 
-const Row = styled.div`
+const Row = styled.div<{ active?: boolean; isModal?: boolean }>`
   display: flex;
   flex-flow: row nowrap;
   width: 100%;
@@ -31,10 +31,10 @@ const Row = styled.div`
   font-size: 0.8rem;
 
   & > * {
-    color: ${({ theme }) => theme.text2};
     &:last-child {
-      color: ${({ theme }) => theme.text1};
+      color: ${({ theme, isModal, active }) => (isModal ? (active ? theme.text1 : theme.text2) : theme.text1)};
     }
+    color: ${({ theme, active }) => (active ? theme.text1 : theme.text2)};
   }
 `
 
@@ -44,12 +44,17 @@ const Title = styled.div`
   margin-bottom: 5px;
   padding-bottom: 5px;
   font-weight: bold;
+  color: ${({ theme }) => theme.text2};
 `
 
-const TotalVP = styled.div`
-  background: -webkit-linear-gradient(1deg, #0badf4, #30efe4 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+const TotalVP = styled.div<{ isModal?: boolean }>`
+  ${({ isModal }) =>
+    !isModal &&
+    `
+    background: -webkit-linear-gradient(1deg, #0badf4, #30efe4 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  `}
 `
 
 export default function UserLockInformation({
@@ -57,11 +62,17 @@ export default function UserLockInformation({
   selectedDate,
   currentVotingPower,
   title,
+  increaseType,
+  isNew,
+  isModal,
 }: {
   amount: string
   selectedDate: Date
   currentVotingPower?: string
   title?: string
+  increaseType?: string // 1: Amount, 2: Duration
+  isNew?: boolean
+  isModal?: boolean
 }) {
   const { account, chainId } = useWeb3React()
 
@@ -89,11 +100,11 @@ export default function UserLockInformation({
   return (
     <Wrapper>
       {title && <Title>{title}</Title>}
-      <Row>
+      <Row active={increaseType === '1' && isNew} isModal={isModal}>
         <div>Total voting Power:</div>
-        <TotalVP>{totalVotingPower} veDEUS</TotalVP>
+        <TotalVP isModal={isModal}>{totalVotingPower} veDEUS</TotalVP>
       </Row>
-      <Row>
+      <Row active={increaseType === '2' && isNew} isModal={isModal}>
         <div>Est. APR</div>
         <div>{formatAmount(parseFloat(userAPY), 0)}%</div>
       </Row>
@@ -101,7 +112,7 @@ export default function UserLockInformation({
         <div>Expiration in: </div>
         {lockHasEnded ? <div>Expired</div> : <div>~ {durationUntilTarget}</div>}
       </Row> */}
-      <Row>
+      <Row active={increaseType === '2' && isNew} isModal={isModal}>
         <div>Locked until: (UTC)</div>
         <div>{dayjs.utc(effectiveDate).format('LL')}</div>
       </Row>

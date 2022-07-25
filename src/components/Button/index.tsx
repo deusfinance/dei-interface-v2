@@ -84,25 +84,27 @@ export const PrimaryButton = styled(BaseButton)`
   `}
 `
 
-export const PrimaryButtonWide = styled(BaseButton)`
-  background: ${({ theme }) => theme.primary2};
+export const PrimaryButtonWide = styled(BaseButton)<{ IsSmall?: boolean }>`
+  background: ${({ theme }) => theme.primary6};
   white-space: nowrap;
   border-radius: 8px;
+  height: 54%;
 
   color: ${({ theme }) => theme.text1};
   z-index: 0;
 
   &:focus {
     box-shadow: 0 0 0 1pt ${({ theme }) => theme.primary2};
-    background: ${({ theme }) => theme.primary5};
+    background: ${({ theme }) => theme.primary7};
   }
   &:hover {
-    background: ${({ theme }) => theme.primary5};
+    background: ${({ theme }) => theme.primary7};
   }
 
   ${({ theme, disabled }) =>
     disabled &&
     `
+      height: 100%;
       background: ${theme.bg2};
       border: 1px solid ${theme.border1};
 
@@ -117,12 +119,20 @@ export const PrimaryButtonWide = styled(BaseButton)`
       margin: -4px;
     }
   `}
+
+  ${({ IsSmall, theme }) =>
+    IsSmall &&
+    theme.mediaWidth.upToExtraSmall`
+      padding-top: 12px;
+      padding-bottom: 12px;
+  `}
 `
 
 export const PrimaryButtonWhite = styled(BaseButton)`
   background: ${({ theme }) => theme.primary2};
   white-space: nowrap;
   border-radius: 8px;
+  height: 53%;
 
   color: ${({ theme }) => theme.text1};
   z-index: 0;
@@ -140,11 +150,20 @@ export const PrimaryButtonWhite = styled(BaseButton)`
     disabled &&
     `
       background: ${theme.bg2};
-      border: 2px solid ${theme.text1};
+      border: 1.5px solid ${theme.text1};
 
       &:focus,
       &:hover {
         background: ${theme.bg0};
       }
+  `}
+
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    width: 110%;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    & > * {
+      margin: -5px;
+    }
   `}
 `

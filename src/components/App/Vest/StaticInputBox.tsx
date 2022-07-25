@@ -15,7 +15,7 @@ import { NumericalInput } from 'components/Input'
 import { RowBetween } from 'components/Row'
 import { lastThursday } from 'utils/vest'
 import { formatAmount } from 'utils/numbers'
-import { ChevronDown, CurrencySymbol, InputWrapper, LogoWrapper, RightWrapper, Wrapper } from '../Migration/InputBox'
+import { CurrencySymbol, InputWrapper, LogoWrapper, RightWrapper, Wrapper } from '../Redemption/InputBox'
 
 dayjs.extend(utc)
 dayjs.extend(relativeTime)
@@ -59,7 +59,7 @@ export default function StaticInputBox({
 
   return (
     <Wrapper>
-      <LogoWrapper onClick={onTokenSelect ? () => onTokenSelect() : undefined} active={onTokenSelect ? true : false}>
+      <LogoWrapper onClick={onTokenSelect ? () => onTokenSelect() : undefined}>
         <ImageWithFallback
           src={logo}
           width={getImageSize()}
@@ -67,17 +67,11 @@ export default function StaticInputBox({
           alt={`${currency?.symbol} Logo`}
           round
         />
-        {onTokenSelect ? <ChevronDown /> : <></>}
       </LogoWrapper>
 
       <RightWrapper>
         <RowBetween>
-          <CurrencySymbol
-            onClick={onTokenSelect ? () => onTokenSelect() : undefined}
-            active={onTokenSelect ? true : false}
-          >
-            {name}
-          </CurrencySymbol>
+          <CurrencySymbol onClick={onTokenSelect ? () => onTokenSelect() : undefined}>{name}</CurrencySymbol>
         </RowBetween>
         <InputWrapper>
           <NumericalInput

@@ -12,7 +12,7 @@ import ImageWithFallback from 'components/ImageWithFallback'
 import { NumericalInput } from 'components/Input'
 import { Row, RowBetween, RowEnd } from 'components/Row'
 
-const Wrapper = styled(Row)`
+export const Wrapper = styled(Row)`
   background: ${({ theme }) => theme.bg2};
   border-radius: 12px;
   color: ${({ theme }) => theme.text2};
@@ -21,9 +21,13 @@ const Wrapper = styled(Row)`
   gap: 10px;
   border: 1px solid #444444;
   border-color: ${({ theme }) => theme.border1};
+
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    height: 60px;
+  `}
 `
 
-const InputWrapper = styled.div`
+export const InputWrapper = styled.div`
   & > * {
     width: 100%;
   }
@@ -33,7 +37,7 @@ const InputWrapper = styled.div`
   `}
 `
 
-const CurrencySymbol = styled.div`
+export const CurrencySymbol = styled.div`
   font-family: 'IBM Plex Mono';
   font-weight: 600;
   font-size: 16px;
@@ -41,7 +45,7 @@ const CurrencySymbol = styled.div`
   color: ${({ theme }) => theme.text1};
 `
 
-const RightWrapper = styled.div`
+export const RightWrapper = styled.div`
   width: 100%;
   border-left: 1px solid ${({ theme }) => theme.border1};
   padding: 6px;
@@ -56,7 +60,7 @@ export const LogoWrapper = styled(Row)`
   max-width: 50px;
 `
 
-const RowWrap = styled(RowEnd)`
+export const RowWrap = styled(RowEnd)`
   gap: 10px;
   font-size: 1.5rem;
 
@@ -99,13 +103,11 @@ export default function InputBox({
   currency,
   value,
   onChange,
-  title,
   disabled,
 }: {
   currency: Currency
   value: string
   onChange(values: string): void
-  title: string
   disabled?: boolean
 }) {
   const { account } = useWeb3React()
@@ -149,7 +151,7 @@ export default function InputBox({
               placeholder="0.0"
               autoFocus
               disabled={disabled}
-              style={{ textAlign: 'left', height: '50px', fontSize: '24px', marginLeft: '5px' }}
+              style={{ textAlign: 'left', fontSize: '24px', marginLeft: '5px' }}
             />
           </InputWrapper>
         </RightWrapper>

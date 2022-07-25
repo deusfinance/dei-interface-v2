@@ -18,7 +18,7 @@ import Migration_IMG from '/public/static/images/pages/mint/TableauBackground.sv
 import { PrimaryButton } from 'components/Button'
 import { DotFlashing } from 'components/Icons'
 import Hero, { HeroSubtext } from 'components/Hero'
-import InputBox from 'components/App/Migration/InputBox'
+import InputBox from 'components/App/Redemption/InputBox'
 import { RowEnd } from 'components/Row'
 import Image from 'next/image'
 
@@ -201,18 +201,12 @@ export default function Migration() {
         <TableauTitle>Migration</TableauTitle>
       </TopTableau>
       <Wrapper>
-        <InputBox
-          currency={deiCurrency}
-          value={amountIn}
-          onChange={(value: string) => setAmountIn(value)}
-          title={'from'}
-        />
+        <InputBox currency={deiCurrency} value={amountIn} onChange={(value: string) => setAmountIn(value)} />
         <ArrowDown color={'#d87466'} />
         <InputBox
           currency={deiv2Currency}
           value={amountOut1}
           onChange={(value: string) => console.log(value)}
-          title={'to'}
           disabled={true}
         />
         <div style={{ marginTop: '30px' }}></div>

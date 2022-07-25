@@ -196,19 +196,13 @@ export default function Redemption() {
       <Wrapper>
         <Tableau title={'Redeem DEI'} imgSrc={REDEEM_IMG} />
         <InputWrapper>
-          <InputBox
-            currency={deiCurrency}
-            value={amountIn}
-            onChange={(value: string) => setAmountIn(value)}
-            title={'From'}
-          />
+          <InputBox currency={deiCurrency} value={amountIn} onChange={(value: string) => setAmountIn(value)} />
           <ArrowDown />
 
           <InputBox
             currency={usdcCurrency}
             value={amountOut1}
             onChange={(value: string) => console.log(value)}
-            title={'To'}
             disabled={true}
           />
           <PlusIcon size={'24px'} />
@@ -216,7 +210,6 @@ export default function Redemption() {
             currency={deusCurrency}
             value={amountOut2}
             onChange={(value: string) => console.log(value)}
-            title={'To ($)'}
             disabled={true}
           />
           <div style={{ marginTop: '20px' }}></div>

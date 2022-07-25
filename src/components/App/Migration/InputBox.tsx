@@ -22,6 +22,10 @@ export const Wrapper = styled(Row)`
   gap: 10px;
   border: 1px solid #444444;
   border-color: ${({ theme }) => theme.border1};
+
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    height: 60px;
+  `}
 `
 
 export const InputWrapper = styled.div`
@@ -108,14 +112,12 @@ export default function InputBox({
   currency,
   value,
   onChange,
-  title,
   onTokenSelect,
   disabled,
 }: {
   currency: Currency
   value: string
   onChange(values: string): void
-  title: string
   onTokenSelect?: () => void
   disabled?: boolean
 }) {
@@ -170,7 +172,7 @@ export default function InputBox({
               placeholder="0.0"
               autoFocus
               disabled={disabled}
-              style={{ textAlign: 'left', height: '50px', fontSize: '24px', marginLeft: '5px' }}
+              style={{ textAlign: 'left', fontSize: '24px', marginLeft: '5px' }}
             />
           </InputWrapper>
         </RightWrapper>

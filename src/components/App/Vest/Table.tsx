@@ -8,7 +8,7 @@ import Image from 'next/image'
 
 import { useVeDeusContract } from 'hooks/useContract'
 import { useHasPendingVest, useTransactionAdder } from 'state/transactions/hooks'
-import { useVestedInformation, useVestedAPY } from 'hooks/useVested'
+import { useVestedInformation } from 'hooks/useVested'
 
 import Pagination from 'components/Pagination'
 import ImageWithFallback from 'components/ImageWithFallback'
@@ -50,6 +50,13 @@ const Row = styled.tr`
   color: ${({ theme }) => theme.text1};
 `
 
+const FirstRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 5px;
+`
+
 const Cell = styled.td<{
   justify?: boolean
 }>`
@@ -57,12 +64,12 @@ const Cell = styled.td<{
   padding: 5px;
   height: 90px;
 
-  ${({ theme }) => theme.mediaWidth.upToMedium`
+  /* ${({ theme }) => theme.mediaWidth.upToMedium`
     :nth-child(3),
     :nth-child(4) {
       display: none;
     }
-  `}
+  `} */
 `
 
 const NoResults = styled.div`
@@ -89,6 +96,10 @@ const CellAmount = styled.div`
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    font-size: 0.95rem;
+  `};
 `
 
 // const CellDescription = styled.div`
@@ -101,6 +112,10 @@ const Name = styled.div`
   font-size: 12px;
   color: ${({ theme }) => theme.text2};
   white-space: nowrap;
+
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    margin-top: 12px;
+  `};
 `
 
 const Value = styled.div`
@@ -118,6 +133,24 @@ const ExpirationPassed = styled.div`
   & > * {
     color: ${({ theme }) => theme.yellow4};
   }
+
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+  `};
+`
+
+const MobileCell = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 95%;
+  margin-left: 10px;
+`
+
+const MobileWrapper = styled.div`
+  margin-top: 10px;
+  margin-bottom: 20px;
 `
 
 const itemsPerPage = 10
@@ -160,6 +193,7 @@ export default function Table({
                   nftId={nftId}
                   toggleLockManager={toggleLockManager}
                   toggleAPYManager={toggleAPYManager}
+                  isMobile={isMobile}
                 />
               ))}
           </tbody>
@@ -187,21 +221,24 @@ function TableRow({
   toggleLockManager,
   toggleAPYManager,
   index,
+  isMobile,
 }: {
   nftId: number
   toggleLockManager: (nftId: number) => void
   toggleAPYManager: (nftId: number) => void
   index: number
+  isMobile?: boolean
 }) {
   const [awaitingConfirmation, setAwaitingConfirmation] = useState(false)
   const [pendingTxHash, setPendingTxHash] = useState('')
   const { deusAmount, veDEUSAmount, lockEnd } = useVestedInformation(nftId)
-  const { userAPY } = useVestedAPY(nftId)
+  // const { userAPY } = useVestedAPY(nftId)
   const veDEUSContract = useVeDeusContract()
   const addTransaction = useTransactionAdder()
   const showTransactionPending = useHasPendingVest(pendingTxHash)
 
-  const lockHasEnded = useMemo(() => dayjs.utc(lockEnd).isBefore(dayjs.utc().subtract(10, 'seconds')), [lockEnd]) // subtracting 10 seconds to mitigate this from being true on page load
+  // subtracting 10 seconds to mitigate this from being true on page load
+  const lockHasEnded = useMemo(() => dayjs.utc(lockEnd).isBefore(dayjs.utc().subtract(10, 'seconds')), [lockEnd])
 
   const onWithdraw = useCallback(async () => {
     try {
@@ -235,20 +272,20 @@ function TableRow({
     )
   }
 
-  function getClaimWithdrawCell() {
+  function getClaimWithdrawCell(IsSmall?: boolean) {
     const hasClaimable = true
 
     if (!lockHasEnded) {
       if (!hasClaimable) return null
       return (
-        <PrimaryButtonWide onClick={onWithdraw}>
+        <PrimaryButtonWide IsSmall={IsSmall} onClick={onWithdraw}>
           <ButtonText>Claim</ButtonText>
         </PrimaryButtonWide>
       )
     }
     if (awaitingConfirmation) {
       return (
-        <PrimaryButtonWide active>
+        <PrimaryButtonWide IsSmall={IsSmall} active>
           <ButtonText>
             Confirming <DotFlashing style={{ marginLeft: '10px' }} />
           </ButtonText>
@@ -257,7 +294,7 @@ function TableRow({
     }
     if (showTransactionPending) {
       return (
-        <PrimaryButtonWide active>
+        <PrimaryButtonWide IsSmall={IsSmall} active>
           <ButtonText>
             Withdrawing <DotFlashing style={{ marginLeft: '10px' }} />
           </ButtonText>
@@ -265,44 +302,82 @@ function TableRow({
       )
     }
     return (
-      <PrimaryButtonWide onClick={onWithdraw}>
-        <ButtonText>Withdraw and Claim</ButtonText>
+      <PrimaryButtonWide IsSmall={IsSmall} onClick={onWithdraw}>
+        <ButtonText>Withdraw</ButtonText>
       </PrimaryButtonWide>
     )
   }
 
-  return (
-    <ZebraStripesRow isEven={index % 2 === 0}>
-      <Cell>
-        <RowCenter>
-          <ImageWithFallback src={DEUS_LOGO} alt={`veDeus logo`} width={30} height={30} />
-          <NFTWrap>
-            <CellAmount>veDEUS #{nftId}</CellAmount>
-            {/* <CellDescription>veDEUS ID</CellDescription> */}
-          </NFTWrap>
-        </RowCenter>
-      </Cell>
-      <Cell>
-        <Name>Vest Amount</Name>
-        <Value>{formatAmount(parseFloat(deusAmount), 8)} DEUS</Value>
-      </Cell>
-      <Cell>
-        <Name>Vest Value</Name>
-        <Value>{formatAmount(parseFloat(veDEUSAmount), 6)} veDEUS</Value>
-      </Cell>
-      <Cell style={{ padding: '5px 10px' }}>{getExpirationCell()}</Cell>
-      <Cell style={{ padding: '5px 10px' }}>{getClaimWithdrawCell()}</Cell>
-      {/* <Cell>
-        <CellRow>
-          {formatAmount(parseFloat(userAPY), 0)}%
-          <Info onClick={() => toggleAPYManager(nftId)} />
-        </CellRow>
-      </Cell> */}
-      <Cell style={{ padding: '5px 10px' }}>
-        <PrimaryButtonWhite disabled onClick={() => toggleLockManager(nftId)}>
-          <ButtonText>Update Lock</ButtonText>
-        </PrimaryButtonWhite>
-      </Cell>
-    </ZebraStripesRow>
-  )
+  function getTableRow() {
+    return (
+      <>
+        <Cell>
+          <RowCenter>
+            <ImageWithFallback src={DEUS_LOGO} alt={`veDeus logo`} width={30} height={30} />
+            <NFTWrap>
+              <CellAmount>veDEUS #{nftId}</CellAmount>
+              {/* <CellDescription>veDEUS ID</CellDescription> */}
+            </NFTWrap>
+          </RowCenter>
+        </Cell>
+
+        <Cell>
+          <Name>Vest Amount</Name>
+          <Value>{formatAmount(parseFloat(deusAmount), 8)} DEUS</Value>
+        </Cell>
+
+        <Cell>
+          <Name>Vest Value</Name>
+          <Value>{formatAmount(parseFloat(veDEUSAmount), 6)} veDEUS</Value>
+        </Cell>
+
+        <Cell style={{ padding: '5px 10px' }}>{getExpirationCell()}</Cell>
+
+        <Cell style={{ padding: '5px 10px' }}>{getClaimWithdrawCell()}</Cell>
+
+        <Cell style={{ padding: '5px 10px' }}>
+          <PrimaryButtonWhite disabled onClick={() => toggleLockManager(nftId)}>
+            <ButtonText>Update Lock</ButtonText>
+          </PrimaryButtonWhite>
+        </Cell>
+      </>
+    )
+  }
+
+  function getTableRowMobile() {
+    return (
+      <MobileWrapper>
+        <FirstRow>
+          <RowCenter>
+            <ImageWithFallback src={DEUS_LOGO} alt={`veDeus logo`} width={30} height={30} />
+            <NFTWrap>
+              <CellAmount>veDEUS #{nftId}</CellAmount>
+            </NFTWrap>
+          </RowCenter>
+
+          <RowCenter style={{ padding: '5px 10px' }}>{getClaimWithdrawCell(true)}</RowCenter>
+
+          <RowCenter style={{ padding: '5px 10px' }}>
+            <PrimaryButtonWhite disabled onClick={() => toggleLockManager(nftId)}>
+              <ButtonText>Update Lock</ButtonText>
+            </PrimaryButtonWhite>
+          </RowCenter>
+        </FirstRow>
+
+        <MobileCell>
+          <Name>Vest Amount</Name>
+          <Value>{formatAmount(parseFloat(deusAmount), 8)} DEUS</Value>
+        </MobileCell>
+
+        <MobileCell>
+          <Name>Vest Value</Name>
+          <Value>{formatAmount(parseFloat(veDEUSAmount), 6)} veDEUS</Value>
+        </MobileCell>
+
+        <MobileCell>{getExpirationCell()}</MobileCell>
+      </MobileWrapper>
+    )
+  }
+
+  return <ZebraStripesRow isEven={index % 2 === 0}>{isMobile ? getTableRowMobile() : getTableRow()}</ZebraStripesRow>
 }

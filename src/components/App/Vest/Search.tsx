@@ -54,9 +54,9 @@ export function useSearch() {
   }
 }
 
-export function SearchField({ searchProps }: { searchProps: any }) {
+export function SearchField({ searchProps, modalSearch }: { searchProps: any; modalSearch?: boolean }) {
   return (
-    <InputWrapper>
+    <InputWrapper ModalSearch={modalSearch}>
       <InputField
         {...searchProps}
         title="Search"

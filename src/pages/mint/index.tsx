@@ -19,7 +19,7 @@ import DEI_LOGO from '/public/static/images/pages/mint/DEI_Logo.svg'
 
 import { DotFlashing } from 'components/Icons'
 import Hero from 'components/Hero'
-import InputBox from 'components/App/Migration/InputBox'
+import InputBox from 'components/App/Redemption/InputBox'
 import { RowBetween } from 'components/Row'
 import AdvancedOptions from 'components/App/Swap/AdvancedOptions'
 import StatsHeader from 'components/StatsHeader'
@@ -163,7 +163,6 @@ export default function Migration() {
             currency={inputToken}
             value={amountIn}
             onChange={(value: string) => setAmountIn(value)}
-            title={'from'}
             onTokenSelect={() => {
               toggleTokensModal(true)
             }}
@@ -173,7 +172,6 @@ export default function Migration() {
             currency={deiv2Currency}
             value={amountOut1}
             onChange={(value: string) => console.log(value)}
-            title={'to'}
             disabled={true}
           />
           <div style={{ marginTop: '30px' }}></div>

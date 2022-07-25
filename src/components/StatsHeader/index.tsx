@@ -12,10 +12,9 @@ const Wrapper = styled.div`
   margin: 18px 2px;
   display: flex;
   justify-content: center;
-  align-items: center;
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
-    display: block;
+    justify-content: stretch;
   `};
 `
 
@@ -75,6 +74,11 @@ const AprWrapper = styled.a`
   }
 `
 
+const TextContent = styled.p`
+  margin-right: 10px;
+  font-size: 14px;
+`
+
 export default function StatsHeader({ items, hasBox }: { items: { name: string; value: string }[]; hasBox?: boolean }) {
   return (
     <Wrapper>
@@ -88,7 +92,7 @@ export default function StatsHeader({ items, hasBox }: { items: { name: string; 
         <ItemBox data-for="id" data-tip={'veDEUS rewards are fully accruing in the Background'}>
           <CustomTooltip id="id" />
           <AprWrapper target={'target'} href={'https://lafayettetabor.medium.com/vedeus-dynamics-40a4a5489ae1'}>
-            <p style={{ marginRight: '10px', fontSize: '14px' }}>APR</p> <InfoIcon size={20} />
+            <TextContent>APR</TextContent> <InfoIcon size={20} />
           </AprWrapper>
         </ItemBox>
       )}

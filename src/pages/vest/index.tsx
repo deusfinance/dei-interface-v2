@@ -71,6 +71,10 @@ export const ButtonText = styled.span<{ disabled?: boolean }>`
   font-size: 14px;
   line-height: 17px;
 
+  /* ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    font-size: 14px;
+  `} */
+
   ${({ disabled }) =>
     disabled &&
     `

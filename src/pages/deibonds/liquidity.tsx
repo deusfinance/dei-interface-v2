@@ -320,19 +320,13 @@ export default function Liquidity() {
       return (
         <>
           <Wrapper>
-            <InputBox
-              currency={lpCurrency}
-              value={lpAmountIn}
-              onChange={(value: string) => setLPAmountIn(value)}
-              title={'From'}
-            />
+            <InputBox currency={lpCurrency} value={lpAmountIn} onChange={(value: string) => setLPAmountIn(value)} />
             <ArrowDown style={{ cursor: 'pointer' }} />
 
             <InputBox
               currency={deiCurrency}
               value={amountOut[0]?.toString()}
               onChange={() => console.debug('')}
-              title={'To'}
               disabled
             />
 
@@ -342,7 +336,6 @@ export default function Liquidity() {
               currency={bdeiCurrency}
               value={amountOut[1]?.toString()}
               onChange={() => console.debug('')}
-              title={'To'}
               disabled
             />
 
@@ -356,21 +349,11 @@ export default function Liquidity() {
       return (
         <>
           <Wrapper>
-            <InputBox
-              currency={deiCurrency}
-              value={amountIn}
-              onChange={(value: string) => setAmountIn(value)}
-              title={'From'}
-            />
+            <InputBox currency={deiCurrency} value={amountIn} onChange={(value: string) => setAmountIn(value)} />
 
             <div style={{ marginTop: '20px' }}></div>
 
-            <InputBox
-              currency={bdeiCurrency}
-              value={amountIn2}
-              onChange={(value: string) => setAmountIn2(value)}
-              title={'From'}
-            />
+            <InputBox currency={bdeiCurrency} value={amountIn2} onChange={(value: string) => setAmountIn2(value)} />
 
             <div style={{ marginTop: '20px' }}></div>
             {getApproveButton('add')}

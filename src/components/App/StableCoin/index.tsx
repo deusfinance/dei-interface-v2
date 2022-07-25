@@ -42,9 +42,13 @@ export const TopTableau = styled.div`
   width: 100%;
   position: relative;
   padding: 0;
-  /* border-radius: 13px 13px 0px 0px; */
-  height: 72px;
+  height: 60px;
   background: ${({ theme }) => theme.bg0};
+  overflow: hidden;
+
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    height: 50px;
+  `}
 `
 
 export const TableauTitle = styled.span`
@@ -59,6 +63,11 @@ export const TableauTitle = styled.span`
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
     top: 13px;
+  `}
+
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    margin-top: -4px;
+    font-size: 23px;
   `}
 `
 

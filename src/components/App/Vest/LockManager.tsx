@@ -18,11 +18,11 @@ import { getMaximumDate, getMinimumDateByLockEnd } from 'utils/vest'
 import { Modal, ModalHeader } from 'components/Modal'
 import { TabWrapper, TabButton } from 'components/Tab'
 import { ContextError, InvalidContext, useInvalidContext } from 'components/InvalidContext'
-import InputBox from './InputBox'
 import { PrimaryButton } from 'components/Button'
 import { DotFlashing } from 'components/Icons'
-import InputDate, { IncreaseDatePresets } from './InputDate'
+import { SelectDatePresets } from './InputDate'
 import UserLockInformation from './UserLockInformation'
+import InputBox from '../Redemption/InputBox'
 
 dayjs.extend(utc)
 
@@ -48,9 +48,12 @@ const ModalInnerWrapper = styled.div`
 `
 
 const StyledTabButton = styled(TabButton)`
+  background: ${({ active, theme }) => (active ? theme.bg3 : theme.bg4)};
+  color: ${({ active, theme }) => (active ? 'white' : theme.text2)};
+
   ${({ theme }) => theme.mediaWidth.upToSmall`
     font-size: 0.8rem;
-  `}
+  `};
 `
 
 enum ManageAction {
@@ -89,14 +92,16 @@ export default function LockManager({
     <StyledModal isOpen={isOpen} onBackgroundClick={onDismissProxy} onEscapeKeydown={onDismissProxy}>
       <ModalHeader title={`Manage Existing Lock #${nftId}`} border onClose={onDismissProxy} />
       <ModalInnerWrapper>
-        <TabWrapper style={{ gap: '20px' }}>
+        <TabWrapper>
           <StyledTabButton
+            style={{ borderTopLeftRadius: '8px', borderBottomLeftRadius: '8px' }}
             active={selectedAction === ManageAction.INCREASE_AMOUNT}
             onClick={() => setSelectedAction(ManageAction.INCREASE_AMOUNT)}
           >
             {ManageAction.INCREASE_AMOUNT}
           </StyledTabButton>
           <StyledTabButton
+            style={{ borderTopRightRadius: '8px', borderBottomRightRadius: '8px' }}
             active={selectedAction === ManageAction.INCREASE_DURATION}
             onClick={() => setSelectedAction(ManageAction.INCREASE_DURATION)}
           >
@@ -151,12 +156,21 @@ function IncreaseAmount({ nftId }: { nftId: number }) {
   return (
     <>
       <InputBox currency={deusCurrency} value={typedValue} onChange={(value: string) => setTypedValue(value)} />
-      <UserLockInformation amount={deusAmount} selectedDate={lockEnd} title="Current vesting setup:" />
+      <UserLockInformation
+        amount={deusAmount}
+        selectedDate={lockEnd}
+        title="Current vesting setup:"
+        increaseType={'1'}
+        isModal={true}
+      />
       <UserLockInformation
         amount={typedValue}
         selectedDate={lockEnd}
         currentVotingPower={veDEUSAmount}
         title="New vesting setup:"
+        increaseType={'1'}
+        isNew={true}
+        isModal={true}
       />
       {INSUFFICIENT_BALANCE ? (
         <PrimaryButton disabled>INSUFFICIENT BALANCE</PrimaryButton>
@@ -216,21 +230,28 @@ function IncreaseDuration({ nftId }: { nftId: number }) {
 
   return (
     <>
-      <InputDate
+      <SelectDatePresets
         selectedDate={selectedDate}
         minimumDate={minimumDate}
         maximumDate={getMaximumDate()}
         onDateSelect={setSelectedDate}
+        isMobileSize={true}
       />
-      <IncreaseDatePresets
+      <UserLockInformation
+        amount={deusAmount}
+        selectedDate={lockEnd}
+        title="Current vesting setup:"
+        increaseType={'2'}
+        isModal={true}
+      />
+      <UserLockInformation
+        amount={deusAmount}
         selectedDate={selectedDate}
-        lockEnd={lockEnd}
-        minimumDate={minimumDate}
-        maximumDate={getMaximumDate()}
-        onDateSelect={setSelectedDate}
+        title="New vesting setup:"
+        increaseType={'2'}
+        isNew={true}
+        isModal={true}
       />
-      <UserLockInformation amount={deusAmount} selectedDate={lockEnd} title="Current vesting setup:" />
-      <UserLockInformation amount={deusAmount} selectedDate={selectedDate} title="New vesting setup:" />
       {awaitingConfirmation ? (
         <PrimaryButton active>
           Awaiting Confirmation <DotFlashing style={{ marginLeft: '10px' }} />

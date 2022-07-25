@@ -211,7 +211,6 @@ export default function Redeem() {
             currency={deiCurrency}
             value={amountOut}
             onChange={(value: string) => console.log(value)}
-            title={'To'}
             disabled={true}
           />
           <div style={{ marginTop: '20px' }}></div>
