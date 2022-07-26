@@ -374,8 +374,7 @@ function TableRow({
           </TopBorder>
         </TopBorderWrap>
       )
-    } else if (lockHasEnded || true) {
-      // FIXME: remove true
+    } else if (lockHasEnded) {
       return (
         <TopBorderWrap>
           <TopBorder>
