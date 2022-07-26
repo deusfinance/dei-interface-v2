@@ -22,9 +22,9 @@ import { DotFlashing } from 'components/Icons'
 import DEUS_LOGO from '/public/static/images/tokens/deus.svg'
 import EMPTY_LOCK from '/public/static/images/pages/veDEUS/emptyLock.svg'
 import EMPTY_LOCK_MOBILE from '/public/static/images/pages/veDEUS/emptyLockMobile.svg'
-import { ButtonText } from 'pages/vest'
 import { formatAmount } from 'utils/numbers'
 import { DefaultHandlerError } from 'utils/parseError'
+import { ButtonText } from 'pages/vest'
 
 dayjs.extend(utc)
 dayjs.extend(relativeTime)
@@ -156,6 +156,28 @@ const MobileWrapper = styled.div`
   margin-bottom: 20px;
 `
 
+const TopBorderWrap = styled.div<{ active?: any }>`
+  background: ${({ theme }) => theme.primary2};
+  padding: 1px;
+  border-radius: 8px;
+  margin-right: 4px;
+  margin-left: 3px;
+  border: 1px solid ${({ theme }) => theme.bg0};
+  /* flex: 1; */
+
+  &:hover {
+    border: 1px solid ${({ theme, active }) => (active ? theme.bg0 : theme.warning)};
+  }
+`
+
+const TopBorder = styled.div`
+  background: ${({ theme }) => theme.bg0};
+  border-radius: 6px;
+  height: 100%;
+  width: 100%;
+  display: flex;
+`
+
 const itemsPerPage = 10
 
 export default function Table({
@@ -216,7 +238,9 @@ export default function Table({
             </>
           )}
         </TableWrapper>
-        {paginatedItems.length > 0 && <Pagination pageCount={pageCount} onPageChange={onPageChange} />}
+        {paginatedItems.length > 0 && (
+          <Pagination count={nftIds.length} pageCount={pageCount} onPageChange={onPageChange} />
+        )}
       </Wrapper>
     </>
   )
@@ -328,25 +352,40 @@ function TableRow({
   function getClaimWithdrawCell(isSmall?: boolean) {
     if (awaitingConfirmation) {
       return (
-        <PrimaryButtonWide isSmall={isSmall} active>
-          <ButtonText>
-            Confirming <DotFlashing style={{ marginLeft: '10px' }} />
-          </ButtonText>
-        </PrimaryButtonWide>
+        <TopBorderWrap>
+          <TopBorder>
+            <PrimaryButtonWide isSmall={isSmall} active>
+              <ButtonText style={{ margin: '-5px' }} disabled>
+                Confirming <DotFlashing style={{ marginLeft: '10px' }} />
+              </ButtonText>
+            </PrimaryButtonWide>
+          </TopBorder>
+        </TopBorderWrap>
       )
     } else if (showTransactionPending) {
       return (
-        <PrimaryButtonWide isSmall={isSmall} active>
-          <ButtonText>
-            Withdrawing <DotFlashing style={{ marginLeft: '10px' }} />
-          </ButtonText>
-        </PrimaryButtonWide>
+        <TopBorderWrap>
+          <TopBorder>
+            <PrimaryButtonWide width={'100%'} disabled>
+              <ButtonText style={{ margin: '-5px' }} disabled>
+                Withdrawing <DotFlashing style={{ marginLeft: '10px' }} />
+              </ButtonText>
+            </PrimaryButtonWide>
+          </TopBorder>
+        </TopBorderWrap>
       )
-    } else if (lockHasEnded) {
+    } else if (lockHasEnded || true) {
+      // FIXME: remove true
       return (
-        <PrimaryButtonWide isSmall={isSmall} onClick={onWithdraw}>
-          <ButtonText>Withdraw</ButtonText>
-        </PrimaryButtonWide>
+        <TopBorderWrap>
+          <TopBorder>
+            <PrimaryButtonWide width={'100%'} disabled onClick={onWithdraw}>
+              <ButtonText style={{ margin: '-6px' }} disabled>
+                Withdraw
+              </ButtonText>
+            </PrimaryButtonWide>
+          </TopBorder>
+        </TopBorderWrap>
       )
     } else if (reward) return getClaimButton()
     return null

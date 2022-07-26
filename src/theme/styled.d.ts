@@ -57,6 +57,7 @@ export interface Colors {
   yellow4: Color
   blue1: Color
   blue2: Color
+  darkPink: Color
 
   error: Color
   success: Color
