@@ -328,7 +328,9 @@ export default function Vest() {
 
   return (
     <Container>
-      {showTopBanner && <InfoHeader onClose={setShowTopBanner} text={'some random text!'} />}
+      {showTopBanner && (
+        <InfoHeader onClose={setShowTopBanner} text={'Some random text! some random text! some random text!'} />
+      )}
       <Hero>
         <Image src={veDEUS_LOGO} height={'90px'} alt="Logo" />
         <Title>veDEUS</Title>

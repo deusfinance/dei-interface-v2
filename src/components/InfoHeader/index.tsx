@@ -14,14 +14,18 @@ const Value = styled.div`
   font-weight: 600;
   font-size: 12px;
   line-height: 16px;
-  margin: 8px 2px;
+  margin: 8px 24px;
 `
 
 const CloseIcon = styled.button`
   position: absolute;
   padding: 5px;
-  right: 30px;
+  right: 25px;
   cursor: pointer;
+
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    right: 6px;
+  `}
 `
 
 export default function InfoHeader({ text, onClose }: { text: string; onClose: (status: boolean) => void }) {
