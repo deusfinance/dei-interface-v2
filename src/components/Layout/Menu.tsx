@@ -9,14 +9,12 @@ import useOnOutsideClick from 'hooks/useOnOutsideClick'
 import {
   NavToggle,
   IconWrapper,
-  Telegram as TelegramIcon,
-  CreditCard as CreditCardIcon,
-  Twitter as TwitterIcon,
-  Github as GithubIcon,
-  Lock as LockIcon,
+  Dashboard as DashboardIcon,
+  VeDeus as VeDeusIcon,
+  Mint as MintIcon,
   Redeem as RedeemIcon,
-  Gift as GiftIcon,
-  Trade as TradeIcon,
+  DeiBonds as DeiBondsIcon,
+  Analytics as AnalyticsIcon,
 } from 'components/Icons'
 import { Card } from 'components/Card'
 import { ExternalLink } from 'components/Link'
@@ -36,7 +34,7 @@ const InlineModal = styled(Card)<{
   width: 220px;
   transform: translateX(-220px) translateY(15px);
   z-index: ${Z_INDEX.modal};
-  gap: 10px;
+  gap: 12px;
   padding: 0.8rem;
   border: 1px solid ${({ theme }) => theme.border2};
   border-radius: 10px;
@@ -79,7 +77,23 @@ export default function Menu() {
             <Row active={router.route === '/dashboard'}>
               <div>Dashboard</div>
               <IconWrapper>
-                <CreditCardIcon size={20} />
+                <DashboardIcon size={20} />
+              </IconWrapper>
+            </Row>
+          </Link>
+          <Link href="/vest" passHref>
+            <Row active={router.route === '/vest'}>
+              <div>veDEUS</div>
+              <IconWrapper>
+                <VeDeusIcon size={20} />
+              </IconWrapper>
+            </Row>
+          </Link>
+          <Link href="/mint" passHref>
+            <Row active={router.route === '/mint'}>
+              <div>Mint DEI</div>
+              <IconWrapper>
+                <MintIcon size={20} />
               </IconWrapper>
             </Row>
           </Link>
@@ -93,33 +107,17 @@ export default function Menu() {
           </Link>
           <Link href="/deibonds" passHref>
             <Row active={router.route === '/deibonds'}>
-              <div>DeiBonds</div>
+              <div>DEI-Bonds</div>
               <IconWrapper>
-                <TradeIcon size={20} />
+                <DeiBondsIcon size={20} />
               </IconWrapper>
             </Row>
           </Link>
-          <Link href="/vdeus" passHref>
-            <Row active={router.route === '/vdeus'}>
-              <div>vDEUS</div>
-              <IconWrapper>
-                <GiftIcon size={20} />
-              </IconWrapper>
-            </Row>
-          </Link>
-          <Link href="/vest" passHref>
-            <Row active={router.route === '/vest'}>
-              <div>Vest</div>
-              <IconWrapper>
-                <LockIcon size={20} />
-              </IconWrapper>
-            </Row>
-          </Link>
-          <Link href="/rewards" passHref>
+          <Link href="/analytics" passHref>
             <Row active={router.route === '/analytics'}>
               <div>Analytics</div>
               <IconWrapper>
-                <GiftIcon size={20} />
+                <AnalyticsIcon size={20} />
               </IconWrapper>
             </Row>
           </Link>
