@@ -16,31 +16,41 @@ import { useERC721ApproveAllCallback } from 'hooks/useApproveNftCallback2'
 import { useVDeusStats } from 'hooks/useVDeusStats'
 
 import { tryParseAmount } from 'utils/parse'
-import { getRemainingTime } from 'utils/time'
-import { BDEI_TOKEN, DEI_TOKEN, DEUS_TOKEN, USDC_TOKEN } from 'constants/tokens'
+import { BDEI_TOKEN, DEI_TOKEN, USDC_TOKEN } from 'constants/tokens'
 import { vDeus, bDeiRedeemer } from 'constants/addresses'
+
+import REDEEM_IMG from '/public/static/images/pages/bdei/TableauBackground.svg'
+import DEI_LOGO from '/public/static/images/pages/bdei/DEI_logo.svg'
+import BOND_NFT_LOGO from '/public/static/images/pages/bdei/BondNFT.svg'
 
 import { DotFlashing, Info } from 'components/Icons'
 import { Row } from 'components/Row'
 import Hero from 'components/Hero'
 import StatsHeader from 'components/StatsHeader'
-import Dropdown from 'components/DropDown'
+import SelectBox from 'components/SelectBox'
 import { BottomWrapper, Container, InputWrapper, Title, Wrapper, MainButton } from 'components/App/StableCoin'
-import InputBox from 'components/App/Redemption/InputBox'
+import InputBox from 'components/InputBox'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
-import NFTModal from 'components/App/bdei/NFTsModal'
-import REDEEM_IMG from '/public/static/images/pages/bdei/TableauBackground.svg'
-import DEI_LOGO from '/public/static/images/pages/bdei/DEI_logo.svg'
+import NFTsModal from 'components/App/bdei/NFTsModal'
 
 const NFTsWrapper = styled(InputWrapper)`
   & > * {
+    &:nth-child(1) {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+    &:nth-child(3) {
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
+
     &:nth-child(4) {
       margin: 15px auto;
     }
     &:nth-child(2) {
-      margin: -11px auto;
-      margin-left: 27px;
+      margin: -12.5px auto;
+      margin-left: 49px;
     }
   }
 `
@@ -62,17 +72,6 @@ const PlusIcon = styled(Plus)`
   background-color: ${({ theme }) => theme.bg4};
   color: ${({ theme }) => theme.text2};
 `
-const DropdownWrapper = styled.div`
-  margin: 0 auto;
-  margin-top: 15px;
-  height: 60px;
-  width: 100%;
-  border-radius: 10px;
-
-  & > * {
-    height: 100%;
-  }
-`
 
 export default function Redemption() {
   const { chainId, account } = useWeb3React()
@@ -83,7 +82,6 @@ export default function Redemption() {
   const deiCurrency = DEI_TOKEN
   const bdeiCurrency = BDEI_TOKEN
   const usdcCurrency = USDC_TOKEN
-  const deusCurrency = DEUS_TOKEN
   const bdeiCurrencyBalance = useCurrencyBalance(account ?? undefined, bdeiCurrency)
   const deiCurrencyBalance = useCurrencyBalance(account ?? undefined, deiCurrency)
   const [isOpenNFTsModal, toggleNFTsModal] = useState(false)
@@ -94,20 +92,12 @@ export default function Redemption() {
   const { redeemPaused, redeemTranche } = useRedeemData()
   // console.log({ redeemPaused, rest })
   const [selectedNftId, setSelectedNftId] = useState('0')
-  const [dropDownDefaultValue, setDropDownDefaultValue] = useState<string | undefined>('0')
   const { listOfVouchers, numberOfVouchers } = useVDeusStats()
 
-  const dropdownOnSelect = useCallback((val: string) => {
-    setSelectedNftId(val)
-    setDropDownDefaultValue(val)
-    // console.log('draw down on select', { val })
-    return
-  }, [])
-
-  const dropdownOptions = listOfVouchers.map((tokenId: number) => ({
-    label: `vDEUS #${tokenId}`,
-    value: `${tokenId}`,
-  }))
+  // const dropdownOptions = listOfVouchers.map((tokenId: number) => ({
+  //   label: `vDEUS #${tokenId}`,
+  //   value: `${tokenId}`,
+  // }))
 
   // Amount typed in either fields
   const bdeiAmount = useMemo(() => {
@@ -145,8 +135,6 @@ export default function Redemption() {
     const show = bdeiCurrency && approvalStateERC20 !== ApprovalState.APPROVED && !!amountIn
     return [show, show && approvalStateERC20 === ApprovalState.PENDING]
   }, [bdeiCurrency, approvalStateERC20, amountIn])
-
-  const { diff } = getRemainingTime(redeemTranche.endTime)
 
   const handleApproveERC20 = async () => {
     setAwaitingApproveConfirmation(true)
@@ -219,10 +207,6 @@ export default function Redemption() {
       return <MainButton disabled>Redeem Paused</MainButton>
     }
 
-    if (diff < 0 && redeemTranche.trancheId != null) {
-      return <MainButton disabled>Tranche Ended</MainButton>
-    }
-
     if (Number(amountOut1) > redeemTranche.amountRemaining) {
       return <MainButton disabled>Exceeds Available Amount</MainButton>
     }
@@ -251,22 +235,14 @@ export default function Redemption() {
   return (
     <Container>
       <Hero>
-        <Image src={DEI_LOGO} height={'90px'} alt="Logo" onClick={() => toggleNFTsModal(true)} />
+        <Image src={DEI_LOGO} height={'90px'} alt="DEI logo" onClick={() => toggleNFTsModal(true)} />
         <Title>DEI Bond</Title>
         <StatsHeader items={items} />
       </Hero>
       <Wrapper>
         <Tableau title={'Redemption'} imgSrc={REDEEM_IMG} />
         <NFTsWrapper>
-          <DropdownWrapper>
-            <Dropdown
-              options={dropdownOptions}
-              placeholder="select an NFT"
-              defaultValue={dropDownDefaultValue}
-              onSelect={(v) => dropdownOnSelect(v)}
-              width="100%"
-            />
-          </DropdownWrapper>
+          <SelectBox icon={BOND_NFT_LOGO} placeholder="Select an NFT" value="" />
           <PlusIcon size={'24px'} />
           <InputBox currency={bdeiCurrency} value={amountOut2} onChange={(value: string) => console.log(value)} />
           <ArrowDown />
@@ -283,7 +259,7 @@ export default function Redemption() {
           {
             <Row mt={'8px'}>
               <Info data-for="id" data-tip={'Tool tip for hint client'} size={15} />
-              <Description>you will spend an {`"Time Reduction NFT"`} to redeem your bDEI .</Description>
+              <Description>you will spend an {`"Time Reduction NFT"`} to redeem your bDEI.</Description>
             </Row>
           }
         </NFTsWrapper>
@@ -292,7 +268,8 @@ export default function Redemption() {
           <InfoItem name={'DEUS Ratio'} value={'0.9???'} />
         </BottomWrapper>
       </Wrapper>
-      <NFTModal
+
+      <NFTsModal
         isOpen={isOpenNFTsModal}
         toggleModal={(action: boolean) => toggleNFTsModal(action)}
         selectedNFT={inputNFT}

@@ -125,6 +125,7 @@ const TopBorder = styled.div`
 `
 
 const Toggle = styled.div<{ active?: any }>`
+  font-family: 'Inter';
   flex: 1;
   line-height: 1.85rem;
   text-align: center;

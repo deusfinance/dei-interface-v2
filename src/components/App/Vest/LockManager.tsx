@@ -18,11 +18,12 @@ import { getMaximumDate, getMinimumDateByLockEnd } from 'utils/vest'
 import { Modal, ModalHeader } from 'components/Modal'
 import { TabWrapper, TabButton } from 'components/Tab'
 import { ContextError, InvalidContext, useInvalidContext } from 'components/InvalidContext'
-import { PrimaryButton } from 'components/Button'
+import { PrimaryButton, PrimaryButtonWide } from 'components/Button'
 import { DotFlashing } from 'components/Icons'
 import { SelectDatePresets } from './InputDate'
 import UserLockInformation from './UserLockInformation'
 import InputBox from '../Redemption/InputBox'
+import { ButtonText } from 'pages/vest'
 
 dayjs.extend(utc)
 
@@ -173,17 +174,25 @@ function IncreaseAmount({ nftId }: { nftId: number }) {
         isModal={true}
       />
       {INSUFFICIENT_BALANCE ? (
-        <PrimaryButton disabled>INSUFFICIENT BALANCE</PrimaryButton>
+        <PrimaryButton disabled>
+          <ButtonText>INSUFFICIENT BALANCE</ButtonText>
+        </PrimaryButton>
       ) : awaitingConfirmation ? (
         <PrimaryButton active>
-          Awaiting Confirmation <DotFlashing style={{ marginLeft: '10px' }} />
+          <ButtonText>
+            Awaiting Confirmation <DotFlashing style={{ marginLeft: '10px' }} />
+          </ButtonText>
         </PrimaryButton>
       ) : showTransactionPending ? (
         <PrimaryButton active>
-          Increasing <DotFlashing style={{ marginLeft: '10px' }} />
+          <ButtonText>
+            Increasing <DotFlashing style={{ marginLeft: '10px' }} />
+          </ButtonText>
         </PrimaryButton>
       ) : (
-        <PrimaryButton onClick={onLock}>Increase Lock Amount</PrimaryButton>
+        <PrimaryButtonWide width={'325px'} onClick={onLock}>
+          <ButtonText>Increase Lock Amount</ButtonText>
+        </PrimaryButtonWide>
       )}
     </>
   )
@@ -253,17 +262,25 @@ function IncreaseDuration({ nftId }: { nftId: number }) {
         isModal={true}
       />
       {awaitingConfirmation ? (
-        <PrimaryButton active>
-          Awaiting Confirmation <DotFlashing style={{ marginLeft: '10px' }} />
-        </PrimaryButton>
+        <PrimaryButtonWide active>
+          <ButtonText>
+            Awaiting Confirmation <DotFlashing style={{ marginLeft: '10px' }} />
+          </ButtonText>
+        </PrimaryButtonWide>
       ) : showTransactionPending ? (
-        <PrimaryButton active>
-          Increasing <DotFlashing style={{ marginLeft: '10px' }} />
-        </PrimaryButton>
+        <PrimaryButtonWide active>
+          <ButtonText>
+            Increasing <DotFlashing style={{ marginLeft: '10px' }} />
+          </ButtonText>
+        </PrimaryButtonWide>
       ) : !lockCanIncrease ? (
-        <PrimaryButton disabled>Maximum Lock Reached</PrimaryButton>
+        <PrimaryButtonWide disabled>
+          <ButtonText>Maximum Lock Reached</ButtonText>
+        </PrimaryButtonWide>
       ) : (
-        <PrimaryButton onClick={onLock}>Increase Duration</PrimaryButton>
+        <PrimaryButtonWide width={'325px'} onClick={onLock}>
+          <ButtonText>Increase Duration</ButtonText>
+        </PrimaryButtonWide>
       )}
     </>
   )

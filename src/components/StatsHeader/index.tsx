@@ -34,7 +34,7 @@ const ItemBox = styled.div`
 `
 
 const Name = styled.div`
-  /* font-family: 'Inter'; */
+  font-family: 'Inter';
   font-weight: 400;
   font-size: 12px;
   color: ${({ theme }) => theme.text2};
@@ -42,7 +42,7 @@ const Name = styled.div`
 `
 
 const Value = styled.div`
-  /* font-family: 'IBM Plex Mono'; */
+  font-family: 'IBM Plex Mono';
   font-weight: 500;
   font-size: 14px;
   color: ${({ theme }) => theme.text1};

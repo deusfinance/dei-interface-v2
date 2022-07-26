@@ -17,6 +17,7 @@ import { useVeDeusContract } from 'hooks/useContract'
 import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
 
 import veDEUS_LOGO from '/public/static/images/pages/veDEUS/veDEUS.svg'
+import CREATE_LOCK_IMG from '/public/static/images/pages/veDEUS/LockTableauBackground.svg'
 import { DEUS_TOKEN } from 'constants/vest'
 import { SupportedChainId } from 'constants/chains'
 import { veDEUS } from 'constants/addresses'
@@ -101,6 +102,8 @@ const CardWrapper = styled(Card)`
 `
 
 const ActionButton = styled(PrimaryButtonWide)`
+  font-family: 'Inter';
+  font-weight: 600;
   margin-top: 15px;
 `
 
@@ -177,41 +180,53 @@ export default function Create() {
     // approve
     if (awaitingApproveConfirmation) {
       return (
-        <ActionButton active>
+        <ActionButton width={'100%'} active>
           Awaiting Confirmation <DotFlashing style={{ marginLeft: '10px' }} />
         </ActionButton>
       )
     }
     if (showApproveLoader) {
       return (
-        <ActionButton active>
+        <ActionButton width={'100%'} active>
           Approving <DotFlashing style={{ marginLeft: '10px' }} />
         </ActionButton>
       )
     }
     if (showApprove) {
-      return <ActionButton onClick={handleApprove}>Approve</ActionButton>
+      return (
+        <ActionButton width={'100%'} onClick={handleApprove}>
+          Approve
+        </ActionButton>
+      )
     }
     // lock
     if (INSUFFICIENT_BALANCE) {
-      return <ActionButton disabled>INSUFFICIENT BALANCE</ActionButton>
+      return (
+        <ActionButton width={'100%'} disabled>
+          INSUFFICIENT BALANCE
+        </ActionButton>
+      )
     }
     if (awaitingConfirmation) {
       return (
-        <ActionButton active>
+        <ActionButton width={'100%'} active>
           Awaiting Confirmation <DotFlashing style={{ marginLeft: '10px' }} />
         </ActionButton>
       )
     }
     if (showTransactionPending) {
       return (
-        <ActionButton active>
+        <ActionButton width={'100%'} active>
           Locking <DotFlashing style={{ marginLeft: '10px' }} />
         </ActionButton>
       )
     }
 
-    return <ActionButton onClick={onLock}>Lock DEUS</ActionButton>
+    return (
+      <ActionButton width={'100%'} onClick={onLock}>
+        Lock DEUS
+      </ActionButton>
+    )
   }
 
   function getMainContent() {
@@ -242,7 +257,7 @@ export default function Create() {
 
     return (
       <>
-        <Tableau title={'Create lock'} />
+        <Tableau title={'Create Lock'} imgSrc={CREATE_LOCK_IMG} />
         <CardWrapper>
           <InputBox currency={deusCurrency} value={typedValue} onChange={(value: string) => setTypedValue(value)} />
 

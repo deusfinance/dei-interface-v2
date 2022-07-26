@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import styled from 'styled-components'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -16,6 +16,7 @@ dayjs.extend(relativeTime)
 dayjs.extend(localizedFormat)
 
 const Wrapper = styled.div`
+  font-family: 'Inter';
   display: flex;
   flex-flow: column nowrap;
   width: 100%;
@@ -57,6 +58,22 @@ const TotalVP = styled.div<{ isModal?: boolean }>`
   `}
 `
 
+export function computedVotingPowerFunc({
+  account,
+  chainId,
+  amount,
+  effectiveDate,
+}: {
+  account: any
+  chainId: number | undefined
+  amount: string
+  effectiveDate: Date
+}): BigNumber {
+  if (!account || !chainId || !amount) return new BigNumber(0)
+  const effectiveWeek = Math.floor(dayjs.utc(effectiveDate).diff(dayjs.utc(), 'week', true))
+  return new BigNumber(amount).times(effectiveWeek).div(208).abs() // 208 = 4 years in weeks
+}
+
 export default function UserLockInformation({
   amount,
   selectedDate,
@@ -80,15 +97,13 @@ export default function UserLockInformation({
     return lastThursday(selectedDate)
   }, [selectedDate])
 
-  const computedVotingPower: BigNumber = useMemo(() => {
-    if (!account || !chainId || !amount) return new BigNumber(0)
-    const effectiveWeek = Math.floor(dayjs.utc(effectiveDate).diff(dayjs.utc(), 'week', true))
-    return new BigNumber(amount).times(effectiveWeek).div(208).abs() // 208 = 4 years in weeks
+  const computedVotingPower = useCallback(() => {
+    return computedVotingPowerFunc({ account, chainId, amount, effectiveDate })
   }, [account, chainId, amount, effectiveDate])
 
   const totalVotingPower: string = useMemo(() => {
     const current = currentVotingPower ? parseFloat(currentVotingPower) : 0
-    return computedVotingPower.plus(current).toFixed(2)
+    return computedVotingPower().plus(current).toFixed(2)
   }, [computedVotingPower, currentVotingPower])
 
   const { userAPY } = useVestedAPY(undefined, effectiveDate)

@@ -5,10 +5,12 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import utc from 'dayjs/plugin/utc'
 import Image from 'next/image'
+import toast from 'react-hot-toast'
 
 import { useVeDeusContract } from 'hooks/useContract'
 import { useHasPendingVest, useTransactionAdder } from 'state/transactions/hooks'
 import { useVestedInformation } from 'hooks/useVested'
+import { useVeDistContract } from 'hooks/useContract'
 
 import Pagination from 'components/Pagination'
 import ImageWithFallback from 'components/ImageWithFallback'
@@ -20,8 +22,9 @@ import { DotFlashing } from 'components/Icons'
 import DEUS_LOGO from '/public/static/images/tokens/deus.svg'
 import EMPTY_LOCK from '/public/static/images/pages/veDEUS/emptyLock.svg'
 import EMPTY_LOCK_MOBILE from '/public/static/images/pages/veDEUS/emptyLockMobile.svg'
-import { formatAmount } from 'utils/numbers'
 import { ButtonText } from 'pages/vest'
+import { formatAmount } from 'utils/numbers'
+import { DefaultHandlerError } from 'utils/parseError'
 
 dayjs.extend(utc)
 dayjs.extend(relativeTime)
@@ -160,11 +163,13 @@ export default function Table({
   toggleLockManager,
   toggleAPYManager,
   isMobile,
+  rewards,
 }: {
   nftIds: number[]
   toggleLockManager: (nftId: number) => void
   toggleAPYManager: (nftId: number) => void
   isMobile?: boolean
+  rewards: number[]
 }) {
   const [offset, setOffset] = useState(0)
 
@@ -194,16 +199,17 @@ export default function Table({
                   toggleLockManager={toggleLockManager}
                   toggleAPYManager={toggleAPYManager}
                   isMobile={isMobile}
+                  reward={rewards[index] ?? 0}
                 />
               ))}
           </tbody>
           {paginatedItems.length == 0 && (
             <>
-              <div style={{ marginLeft: '15px', marginRight: '15px' }}>
+              <div style={{ margin: '0 auto' }}>
                 {isMobile ? (
                   <Image src={EMPTY_LOCK_MOBILE} alt="empty-lock-mobile" />
                 ) : (
-                  <Image src={EMPTY_LOCK} height={'90px'} alt="empty-lock" />
+                  <Image src={EMPTY_LOCK} alt="empty-lock" />
                 )}
               </div>
               <NoResults>You have no lock!</NoResults>
@@ -222,23 +228,44 @@ function TableRow({
   toggleAPYManager,
   index,
   isMobile,
+  reward,
 }: {
   nftId: number
   toggleLockManager: (nftId: number) => void
   toggleAPYManager: (nftId: number) => void
   index: number
   isMobile?: boolean
+  reward: number
 }) {
   const [awaitingConfirmation, setAwaitingConfirmation] = useState(false)
+  const [ClaimAwaitingConfirmation, setClaimAwaitingConfirmation] = useState(false)
   const [pendingTxHash, setPendingTxHash] = useState('')
   const { deusAmount, veDEUSAmount, lockEnd } = useVestedInformation(nftId)
-  // const { userAPY } = useVestedAPY(nftId)
   const veDEUSContract = useVeDeusContract()
   const addTransaction = useTransactionAdder()
   const showTransactionPending = useHasPendingVest(pendingTxHash)
+  const veDistContract = useVeDistContract()
 
   // subtracting 10 seconds to mitigate this from being true on page load
   const lockHasEnded = useMemo(() => dayjs.utc(lockEnd).isBefore(dayjs.utc().subtract(10, 'seconds')), [lockEnd])
+
+  const onClaim = useCallback(async () => {
+    try {
+      if (!veDistContract) return
+      setClaimAwaitingConfirmation(true)
+      const response = await veDistContract.claim(nftId)
+      addTransaction(response, { summary: `Claim #${nftId} reward`, vest: { hash: response.hash } })
+      setPendingTxHash(response.hash)
+      setClaimAwaitingConfirmation(false)
+    } catch (err) {
+      console.log(DefaultHandlerError(err))
+      setClaimAwaitingConfirmation(false)
+      setPendingTxHash('')
+      if (err?.code === 4001) {
+        toast.error('Transaction rejected.')
+      } else toast.error(DefaultHandlerError(err))
+    }
+  }, [veDistContract, nftId, addTransaction])
 
   const onWithdraw = useCallback(async () => {
     try {
@@ -272,20 +299,10 @@ function TableRow({
     )
   }
 
-  function getClaimWithdrawCell(IsSmall?: boolean) {
-    const hasClaimable = true
-
-    if (!lockHasEnded) {
-      if (!hasClaimable) return null
+  function getClaimButton() {
+    if (ClaimAwaitingConfirmation) {
       return (
-        <PrimaryButtonWide IsSmall={IsSmall} onClick={onWithdraw}>
-          <ButtonText>Claim</ButtonText>
-        </PrimaryButtonWide>
-      )
-    }
-    if (awaitingConfirmation) {
-      return (
-        <PrimaryButtonWide IsSmall={IsSmall} active>
+        <PrimaryButtonWide isSmall={true} active>
           <ButtonText>
             Confirming <DotFlashing style={{ marginLeft: '10px' }} />
           </ButtonText>
@@ -294,18 +311,45 @@ function TableRow({
     }
     if (showTransactionPending) {
       return (
-        <PrimaryButtonWide IsSmall={IsSmall} active>
+        <PrimaryButtonWide isSmall={true} active>
           <ButtonText>
-            Withdrawing <DotFlashing style={{ marginLeft: '10px' }} />
+            Claiming <DotFlashing style={{ marginLeft: '10px' }} />
           </ButtonText>
         </PrimaryButtonWide>
       )
     }
     return (
-      <PrimaryButtonWide IsSmall={IsSmall} onClick={onWithdraw}>
-        <ButtonText>Withdraw</ButtonText>
+      <PrimaryButtonWide style={{ margin: '0 auto' }} isSmall={true} onClick={onClaim}>
+        <ButtonText>Claim {formatAmount(reward, 3)}</ButtonText>
       </PrimaryButtonWide>
     )
+  }
+
+  function getClaimWithdrawCell(isSmall?: boolean) {
+    if (awaitingConfirmation) {
+      return (
+        <PrimaryButtonWide isSmall={isSmall} active>
+          <ButtonText>
+            Confirming <DotFlashing style={{ marginLeft: '10px' }} />
+          </ButtonText>
+        </PrimaryButtonWide>
+      )
+    } else if (showTransactionPending) {
+      return (
+        <PrimaryButtonWide isSmall={isSmall} active>
+          <ButtonText>
+            Withdrawing <DotFlashing style={{ marginLeft: '10px' }} />
+          </ButtonText>
+        </PrimaryButtonWide>
+      )
+    } else if (lockHasEnded) {
+      return (
+        <PrimaryButtonWide isSmall={isSmall} onClick={onWithdraw}>
+          <ButtonText>Withdraw</ButtonText>
+        </PrimaryButtonWide>
+      )
+    } else if (reward) return getClaimButton()
+    return null
   }
 
   function getTableRow() {
@@ -316,7 +360,6 @@ function TableRow({
             <ImageWithFallback src={DEUS_LOGO} alt={`veDeus logo`} width={30} height={30} />
             <NFTWrap>
               <CellAmount>veDEUS #{nftId}</CellAmount>
-              {/* <CellDescription>veDEUS ID</CellDescription> */}
             </NFTWrap>
           </RowCenter>
         </Cell>
@@ -333,7 +376,7 @@ function TableRow({
 
         <Cell style={{ padding: '5px 10px' }}>{getExpirationCell()}</Cell>
 
-        <Cell style={{ padding: '5px 10px' }}>{getClaimWithdrawCell()}</Cell>
+        <Cell style={{ padding: '5px 10px' }}>{getClaimWithdrawCell(false)}</Cell>
 
         <Cell style={{ padding: '5px 10px' }}>
           <PrimaryButtonWhite disabled onClick={() => toggleLockManager(nftId)}>
