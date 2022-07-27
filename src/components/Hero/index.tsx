@@ -11,8 +11,7 @@ const Hero = styled.div`
   font-size: 60px;
   font-weight: bold;
   background: ${({ theme }) => theme.bg0};
-  gap: 10px;
-  padding: 20px;
+  padding: 10px;
   padding-bottom: 10px;
 
   ${({ theme }) => theme.mediaWidth.upToMedium`

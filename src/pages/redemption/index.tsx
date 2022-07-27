@@ -30,6 +30,19 @@ import InputBox from 'components/App/Redemption/InputBox'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
 
+const RedemptionWrapper = styled(InputWrapper)`
+  & > * {
+    &:nth-child(3) {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+    &:nth-child(5) {
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
+  }
+`
+
 const Description = styled.div`
   font-size: 0.85rem;
   line-height: 1.25rem;
@@ -38,14 +51,18 @@ const Description = styled.div`
 `
 
 const PlusIcon = styled(Plus)`
-  margin: -11px auto;
-  margin-left: 17px;
+  margin: -12px auto;
+  margin-left: 67px;
   z-index: 1000;
   padding: 3px;
   border: 1px solid ${({ theme }) => theme.bg4};
   border-radius: 4px;
   background-color: ${({ theme }) => theme.bg4};
   color: ${({ theme }) => theme.text2};
+
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    margin-left: 62px;
+  `}
 `
 
 export default function Redemption() {
@@ -179,13 +196,8 @@ export default function Redemption() {
 
     return <MainButton onClick={() => handleRedeem()}>Redeem DEI</MainButton>
   }
-  const items = [
-    { name: 'DEI Price', value: '$0.5' },
-    { name: 'Global Dei Borrowed', value: '0.77m' },
-    { name: 'Total Supply', value: '72.53m' },
-    { name: 'Total Protocol Holdings', value: '24.64m' },
-    { name: 'Total DEI Bonded', value: '18.88m' },
-  ]
+  // TODO: use useMemo for items
+  const items = [{ name: 'Total DEI Redeemed ', value: '$0.5?' }]
   return (
     <Container>
       <Hero>
@@ -195,7 +207,7 @@ export default function Redemption() {
       </Hero>
       <Wrapper>
         <Tableau title={'Redeem DEI'} imgSrc={REDEEM_IMG} />
-        <InputWrapper>
+        <RedemptionWrapper>
           <InputBox currency={deiCurrency} value={amountIn} onChange={(value: string) => setAmountIn(value)} />
           <ArrowDown />
 
@@ -223,7 +235,7 @@ export default function Redemption() {
               <Description>you will get an NFT {`"DEUS voucher"`} that will let you claim DEUS later .</Description>
             </Row>
           }
-        </InputWrapper>
+        </RedemptionWrapper>
         <BottomWrapper>
           <InfoItem name={'USDC Ratio'} value={'0.1???'} />
           <InfoItem name={'DEUS Ratio'} value={'0.9???'} />

@@ -173,6 +173,7 @@ export default function NavBar() {
     return (
       <MobileWrapper>
         <NavLogo />
+        <Web3Network />
         <Web3Status />
         <Menu />
       </MobileWrapper>

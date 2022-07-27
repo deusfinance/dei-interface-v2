@@ -10,7 +10,6 @@ export const BaseButton = styled.div<{
   text-align: center;
   border-radius: 4px;
   outline: none;
-  border: 1px solid transparent;
   color: black;
   text-decoration: none;
   display: flex;
@@ -60,15 +59,15 @@ export const NavButton = styled.button`
 `
 
 export const PrimaryButton = styled(BaseButton)`
-  background: ${({ theme }) => theme.primary1};
+  background: ${({ theme }) => theme.specialBG1};
   color: ${({ theme }) => theme.text1};
   z-index: 0;
   &:focus {
-    box-shadow: 0 0 0 1pt ${({ theme }) => theme.primary2};
-    background: ${({ theme }) => theme.primary2};
+    box-shadow: 0 0 0 1pt ${({ theme }) => theme.primary7};
+    background: ${({ theme }) => theme.primary7};
   }
   &:hover {
-    background: ${({ theme }) => theme.primary2};
+    background: ${({ theme }) => theme.primary7};
   }
 
   ${({ theme, disabled }) =>
