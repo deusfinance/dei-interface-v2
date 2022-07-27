@@ -35,7 +35,7 @@ function fuzzySearch(options: SelectSearchOption[]): any {
   }
 }
 
-export function useSearch(tokens: Token[]) {
+export function useSearch(tokens: Token[][]) {
   // const tokens = allTokens
   const list = useMemo(() => {
     return tokens.map((token) => ({ ...token, name: token.name, value: token.symbol }))

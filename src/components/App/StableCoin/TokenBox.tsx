@@ -12,21 +12,21 @@ import { RowBetween } from 'components/Row'
 
 const Wrapper = styled(RowBetween).attrs({
   align: 'center',
-})`
+})<{ disabled?: boolean }>`
   display: flex;
-  border-radius: 15px;
+  border-radius: 12px;
   color: ${({ theme }) => theme.text2};
   white-space: nowrap;
   height: 60px;
   gap: 10px;
   padding: 0px 1rem;
   margin: 0 auto;
-  border: 1px solid ${({ theme }) => theme.border3};
+  border: 1px solid ${({ theme, disabled }) => (disabled ? theme.bg2 : theme.border3)};
   background: ${({ theme }) => theme.bg1};
 
   &:hover {
-    background: ${({ theme }) => theme.bg3};
-    cursor: pointer;
+    background: ${({ theme, disabled }) => (disabled ? theme.bg1 : theme.bg3)};
+    cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
   }
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
@@ -45,20 +45,30 @@ const Row = styled.div`
   `}
 `
 
-const Balance = styled.div`
+const Balance = styled.div<{ disabled?: boolean }>`
   font-size: 1rem;
   text-align: center;
-  color: ${({ theme }) => theme.text1};
+  color: ${({ theme, disabled }) => (disabled ? theme.text3 : theme.text1)};
+`
+
+const Symbol = styled.p<{ disabled?: boolean }>`
+  margin-left: 8px;
+  font-size: 1rem;
+  color: ${({ theme, disabled }) => (disabled ? theme.text3 : theme.text1)};
 `
 
 export default function TokenBox({
   currency,
+  index,
   toggleModal,
   setToken,
+  disabled,
 }: {
   currency: Currency
+  index: number
   toggleModal: (action: boolean) => void
-  setToken: (currency: Currency) => void
+  setToken: (index: number) => void
+  disabled?: boolean
 }) {
   const { account } = useWeb3React()
   const tokenAddress = currency.isToken ? currency.address : currency.wrapped.address
@@ -66,15 +76,21 @@ export default function TokenBox({
   const currencyBalance = useCurrencyBalance(account ?? undefined, currency ?? undefined)
   const balanceDisplay = useMemo(() => currencyBalance?.toSignificant(6), [currencyBalance])
 
+  // const tokenAddress2 = currency[1]?.isToken ? currency[1].address : currency[1].wrapped.address
+  // const logo2 = useCurrencyLogo(tokenAddress2)
+  // const currencyBalance2 = useCurrencyBalance(account ?? undefined, currency[1] ?? undefined)
+  // const balanceDisplay2 = useMemo(() => currencyBalance2?.toSignificant(6), [currencyBalance2])
+
   function getImageSize() {
-    return isMobile ? 28 : 36
+    return isMobile ? 28 : 32
   }
 
   return (
     <Wrapper
+      disabled={disabled}
       onClick={() => {
         toggleModal(false)
-        setToken(currency)
+        if (!disabled) setToken(index)
       }}
     >
       <div>
@@ -86,10 +102,10 @@ export default function TokenBox({
             alt={`${currency?.symbol} Logo`}
             round
           />
-          <p style={{ marginLeft: '8px', fontSize: '1rem', color: '#ccc' }}>{currency?.symbol}</p>
+          <Symbol disabled={disabled}>{currency?.symbol}</Symbol>
         </Row>
       </div>
-      <Balance>{balanceDisplay ? balanceDisplay : '0.00'}</Balance>
+      <Balance disabled={disabled}>{balanceDisplay ? balanceDisplay : '0.00'}</Balance>
     </Wrapper>
   )
 }
