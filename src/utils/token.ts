@@ -1,20 +1,21 @@
 // import StaticImageData from 'next/image'
-import { isAddress } from './address'
+// import { isAddress } from './address'
 import { SupportedChainId, SUPPORTED_CHAIN_IDS } from 'constants/chains'
 import { AddressMap, DecimalMap } from 'utils/address'
+import { Token } from '@sushiswap/core-sdk'
 
-export interface IToken {
-  chainId: number
-  address: string
-  decimals: number
-  symbol: string
-  name: string
-  isNative: boolean
-  isToken: boolean
-}
+// export interface IToken {
+//   chainId: number
+//   address: string
+//   decimals: number
+//   symbol: string
+//   name: string
+//   isNative: boolean
+//   isToken: boolean
+// }
 
 export type TokenMap = {
-  [key: number]: IToken
+  [key: number]: Token
 }
 
 export function duplicateTokenByChainId(
@@ -25,7 +26,7 @@ export function duplicateTokenByChainId(
   chains: SupportedChainId[] = SUPPORTED_CHAIN_IDS
 ): TokenMap {
   return chains.reduce((acc: TokenMap, chainId: number) => {
-    acc[chainId] = new Token(chainId, address, decimals, name, symbol)
+    acc[chainId] = new Token(chainId, address, decimals, symbol, name)
     return acc
   }, {})
 }
@@ -46,30 +47,30 @@ export function duplicateTokenByAddressMap(
     }, {})
 }
 
-export class Token implements IToken {
-  chainId: number
-  address: string
-  decimals: number
-  symbol: string
-  name: string
-  isNative: boolean
-  isToken: boolean
+// export class Token implements IToken {
+//   chainId: number
+//   address: string
+//   decimals: number
+//   symbol: string
+//   name: string
+//   isNative: boolean
+//   isToken: boolean
 
-  constructor(chainId: number, address: string, decimals: number, symbol: string, name: string) {
-    this.chainId = chainId
-    this.address = address
-    this.decimals = decimals
-    this.symbol = symbol
-    this.name = name
-    this.isNative = this.getIsNative()
-    this.isToken = this.getIsToken()
-  }
+//   constructor(chainId: number, address: string, decimals: number, symbol: string, name: string) {
+//     this.chainId = chainId
+//     this.address = address
+//     this.decimals = decimals
+//     this.symbol = symbol
+//     this.name = name
+//     this.isNative = this.getIsNative()
+//     this.isToken = this.getIsToken()
+//   }
 
-  private getIsNative(): boolean {
-    return this.address === '0x'
-  }
+//   private getIsNative(): boolean {
+//     return this.address === '0x'
+//   }
 
-  private getIsToken(): boolean {
-    return isAddress(this.address) ? true : false
-  }
-}
+//   private getIsToken(): boolean {
+//     return isAddress(this.address) ? true : false
+//   }
+// }

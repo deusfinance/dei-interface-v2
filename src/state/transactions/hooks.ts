@@ -117,3 +117,23 @@ export function useHasPendingVest(hash: string | null | undefined) {
     [allTransactions, hash]
   )
 }
+
+// export function useHasPendingMint(addressMap: string | null | undefined) {
+//   const allTransactions = useAllTransactions()
+//   return useMemo(
+//     () =>
+//       typeof addressMap === 'string' &&
+//       Object.keys(allTransactions).some((hash) => {
+//         const tx = allTransactions[hash]
+//         if (!tx) return false
+//         if (tx.receipt) {
+//           return false
+//         } else {
+//           const mint = tx.mint
+//           if (!mint) return false
+//           return mint.addressMap === addressMap && isTransactionRecent(tx)
+//         }
+//       }),
+//     [allTransactions, addressMap]
+//   )
+// }

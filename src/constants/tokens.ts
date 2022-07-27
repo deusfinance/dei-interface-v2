@@ -1,6 +1,6 @@
 import { SupportedChainId } from 'constants/chains'
-// import { Token } from '@sushiswap/core-sdk'
-import { duplicateTokenByAddressMap, duplicateTokenByChainId, Token, TokenMap } from 'utils/token'
+import { Token } from '@sushiswap/core-sdk'
+import { duplicateTokenByAddressMap, duplicateTokenByChainId, TokenMap } from 'utils/token'
 import { USDC_ADDRESS, DEUS_ADDRESS, DEI_ADDRESS, BDEI_ADDRESS } from './addresses'
 
 // import USDC_LOGO from 'assets/img/tokens/usdc.svg'
@@ -82,9 +82,9 @@ export const Tokens: { [key: string]: TokenMap } = {
       'Dai'
     ),
   },
-  ETH: {
-    [SupportedChainId.MAINNET]: new Token(SupportedChainId.MAINNET, '0x', 18, 'ETH', 'ETH'),
-  },
+  // ETH: {
+  //   [SupportedChainId.MAINNET]: new Token(SupportedChainId.MAINNET, '0x', 18, 'ETH', 'ETH'),
+  // },
   WBTC: {
     [SupportedChainId.MAINNET]: new Token(
       SupportedChainId.MAINNET,
@@ -94,18 +94,18 @@ export const Tokens: { [key: string]: TokenMap } = {
       'wBTC'
     ),
   },
-  MATIC: {
-    [SupportedChainId.POLYGON]: new Token(SupportedChainId.POLYGON, '0x', 18, 'MATIC', 'MATIC'),
-  },
-  WMATIC: {
-    [SupportedChainId.POLYGON]: new Token(
-      SupportedChainId.POLYGON,
-      '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-      18,
-      'WMATIC',
-      'wMATIC'
-    ),
-  },
+  // MATIC: {
+  //   [SupportedChainId.POLYGON]: new Token(SupportedChainId.POLYGON, '0x', 18, 'MATIC', 'MATIC'),
+  // },
+  // WMATIC: {
+  //   [SupportedChainId.POLYGON]: new Token(
+  //     SupportedChainId.POLYGON,
+  //     '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
+  //     18,
+  //     'WMATIC',
+  //     'wMATIC'
+  //   ),
+  // },
   WETH: duplicateTokenByAddressMap(WETH, 18, 'WETH', 'wETH'),
   USDC: duplicateTokenByAddressMap(USDC, 6, 'USDC', 'USD//C', { [SupportedChainId.BSC]: 18 }),
   DEI: duplicateTokenByChainId('0xDE12c7959E1a72bbe8a5f7A1dc8f8EeF9Ab011B3', 18, 'DEI', 'DEI'),
@@ -114,14 +114,14 @@ export const Tokens: { [key: string]: TokenMap } = {
     [SupportedChainId.MAINNET]: new Token(1, WRAPPED_NATIVE[1], 18, 'WETH', 'Wrapped Ether'),
     [SupportedChainId.RINKEBY]: new Token(4, WRAPPED_NATIVE[4], 18, 'WETH', 'Wrapped Ether'),
     [SupportedChainId.POLYGON]: new Token(137, WRAPPED_NATIVE[137], 18, 'WMATIC', 'Wrapped Matic'),
-    [SupportedChainId.FANTOM]: new Token(250, WRAPPED_NATIVE[250], 18, 'WFTM', 'Wrapped Fantom'), //TODO: change logo
-    [SupportedChainId.BSC]: new Token(56, WRAPPED_NATIVE[56], 18, 'WBNB', 'Wrapped BNB'), //TODO: change logo
+    [SupportedChainId.FANTOM]: new Token(250, WRAPPED_NATIVE[250], 18, 'WFTM', 'Wrapped Fantom'),
+    [SupportedChainId.BSC]: new Token(56, WRAPPED_NATIVE[56], 18, 'WBNB', 'Wrapped BNB'),
   },
-  NATIVE: {
-    [SupportedChainId.MAINNET]: new Token(1, '0x', 18, 'ETH', 'Ether'),
-    [SupportedChainId.RINKEBY]: new Token(4, '0x', 18, 'ETH', 'Ether'),
-    [SupportedChainId.POLYGON]: new Token(137, '0x', 18, 'MATIC', 'MATIC'),
-    [SupportedChainId.FANTOM]: new Token(250, '0x', 18, 'FTM', 'Fantom'), //TODO: change logo
-    [SupportedChainId.BSC]: new Token(56, '0x', 18, 'BNB', 'BNB'), //TODO: change logo
-  },
+  // NATIVE: {
+  //   [SupportedChainId.MAINNET]: new Token(1, '0x', 18, 'ETH', 'Ether'),
+  //   [SupportedChainId.RINKEBY]: new Token(4, '0x', 18, 'ETH', 'Ether'),
+  //   [SupportedChainId.POLYGON]: new Token(137, '0x', 18, 'MATIC', 'MATIC'),
+  //   [SupportedChainId.FANTOM]: new Token(250, '0x', 18, 'FTM', 'Fantom'),
+  //   [SupportedChainId.BSC]: new Token(56, '0x', 18, 'BNB', 'BNB'),
+  // },
 }

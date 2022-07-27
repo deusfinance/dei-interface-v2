@@ -18,6 +18,8 @@ import SWAP_ABI from 'constants/abi/SWAP_ABI.json'
 import VDeusMasterChefV2_ABI from 'constants/abi/VDeusMasterChefV2_ABI.json'
 import MasterChefV2_ABI from 'constants/abi/MasterChefV2_ABI.json'
 import VDEUS_STAKING_ABI from 'constants/abi/VDEUS_STAKING.json'
+import COLLATERAL_POOL_ABI from 'constants/abi/COLLATERAL_POOL_ABI.json'
+import PROXY_MINTER_ABI from 'constants/abi/PROXY_MINTER_ABI.json'
 
 import { Providers } from 'constants/providers'
 import {
@@ -32,6 +34,8 @@ import {
   vDeus,
   vDeusStaking,
   vDeusMasterChefV2,
+  CollateralPool,
+  MintProxy,
 } from 'constants/addresses'
 
 export function useContract<T extends Contract = Contract>(
@@ -150,4 +154,16 @@ export function useVDeusStakingContract() {
   const { chainId } = useWeb3React()
   const address = useMemo(() => (chainId ? vDeusStaking[chainId] : undefined), [chainId])
   return useContract(address, VDEUS_STAKING_ABI)
+}
+
+export function useCollateralPoolContract() {
+  const { chainId } = useWeb3React()
+  const address = useMemo(() => (chainId ? CollateralPool[chainId] : undefined), [chainId])
+  return useContract(address, COLLATERAL_POOL_ABI)
+}
+
+export function useProxyMinterContract() {
+  const { chainId } = useWeb3React()
+  const address = useMemo(() => (chainId ? MintProxy[chainId] : undefined), [chainId])
+  return useContract(address, PROXY_MINTER_ABI)
 }

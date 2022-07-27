@@ -153,3 +153,15 @@ export const vDeusStaking: AddressMap = {
 export const bDeiRedeemer: AddressMap = {
   [SupportedChainId.FANTOM]: '0x978b5d59DeE843C99B205A81ca82F66F35B1Ba35',
 }
+
+export const MintProxy: AddressMap = {
+  [SupportedChainId.FANTOM]: '',
+}
+
+export const CollateralPool: AddressMap = {
+  [SupportedChainId.FANTOM]: '',
+}
+
+export const Collateral: AddressMap = {
+  [SupportedChainId.FANTOM]: '',
+}
