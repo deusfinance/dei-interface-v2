@@ -19,16 +19,16 @@ import useDebounce from 'hooks/useDebounce'
 import { useSupportedChainId } from 'hooks/useSupportedChainId'
 import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
 import useRedemptionCallback from 'hooks/useRedemptionCallback'
-import { useRedeemAmountsOut, useRedeemData } from 'hooks/useRedemptionPage'
+import { useRedeemData } from 'hooks/useRedemptionPage'
 
-import { DotFlashing, Info } from 'components/Icons'
-import { Row } from 'components/Row'
+import { DotFlashing } from 'components/Icons'
 import Hero from 'components/Hero'
 import StatsHeader from 'components/StatsHeader'
 import { BottomWrapper, Container, InputWrapper, Title, Wrapper, MainButton } from 'components/App/StableCoin'
 import InputBox from 'components/App/Redemption/InputBox'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
+import { toBN } from 'utils/numbers'
 
 const RedemptionWrapper = styled(InputWrapper)`
   & > * {
@@ -76,8 +76,18 @@ export default function Redemption() {
   const deusCurrency = DEUS_TOKEN
   const deiCurrencyBalance = useCurrencyBalance(account ?? undefined, deiCurrency)
 
-  /* const { amountIn, amountOut1, amountOut2, onUserInput, onUserOutput1, onUserOutput2 } = useRedeemAmounts() */
-  const { amountOut1, amountOut2 } = useRedeemAmountsOut(debouncedAmountIn, deiCurrency)
+  const collatRatio = 80
+  const collatRatioBN = toBN(80)
+  const oneHundred = toBN(100)
+
+  const amountOut1 = useMemo(() => {
+    return toBN(amountIn).times(collatRatioBN).div(oneHundred).toString()
+  }, [amountIn, collatRatioBN, oneHundred])
+
+  const amountOut2 = useMemo(() => {
+    return toBN(amountIn).times(oneHundred.minus(collatRatioBN)).div(oneHundred).toString()
+  }, [amountIn, oneHundred, collatRatioBN])
+
   const { redeemPaused, redeemTranche } = useRedeemData()
   // console.log({ redeemPaused, rest })
 
@@ -91,15 +101,15 @@ export default function Redemption() {
     return deiCurrencyBalance?.lessThan(deiAmount)
   }, [deiCurrencyBalance, deiAmount])
 
-  const usdcAmount = useMemo(() => {
-    return tryParseAmount(amountOut1, usdcCurrency || undefined)
-  }, [amountOut1, usdcCurrency])
+  // const usdcAmount = useMemo(() => {
+  //   return tryParseAmount(amountOut1, usdcCurrency || undefined)
+  // }, [amountOut1, usdcCurrency])
 
   const {
     state: redeemCallbackState,
     callback: redeemCallback,
     error: redeemCallbackError,
-  } = useRedemptionCallback(deiCurrency, usdcCurrency, deiAmount, usdcAmount, amountOut2)
+  } = useRedemptionCallback(deiCurrency, deiAmount, collatRatio)
 
   const [awaitingApproveConfirmation, setAwaitingApproveConfirmation] = useState<boolean>(false)
   const [awaitingRedeemConfirmation, setAwaitingRedeemConfirmation] = useState<boolean>(false)
@@ -227,14 +237,14 @@ export default function Redemption() {
           <div style={{ marginTop: '20px' }}></div>
           {getApproveButton()}
           {getActionButton()}
-          <div style={{ marginTop: '20px' }}></div>
+          {/* <div style={{ marginTop: '20px' }}></div> */}
 
-          {
+          {/* {
             <Row mt={'8px'}>
               <Info data-for="id" data-tip={'Tool tip for hint client'} size={15} />
               <Description>you will get an NFT {`"DEUS voucher"`} that will let you claim DEUS later .</Description>
             </Row>
-          }
+          } */}
         </RedemptionWrapper>
         <BottomWrapper>
           <InfoItem name={'USDC Ratio'} value={'0.1???'} />

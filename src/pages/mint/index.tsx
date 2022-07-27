@@ -125,7 +125,7 @@ export default function Mint() {
 
   const handleMint = useCallback(async () => {
     console.log('called handleMint')
-    console.log(redeemCallbackState, redeemCallback, redeemCallbackError)
+    // console.log(redeemCallbackState, redeemCallback, redeemCallbackError)
     if (!redeemCallback) return
 
     try {
@@ -186,7 +186,7 @@ export default function Mint() {
   // TODO: move items to use memo
   const items = [
     { name: 'DEI Price', value: '$0.5?' },
-    { name: 'Collateral Ratio', value: '43.00%?' },
+    { name: 'Collateral Ratio', value: '99.00%?' },
     { name: 'Available to Mint', value: '72.53m?' },
     { name: 'Pool Balance', value: '24.64m?' },
     { name: 'Ceiling', value: '18.88m?' },

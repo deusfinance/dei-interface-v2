@@ -5,7 +5,7 @@ import toast from 'react-hot-toast'
 
 import { useTransactionAdder } from 'state/transactions/hooks'
 import useWeb3React from 'hooks/useWeb3'
-import { useDynamicRedeemerContract } from 'hooks/useContract'
+import { useCollateralPoolContract } from 'hooks/useContract'
 import { calculateGasMargin } from 'utils/web3'
 import { toHex } from 'utils/hex'
 import { DefaultHandlerError } from 'utils/parseError'
@@ -17,10 +17,8 @@ export enum RedeemCallbackState {
 
 export default function useRedemptionCallback(
   deiCurrency: Currency | undefined | null,
-  usdcCurrency: Currency | undefined | null,
   deiAmount: CurrencyAmount<NativeCurrency | Token> | null | undefined,
-  usdcAmount: CurrencyAmount<NativeCurrency | Token> | null | undefined,
-  deusAmount: string | null | undefined
+  collatRatio: number
 ): {
   state: RedeemCallbackState
   callback: null | (() => Promise<string>)
@@ -28,20 +26,27 @@ export default function useRedemptionCallback(
 } {
   const { account, chainId, library } = useWeb3React()
   const addTransaction = useTransactionAdder()
-  const dynamicRedeemer = useDynamicRedeemerContract()
+  const collateralPoolContract = useCollateralPoolContract()
 
   const constructCall = useCallback(() => {
     try {
-      if (!account || !library || !dynamicRedeemer || !deiAmount) {
+      if (!account || !library || !collateralPoolContract || !deiAmount) {
         throw new Error('Missing dependencies.')
       }
 
-      const methodName = 'redeemDEI'
+      let methodName = ''
+      if (collatRatio === 100) {
+        methodName = 'redeem1t1DEI'
+      } else if (collatRatio > 0) {
+        methodName = 'redeemFractionalDEI'
+      } else {
+        methodName = 'redeemAlgorithmicDEI'
+      }
       const args = [toHex(deiAmount.quotient)]
 
       return {
-        address: dynamicRedeemer.address,
-        calldata: dynamicRedeemer.interface.encodeFunctionData(methodName, args) ?? '',
+        address: collateralPoolContract.address,
+        calldata: collateralPoolContract.interface.encodeFunctionData(methodName, args) ?? '',
         value: 0,
       }
     } catch (error) {
@@ -49,17 +54,17 @@ export default function useRedemptionCallback(
         error,
       }
     }
-  }, [account, library, dynamicRedeemer, deiAmount])
+  }, [account, library, collateralPoolContract, deiAmount, collatRatio])
 
   return useMemo(() => {
-    if (!account || !chainId || !library || !dynamicRedeemer || !usdcCurrency || !deiCurrency || !deiAmount) {
+    if (!account || !chainId || !library || !collateralPoolContract || !deiCurrency || !deiAmount) {
       return {
         state: RedeemCallbackState.INVALID,
         callback: null,
         error: 'Missing dependencies',
       }
     }
-    if (!usdcAmount || !deusAmount || !deiAmount) {
+    if (!deiAmount) {
       return {
         state: RedeemCallbackState.INVALID,
         callback: null,
@@ -123,7 +128,7 @@ export default function useRedemptionCallback(
           })
           .then((response: TransactionResponse) => {
             console.log(response)
-            const summary = `Redeem ${deiAmount?.toSignificant()} DEI for ${usdcAmount?.toSignificant()} USDC & $${deusAmount} as DEUS NFT`
+            const summary = `Redeem ${deiAmount?.toSignificant()} DEI`
             addTransaction(response, { summary })
 
             return response.hash
@@ -140,17 +145,5 @@ export default function useRedemptionCallback(
           })
       },
     }
-  }, [
-    account,
-    chainId,
-    library,
-    addTransaction,
-    constructCall,
-    dynamicRedeemer,
-    usdcCurrency,
-    deiCurrency,
-    usdcAmount,
-    deusAmount,
-    deiAmount,
-  ])
+  }, [account, chainId, library, collateralPoolContract, deiCurrency, deiAmount, constructCall, addTransaction])
 }
