@@ -27,6 +27,8 @@ import { BottomWrapper, Container, InputWrapper, Title, Wrapper, MainButton } fr
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
 import TokensModal from 'components/App/StableCoin/TokensModal'
+import { MINT__INPUTS } from 'constants/inputs'
+import { SupportedChainId } from 'constants/chains'
 
 const SlippageWrapper = styled(RowBetween)`
   margin-top: 10px;
@@ -85,6 +87,7 @@ export default function Mint() {
 
   // TODO: this for test
   const tokens = useMemo(() => [[DEI_TOKEN], [USDC_TOKEN], [USDC_TOKEN, DEUS_TOKEN]], [])
+  // const tokens = useMemo(() => MINT__INPUTS[chainId ?? SupportedChainId.FANTOM], [])
 
   const [slippage, setSlippage] = useState(0.5)
 

@@ -30,6 +30,7 @@ import useDistRewards from 'hooks/useDistRewards'
 import { DefaultHandlerError } from 'utils/parseError'
 import { useIsTransactionPending, useTransactionAdder } from 'state/transactions/hooks'
 import { DotFlashing } from 'components/Icons'
+import InfoHeader from 'components/InfoHeader'
 
 const Wrapper = styled(Container)`
   margin: 0 auto;
@@ -323,14 +324,18 @@ export default function Vest() {
     return !!snapshotList.length && !!totalRewards
   }, [totalRewards, snapshotList.length])
 
+  const [showTopBanner, setShowTopBanner] = useState(true)
+
   return (
     <Container>
+      {showTopBanner && (
+        <InfoHeader onClose={setShowTopBanner} text={'Some random text! some random text! some random text!'} />
+      )}
       <Hero>
         <Image src={veDEUS_LOGO} height={'90px'} alt="Logo" />
         <Title>veDEUS</Title>
         <StatsHeader items={items} hasBox />
       </Hero>
-
       <Wrapper>
         {isMobile ? getUpperRowMobile() : getUpperRow()}
 
@@ -342,7 +347,6 @@ export default function Vest() {
           rewards={rewards}
         />
       </Wrapper>
-
       <LockManager isOpen={showLockManager} onDismiss={() => setShowLockManager(false)} nftId={nftId} />
       <APYManager
         isOpen={showAPYManager}

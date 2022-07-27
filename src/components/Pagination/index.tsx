@@ -45,18 +45,21 @@ const Wrapper = styled.div`
   `}
 `
 
+// TODO: #M shows (e.g. 1-10 if 47)
 export default function Pagination({
   pageCount,
   onPageChange,
+  count,
 }: {
   pageCount: number
   onPageChange: ({ selected }: { selected: number }) => void
+  count: number
 }) {
   return (
     <Wrapper>
       <ReactPaginate
-        previousLabel={'←'}
-        nextLabel={'→'}
+        previousLabel={'<'}
+        nextLabel={'>'}
         breakLabel={''}
         breakClassName={'break'}
         pageCount={pageCount}

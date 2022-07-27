@@ -224,8 +224,8 @@ export default function Redemption() {
 
     return <MainButton onClick={() => handleRedeem()}>Redeem DEI</MainButton>
   }
-  // TODO: use useMemo for items
 
+  // TODO: use useMemo for items
   const items = [
     { name: 'DEI Price', value: '$0.5?' },
     { name: 'Total DEI Bonded', value: '0.77m?' },

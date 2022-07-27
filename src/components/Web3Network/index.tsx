@@ -9,7 +9,7 @@ import { NavButton } from 'components/Button'
 import { SolidlyChains } from 'constants/chains'
 
 const Button = styled(NavButton)`
-  background: transparent;
+  background: ${({ theme }) => theme.bg1};
   justify-content: space-between;
   gap: 5px;
 
@@ -30,7 +30,7 @@ const Button = styled(NavButton)`
 
 const Text = styled.p`
   width: fit-content;
-  overflow: hidden;
+  /* overflow: hidden; */
   text-overflow: ellipsis;
   white-space: nowrap;
   font-weight: bold;

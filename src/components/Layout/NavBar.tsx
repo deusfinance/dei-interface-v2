@@ -29,6 +29,11 @@ const Wrapper = styled.div`
 const DefaultWrapper = styled(Wrapper)`
   display: flex;
   flex-flow: row nowrap;
+  font-family: 'Inter';
+  font-style: normal;
+  /* font-weight: 600; */
+  font-size: 16px;
+  line-height: 19px;
   & > * {
     &:first-child {
       flex: 1;
@@ -96,7 +101,7 @@ export const SubNavbarContentWrap = styled.ul`
   list-style: none;
   position: absolute;
   top: 50px;
-  margin-top: -10px;
+  margin-top: -14px;
   left: 50%;
   transform: translateX(-50%);
 
@@ -126,14 +131,13 @@ const NavLink = styled.div<{
   text-align: center;
   color: ${({ theme }) => theme.text1};
 
-  ${({ active, theme }) =>
+  ${({ active }) =>
     active &&
     `
-    // pointer-events: none;
-    // border-radius: 6px;
-    // background-color: ${theme.warning};
-    font-weight: 900;
-    color: ${theme.warning};
+    background: -webkit-linear-gradient(1deg, #e29d52 -10.26%, #de4a7b 90%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 600;
 `};
 
   &:hover {
@@ -142,20 +146,23 @@ const NavLink = styled.div<{
       !active &&
       `
       cursor: pointer;
-      color: ${theme.warning};
+      color: ${theme.darkPink};
   `};
   }
 `
 
 const TitleSpan = styled.span<{ active: boolean }>`
-  ${({ active, theme }) =>
+  ${({ active }) =>
     active &&
     `
-    // background-color: ${theme.warning};
-    // padding: 5px 7px;
-    // border-radius: 6px;
-    font-weight: 900;
-    color: ${theme.warning};
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 19px;
+    background: -webkit-linear-gradient(1deg, #e29d52 -10.26%, #de4a7b 90%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 `};
 `
 
@@ -191,9 +198,9 @@ export default function NavBar() {
                 <TitleSpan active={isSubItemChosen(item.children)}>
                   {item.text}
                   <ChevronDown
-                    color={isSubItemChosen(item.children) ? '#FF8F00' : 'white'}
+                    color={isSubItemChosen(item.children) ? '#B63562' : 'white'}
                     disable={true}
-                    style={{ position: 'absolute' }}
+                    style={{ position: 'absolute', marginTop: '-2px' }}
                   />
                 </TitleSpan>
                 <SubNavbarContentWrap>
