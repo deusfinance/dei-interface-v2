@@ -29,6 +29,7 @@ import Tableau from 'components/App/StableCoin/Tableau'
 import TokensModal from 'components/App/StableCoin/TokensModal'
 import { MINT__INPUTS } from 'constants/inputs'
 import { SupportedChainId } from 'constants/chains'
+import useMintCallback from 'hooks/useMintCallback'
 
 const SlippageWrapper = styled(RowBetween)`
   margin-top: 10px;
@@ -81,17 +82,19 @@ export default function Mint() {
   const debouncedAmountIn = useDebounce(amountIn, 500)
   const deiv2Currency = DEIv2_TOKEN
   const usdcCurrency = USDC_TOKEN
+  const deusCurrency = DEUS_TOKEN
   const usdcCurrencyBalance = useCurrencyBalance(account ?? undefined, usdcCurrency)
   const [isOpenTokensModal, toggleTokensModal] = useState(false)
   const [inputToken, setInputToken] = useState<number>(0)
 
   // TODO: this for test
-  const tokens = useMemo(() => [[DEI_TOKEN], [USDC_TOKEN], [USDC_TOKEN, DEUS_TOKEN]], [])
-  // const tokens = useMemo(() => MINT__INPUTS[chainId ?? SupportedChainId.FANTOM], [])
+  // const tokens = useMemo(() => [[DEI_TOKEN], [USDC_TOKEN], [USDC_TOKEN, DEUS_TOKEN]], [])
+  const tokens = useMemo(() => MINT__INPUTS[chainId ?? SupportedChainId.FANTOM], [chainId])
 
   const [slippage, setSlippage] = useState(0.5)
 
   const { amountOut1, amountOut2 } = useRedeemAmountsOut(debouncedAmountIn, usdcCurrency)
+  const { amountOut } = useRedeemAmountsOut(debouncedAmountIn, usdcCurrency)
 
   const usdcAmount = useMemo(() => {
     return tryParseAmount(amountIn, usdcCurrency || undefined)
@@ -106,7 +109,7 @@ export default function Mint() {
     state: redeemCallbackState,
     callback: redeemCallback,
     error: redeemCallbackError,
-  } = useRedemptionCallback(usdcCurrency, usdcCurrency, usdcAmount, usdcAmount, amountOut2)
+  } = useMintCallback(usdcCurrency, deusCurrency, deiv2Currency, usdcAmount, usdcAmount, amountOut)
 
   const [awaitingApproveConfirmation, setAwaitingApproveConfirmation] = useState<boolean>(false)
   const [awaitingRedeemConfirmation, setAwaitingRedeemConfirmation] = useState<boolean>(false)
@@ -125,7 +128,7 @@ export default function Mint() {
 
   const handleMint = useCallback(async () => {
     console.log('called handleMint')
-    console.log(redeemCallbackState, redeemCallback, redeemCallbackError)
+    // console.log(redeemCallbackState, redeemCallback, redeemCallbackError)
     if (!redeemCallback) return
 
     try {
@@ -186,7 +189,7 @@ export default function Mint() {
   // TODO: move items to use memo
   const items = [
     { name: 'DEI Price', value: '$0.5?' },
-    { name: 'Collateral Ratio', value: '43.00%?' },
+    { name: 'Collateral Ratio', value: '99.00%?' },
     { name: 'Available to Mint', value: '72.53m?' },
     { name: 'Pool Balance', value: '24.64m?' },
     { name: 'Ceiling', value: '18.88m?' },
