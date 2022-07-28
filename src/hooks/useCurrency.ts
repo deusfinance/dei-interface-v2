@@ -73,7 +73,7 @@ export function useToken(tokenAddress?: string | null): Token | null | undefined
   ])
 }
 
-export function useCurrency(currencyId?: string | null): Currency | null | undefined {
+export function useCurrency(currencyId?: string | null): Currency | undefined {
   const { chainId } = useWeb3React()
   const isETH = currencyId?.toUpperCase() === 'ETH'
   const token = useToken(isETH ? undefined : currencyId)

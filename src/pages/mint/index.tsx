@@ -9,17 +9,14 @@ import useWeb3React from 'hooks/useWeb3'
 import useDebounce from 'hooks/useDebounce'
 import { useSupportedChainId } from 'hooks/useSupportedChainId'
 import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
-import useRedemptionCallback from 'hooks/useRedemptionCallback'
-import { useRedeemAmountsOut } from 'hooks/useRedemptionPage'
 import { tryParseAmount } from 'utils/parse'
-import { DEIv2_TOKEN, DEI_TOKEN, DEUS_TOKEN, USDC_TOKEN } from 'constants/tokens'
-import { DynamicRedeemer } from 'constants/addresses'
+import { CollateralPool } from 'constants/addresses'
 import MINT_IMG from '/public/static/images/pages/mint/TableauBackground.svg'
 import DEI_LOGO from '/public/static/images/pages/mint/DEI_Logo.svg'
 
 import { DotFlashing } from 'components/Icons'
 import Hero from 'components/Hero'
-import InputBox from 'components/App/Migration/InputBox'
+import InputBox from 'components/InputBox'
 import { RowBetween } from 'components/Row'
 import AdvancedOptions from 'components/App/Swap/AdvancedOptions'
 import StatsHeader from 'components/StatsHeader'
@@ -27,9 +24,10 @@ import { BottomWrapper, Container, InputWrapper, Title, Wrapper, MainButton } fr
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
 import TokensModal from 'components/App/StableCoin/TokensModal'
-import { MINT__INPUTS } from 'constants/inputs'
+import { MINT__INPUTS, MINT__OUTPUTS } from 'constants/inputs'
 import { SupportedChainId } from 'constants/chains'
 import useMintCallback from 'hooks/useMintCallback'
+import useMintAmountOut from 'hooks/useMintPage'
 
 const SlippageWrapper = styled(RowBetween)`
   margin-top: 10px;
@@ -78,66 +76,103 @@ export default function Mint() {
   const { chainId, account } = useWeb3React()
   const toggleWalletModal = useWalletModalToggle()
   const isSupportedChainId = useSupportedChainId()
-  const [amountIn, setAmountIn] = useState('')
-  const debouncedAmountIn = useDebounce(amountIn, 500)
-  const deiv2Currency = DEIv2_TOKEN
-  const usdcCurrency = USDC_TOKEN
-  const deusCurrency = DEUS_TOKEN
-  const usdcCurrencyBalance = useCurrencyBalance(account ?? undefined, usdcCurrency)
+  // TODO: set one amount from the other based on collateralRatio
+  const [amountIn1, setAmountIn1] = useState('')
+  const [amountIn2, setAmountIn2] = useState('')
+  const debouncedAmountIn1 = useDebounce(amountIn1, 500)
+  const debouncedAmountIn2 = useDebounce(amountIn2, 500)
   const [isOpenTokensModal, toggleTokensModal] = useState(false)
   const [inputToken, setInputToken] = useState<number>(0)
 
-  // TODO: this for test
-  // const tokens = useMemo(() => [[DEI_TOKEN], [USDC_TOKEN], [USDC_TOKEN, DEUS_TOKEN]], [])
   const tokens = useMemo(() => MINT__INPUTS[chainId ?? SupportedChainId.FANTOM], [chainId])
+  const outputToken = useMemo(() => MINT__OUTPUTS[chainId ?? SupportedChainId.FANTOM], [chainId])
+
+  const token1Currency = tokens[inputToken][0]
+  const token2Currency = tokens[inputToken][1]
+
+  const OutputTokenCurrency = outputToken[inputToken][0]
+
+  const token1CurrencyBalance = useCurrencyBalance(account ?? undefined, token1Currency)
+  const token2CurrencyBalance = useCurrencyBalance(account ?? undefined, token2Currency)
 
   const [slippage, setSlippage] = useState(0.5)
 
-  const { amountOut1, amountOut2 } = useRedeemAmountsOut(debouncedAmountIn, usdcCurrency)
-  const { amountOut } = useRedeemAmountsOut(debouncedAmountIn, usdcCurrency)
+  // FIXME: set correct fee
+  const amountOut = useMintAmountOut(token1Currency, token2Currency, debouncedAmountIn1, debouncedAmountIn2, 0)
 
-  const usdcAmount = useMemo(() => {
-    return tryParseAmount(amountIn, usdcCurrency || undefined)
-  }, [amountIn, usdcCurrency])
+  const token1Amount = useMemo(() => {
+    return tryParseAmount(amountIn1, token1Currency || undefined)
+  }, [amountIn1, token1Currency])
 
-  const insufficientBalance = useMemo(() => {
-    if (!usdcAmount) return false
-    return usdcCurrencyBalance?.lessThan(usdcAmount)
-  }, [usdcCurrencyBalance, usdcAmount])
+  const token2Amount = useMemo(() => {
+    return tryParseAmount(amountIn2, token2Currency || undefined)
+  }, [amountIn2, token2Currency])
+
+  const insufficientBalance1 = useMemo(() => {
+    if (!token1Amount) return false
+    return token1CurrencyBalance?.lessThan(token1Amount)
+  }, [token1CurrencyBalance, token1Amount])
+
+  const insufficientBalance2 = useMemo(() => {
+    if (!token2Amount) return false
+    return token2CurrencyBalance?.lessThan(token2Amount)
+  }, [token2CurrencyBalance, token2Amount])
 
   const {
-    state: redeemCallbackState,
-    callback: redeemCallback,
-    error: redeemCallbackError,
-  } = useMintCallback(usdcCurrency, deusCurrency, deiv2Currency, usdcAmount, usdcAmount, amountOut)
+    state: mintCallbackState,
+    callback: mintCallback,
+    error: mintCallbackError,
+  } = useMintCallback(
+    token1Currency,
+    token2Currency,
+    OutputTokenCurrency,
+    debouncedAmountIn1,
+    debouncedAmountIn2,
+    amountOut
+  )
 
   const [awaitingApproveConfirmation, setAwaitingApproveConfirmation] = useState<boolean>(false)
-  const [awaitingRedeemConfirmation, setAwaitingRedeemConfirmation] = useState<boolean>(false)
-  const spender = useMemo(() => (chainId ? DynamicRedeemer[chainId] : undefined), [chainId])
-  const [approvalState, approveCallback] = useApproveCallback(usdcCurrency ?? undefined, spender)
-  const [showApprove, showApproveLoader] = useMemo(() => {
-    const show = usdcCurrency && approvalState !== ApprovalState.APPROVED && !!amountIn
-    return [show, show && approvalState === ApprovalState.PENDING]
-  }, [usdcCurrency, approvalState, amountIn])
+  const [awaitingMintConfirmation, setAwaitingMintConfirmation] = useState<boolean>(false)
 
-  const handleApprove = async () => {
+  // FIXME: who is the spender?
+  const spender = useMemo(() => (chainId ? CollateralPool[chainId] : undefined), [chainId])
+  const [approvalState1, approveCallback1] = useApproveCallback(token1Currency ?? undefined, spender)
+  const [approvalState2, approveCallback2] = useApproveCallback(token2Currency ?? undefined, spender)
+
+  const [showApprove1, showApproveLoader1] = useMemo(() => {
+    const show = token1Currency && approvalState1 !== ApprovalState.APPROVED && !!amountIn1
+    return [show, show && approvalState1 === ApprovalState.PENDING]
+  }, [token1Currency, approvalState1, amountIn1])
+
+  const [showApprove2, showApproveLoader2] = useMemo(() => {
+    const show = token2Currency && approvalState2 !== ApprovalState.APPROVED && !!amountIn2
+    return [show, show && approvalState2 === ApprovalState.PENDING]
+  }, [token2Currency, approvalState2, amountIn2])
+
+  const handleApprove1 = async () => {
     setAwaitingApproveConfirmation(true)
-    await approveCallback()
+    await approveCallback1()
+    setAwaitingApproveConfirmation(false)
+  }
+
+  const handleApprove2 = async () => {
+    setAwaitingApproveConfirmation(true)
+    await approveCallback2()
     setAwaitingApproveConfirmation(false)
   }
 
   const handleMint = useCallback(async () => {
     console.log('called handleMint')
-    // console.log(redeemCallbackState, redeemCallback, redeemCallbackError)
-    if (!redeemCallback) return
+    console.log(mintCallbackState, mintCallback, mintCallbackError)
+    if (!mintCallback) return
 
     try {
-      setAwaitingRedeemConfirmation(true)
-      const txHash = await redeemCallback()
-      setAwaitingRedeemConfirmation(false)
+      setAwaitingMintConfirmation(true)
+      const txHash = await mintCallback()
+      setAwaitingMintConfirmation(false)
       console.log({ txHash })
     } catch (e) {
-      setAwaitingRedeemConfirmation(false)
+      setAwaitingMintConfirmation(false)
       if (e instanceof Error) {
         // error = e.message
       } else {
@@ -145,45 +180,46 @@ export default function Mint() {
         // error = 'An unknown error occurred.'
       }
     }
-  }, [redeemCallbackState, redeemCallback, redeemCallbackError])
+  }, [mintCallback, mintCallbackError, mintCallbackState])
 
   function getApproveButton(): JSX.Element | null {
     if (!isSupportedChainId || !account) return null
-
-    if (awaitingApproveConfirmation) {
+    else if (awaitingApproveConfirmation) {
       return (
         <MainButton active>
           Awaiting Confirmation <DotFlashing style={{ marginLeft: '10px' }} />
         </MainButton>
       )
-    }
-    if (showApproveLoader) {
+    } else if (showApproveLoader1 || showApproveLoader2) {
       return (
         <MainButton active>
           Approving <DotFlashing style={{ marginLeft: '10px' }} />
         </MainButton>
       )
     }
-    if (showApprove) return <MainButton onClick={handleApprove}>Allow us to spend {usdcCurrency?.symbol}</MainButton>
+    if (showApprove1)
+      return <MainButton onClick={handleApprove1}>Allow us to spend {token1Currency?.symbol}</MainButton>
+    else if (showApprove2)
+      return <MainButton onClick={handleApprove2}>Allow us to spend {token2Currency?.symbol}</MainButton>
 
     return null
   }
 
   function getActionButton(): JSX.Element | null {
     if (!chainId || !account) return <MainButton onClick={toggleWalletModal}>Connect Wallet</MainButton>
-
-    if (showApprove) return null
-
-    if (insufficientBalance) return <MainButton disabled>Insufficient {usdcCurrency?.symbol} Balance</MainButton>
-
-    if (awaitingRedeemConfirmation) {
+    else if (showApprove1 || showApprove2) return null
+    else if (insufficientBalance1)
+      return <MainButton disabled>Insufficient {token1Currency?.symbol} Balance</MainButton>
+    else if (insufficientBalance2)
+      return <MainButton disabled>Insufficient {token2Currency?.symbol} Balance</MainButton>
+    else if (awaitingMintConfirmation) {
       return (
         <MainButton>
-          Migrating to {deiv2Currency?.symbol} <DotFlashing style={{ marginLeft: '10px' }} />
+          Minting {OutputTokenCurrency?.symbol} <DotFlashing style={{ marginLeft: '10px' }} />
         </MainButton>
       )
     }
-    return <MainButton onClick={() => handleMint()}>Mint {deiv2Currency?.symbol}</MainButton>
+    return <MainButton onClick={() => handleMint()}>Mint {OutputTokenCurrency?.symbol}</MainButton>
   }
 
   // TODO: move items to use memo
@@ -209,20 +245,20 @@ export default function Mint() {
           {tokens[inputToken].length > 1 ? (
             <ComboInputBox>
               <InputBox
-                currency={tokens[inputToken][0]}
-                value={amountOut1}
-                onChange={(value: string) => console.log(value)}
-                disabled={true}
+                currency={token1Currency}
+                value={amountIn1}
+                onChange={(value: string) => setAmountIn1(value)}
+                // disabled={true}
                 onTokenSelect={() => {
                   toggleTokensModal(true)
                 }}
               />
               <PlusIcon size={'24px'} />
               <InputBox
-                currency={tokens[inputToken][1]}
-                value={amountOut2}
-                onChange={(value: string) => console.log(value)}
-                disabled={true}
+                currency={token2Currency}
+                value={amountIn2}
+                onChange={(value: string) => setAmountIn2(value)}
+                // disabled={true}
                 onTokenSelect={() => {
                   toggleTokensModal(true)
                 }}
@@ -230,9 +266,9 @@ export default function Mint() {
             </ComboInputBox>
           ) : (
             <InputBox
-              currency={tokens[inputToken][0]}
-              value={amountIn}
-              onChange={(value: string) => setAmountIn(value)}
+              currency={token1Currency}
+              value={amountIn1}
+              onChange={(value: string) => setAmountIn1(value)}
               onTokenSelect={() => {
                 toggleTokensModal(true)
               }}
@@ -241,8 +277,8 @@ export default function Mint() {
 
           <ArrowDown />
           <InputBox
-            currency={deiv2Currency}
-            value={amountOut1}
+            currency={OutputTokenCurrency}
+            value={amountOut}
             onChange={(value: string) => console.log(value)}
             disabled={true}
           />

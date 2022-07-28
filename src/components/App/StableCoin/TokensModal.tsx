@@ -1,12 +1,10 @@
 import { useMemo } from 'react'
 import styled from 'styled-components'
-import { Currency, Token } from '@sushiswap/core-sdk'
 
 import { Modal, ModalHeader } from 'components/Modal'
 import useWeb3React from 'hooks/useWeb3'
 import TokenBox from 'components/App/StableCoin/TokenBox'
 import Column from 'components/Column'
-import { DEI_TOKEN, DEUS_TOKEN, USDC_TOKEN } from 'constants/tokens'
 import { Plus } from 'react-feather'
 import { MINT__INPUTS } from 'constants/inputs'
 import { SupportedChainId } from 'constants/chains'
@@ -83,9 +81,8 @@ export default function TokensModal({
   const { chainId, account } = useWeb3React()
 
   // TODO: selectedToken
-  // TODO: this for test
-  const tokens = useMemo(() => [[DEI_TOKEN], [USDC_TOKEN], [USDC_TOKEN, DEUS_TOKEN]], [])
-  // const tokens = useMemo(() => MINT__INPUTS[chainId ?? SupportedChainId.FANTOM], [])
+  // const tokens = useMemo(() => [[DEI_TOKEN], [USDC_TOKEN], [USDC_TOKEN, DEUS_TOKEN]], [])
+  const tokens = useMemo(() => MINT__INPUTS[chainId ?? SupportedChainId.FANTOM], [chainId])
 
   return (
     <Modal isOpen={isOpen} onBackgroundClick={() => toggleModal(false)} onEscapeKeydown={() => toggleModal(false)}>

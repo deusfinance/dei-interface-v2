@@ -44,6 +44,8 @@ export default function useRedemptionCallback(
       }
       const args = [toHex(deiAmount.quotient)]
 
+      // console.log({ args, methodName })
+
       return {
         address: collateralPoolContract.address,
         calldata: collateralPoolContract.interface.encodeFunctionData(methodName, args) ?? '',

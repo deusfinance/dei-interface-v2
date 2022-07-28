@@ -1,30 +1,34 @@
 import React, { useCallback, useMemo } from 'react'
 import styled from 'styled-components'
-import { Currency } from '@sushiswap/core-sdk'
+import { Currency, Token } from '@sushiswap/core-sdk'
 import { isMobile } from 'react-device-detect'
 
+import { useCurrencyBalance } from 'state/wallet/hooks'
 import useCurrencyLogo from 'hooks/useCurrencyLogo'
 import useWeb3React from 'hooks/useWeb3'
-import { useCurrencyBalance } from 'state/wallet/hooks'
 import { maxAmountSpend } from 'utils/currency'
 
-import { ChevronDown } from 'components/Icons'
 import ImageWithFallback from 'components/ImageWithFallback'
 import { NumericalInput } from 'components/Input'
-import { Row, RowBetween, RowEnd } from 'components/Row'
+import { Row, RowBetween, RowCenter, RowEnd } from 'components/Row'
+import { ChevronDown as ChevronDownIcon } from 'components/Icons'
 
-const Wrapper = styled(Row)`
+export const Wrapper = styled(Row)`
   background: ${({ theme }) => theme.bg2};
   border-radius: 12px;
   color: ${({ theme }) => theme.text2};
   white-space: nowrap;
   height: 80px;
+  gap: 10px;
   border: 1px solid #444444;
   border-color: ${({ theme }) => theme.border1};
-  position: relative;
+
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    height: 60px;
+  `}
 `
 
-const InputWrapper = styled.div`
+export const InputWrapper = styled.div`
   & > * {
     width: 100%;
   }
@@ -34,30 +38,31 @@ const InputWrapper = styled.div`
   `}
 `
 
-const CurrencySymbol = styled.div`
+export const CurrencySymbol = styled.div<{ active?: any }>`
   font-family: 'IBM Plex Mono';
   font-weight: 600;
   font-size: 16px;
   margin-left: 5px;
   color: ${({ theme }) => theme.text1};
+  cursor: ${({ active }) => active && 'pointer'};
 `
 
-const RightWrapper = styled.div`
+export const RightWrapper = styled.div`
   width: 100%;
-  padding: 8px;
+  border-left: 1px solid ${({ theme }) => theme.border1};
+  padding: 6px;
+  height: 100%;
   position: relative;
-  height: 100%;
 `
 
-export const LogoWrapper = styled(Row)`
+export const LogoWrapper = styled(RowCenter)<{ active?: any }>`
   height: 100%;
-  border-right: 1px solid ${({ theme }) => theme.border1};
   padding-left: 10px;
-  min-width: 48px;
-  max-width: 61px; //because of border-right
+  width: 80px;
+  cursor: ${({ active }) => active && 'pointer'};
 `
 
-const RowWrap = styled(RowEnd)`
+export const RowWrap = styled(RowEnd)`
   gap: 10px;
   font-size: 1.5rem;
 
@@ -66,13 +71,24 @@ const RowWrap = styled(RowEnd)`
   `}
 `
 
-const Balance = styled(RowWrap)`
+export const ChevronDown = styled(ChevronDownIcon)`
+  margin-left: 7px;
+  width: 16px;
+  color: ${({ theme }) => theme.text1};
+
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+      margin-left: 4px;
+  `}
+`
+
+const Balance = styled(RowWrap)<{ disabled?: boolean }>`
   font-family: 'IBM Plex Mono';
   font-weight: 500;
   font-size: 10px;
   margin-left: 4px;
   gap: 5px;
   color: ${({ theme }) => theme.text2};
+  width: 20px;
 
   & > span {
     background: ${({ theme }) => theme.bg2};
@@ -83,19 +99,13 @@ const Balance = styled(RowWrap)`
 
     &:hover {
       background: ${({ theme }) => theme.secondary2};
-      cursor: pointer;
+      cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
     }
   }
 
   &:hover {
-    cursor: pointer;
+    cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
   }
-`
-
-const StyledChevron = styled(ChevronDown)`
-  size: 20px;
-  position: absolute;
-  right: 16px;
 `
 
 export const getImageSize = () => {
@@ -106,17 +116,17 @@ export default function InputBox({
   currency,
   value,
   onChange,
-  title,
+  onTokenSelect,
   disabled,
 }: {
   currency: Currency
   value: string
   onChange(values: string): void
-  title?: string
+  onTokenSelect?: () => void
   disabled?: boolean
 }) {
   const { account } = useWeb3React()
-  const logo = useCurrencyLogo(currency?.wrapped.address)
+  const logo = useCurrencyLogo((currency as Token)?.address)
   const currencyBalance = useCurrencyBalance(account ?? undefined, currency ?? undefined)
 
   const [balanceExact, balanceDisplay] = useMemo(() => {
@@ -131,7 +141,7 @@ export default function InputBox({
   return (
     <>
       <Wrapper>
-        <LogoWrapper>
+        <LogoWrapper onClick={onTokenSelect ? () => onTokenSelect() : undefined} active={onTokenSelect ? true : false}>
           <ImageWithFallback
             src={logo}
             width={getImageSize()}
@@ -139,11 +149,17 @@ export default function InputBox({
             alt={`${currency?.symbol} Logo`}
             round
           />
+          {onTokenSelect ? <ChevronDown /> : <></>}
         </LogoWrapper>
 
         <RightWrapper>
           <RowBetween>
-            <CurrencySymbol>{currency?.symbol}</CurrencySymbol>
+            <CurrencySymbol
+              onClick={onTokenSelect ? () => onTokenSelect() : undefined}
+              active={onTokenSelect ? true : false}
+            >
+              {currency?.symbol}
+            </CurrencySymbol>
             <Balance onClick={handleClick}>
               balance: {balanceDisplay ? balanceDisplay : '0.00'}
               {!disabled && <span>MAX</span>}
@@ -156,73 +172,10 @@ export default function InputBox({
               placeholder="0.0"
               autoFocus
               disabled={disabled}
-              style={{ textAlign: 'left', height: '50px', fontSize: '24px', marginLeft: '5px' }}
+              style={{ textAlign: 'left', fontSize: '24px', marginLeft: '5px' }}
             />
           </InputWrapper>
         </RightWrapper>
-      </Wrapper>
-    </>
-  )
-}
-
-export function CustomInputBox({
-  symbol,
-  value,
-  onChange,
-  icon,
-  balance,
-  placeholder,
-  disabled,
-}: {
-  symbol: string
-  value: string
-  onChange(values: string): void
-  icon: string | StaticImageData
-  balance?: string
-  placeholder?: string
-  disabled?: boolean
-}) {
-  const handleClick = useCallback(() => {
-    if (!balance || !onChange) return
-    onChange(balance)
-  }, [balance, onChange])
-
-  return (
-    <>
-      <Wrapper style={{ cursor: 'pointer' }}>
-        <LogoWrapper>
-          <ImageWithFallback
-            src={icon}
-            value=""
-            width={getImageSize()}
-            height={getImageSize()}
-            alt={`${symbol} Logo`}
-            round
-          />
-        </LogoWrapper>
-
-        <RightWrapper>
-          <RowBetween>
-            <CurrencySymbol>{symbol}</CurrencySymbol>
-            {balance && (
-              <Balance onClick={handleClick}>
-                balance: {balance || '0.00'}
-                {!disabled && <span>MAX</span>}
-              </Balance>
-            )}
-          </RowBetween>
-          <InputWrapper>
-            <NumericalInput
-              value={value || ''}
-              onUserInput={onChange}
-              placeholder={placeholder || '0.0'}
-              autoFocus
-              disabled={disabled}
-              style={{ textAlign: 'left', height: '50px', fontSize: '16px', marginLeft: '-3px' }}
-            />
-          </InputWrapper>
-        </RightWrapper>
-        <StyledChevron />
       </Wrapper>
     </>
   )
