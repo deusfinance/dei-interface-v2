@@ -81,10 +81,12 @@ export default function Redemption() {
   const oneHundred = toBN(100)
 
   const amountOut1 = useMemo(() => {
+    if (!collatRatioBN || !amountIn) return '0'
     return toBN(amountIn).times(collatRatioBN).div(oneHundred).toString()
   }, [amountIn, collatRatioBN, oneHundred])
 
   const amountOut2 = useMemo(() => {
+    if (!collatRatioBN || !amountIn) return '0'
     return toBN(amountIn).times(oneHundred.minus(collatRatioBN)).div(oneHundred).toString()
   }, [amountIn, oneHundred, collatRatioBN])
 
@@ -207,7 +209,7 @@ export default function Redemption() {
     return <MainButton onClick={() => handleRedeem()}>Redeem DEI</MainButton>
   }
   // TODO: use useMemo for items
-  const items = [{ name: 'Total DEI Redeemed ', value: '$0.5?' }]
+  const items = [{ name: 'Total DEI Redeemed ', value: '$12M?' }]
   return (
     <Container>
       <Hero>

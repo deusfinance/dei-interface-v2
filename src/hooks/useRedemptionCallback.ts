@@ -30,7 +30,7 @@ export default function useRedemptionCallback(
 
   const constructCall = useCallback(() => {
     try {
-      if (!account || !library || !collateralPoolContract || !deiAmount) {
+      if (!account || !library || !collateralPoolContract || !deiAmount || !deiCurrency || !collatRatio) {
         throw new Error('Missing dependencies.')
       }
 
@@ -54,10 +54,10 @@ export default function useRedemptionCallback(
         error,
       }
     }
-  }, [account, library, collateralPoolContract, deiAmount, collatRatio])
+  }, [account, library, collateralPoolContract, deiAmount, deiCurrency, collatRatio])
 
   return useMemo(() => {
-    if (!account || !chainId || !library || !collateralPoolContract || !deiCurrency || !deiAmount) {
+    if (!account || !chainId || !library || !collateralPoolContract || !deiCurrency) {
       return {
         state: RedeemCallbackState.INVALID,
         callback: null,
