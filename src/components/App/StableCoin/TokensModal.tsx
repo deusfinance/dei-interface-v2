@@ -92,9 +92,8 @@ export default function TokensModal({
           {tokens.map((token, index) => {
             if (token.length > 1)
               return (
-                <ComboWrapper disabled={index === 2}>
+                <ComboWrapper disabled={index === 2} key={index}>
                   <TokenBox
-                    key={index}
                     index={index}
                     toggleModal={toggleModal}
                     currency={token[0]}
@@ -103,7 +102,6 @@ export default function TokensModal({
                   />
                   <PlusIcon size={24} />
                   <TokenBox
-                    key={index}
                     index={index}
                     toggleModal={toggleModal}
                     currency={token[1]}

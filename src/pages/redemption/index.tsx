@@ -29,6 +29,7 @@ import InputBox from 'components/InputBox'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
 import { toBN } from 'utils/numbers'
+import { useCollateralRatio } from 'state/dei/hooks'
 
 const RedemptionWrapper = styled(InputWrapper)`
   & > * {
@@ -76,9 +77,8 @@ export default function Redemption() {
   const deusCurrency = DEUS_TOKEN
   const deiCurrencyBalance = useCurrencyBalance(account ?? undefined, deiCurrency)
 
-  // FIXME: get from contract
-  const collatRatio = 80
-  const collatRatioBN = toBN(80)
+  const collatRatio = useCollateralRatio()
+  const collatRatioBN = toBN(collatRatio)
   const oneHundred = toBN(100)
 
   const amountOut1 = useMemo(() => {

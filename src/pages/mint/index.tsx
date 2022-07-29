@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react'
+import React, { useState, useMemo, useCallback, useEffect } from 'react'
 import styled from 'styled-components'
 import { ArrowDown, Plus } from 'react-feather'
 import Image from 'next/image'
@@ -16,7 +16,7 @@ import DEI_LOGO from '/public/static/images/pages/mint/DEI_Logo.svg'
 
 import { DotFlashing } from 'components/Icons'
 import Hero from 'components/Hero'
-import InputBox from 'components/InputBox'
+import InputBox from 'components/App/mint/InputBox'
 import { RowBetween } from 'components/Row'
 import AdvancedOptions from 'components/App/Swap/AdvancedOptions'
 import StatsHeader from 'components/StatsHeader'
@@ -28,6 +28,9 @@ import { MINT__INPUTS, MINT__OUTPUTS } from 'constants/inputs'
 import { SupportedChainId } from 'constants/chains'
 import useMintCallback from 'hooks/useMintCallback'
 import useMintAmountOut from 'hooks/useMintPage'
+import { DEUS_TOKEN } from 'constants/tokens'
+import { useCollateralRatio } from 'state/dei/hooks'
+import { toBN } from 'utils/numbers'
 
 const SlippageWrapper = styled(RowBetween)`
   margin-top: 10px;
@@ -76,29 +79,101 @@ export default function Mint() {
   const { chainId, account } = useWeb3React()
   const toggleWalletModal = useWalletModalToggle()
   const isSupportedChainId = useSupportedChainId()
-  // TODO: set one amount from the other based on collateralRatio
+
+  // FIXME: set correct fee
+  const [mintingFee, setMintingFee] = useState(0.5)
+
+  // FIXME: set correct deiPrices
+  const [deiPrices, setDeiPrices] = useState({ collateral_price: '1', deus_price: '1' })
+
   const [amountIn1, setAmountIn1] = useState('')
   const [amountIn2, setAmountIn2] = useState('')
+  const [hasPair, setHasPair] = useState(false)
   const debouncedAmountIn1 = useDebounce(amountIn1, 500)
   const debouncedAmountIn2 = useDebounce(amountIn2, 500)
   const [isOpenTokensModal, toggleTokensModal] = useState(false)
   const [inputToken, setInputToken] = useState<number>(0)
 
+  const collateralRatio = useCollateralRatio()
+  // const collateralRatioBN = toBN(collateralRatio)
+  // const oneHundred = toBN(100)
+
   const tokens = useMemo(() => MINT__INPUTS[chainId ?? SupportedChainId.FANTOM], [chainId])
-  const outputToken = useMemo(() => MINT__OUTPUTS[chainId ?? SupportedChainId.FANTOM], [chainId])
+  const outputToken = useMemo(() => MINT__OUTPUTS[chainId ?? SupportedChainId.FANTOM], [chainId])[0]
 
   const token1Currency = tokens[inputToken][0]
-  const token2Currency = tokens[inputToken][1]
+  const token2Currency = hasPair ? tokens[inputToken][1] : DEUS_TOKEN
 
-  const OutputTokenCurrency = outputToken[inputToken][0]
+  const OutputTokenCurrency = outputToken[0]
 
   const token1CurrencyBalance = useCurrencyBalance(account ?? undefined, token1Currency)
   const token2CurrencyBalance = useCurrencyBalance(account ?? undefined, token2Currency)
 
   const [slippage, setSlippage] = useState(0.5)
 
-  // FIXME: set correct fee
-  const amountOut = useMintAmountOut(token1Currency, token2Currency, debouncedAmountIn1, debouncedAmountIn2, 0)
+  useEffect(() => {
+    if (tokens[inputToken].length > 1) {
+      setAmountIn2('')
+      setHasPair(true)
+    } else {
+      setAmountIn2('')
+      setHasPair(false)
+    }
+  }, [inputToken, tokens])
+
+  const [focusType, setFocusType] = useState('from1')
+
+  useEffect(() => {
+    if (amountIn1 === '' && focusType === 'from1') {
+      setAmountIn2('')
+    } else if (amountIn2 === '' && focusType === 'from2') {
+      setAmountIn1('')
+    }
+  }, [amountIn1, amountIn2, focusType])
+
+  useEffect(() => {
+    if (deiPrices && hasPair) {
+      const { collateral_price, deus_price } = deiPrices
+
+      const in1Unit = collateralRatio === 0 ? deus_price : collateral_price
+      const in2Unit = deus_price
+      let a1 = ''
+      let a2 = ''
+
+      if (focusType === 'from1' && amountIn1 !== '') {
+        a1 = amountIn1
+        a2 =
+          collateralRatio > 0 && collateralRatio < 100
+            ? toBN(a1)
+                .times(in1Unit)
+                .times(100 - collateralRatio)
+                .div(collateralRatio)
+                .div(in2Unit)
+                .toString()
+            : '0'
+      } else if (focusType === 'from2' && amountIn2 !== '') {
+        a2 = amountIn2
+        a1 = toBN(a2)
+          .times(in2Unit)
+          .times(collateralRatio)
+          .div(100 - collateralRatio)
+          .div(in1Unit)
+          .toString()
+      }
+      setAmountIn1(a1)
+      setAmountIn2(a2)
+    }
+  }, [debouncedAmountIn1, amountIn2, focusType, amountIn1, debouncedAmountIn2, deiPrices, hasPair, collateralRatio])
+
+  // useEffect(() => {
+  //   if (amountIn1 !== debouncedAmountIn1) {
+  //     seta2(toBN(amountIn1).times(collateralRatioBN).div(oneHundred).toString())
+  //   } else if (amountIn2 !== debouncedAmountIn2) {
+  //     setAmountIn1(toBN(amountIn2).times(collateralRatioBN).div(oneHundred).toString())
+  //   }
+  // }, [amountIn1, amountIn2])
+
+  const amountOut = useMintAmountOut(token1Currency, token2Currency, debouncedAmountIn1, debouncedAmountIn2, mintingFee)
 
   const token1Amount = useMemo(() => {
     return tryParseAmount(amountIn1, token1Currency || undefined)
@@ -115,8 +190,9 @@ export default function Mint() {
 
   const insufficientBalance2 = useMemo(() => {
     if (!token2Amount) return false
+    if (!hasPair) return false
     return token2CurrencyBalance?.lessThan(token2Amount)
-  }, [token2CurrencyBalance, token2Amount])
+  }, [token2Amount, hasPair, token2CurrencyBalance])
 
   const {
     state: mintCallbackState,
@@ -134,7 +210,6 @@ export default function Mint() {
   const [awaitingApproveConfirmation, setAwaitingApproveConfirmation] = useState<boolean>(false)
   const [awaitingMintConfirmation, setAwaitingMintConfirmation] = useState<boolean>(false)
 
-  // FIXME: who is the spender?
   const spender = useMemo(() => (chainId ? CollateralPool[chainId] : undefined), [chainId])
   const [approvalState1, approveCallback1] = useApproveCallback(token1Currency ?? undefined, spender)
   const [approvalState2, approveCallback2] = useApproveCallback(token2Currency ?? undefined, spender)
@@ -145,9 +220,10 @@ export default function Mint() {
   }, [token1Currency, approvalState1, amountIn1])
 
   const [showApprove2, showApproveLoader2] = useMemo(() => {
+    if (hasPair) [false, false]
     const show = token2Currency && approvalState2 !== ApprovalState.APPROVED && !!amountIn2
     return [show, show && approvalState2 === ApprovalState.PENDING]
-  }, [token2Currency, approvalState2, amountIn2])
+  }, [hasPair, token2Currency, approvalState2, amountIn2])
 
   const handleApprove1 = async () => {
     setAwaitingApproveConfirmation(true)
@@ -196,8 +272,7 @@ export default function Mint() {
           Approving <DotFlashing style={{ marginLeft: '10px' }} />
         </MainButton>
       )
-    }
-    if (showApprove1)
+    } else if (showApprove1)
       return <MainButton onClick={handleApprove1}>Allow us to spend {token1Currency?.symbol}</MainButton>
     else if (showApprove2)
       return <MainButton onClick={handleApprove2}>Allow us to spend {token2Currency?.symbol}</MainButton>
@@ -248,6 +323,8 @@ export default function Mint() {
                 currency={token1Currency}
                 value={amountIn1}
                 onChange={(value: string) => setAmountIn1(value)}
+                setFocusType={setFocusType}
+                focusType="from1"
                 // disabled={true}
                 onTokenSelect={() => {
                   toggleTokensModal(true)
@@ -258,6 +335,8 @@ export default function Mint() {
                 currency={token2Currency}
                 value={amountIn2}
                 onChange={(value: string) => setAmountIn2(value)}
+                setFocusType={setFocusType}
+                focusType="from2"
                 // disabled={true}
                 onTokenSelect={() => {
                   toggleTokensModal(true)
@@ -269,6 +348,8 @@ export default function Mint() {
               currency={token1Currency}
               value={amountIn1}
               onChange={(value: string) => setAmountIn1(value)}
+              setFocusType={setFocusType}
+              focusType="from1"
               onTokenSelect={() => {
                 toggleTokensModal(true)
               }}
@@ -280,6 +361,8 @@ export default function Mint() {
             currency={OutputTokenCurrency}
             value={amountOut}
             onChange={(value: string) => console.log(value)}
+            setFocusType={setFocusType}
+            focusType="to"
             disabled={true}
           />
           <div style={{ marginTop: '30px' }}></div>
