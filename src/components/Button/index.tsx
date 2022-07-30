@@ -167,3 +167,27 @@ export const PrimaryButtonWhite = styled(BaseButton)`
     }
   `}
 `
+
+export const OptionButton = styled(BaseButton)<{ active?: any }>`
+  height: 36px;
+  width: 62px;
+  font-size: 13px;
+  padding: 0;
+  border-radius: 6px;
+  color: ${({ theme }) => theme.text1};
+  border: 1.5px solid ${({ theme, active }) => (active ? theme.border2 : theme.border1)};
+  background: ${({ theme, active }) => (active ? theme.bg3 : 'transparent')};
+  position: relative;
+  z-index: 1;
+  transition: all 0.1s;
+  cursor: ${({ active }) => active && 'pointer'};
+
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+      margin-right: 3px;
+      // width: 48px;
+  `}
+
+  &:hover {
+    border: 1.5px solid ${({ theme, active }) => (active ? theme.border3 : theme.text1)};
+  }
+`

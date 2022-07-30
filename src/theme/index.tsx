@@ -93,7 +93,7 @@ function colors(themeName: SupportedThemes): Colors {
       primary2: 'linear-gradient(90deg, #FFBA35 1.54%, #FFA76A 50%)',
       primary3: '#FFBA35',
       primary4: 'linear-gradient(92.33deg, #DE4A7B -10.26%, #E29D52 80%)',
-      primary5: 'linear-gradient(92.33deg, #DE4A7B -10.26%, #E29D52 100%)',
+      primary5: 'linear-gradient(92.33deg, #8f3e5c -10.26%, #a97d4d 80%)',
       primary6: 'linear-gradient(-90deg, #B63562 10%, #CF8D49 90%)',
       primary7: 'linear-gradient(90deg, #B63562 10%, #CF8D49 90%)',
 
@@ -156,7 +156,7 @@ function colors(themeName: SupportedThemes): Colors {
       primary2: 'linear-gradient(92.33deg, #E29D52 -10.26%, #DE4A7B 80%)',
       primary3: '#FFBA35',
       primary4: 'linear-gradient(92.33deg, #DE4A7B -10.26%, #E29D52 80%)',
-      primary5: 'linear-gradient(92.33deg, #DE4A7B -10.26%, #E29D52 100%)',
+      primary5: 'linear-gradient(-92.33deg, #421D2D -10.26%, #493625 80%)',
       primary6: 'linear-gradient(-90deg, #B63562 10%, #CF8D49 90%)',
       primary7: 'linear-gradient(90deg, #ff538f 10%, #ffb56c 90%)',
       // color text

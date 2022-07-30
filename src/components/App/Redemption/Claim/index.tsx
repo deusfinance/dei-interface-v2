@@ -1,6 +1,5 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useState } from 'react'
 import styled from 'styled-components'
-import { lighten } from 'polished'
 import Image from 'next/image'
 
 import CLAIM_LOGO from '/public/static/images/pages/redemption/claim.svg'
@@ -13,6 +12,7 @@ import { useClaimableTokens } from 'state/redeem/hooks'
 // import { useClaimCallback } from 'hooks/useBridgeCallback'
 import useRpcChangerCallback from 'hooks/useRpcChangerCallback'
 import { useAppDispatch } from 'state'
+import { SupportedChainId } from 'constants/chains'
 
 const ActionWrap = styled(Card)`
   padding: 0;
@@ -50,7 +50,7 @@ export const ClaimBox = styled.div`
   overflow-y: auto;
   & > div {
     padding: 15px 10px;
-    border-bottom: 1px solid ${({ theme }) => lighten(0.3, theme.blue2)};
+    border-bottom: 1px solid ${({ theme }) => theme.bg2};
   }
 `
 
@@ -94,10 +94,10 @@ const getInfoComponent = (): JSX.Element => {
   )
 }
 
-export default function BridgeClaim() {
+export default function RedeemClaim() {
   const unClaimed = useClaimableTokens()
   // const currentBlocks = useCurrentBlocks()
-  const currentBlocks = 10
+  const currentBlock = Date.now() / 1000
   const dispatch = useAppDispatch()
   const onSwitchNetwork = useRpcChangerCallback()
 
@@ -109,12 +109,12 @@ export default function BridgeClaim() {
       // console.log('called handleClaim')
       // console.log(claimCallbackState, claimCallback, claimCallbackError)
 
-      if (!claimCallback) return
+      // if (!claimCallback) return
       dispatch(setAttemptingTxn(true))
 
       let error = ''
       try {
-        const txHash = await claimCallback(token)
+        // const txHash = await claimCallback(token)
         // setTxHash(txHash)
       } catch (e) {
         if (e instanceof Error) {
@@ -125,7 +125,7 @@ export default function BridgeClaim() {
         }
       }
     },
-    [dispatch, claimCallback]
+    [dispatch]
   )
 
   return (
@@ -141,13 +141,14 @@ export default function BridgeClaim() {
       ) : (
         <ClaimBox>
           {unClaimed.map((token: IClaimToken, index: number) => {
-            const { symbol, amount, claimableBlock, logo } = token
+            const { symbol, amount, claimableBlock } = token
+            const toChainId = SupportedChainId.FANTOM
             return (
               <TokenBox
                 key={index}
                 symbol={symbol}
-                claimableBlock={10}
-                currentBlock={100}
+                claimableBlock={claimableBlock}
+                currentBlock={currentBlock}
                 amount={amount}
                 onSwitchNetwork={() => onSwitchNetwork(toChainId)}
                 onClaim={() => handleClaim(token)}

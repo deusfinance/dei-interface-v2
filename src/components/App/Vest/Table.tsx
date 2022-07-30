@@ -350,7 +350,7 @@ function TableRow({
           <TopBorder>
             <PrimaryButtonWide width={'100%'} disabled>
               <ButtonText style={{ margin: '-6px' }} disabled>
-                Confirming <DotFlashing style={{ marginLeft: '10px' }} />
+                Confirming ...
               </ButtonText>
             </PrimaryButtonWide>
           </TopBorder>
@@ -362,7 +362,7 @@ function TableRow({
           <TopBorder>
             <PrimaryButtonWide width={'100%'} disabled>
               <ButtonText style={{ margin: '-5px' }} disabled>
-                Withdrawing <DotFlashing style={{ marginLeft: '10px' }} />
+                Withdrawing ...
               </ButtonText>
             </PrimaryButtonWide>
           </TopBorder>

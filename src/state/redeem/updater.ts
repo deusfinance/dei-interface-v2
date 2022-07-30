@@ -4,12 +4,12 @@ import { useAppDispatch, AppThunkDispatch } from 'state'
 import { autoRefresh } from 'utils/retry'
 import { fetchUnClaimed } from './reducer'
 import useWeb3React from 'hooks/useWeb3'
-import { useClaimableTokens } from './hooks'
+// import { useClaimableTokens } from './hooks'
 
 export default function Updater(): null {
   const { account } = useWeb3React()
   const thunkDispatch: AppThunkDispatch = useAppDispatch()
-  const unClaimed = useClaimableTokens()
+  // const unClaimed = useClaimableTokens()
 
   useEffect(() => {
     if (account) {

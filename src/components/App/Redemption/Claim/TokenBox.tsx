@@ -5,6 +5,7 @@ import { RowBetween, RowStart } from 'components/Row'
 
 import ClaimButton from './ClaimButton'
 import { formatBalance } from 'utils/numbers'
+import DEUS_LOGO from '/public/static/images/tokens/deus.svg'
 
 const TokenInfo = styled.div`
   color: ${({ theme }) => theme.bg0};
@@ -27,7 +28,6 @@ const Amount = styled.div`
 
 export const TokenBox = ({
   symbol,
-  logo,
   claimableBlock,
   currentBlock,
   amount,
@@ -35,13 +35,13 @@ export const TokenBox = ({
   onClaim,
 }: {
   symbol: string | null
-  logo: StaticImageData | string
   claimableBlock?: number
   currentBlock?: number
   amount?: number | null
   onSwitchNetwork?: () => void
   onClaim?: () => void
 }): JSX.Element => {
+  const logo = DEUS_LOGO
   return (
     <>
       <TokenInfo>

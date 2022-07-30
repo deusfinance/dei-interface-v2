@@ -5,7 +5,6 @@ import BN from 'bignumber.js'
 import { autoRefresh } from 'utils/retry'
 import useWeb3React from 'hooks/useWeb3'
 import { useSingleContractMultipleMethods } from 'state/multicall/hooks'
-import { setRedeemBalances, setShowClaim } from 'state/redeem/reducer'
 import { useCollateralPoolContract, useDeiContract } from 'hooks/useContract'
 
 import { useCollateralPrice } from './hooks'
@@ -139,25 +138,6 @@ export default function Updater(): null {
     poolCeilingScale,
     poolBalanceScale,
   ])
-
-  //update user's balance in CollateralPoolContract
-  useEffect(() => {
-    if (!isSupported || !account || !chainId || collateralRatioScale == undefined) return
-
-    const [collateralBalances, deusBalances] = userResponse
-
-    if (collateralBalances?.result && deusBalances?.result) {
-      const collateralBalance = new BN(collateralBalances.result[0].toString()).div(collateralRatioScale)
-      const deusBalance = new BN(deusBalances.result[0].toString()).div(1e18)
-      dispatch(setRedeemBalances({ deus: deusBalance.toNumber(), collateral: collateralBalance.toNumber() }))
-
-      if (!collateralBalance.isZero() || !deusBalance.isZero()) {
-        dispatch(setShowClaim(true))
-      } else {
-        dispatch(setShowClaim(false))
-      }
-    }
-  }, [dispatch, isSupported, account, collateralRatioScale, userResponse, chainId])
 
   useEffect(() => {
     if (chainId && isSupported) {
