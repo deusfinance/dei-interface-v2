@@ -30,6 +30,14 @@ import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
 import { toBN } from 'utils/numbers'
 import { useCollateralRatio } from 'state/dei/hooks'
+import DefaultReviewModal from 'components/ReviewModal/DefaultReviewModal'
+import Claim from 'components/App/Redemption/Claim'
+
+const MainWrap = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: -10px;
+`
 
 const RedemptionWrapper = styled(InputWrapper)`
   & > * {
@@ -76,6 +84,7 @@ export default function Redemption() {
   const usdcCurrency = USDC_TOKEN
   const deusCurrency = DEUS_TOKEN
   const deiCurrencyBalance = useCurrencyBalance(account ?? undefined, deiCurrency)
+  const [isOpenReviewModal, toggleReviewModal] = useState(false)
 
   const collatRatio = useCollateralRatio()
   const collatRatioBN = toBN(collatRatio)
@@ -199,61 +208,99 @@ export default function Redemption() {
     if (insufficientBalance) {
       return <MainButton disabled>Insufficient {deiCurrency?.symbol} Balance</MainButton>
     }
-    if (awaitingRedeemConfirmation) {
-      return (
-        <MainButton>
-          Redeeming DEI <DotFlashing style={{ marginLeft: '10px' }} />
-        </MainButton>
-      )
-    }
+    // if (awaitingRedeemConfirmation) {
+    //   return (
+    //     <MainButton>
+    //       Redeeming DEI <DotFlashing style={{ marginLeft: '10px' }} />
+    //     </MainButton>
+    //   )
+    // }
 
-    return <MainButton onClick={() => handleRedeem()}>Redeem DEI</MainButton>
+    return (
+      <MainButton
+        onClick={() => {
+          if (amountIn && amountIn !== '0') toggleReviewModal(true)
+        }}
+      >
+        Redeem DEI
+      </MainButton>
+    )
   }
   // TODO: use useMemo for items
   const items = [{ name: 'Total DEI Redeemed ', value: '$12M?' }]
+
+  const info = useMemo(
+    () => [
+      { title: 'Max Slippage', value: '0.5' + ' %' },
+      { title: 'Txn Deadline', value: '20 min' },
+      { title: 'Network Fee', value: 'N/A' },
+      { title: 'Min Received', value: amountOut1 + ' USDC + ' + amountOut2 + ' DEUS' },
+    ],
+    [amountOut1, amountOut2]
+  )
   return (
-    <Container>
-      <Hero>
-        <Image src={DEUS_LOGO} height={'90px'} alt="Logo" />
-        <Title>Redemption</Title>
-        <StatsHeader items={items} />
-      </Hero>
-      <Wrapper>
-        <Tableau title={'Redeem DEI'} imgSrc={REDEEM_IMG} />
-        <RedemptionWrapper>
-          <InputBox currency={deiCurrency} value={amountIn} onChange={(value: string) => setAmountIn(value)} />
-          <ArrowDown />
+    <>
+      <Container>
+        <Hero>
+          <Image src={DEUS_LOGO} height={'90px'} alt="Logo" />
+          <Title>Redemption</Title>
+          <StatsHeader items={items} />
+        </Hero>
+        <MainWrap>
+          <Wrapper>
+            <Tableau title={'Redeem DEI'} imgSrc={REDEEM_IMG} />
+            <RedemptionWrapper>
+              <InputBox currency={deiCurrency} value={amountIn} onChange={(value: string) => setAmountIn(value)} />
+              <ArrowDown />
 
-          <InputBox
-            currency={usdcCurrency}
-            value={amountOut1}
-            onChange={(value: string) => console.log(value)}
-            disabled={true}
-          />
-          <PlusIcon size={'24px'} />
-          <InputBox
-            currency={deusCurrency}
-            value={amountOut2}
-            onChange={(value: string) => console.log(value)}
-            disabled={true}
-          />
-          <div style={{ marginTop: '20px' }}></div>
-          {getApproveButton()}
-          {getActionButton()}
-          {/* <div style={{ marginTop: '20px' }}></div> */}
+              <InputBox
+                currency={usdcCurrency}
+                value={amountOut1}
+                onChange={(value: string) => console.log(value)}
+                disabled={true}
+              />
+              <PlusIcon size={'24px'} />
+              <InputBox
+                currency={deusCurrency}
+                value={amountOut2}
+                onChange={(value: string) => console.log(value)}
+                disabled={true}
+              />
+              <div style={{ marginTop: '20px' }}></div>
+              {getApproveButton()}
+              {getActionButton()}
+              {/* <div style={{ marginTop: '20px' }}></div>
 
-          {/* {
-            <Row mt={'8px'}>
-              <Info data-for="id" data-tip={'Tool tip for hint client'} size={15} />
-              <Description>you will get an NFT {`"DEUS voucher"`} that will let you claim DEUS later .</Description>
-            </Row>
-          } */}
-        </RedemptionWrapper>
-        <BottomWrapper>
-          <InfoItem name={'USDC Ratio'} value={'0.1???'} />
-          <InfoItem name={'DEUS Ratio'} value={'0.9???'} />
-        </BottomWrapper>
-      </Wrapper>
-    </Container>
+              {
+                <Row mt={'8px'}>
+                  <Info data-for="id" data-tip={'Tool tip for hint client'} size={15} />
+                  <Description>you will get an NFT {`"DEUS voucher"`} that will let you claim DEUS later .</Description>
+                </Row>
+              } */}
+            </RedemptionWrapper>
+            <BottomWrapper>
+              <InfoItem name={'USDC Ratio'} value={'0.1???'} />
+              <InfoItem name={'DEUS Ratio'} value={'0.9???'} />
+            </BottomWrapper>
+          </Wrapper>
+          <Claim />
+        </MainWrap>
+      </Container>
+
+      <DefaultReviewModal
+        title="Review Redeem Transaction"
+        isOpen={isOpenReviewModal}
+        toggleModal={(action: boolean) => toggleReviewModal(action)}
+        inputTokens={[DEI_TOKEN]}
+        outputTokens={[USDC_TOKEN, DEUS_TOKEN]}
+        amountsIn={[amountIn]}
+        amountsOut={[amountOut1, amountOut2]}
+        info={info}
+        data={''}
+        buttonText={awaitingRedeemConfirmation ? 'Redeeming ' : 'Confirm Redeem'}
+        awaiting={awaitingRedeemConfirmation}
+        handleClick={handleRedeem}
+      />
+    </>
   )
 }

@@ -5,39 +5,37 @@ import useWeb3React from 'hooks/useWeb3'
 import { ExplorerDataType } from 'utils/explorers'
 import { FALLBACK_CHAIN_ID } from 'constants/chains'
 import { ExplorerLink } from 'components/Link'
-import { CheckMark, Copy as CopyIcon, Close } from 'components/Icons'
+import { CheckMark, Close, Link, Error } from 'components/Icons'
 
 const Wrapper = styled.div`
   display: flex;
   flex-flow: column nowrap;
   justify-content: flex-start;
   width: 100%;
-  padding: 1rem 1.25rem;
 `
 
 const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 12.5px;
-  color: ${({ theme }) => theme.text2};
+  color: ${({ theme }) => theme.text1};
+  font-family: 'IBM Plex Mono';
+  font-weight: 400;
+  font-size: 12px;
 `
 
 const SuccessBox = styled.div`
   display: flex;
   flex-flow: row nowrap;
   justify-content: flex-start;
-  gap: 10px;
   align-items: center;
-  margin-top: 1rem;
-  background: ${({ theme }) => theme.bg1};
-  border: 1px solid ${({ theme }) => theme.border2};
+
   border-radius: 10px;
-  height: 2rem;
   padding: 0.8rem;
   font-size: 0.8rem;
   line-height: 2rem;
   color: ${({ theme }) => theme.primary2};
+  margin-right: 8px;
 
   & > * {
     &:first-child {
@@ -47,6 +45,37 @@ const SuccessBox = styled.div`
       margin-left: auto;
     }
   }
+`
+
+const TopBorderWrap = styled.div<{ active?: any }>`
+  background: ${({ theme }) => theme.primary2};
+  padding: 1px;
+  border-radius: 14px;
+  border: 1px solid ${({ theme }) => theme.bg0};
+  flex: 1;
+  height: 80px;
+  width: 316px;
+`
+
+const TopBorder = styled.div`
+  background: ${({ theme }) => theme.bg0};
+  border: 1px solid ${({ theme }) => theme.border2};
+  border-radius: 12px;
+  height: 100%;
+  width: 100%;
+  display: flex;
+`
+
+const Connected = styled.button`
+  cursor: default;
+  background: ${({ theme }) => theme.specialBG1};
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 1rem;
+
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    font-size: 0.7rem;
+  `};
 `
 
 export default function TransactionPopup({
@@ -65,29 +94,38 @@ export default function TransactionPopup({
 
   const getHeader = () => {
     return (
-      <Header>
-        {summary}
-        <Close onClick={removeThisPopup} />
-      </Header>
+      <SuccessBox>
+        <Header>{summary}</Header>
+        <ExplorerLink chainId={chainId ?? FALLBACK_CHAIN_ID} type={ExplorerDataType.TRANSACTION} value={hash}>
+          <Link />
+        </ExplorerLink>
+
+        {success ? (
+          <CheckMark size={12} style={{ marginRight: '6px' }} />
+        ) : (
+          <Error size={12} color={'red'} style={{ marginRight: '6px' }} />
+        )}
+      </SuccessBox>
     )
   }
 
   const getBox = () => {
     return (
-      <ExplorerLink chainId={chainId ?? FALLBACK_CHAIN_ID} type={ExplorerDataType.TRANSACTION} value={hash}>
-        <SuccessBox color={success ? theme.success : theme.error}>
-          <CheckMark color={success ? theme.success : theme.error} />
-          Transaction {success ? 'successful' : 'failed'}
-          <CopyIcon size={12} color={theme.text1} />
-        </SuccessBox>
-      </ExplorerLink>
+      <SuccessBox color={success ? theme.success : theme.error}>
+        <Connected disabled>Transaction {success ? 'successful' : 'failed'}</Connected>
+        <Close onClick={removeThisPopup} size={'24'} />
+      </SuccessBox>
     )
   }
 
   return (
-    <Wrapper>
-      {getHeader()}
-      {getBox()}
-    </Wrapper>
+    <TopBorderWrap>
+      <TopBorder>
+        <Wrapper>
+          {getBox()}
+          {getHeader()}
+        </Wrapper>
+      </TopBorder>
+    </TopBorderWrap>
   )
 }

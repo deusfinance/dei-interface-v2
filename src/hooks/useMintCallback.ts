@@ -124,7 +124,7 @@ export default function useMintCallback(
         const query = 'mint-fractional'
         const { collateral_price, deus_price, expire_block, signature }: OracleResponse = await oracleRequest(query)
 
-        const path: string[] | null = chainId && Token1 ? MINT__PATHS[chainId][Token1.symbol] : null
+        const path: string[] | null = chainId && Token1 ? MINT__PATHS[chainId][Token1.symbol ?? 'USDC'] : null
 
         const params = []
         if (BigNumber.from(proxyValues[0]).eq(amountOutBN)) {

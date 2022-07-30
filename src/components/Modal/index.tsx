@@ -56,7 +56,8 @@ const HeaderWrapper = styled.div<{
   align-items: center;
   padding: 1.3rem;
   color: ${({ theme }) => theme.text1};
-  border-bottom: 1px solid ${({ theme, border }) => (border ? theme.border2 : 'transparent')};
+  border-bottom: 1px solid ${({ theme, border }) => (border ? theme.bg2 : 'transparent')};
+  background: ${({ theme }) => theme.bg0};
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
     padding: 1rem;
