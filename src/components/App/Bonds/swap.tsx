@@ -13,7 +13,7 @@ import { useSwapAmountsOut } from 'hooks/useSwapPage'
 import { tryParseAmount } from 'utils/parse'
 
 import AdvancedOptions from 'components/App/Swap/AdvancedOptions'
-import InputBox from 'components/App/Redemption/InputBox'
+import InputBox from 'components/InputBox'
 import { PrimaryButton } from 'components/Button'
 import { DotFlashing } from 'components/Icons'
 import { SwapFlashLoan } from 'constants/addresses'

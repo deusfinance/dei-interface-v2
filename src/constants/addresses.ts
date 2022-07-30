@@ -159,9 +159,9 @@ export const MintProxy: AddressMap = {
 }
 
 export const CollateralPool: AddressMap = {
-  [SupportedChainId.FANTOM]: '',
+  [SupportedChainId.FANTOM]: '0x9bd5CC542Bc922e95BA41c0702555e830F2C1cB4',
 }
 
 export const Collateral: AddressMap = {
-  [SupportedChainId.FANTOM]: '',
+  [SupportedChainId.FANTOM]: '0x04068DA6C83AFCFA0e13ba15A6696662335D5B75',
 }
