@@ -21,6 +21,7 @@ import { Container } from 'components/App/StableCoin'
 import { RowCenter } from 'components/Row'
 import { Card } from 'components/App/Dashboard/card'
 import { SocialCard } from 'components/App/Dashboard/SocialCard'
+import Stats from 'components/App/Dashboard/Stats'
 
 export default function Dashboard() {
   const items = [
@@ -46,6 +47,10 @@ export default function Dashboard() {
     ${({ theme }) => theme.mediaWidth.upToSmall`
       gap: 8px;
   `};
+
+    & > * {
+      width: 100%;
+    }
   `
 
   return (
@@ -85,6 +90,7 @@ export default function Dashboard() {
           HoverIcon={ANALYTICS_HOVER_LOGO}
         />
         <SocialCard />
+        <Stats />
       </Wrapper>
     </Container>
   )
