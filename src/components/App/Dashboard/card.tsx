@@ -1,9 +1,9 @@
+import { useState } from 'react'
 import styled from 'styled-components'
 import Image from 'next/image'
+import Link from 'next/link'
 
 import { RowBetween } from 'components/Row'
-import { ExternalLink } from 'components/Link'
-import { useState } from 'react'
 
 const Wrapper = styled(RowBetween)`
   color: ${({ theme }) => theme.text1};
@@ -15,8 +15,8 @@ const Wrapper = styled(RowBetween)`
 
   & > * {
     &:first-child {
-      height: 100px;
       padding: 24px;
+      height: 100px;
       display: flex;
       width: 100%;
       justify-content: space-between;
@@ -55,18 +55,20 @@ export const DashboardCard = ({
   subTitle: string | null
   href: string
   MainIcon: StaticImageData | string
-  HoverIcon?: StaticImageData | string
+  HoverIcon: StaticImageData | string
 }): JSX.Element => {
   const [hover, setHover] = useState(false)
   return (
     <Wrapper onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
-      <ExternalLink href={href}>
-        <LeftWrap>
-          <Title>{title}</Title>
-          <SubTitle>{subTitle}</SubTitle>
-        </LeftWrap>
-        <Image src={hover ? HoverIcon : MainIcon} alt={'icon'} />
-      </ExternalLink>
+      <Link href={href} passHref>
+        <a style={{ textDecoration: 'none' }}>
+          <LeftWrap>
+            <Title>{title}</Title>
+            <SubTitle>{subTitle}</SubTitle>
+          </LeftWrap>
+          <Image src={hover ? HoverIcon : MainIcon} alt={'icon'} />
+        </a>
+      </Link>
     </Wrapper>
   )
 }

@@ -55,28 +55,28 @@ export default function Dashboard() {
           HoverIcon={MINT_HOVER_LOGO}
         />
         <DashboardCard
-          href="/mint"
+          href="/redeem"
           title={'Redeem DEI'}
           subTitle="Redeem DEI"
           MainIcon={REDEEM_LOGO}
           HoverIcon={REDEEM_HOVER_LOGO}
         />
         <DashboardCard
-          href="/mint"
+          href="/bdei"
           title={'DEI Bonds'}
           subTitle="Redeem your DEI Bonds"
           MainIcon={BOND_LOGO}
           HoverIcon={BOND_HOVER_LOGO}
         />
         <DashboardCard
-          href="/mint"
+          href="/vest"
           title={'veDEUS'}
           subTitle="Lock your deus and earn rewards"
           MainIcon={VEDEUS_LOGO}
           HoverIcon={VEDEUS_HOVER_LOGO}
         />
         <DashboardCard
-          href="/mint"
+          href="/analytics"
           title={'Analytics'}
           subTitle="DEI and DEUS Stats"
           MainIcon={ANALYTICS_LOGO}
