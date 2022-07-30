@@ -3,9 +3,9 @@ import styled from 'styled-components'
 import { Currency, Token } from '@sushiswap/core-sdk'
 import { isMobile } from 'react-device-detect'
 
+import { useCurrencyBalance } from 'state/wallet/hooks'
 import useCurrencyLogo from 'hooks/useCurrencyLogo'
 import useWeb3React from 'hooks/useWeb3'
-import { useCurrencyBalance } from 'state/wallet/hooks'
 import { maxAmountSpend } from 'utils/currency'
 
 import ImageWithFallback from 'components/ImageWithFallback'
@@ -62,6 +62,15 @@ export const LogoWrapper = styled(RowCenter)<{ active?: any }>`
   cursor: ${({ active }) => active && 'pointer'};
 `
 
+export const RowWrap = styled(RowEnd)`
+  gap: 10px;
+  font-size: 1.5rem;
+
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    gap: 3px;
+  `}
+`
+
 export const ChevronDown = styled(ChevronDownIcon)`
   margin-left: 7px;
   width: 16px;
@@ -72,16 +81,7 @@ export const ChevronDown = styled(ChevronDownIcon)`
   `}
 `
 
-export const RowWrap = styled(RowEnd)`
-  gap: 10px;
-  font-size: 1.5rem;
-
-  ${({ theme }) => theme.mediaWidth.upToMedium`
-    gap: 3px;
-  `}
-`
-
-export const Balance = styled(RowWrap)<{ disabled?: boolean }>`
+const Balance = styled(RowWrap)<{ disabled?: boolean }>`
   font-family: 'IBM Plex Mono';
   font-weight: 500;
   font-size: 10px;
@@ -108,16 +108,24 @@ export const Balance = styled(RowWrap)<{ disabled?: boolean }>`
   }
 `
 
+export const getImageSize = () => {
+  return isMobile ? 35 : 38
+}
+
 export default function InputBox({
   currency,
   value,
   onChange,
+  setFocusType,
+  focusType,
   onTokenSelect,
   disabled,
 }: {
   currency: Currency
   value: string
   onChange(values: string): void
+  setFocusType: (value: string) => void
+  focusType: string
   onTokenSelect?: () => void
   disabled?: boolean
 }) {
@@ -133,10 +141,6 @@ export default function InputBox({
     if (!balanceExact || !onChange) return
     onChange(balanceExact)
   }, [balanceExact, onChange])
-
-  function getImageSize() {
-    return isMobile ? 35 : 38
-  }
 
   return (
     <>
@@ -165,7 +169,7 @@ export default function InputBox({
               {!disabled && <span>MAX</span>}
             </Balance>
           </RowBetween>
-          <InputWrapper>
+          <InputWrapper onFocus={() => setFocusType(focusType)}>
             <NumericalInput
               value={value || ''}
               onUserInput={onChange}

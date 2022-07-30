@@ -18,7 +18,7 @@ import Migration_IMG from '/public/static/images/pages/mint/TableauBackground.sv
 import { PrimaryButton } from 'components/Button'
 import { DotFlashing } from 'components/Icons'
 import Hero, { HeroSubtext } from 'components/Hero'
-import InputBox from 'components/App/Redemption/InputBox'
+import InputBox from 'components/InputBox'
 import { RowEnd } from 'components/Row'
 import Image from 'next/image'
 

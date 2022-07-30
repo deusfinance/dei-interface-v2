@@ -1,12 +1,10 @@
 import { useMemo } from 'react'
 import styled from 'styled-components'
-import { Currency, Token } from '@sushiswap/core-sdk'
 
 import { Modal, ModalHeader } from 'components/Modal'
 import useWeb3React from 'hooks/useWeb3'
 import TokenBox from 'components/App/StableCoin/TokenBox'
 import Column from 'components/Column'
-import { DEI_TOKEN, DEUS_TOKEN, USDC_TOKEN } from 'constants/tokens'
 import { Plus } from 'react-feather'
 import { MINT__INPUTS } from 'constants/inputs'
 import { SupportedChainId } from 'constants/chains'
@@ -72,20 +70,17 @@ const PlusIcon = styled(Plus)`
 export default function TokensModal({
   isOpen,
   toggleModal,
-  selectedToken,
+  selectedTokenIndex,
   setToken,
 }: {
   isOpen: boolean
   toggleModal: (action: boolean) => void
-  selectedToken: number
+  selectedTokenIndex: number
   setToken: (index: number) => void
 }) {
   const { chainId, account } = useWeb3React()
 
-  // TODO: selectedToken
-  // TODO: this for test
-  const tokens = useMemo(() => [[DEI_TOKEN], [USDC_TOKEN], [USDC_TOKEN, DEUS_TOKEN]], [])
-  // const tokens = useMemo(() => MINT__INPUTS[chainId ?? SupportedChainId.FANTOM], [])
+  const tokens = useMemo(() => MINT__INPUTS[chainId ?? SupportedChainId.FANTOM], [chainId])
 
   return (
     <Modal isOpen={isOpen} onBackgroundClick={() => toggleModal(false)} onEscapeKeydown={() => toggleModal(false)}>
@@ -95,23 +90,21 @@ export default function TokensModal({
           {tokens.map((token, index) => {
             if (token.length > 1)
               return (
-                <ComboWrapper disabled={index === 2}>
+                <ComboWrapper disabled={index === 2} key={index}>
                   <TokenBox
-                    key={index}
                     index={index}
                     toggleModal={toggleModal}
                     currency={token[0]}
                     setToken={setToken}
-                    // disabled={index === 2}
+                    disabled={index === selectedTokenIndex}
                   />
                   <PlusIcon size={24} />
                   <TokenBox
-                    key={index}
                     index={index}
                     toggleModal={toggleModal}
                     currency={token[1]}
                     setToken={setToken}
-                    // disabled={index === 2}
+                    disabled={index === selectedTokenIndex}
                   />
                 </ComboWrapper>
               )
@@ -122,7 +115,7 @@ export default function TokensModal({
                 toggleModal={toggleModal}
                 currency={token[0]}
                 setToken={setToken}
-                disabled={index < 1}
+                disabled={index === selectedTokenIndex}
               />
             )
           })}

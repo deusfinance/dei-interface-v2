@@ -22,8 +22,8 @@ import { PrimaryButton, PrimaryButtonWide } from 'components/Button'
 import { DotFlashing } from 'components/Icons'
 import { SelectDatePresets } from './InputDate'
 import UserLockInformation from './UserLockInformation'
-import InputBox from '../Redemption/InputBox'
 import { ButtonText } from 'pages/vest'
+import InputBox from 'components/InputBox'
 
 dayjs.extend(utc)
 

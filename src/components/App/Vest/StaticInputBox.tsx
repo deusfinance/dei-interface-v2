@@ -13,7 +13,7 @@ import ImageWithFallback from 'components/ImageWithFallback'
 import { NumericalInput } from 'components/Input'
 import { RowBetween } from 'components/Row'
 import { lastThursday } from 'utils/vest'
-import { CurrencySymbol, InputWrapper, LogoWrapper, RightWrapper, Wrapper } from '../Redemption/InputBox'
+import { CurrencySymbol, InputWrapper, LogoWrapper, RightWrapper, Wrapper } from 'components/InputBox'
 import { computedVotingPowerFunc } from './UserLockInformation'
 
 dayjs.extend(utc)

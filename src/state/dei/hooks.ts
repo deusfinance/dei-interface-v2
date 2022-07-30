@@ -31,7 +31,9 @@ export const useDeusPrice = () => {
 }
 
 export const useCollateralRatio = () => {
-  const { collateralRatio } = useDeiState()
+  // FIXME: get from contract
+  // const { collateralRatio } = useDeiState()
+  const collateralRatio = 80
   return useMemo(() => collateralRatio, [collateralRatio])
 }
 

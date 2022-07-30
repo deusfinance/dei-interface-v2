@@ -25,10 +25,11 @@ import { DotFlashing } from 'components/Icons'
 import Hero from 'components/Hero'
 import StatsHeader from 'components/StatsHeader'
 import { BottomWrapper, Container, InputWrapper, Title, Wrapper, MainButton } from 'components/App/StableCoin'
-import InputBox from 'components/App/Redemption/InputBox'
+import InputBox from 'components/InputBox'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
 import { toBN } from 'utils/numbers'
+import { useCollateralRatio } from 'state/dei/hooks'
 
 const RedemptionWrapper = styled(InputWrapper)`
   & > * {
@@ -76,8 +77,8 @@ export default function Redemption() {
   const deusCurrency = DEUS_TOKEN
   const deiCurrencyBalance = useCurrencyBalance(account ?? undefined, deiCurrency)
 
-  const collatRatio = 80
-  const collatRatioBN = toBN(80)
+  const collatRatio = useCollateralRatio()
+  const collatRatioBN = toBN(collatRatio)
   const oneHundred = toBN(100)
 
   const amountOut1 = useMemo(() => {

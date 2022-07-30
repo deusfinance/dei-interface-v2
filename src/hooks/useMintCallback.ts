@@ -2,6 +2,7 @@ import { useCallback, useMemo } from 'react'
 import { TransactionResponse } from '@ethersproject/abstract-provider'
 import { BigNumber } from '@ethersproject/bignumber'
 import { formatUnits } from '@ethersproject/units'
+import { Token } from '@sushiswap/core-sdk'
 
 import useWeb3React from './useWeb3'
 import { useProxyMinterContract, useCollateralPoolContract } from './useContract'
@@ -19,7 +20,6 @@ import { dynamicPrecision, toBN } from 'utils/numbers'
 import { useUserSlippageToleranceWithDefault } from 'state/user/hooks'
 import { useMintState } from 'state/mint/reducer'
 import { MintErrorToUserReadableMessage } from 'utils/parseErrors'
-import { Token } from '@sushiswap/core-sdk'
 
 export enum MintCallbackState {
   INVALID = 'INVALID',
@@ -201,7 +201,7 @@ export default function useMintCallback(
   ])
 
   return useMemo(() => {
-    if (!account || !chainId || !library || !ProxyMinterContract || !CollateralPoolContract || !Token1 || !TokenOut) {
+    if (!account || !chainId || !library || !CollateralPoolContract || !Token1 || !Token2 || !TokenOut) {
       return {
         state: MintCallbackState.INVALID,
         callback: null,
@@ -217,6 +217,12 @@ export default function useMintCallback(
     //   }
     // }
     if (!amount1 || amount1 == '0') {
+      return {
+        state: MintCallbackState.INVALID,
+        callback: null,
+        error: 'No amount provided',
+      }
+    } else if (!amount2 || amount2 == '0') {
       return {
         state: MintCallbackState.INVALID,
         callback: null,
@@ -263,7 +269,6 @@ export default function useMintCallback(
         if ('error' in estimatedGas) {
           throw new Error('Unexpected error. Could not estimate gas for minting DEI.')
         }
-        // console.log(account, address)
 
         return library
           .getSigner()
@@ -306,7 +311,6 @@ export default function useMintCallback(
     account,
     chainId,
     library,
-    ProxyMinterContract,
     CollateralPoolContract,
     amount1,
     amount2,
