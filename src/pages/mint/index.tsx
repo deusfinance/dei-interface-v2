@@ -31,6 +31,8 @@ import useMintAmountOut from 'hooks/useMintPage'
 import { DEUS_TOKEN } from 'constants/tokens'
 import { useCollateralRatio } from 'state/dei/hooks'
 import { toBN } from 'utils/numbers'
+import DefaultReviewModal from 'components/ReviewModal/DefaultReviewModal'
+// import { useDeusPrice, useUSDCPrice } from 'hooks/useCoingeckoPrice'
 
 const SlippageWrapper = styled(RowBetween)`
   margin-top: 10px;
@@ -83,8 +85,14 @@ export default function Mint() {
   // FIXME: set correct fee
   const [mintingFee, setMintingFee] = useState(0.5)
 
+  // const USDC_Price = useUSDCPrice().toString()
+  // const USDC_Price = useUSDCPrice().toString()
+
   // FIXME: set correct deiPrices
-  const [deiPrices, setDeiPrices] = useState({ collateral_price: '1', deus_price: '40' })
+  const [deiPrices, setDeiPrices] = useState({
+    collateral_price: '1',
+    deus_price: '40',
+  })
 
   const [amountIn1, setAmountIn1] = useState('')
   const [amountIn2, setAmountIn2] = useState('')
@@ -93,18 +101,18 @@ export default function Mint() {
   const debouncedAmountIn2 = useDebounce(amountIn2, 500)
   const [isOpenTokensModal, toggleTokensModal] = useState(false)
   const [inputTokenIndex, setInputTokenIndex] = useState<number>(0)
+  const [isOpenReviewModal, toggleReviewModal] = useState(false)
 
   const collateralRatio = useCollateralRatio()
-  // const collateralRatioBN = toBN(collateralRatio)
-  // const oneHundred = toBN(100)
 
   const tokens = useMemo(() => MINT__INPUTS[chainId ?? SupportedChainId.FANTOM], [chainId])
-  const outputToken = useMemo(() => MINT__OUTPUTS[chainId ?? SupportedChainId.FANTOM], [chainId])[0]
+  const inputToken = tokens[inputTokenIndex]
+  const token1Currency = inputToken[0]
+  const token2Currency = hasPair ? inputToken[1] : DEUS_TOKEN
 
-  const token1Currency = tokens[inputTokenIndex][0]
-  const token2Currency = hasPair ? tokens[inputTokenIndex][1] : DEUS_TOKEN
-
-  const OutputTokenCurrency = outputToken[0]
+  const tokensOut = useMemo(() => MINT__OUTPUTS[chainId ?? SupportedChainId.FANTOM], [chainId])
+  const outputToken = tokensOut[0]
+  const outputTokenCurrency = outputToken[0]
 
   const token1CurrencyBalance = useCurrencyBalance(account ?? undefined, token1Currency)
   const token2CurrencyBalance = useCurrencyBalance(account ?? undefined, token2Currency)
@@ -112,14 +120,14 @@ export default function Mint() {
   const [slippage, setSlippage] = useState(0.5)
 
   useEffect(() => {
-    if (tokens[inputTokenIndex].length > 1) {
+    if (inputToken.length > 1) {
       setAmountIn2('')
       setHasPair(true)
     } else {
       setAmountIn2('')
       setHasPair(false)
     }
-  }, [inputTokenIndex, tokens])
+  }, [inputToken.length, inputTokenIndex, tokens])
 
   const [focusType, setFocusType] = useState('from1')
 
@@ -193,7 +201,7 @@ export default function Mint() {
   } = useMintCallback(
     token1Currency,
     token2Currency,
-    OutputTokenCurrency,
+    outputTokenCurrency,
     debouncedAmountIn1,
     debouncedAmountIn2,
     amountOut
@@ -282,11 +290,19 @@ export default function Mint() {
     else if (awaitingMintConfirmation) {
       return (
         <MainButton>
-          Minting {OutputTokenCurrency?.symbol} <DotFlashing style={{ marginLeft: '10px' }} />
+          Minting {outputTokenCurrency?.symbol} <DotFlashing style={{ marginLeft: '10px' }} />
         </MainButton>
       )
     }
-    return <MainButton onClick={() => handleMint()}>Mint {OutputTokenCurrency?.symbol}</MainButton>
+    return (
+      <MainButton
+        onClick={() => {
+          if (amountOut !== '0') toggleReviewModal(true)
+        }}
+      >
+        Mint {outputTokenCurrency?.symbol}
+      </MainButton>
+    )
   }
 
   // TODO: move items to use memo
@@ -297,20 +313,55 @@ export default function Mint() {
     { name: 'Pool Balance', value: '24.64m?' },
     { name: 'Ceiling', value: '18.88m?' },
   ]
+  const info = useMemo(
+    () => [
+      { title: 'Max Slippage', value: slippage.toString() + ' %' },
+      { title: 'Txn Deadline', value: '20 min' },
+      { title: 'Network Fee', value: 'N/A' },
+      { title: 'Min Received', value: amountOut },
+    ],
+    [amountOut, slippage]
+  )
   return (
-    <Container>
-      <Hero>
-        <Image src={DEI_LOGO} height={'90px'} alt="Logo" />
-        <Title>Mint</Title>
-        <StatsHeader items={items} />
-      </Hero>
+    <>
+      <Container>
+        <Hero>
+          <Image src={DEI_LOGO} height={'90px'} alt="Logo" />
+          <Title>Mint</Title>
+          <StatsHeader items={items} />
+        </Hero>
 
-      <Wrapper>
-        <Tableau title={'Mint DEI'} imgSrc={MINT_IMG} />
+        <Wrapper>
+          <Tableau title={'Mint DEI'} imgSrc={MINT_IMG} />
 
-        <InputWrapper>
-          {tokens[inputTokenIndex].length > 1 ? (
-            <ComboInputBox>
+          <InputWrapper>
+            {inputToken.length > 1 ? (
+              <ComboInputBox>
+                <InputBox
+                  currency={token1Currency}
+                  value={amountIn1}
+                  onChange={(value: string) => setAmountIn1(value)}
+                  setFocusType={setFocusType}
+                  focusType="from1"
+                  onTokenSelect={() => {
+                    toggleTokensModal(true)
+                    setInputTokenIndex(inputTokenIndex)
+                  }}
+                />
+                <PlusIcon size={'24px'} />
+                <InputBox
+                  currency={token2Currency}
+                  value={amountIn2}
+                  onChange={(value: string) => setAmountIn2(value)}
+                  setFocusType={setFocusType}
+                  focusType="from2"
+                  onTokenSelect={() => {
+                    toggleTokensModal(true)
+                    setInputTokenIndex(inputTokenIndex)
+                  }}
+                />
+              </ComboInputBox>
+            ) : (
               <InputBox
                 currency={token1Currency}
                 value={amountIn1}
@@ -322,60 +373,51 @@ export default function Mint() {
                   setInputTokenIndex(inputTokenIndex)
                 }}
               />
-              <PlusIcon size={'24px'} />
-              <InputBox
-                currency={token2Currency}
-                value={amountIn2}
-                onChange={(value: string) => setAmountIn2(value)}
-                setFocusType={setFocusType}
-                focusType="from2"
-                onTokenSelect={() => {
-                  toggleTokensModal(true)
-                  setInputTokenIndex(inputTokenIndex)
-                }}
-              />
-            </ComboInputBox>
-          ) : (
-            <InputBox
-              currency={token1Currency}
-              value={amountIn1}
-              onChange={(value: string) => setAmountIn1(value)}
-              setFocusType={setFocusType}
-              focusType="from1"
-              onTokenSelect={() => {
-                toggleTokensModal(true)
-                setInputTokenIndex(inputTokenIndex)
-              }}
-            />
-          )}
+            )}
 
-          <ArrowDown />
-          <InputBox
-            currency={OutputTokenCurrency}
-            value={amountOut}
-            onChange={(value: string) => console.log(value)}
-            setFocusType={setFocusType}
-            focusType="to"
-            disabled={true}
-          />
-          <div style={{ marginTop: '30px' }}></div>
-          {getApproveButton()}
-          {getActionButton()}
-        </InputWrapper>
-        <BottomWrapper>
-          <SlippageWrapper>
-            <AdvancedOptions slippage={slippage} setSlippage={setSlippage} />
-          </SlippageWrapper>
-          <InfoItem name={'Minter Contract'} value={'Proxy'} />
-          <InfoItem name={'Minting Fee'} value={'Zero'} />
-        </BottomWrapper>
-      </Wrapper>
-      <TokensModal
-        isOpen={isOpenTokensModal}
-        toggleModal={(action: boolean) => toggleTokensModal(action)}
-        selectedTokenIndex={inputTokenIndex}
-        setToken={setInputTokenIndex}
+            <ArrowDown />
+            <InputBox
+              currency={outputTokenCurrency}
+              value={amountOut}
+              onChange={(value: string) => console.log(value)}
+              setFocusType={setFocusType}
+              focusType="to"
+              disabled={true}
+            />
+            <div style={{ marginTop: '30px' }}></div>
+            {getApproveButton()}
+            {getActionButton()}
+          </InputWrapper>
+          <BottomWrapper>
+            <SlippageWrapper>
+              <AdvancedOptions slippage={slippage} setSlippage={setSlippage} />
+            </SlippageWrapper>
+            <InfoItem name={'Minter Contract'} value={'Proxy'} />
+            <InfoItem name={'Minting Fee'} value={'Zero'} />
+          </BottomWrapper>
+        </Wrapper>
+        <TokensModal
+          isOpen={isOpenTokensModal}
+          toggleModal={(action: boolean) => toggleTokensModal(action)}
+          selectedTokenIndex={inputTokenIndex}
+          setToken={setInputTokenIndex}
+        />
+      </Container>
+
+      <DefaultReviewModal
+        title="Review Mint Transaction"
+        isOpen={isOpenReviewModal}
+        toggleModal={(action: boolean) => toggleReviewModal(action)}
+        inputTokens={inputToken}
+        outputTokens={outputToken}
+        amountsIn={[amountIn1, amountIn2]}
+        amountsOut={[amountOut]}
+        info={info}
+        data={''}
+        buttonText={awaitingMintConfirmation ? 'Minting ' : 'Confirm Mint'}
+        awaiting={awaitingMintConfirmation}
+        handleClick={handleMint}
       />
-    </Container>
+    </>
   )
 }
