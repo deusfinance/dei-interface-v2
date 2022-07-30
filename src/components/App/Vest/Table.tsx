@@ -42,8 +42,8 @@ const TableWrapper = styled.table`
   table-layout: fixed;
   border-collapse: collapse;
   background: ${({ theme }) => theme.bg1};
-  border-bottom-right-radius: 12px;
-  border-bottom-left-radius: 12px;
+  /* border-bottom-right-radius: 12px; */
+  /* border-bottom-left-radius: 12px; */
 `
 
 const Row = styled.tr`
@@ -66,13 +66,6 @@ const Cell = styled.td<{
   align-items: center;
   padding: 5px;
   height: 90px;
-
-  /* ${({ theme }) => theme.mediaWidth.upToMedium`
-    :nth-child(3),
-    :nth-child(4) {
-      display: none;
-    }
-  `} */
 `
 
 const NoResults = styled.div`
@@ -85,13 +78,12 @@ const NFTWrap = styled(Column)`
   align-items: flex-start;
 `
 
-// const CellWrap = styled(Column)`
-//   gap: 5px;
-// `
-
-// const CellRow = styled(RowCenter)`
-//   gap: 5px;
-// `
+const PaginationWrapper = styled.div`
+  background: ${({ theme }) => theme.bg0};
+  border-bottom-right-radius: 12px;
+  border-bottom-left-radius: 12px;
+  width: 100%;
+`
 
 const CellAmount = styled.div`
   font-size: 0.85rem;
@@ -238,9 +230,11 @@ export default function Table({
             </>
           )}
         </TableWrapper>
-        {paginatedItems.length > 0 && (
-          <Pagination count={nftIds.length} pageCount={pageCount} onPageChange={onPageChange} />
-        )}
+        <PaginationWrapper>
+          {paginatedItems.length > 0 && (
+            <Pagination count={nftIds.length} pageCount={pageCount} onPageChange={onPageChange} />
+          )}
+        </PaginationWrapper>
       </Wrapper>
     </>
   )
@@ -349,13 +343,13 @@ function TableRow({
     )
   }
 
-  function getClaimWithdrawCell(isSmall?: boolean) {
+  function getClaimWithdrawCell() {
     if (awaitingConfirmation) {
       return (
         <TopBorderWrap>
           <TopBorder>
-            <PrimaryButtonWide isSmall={isSmall} active>
-              <ButtonText style={{ margin: '-5px' }} disabled>
+            <PrimaryButtonWide width={'100%'} disabled>
+              <ButtonText style={{ margin: '-6px' }} disabled>
                 Confirming <DotFlashing style={{ marginLeft: '10px' }} />
               </ButtonText>
             </PrimaryButtonWide>
@@ -414,7 +408,7 @@ function TableRow({
 
         <Cell style={{ padding: '5px 10px' }}>{getExpirationCell()}</Cell>
 
-        <Cell style={{ padding: '5px 10px' }}>{getClaimWithdrawCell(false)}</Cell>
+        <Cell style={{ padding: '5px 10px' }}>{getClaimWithdrawCell()}</Cell>
 
         <Cell style={{ padding: '5px 10px' }}>
           <PrimaryButtonWhite disabled onClick={() => toggleLockManager(nftId)}>
@@ -436,7 +430,7 @@ function TableRow({
             </NFTWrap>
           </RowCenter>
 
-          <RowCenter style={{ padding: '5px 10px' }}>{getClaimWithdrawCell(true)}</RowCenter>
+          <RowCenter style={{ padding: '5px 10px' }}>{getClaimWithdrawCell()}</RowCenter>
 
           <RowCenter style={{ padding: '5px 10px' }}>
             <PrimaryButtonWhite disabled onClick={() => toggleLockManager(nftId)}>

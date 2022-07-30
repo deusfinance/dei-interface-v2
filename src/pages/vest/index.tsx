@@ -323,7 +323,8 @@ export default function Vest() {
     return !!snapshotList.length && !!totalRewards
   }, [totalRewards, snapshotList.length])
 
-  const [showTopBanner, setShowTopBanner] = useState(true)
+  // TODO: #M globalize this
+  const [showTopBanner, setShowTopBanner] = useState(false)
 
   return (
     <Container>

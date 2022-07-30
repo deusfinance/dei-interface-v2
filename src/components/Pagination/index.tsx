@@ -37,7 +37,7 @@ const Wrapper = styled.div`
       font-size: 1rem;
       font-weight: 700;
       background: ${({ theme }) => theme.bg1};
-      color: ${({ theme }) => theme.primary3};
+      color: ${({ theme }) => theme.darkPink};
     }
   }
   ${({ theme }) => theme.mediaWidth.upToSmall`
@@ -45,7 +45,6 @@ const Wrapper = styled.div`
   `}
 `
 
-// TODO: #M shows (e.g. 1-10 if 47)
 export default function Pagination({
   pageCount,
   onPageChange,
