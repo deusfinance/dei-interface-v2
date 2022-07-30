@@ -1,17 +1,32 @@
 import { useMemo } from 'react'
 import { useAppSelector, AppState } from 'state'
-import { RedeemState, RedeemBalances } from './reducer'
+import { IClaimToken } from './reducer'
+import { Tokens } from 'constants/tokens'
 
-export function useRedeemState(): RedeemState {
+export const useRedeemState = () => {
   return useAppSelector((state: AppState) => state.redeem)
 }
 
-export function useRedeemBalances(): RedeemBalances {
-  const { redeemBalances } = useRedeemState()
-  return useMemo(() => redeemBalances, [redeemBalances])
-}
-
-export function useShowClaim(): boolean {
-  const { showClaim } = useRedeemState()
-  return useMemo(() => showClaim, [showClaim])
+export const useClaimableTokens = () => {
+  const { unClaimed } = useRedeemState()
+  return useMemo(() => {
+    // const items = Array<IClaimToken>()
+    // for (let i = 0; i < unClaimed.length; i++) {
+    //   const item = unClaimed[i]
+    //   if (!token) {
+    //     console.log('token is undefined', { token, item })
+    //     continue
+    //   }
+    //   items.push({
+    //     symbol: TokenID[item.tokenId],
+    //     amount: item.amount,
+    //     decimals: token.decimals,
+    //     depositedBlock: item.blockNumber,
+    //     claimableBlock: item.blockNumber + 10, //TODO
+    //     isClaimed: item.isClaimed,
+    //   } as IClaimToken)
+    // }
+    // return items
+    return []
+  }, [unClaimed])
 }

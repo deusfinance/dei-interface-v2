@@ -1,30 +1,50 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 
-export type RedeemBalances = {
-  collateral: number
-  deus: number
+export enum UnClaimRedeemState {
+  OK = 'OK',
+  LOADING = 'LOADING',
+  ERROR = 'ERROR',
 }
-
 export interface RedeemState {
+  status: UnClaimRedeemState
   attemptingTxn: boolean
   showReview: boolean
-  showClaim: boolean
-  redeemBalances: RedeemBalances
+  unClaimed: []
+  currentBlocks: []
+  info: null
   error?: string
 }
 
 const initialState: RedeemState = {
+  status: UnClaimRedeemState.OK,
   attemptingTxn: false,
   showReview: false,
+  unClaimed: [],
+  currentBlocks: [],
+  info: null,
   error: undefined,
-  showClaim: false,
-  redeemBalances: {
-    collateral: 0,
-    deus: 0,
-  },
 }
 
-export const redeemSlice = createSlice({
+export interface IClaimToken {
+  symbol: string
+  amount: number
+  decimals: number
+  depositedBlock: number
+  claimableBlock: number
+  isClaimed?: boolean
+}
+
+export const fetchUnClaimed = createAsyncThunk('redeem/fetchUnClaimed', async ({ address }: { address: string }) => {
+  if (!address) throw new Error('No address present')
+  // const { href: url } = new URL(`/redeem/deposits?address=${address}&isClaimed=false`, INFO_URL)
+
+  // Destruct the response directly so if these params don't exist it will throw an error.
+  // const unClaimed = await makeHttpRequest(url)
+  // return unClaimed ?? []
+  return []
+})
+
+const redeemSlice = createSlice({
   name: 'redeem',
   initialState,
   reducers: {
@@ -32,12 +52,6 @@ export const redeemSlice = createSlice({
       state.attemptingTxn = action.payload.attemptingTxn
       state.showReview = action.payload.showReview
       state.error = action.payload.error
-    },
-    setRedeemBalances: (state, action: PayloadAction<RedeemBalances>) => {
-      state.redeemBalances = action.payload
-    },
-    setShowClaim: (state, action: PayloadAction<boolean>) => {
-      state.showClaim = action.payload
     },
     setAttemptingTxn: (state, action: PayloadAction<boolean>) => {
       state.attemptingTxn = action.payload
@@ -49,9 +63,25 @@ export const redeemSlice = createSlice({
       state.error = action.payload
     },
   },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchUnClaimed.pending, (state) => {
+        state.status = UnClaimRedeemState.LOADING
+      })
+      .addCase(fetchUnClaimed.fulfilled, (state, { payload }) => {
+        state.status = UnClaimRedeemState.OK
+        // state.unClaimed = payload  //TODO
+        state.unClaimed = []
+      })
+      .addCase(fetchUnClaimed.rejected, () => {
+        console.log('Unable to fetch unclaimed tokens')
+        return {
+          ...initialState,
+          status: UnClaimRedeemState.ERROR,
+        }
+      })
+  },
 })
-
-export const { setRedeemState, setRedeemBalances, setShowClaim, setAttemptingTxn, setShowReview, setError } =
-  redeemSlice.actions
-
-export default redeemSlice.reducer
+const { reducer, actions } = redeemSlice
+export const { setRedeemState, setAttemptingTxn, setShowReview, setError } = actions
+export default reducer
