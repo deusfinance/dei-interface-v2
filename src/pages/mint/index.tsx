@@ -84,7 +84,7 @@ export default function Mint() {
   const [mintingFee, setMintingFee] = useState(0.5)
 
   // FIXME: set correct deiPrices
-  const [deiPrices, setDeiPrices] = useState({ collateral_price: '1', deus_price: '1' })
+  const [deiPrices, setDeiPrices] = useState({ collateral_price: '1', deus_price: '40' })
 
   const [amountIn1, setAmountIn1] = useState('')
   const [amountIn2, setAmountIn2] = useState('')
@@ -92,7 +92,7 @@ export default function Mint() {
   const debouncedAmountIn1 = useDebounce(amountIn1, 500)
   const debouncedAmountIn2 = useDebounce(amountIn2, 500)
   const [isOpenTokensModal, toggleTokensModal] = useState(false)
-  const [inputToken, setInputToken] = useState<number>(0)
+  const [inputTokenIndex, setInputTokenIndex] = useState<number>(0)
 
   const collateralRatio = useCollateralRatio()
   // const collateralRatioBN = toBN(collateralRatio)
@@ -101,8 +101,8 @@ export default function Mint() {
   const tokens = useMemo(() => MINT__INPUTS[chainId ?? SupportedChainId.FANTOM], [chainId])
   const outputToken = useMemo(() => MINT__OUTPUTS[chainId ?? SupportedChainId.FANTOM], [chainId])[0]
 
-  const token1Currency = tokens[inputToken][0]
-  const token2Currency = hasPair ? tokens[inputToken][1] : DEUS_TOKEN
+  const token1Currency = tokens[inputTokenIndex][0]
+  const token2Currency = hasPair ? tokens[inputTokenIndex][1] : DEUS_TOKEN
 
   const OutputTokenCurrency = outputToken[0]
 
@@ -112,14 +112,14 @@ export default function Mint() {
   const [slippage, setSlippage] = useState(0.5)
 
   useEffect(() => {
-    if (tokens[inputToken].length > 1) {
+    if (tokens[inputTokenIndex].length > 1) {
       setAmountIn2('')
       setHasPair(true)
     } else {
       setAmountIn2('')
       setHasPair(false)
     }
-  }, [inputToken, tokens])
+  }, [inputTokenIndex, tokens])
 
   const [focusType, setFocusType] = useState('from1')
 
@@ -164,14 +164,6 @@ export default function Mint() {
       setAmountIn2(a2)
     }
   }, [debouncedAmountIn1, amountIn2, focusType, amountIn1, debouncedAmountIn2, deiPrices, hasPair, collateralRatio])
-
-  // useEffect(() => {
-  //   if (amountIn1 !== debouncedAmountIn1) {
-  //     seta2(toBN(amountIn1).times(collateralRatioBN).div(oneHundred).toString())
-  //   } else if (amountIn2 !== debouncedAmountIn2) {
-  //     setAmountIn1(toBN(amountIn2).times(collateralRatioBN).div(oneHundred).toString())
-  //   }
-  // }, [amountIn1, amountIn2])
 
   const amountOut = useMintAmountOut(token1Currency, token2Currency, debouncedAmountIn1, debouncedAmountIn2, mintingFee)
 
@@ -317,7 +309,7 @@ export default function Mint() {
         <Tableau title={'Mint DEI'} imgSrc={MINT_IMG} />
 
         <InputWrapper>
-          {tokens[inputToken].length > 1 ? (
+          {tokens[inputTokenIndex].length > 1 ? (
             <ComboInputBox>
               <InputBox
                 currency={token1Currency}
@@ -325,9 +317,9 @@ export default function Mint() {
                 onChange={(value: string) => setAmountIn1(value)}
                 setFocusType={setFocusType}
                 focusType="from1"
-                // disabled={true}
                 onTokenSelect={() => {
                   toggleTokensModal(true)
+                  setInputTokenIndex(inputTokenIndex)
                 }}
               />
               <PlusIcon size={'24px'} />
@@ -337,9 +329,9 @@ export default function Mint() {
                 onChange={(value: string) => setAmountIn2(value)}
                 setFocusType={setFocusType}
                 focusType="from2"
-                // disabled={true}
                 onTokenSelect={() => {
                   toggleTokensModal(true)
+                  setInputTokenIndex(inputTokenIndex)
                 }}
               />
             </ComboInputBox>
@@ -352,6 +344,7 @@ export default function Mint() {
               focusType="from1"
               onTokenSelect={() => {
                 toggleTokensModal(true)
+                setInputTokenIndex(inputTokenIndex)
               }}
             />
           )}
@@ -380,8 +373,8 @@ export default function Mint() {
       <TokensModal
         isOpen={isOpenTokensModal}
         toggleModal={(action: boolean) => toggleTokensModal(action)}
-        selectedToken={inputToken}
-        setToken={setInputToken}
+        selectedTokenIndex={inputTokenIndex}
+        setToken={setInputTokenIndex}
       />
     </Container>
   )

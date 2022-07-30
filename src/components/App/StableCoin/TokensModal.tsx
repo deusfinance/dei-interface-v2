@@ -70,18 +70,16 @@ const PlusIcon = styled(Plus)`
 export default function TokensModal({
   isOpen,
   toggleModal,
-  selectedToken,
+  selectedTokenIndex,
   setToken,
 }: {
   isOpen: boolean
   toggleModal: (action: boolean) => void
-  selectedToken: number
+  selectedTokenIndex: number
   setToken: (index: number) => void
 }) {
   const { chainId, account } = useWeb3React()
 
-  // TODO: selectedToken
-  // const tokens = useMemo(() => [[DEI_TOKEN], [USDC_TOKEN], [USDC_TOKEN, DEUS_TOKEN]], [])
   const tokens = useMemo(() => MINT__INPUTS[chainId ?? SupportedChainId.FANTOM], [chainId])
 
   return (
@@ -98,7 +96,7 @@ export default function TokensModal({
                     toggleModal={toggleModal}
                     currency={token[0]}
                     setToken={setToken}
-                    // disabled={index === 2}
+                    disabled={index === selectedTokenIndex}
                   />
                   <PlusIcon size={24} />
                   <TokenBox
@@ -106,7 +104,7 @@ export default function TokensModal({
                     toggleModal={toggleModal}
                     currency={token[1]}
                     setToken={setToken}
-                    // disabled={index === 2}
+                    disabled={index === selectedTokenIndex}
                   />
                 </ComboWrapper>
               )
@@ -117,7 +115,7 @@ export default function TokensModal({
                 toggleModal={toggleModal}
                 currency={token[0]}
                 setToken={setToken}
-                disabled={index < 1}
+                disabled={index === selectedTokenIndex}
               />
             )
           })}
