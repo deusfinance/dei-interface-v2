@@ -1,5 +1,4 @@
 import { useCallback } from 'react'
-import { ExternalLink as LinkIcon } from 'react-feather'
 import styled from 'styled-components'
 
 import useWeb3React from 'hooks/useWeb3'
@@ -10,10 +9,12 @@ import { ExplorerDataType } from 'utils/explorers'
 import { truncateAddress } from 'utils/account'
 import { clearAllTransactions } from 'state/transactions/actions'
 
-import { Connected as ConnectedIcon } from 'components/Icons'
+import { Connected as ConnectedIcon, Link } from 'components/Icons'
 import { ExplorerLink } from 'components/Link'
 import Copy from 'components/Copy'
 import Transaction from './Transaction'
+import { RowEnd } from 'components/Row'
+import { darken } from 'polished'
 
 const AccountWrapper = styled.div`
   display: flex;
@@ -22,8 +23,7 @@ const AccountWrapper = styled.div`
   position: relative;
   border: 1px solid ${({ theme }) => theme.border2};
   border-radius: 10px;
-  padding: 0.8rem;
-  margin: 1.6rem 1rem;
+  padding: 12px 21px;
   height: 125px;
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
@@ -40,8 +40,10 @@ const Row = styled.div`
   width: 100%;
 `
 
-const Connected = styled.div`
-  color: ${({ theme }) => theme.text2};
+const Connected = styled.button`
+  background: ${({ theme }) => theme.specialBG1};
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   font-size: 1rem;
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
@@ -53,8 +55,8 @@ const ActionButton = styled.button<{
   hide?: boolean
   disable?: boolean
 }>`
-  background: ${({ theme }) => theme.primary1};
-  border-radius: 10px;
+  background: ${({ theme }) => theme.bg1};
+  border-radius: 4px;
   outline: none;
   display: ${({ hide }) => (hide ? 'none' : 'flex')};
   justify-content: center;
@@ -63,9 +65,11 @@ const ActionButton = styled.button<{
   padding: 0.2rem 0.5rem;
   text-align: center;
   color: white;
+  width: 61px;
+  height: 24px;
 
   &:hover {
-    background: ${({ theme }) => theme.primary2};
+    background: ${({ theme }) => theme.bg3};
     cursor: pointer;
   }
 
@@ -80,6 +84,11 @@ const ActionButton = styled.button<{
 const ClearButton = styled(ActionButton)`
   font-size: 0.6rem;
   padding: 0.2rem 0.5rem;
+  font-family: 'Inter';
+  font-weight: 400;
+  font-size: 12px;
+
+  color: ${({ theme }) => theme.text2};
 `
 
 const MiddleRow = styled(Row)`
@@ -103,17 +112,30 @@ const BottomRow = styled(Row)`
 `
 
 const AddressLink = styled.div`
+  font-family: 'Inter';
   display: flex;
   align-items: center;
   gap: 4px;
   margin-left: 10px;
+  font-weight: 500;
+  font-size: 12px;
+
+  color: ${({ theme }) => theme.text1};
+
+  &:hover {
+    color: ${({ theme }) => darken(0.2, theme.text1)};
+    cursor: pointer;
+  }
 `
 
 const TransactionsWrapper = styled.div`
   display: flex;
   flex-flow: column nowrap;
-  background: ${({ theme }) => theme.bg2};
-  padding: 1.5rem;
+  background: ${({ theme }) => theme.bg1};
+  color: ${({ theme }) => theme.text3};
+  /* padding: 1.5rem; */
+  padding: 40px 4px;
+
   overflow: scroll;
   gap: 5px;
 
@@ -121,14 +143,51 @@ const TransactionsWrapper = styled.div`
     &:first-child {
       display: flex;
       flex-flow: row nowrap;
-      justify-content: space-between;
+      justify-content: center;
       font-size: 0.8rem;
-      margin-bottom: 5px;
+      margin-bottom: 8px;
+      padding: 40px auto;
     }
     &:not(:first-child) {
       max-height: 200px;
     }
   }
+`
+
+const AllTransactions = styled.div`
+  display: flex;
+  flex-flow: column nowrap;
+  background: ${({ theme }) => theme.bg1};
+  color: ${({ theme }) => theme.text3};
+  padding: 11px 24px;
+
+  overflow: scroll;
+  gap: 4px;
+
+  & > * {
+    &:first-child {
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      margin-bottom: 8px;
+      align-items: baseline;
+    }
+    &:not(:first-child) {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 200px;
+      margin-bottom: 12px;
+    }
+  }
+`
+
+const RecentTransactions = styled.div`
+  font-family: 'IBM Plex Mono';
+  font-weight: 400;
+  font-size: 12px;
+  color: ${({ theme }) => theme.text1};
 `
 
 function renderTransactions(transactions: string[]) {
@@ -197,30 +256,31 @@ export default function AccountDetails({
         <MiddleRow>
           {connector && <ConnectedIcon />}
           {account && truncateAddress(account)}
-        </MiddleRow>
-        <BottomRow>
-          {account && <Copy toCopy={account} text={'Copy Address'} />}
+          {account && <Copy toCopy={account} text={''} />}
           {chainId && account && (
-            <ExplorerLink type={ExplorerDataType.ADDRESS} chainId={chainId} value={account}>
-              <AddressLink>
-                View on Explorer
-                <LinkIcon size={12} style={{ transform: 'translateY(1px)' }} />
-              </AddressLink>
-            </ExplorerLink>
+            <RowEnd>
+              <ExplorerLink type={ExplorerDataType.ADDRESS} chainId={chainId} value={account}>
+                <AddressLink>
+                  View on Explorer
+                  <Link style={{ transform: 'translateY(1px)' }} />
+                </AddressLink>
+              </ExplorerLink>
+            </RowEnd>
           )}
-        </BottomRow>
+        </MiddleRow>
+        <BottomRow></BottomRow>
       </AccountWrapper>
       {!!pendingTransactions.length || !!confirmedTransactions.length ? (
-        <TransactionsWrapper>
+        <AllTransactions>
           <div>
-            Recent Transactions
-            <ClearButton onClick={clearAllTransactionsCallback}>clear all</ClearButton>
+            <RecentTransactions>Recent Transactions</RecentTransactions>
+            <ClearButton onClick={clearAllTransactionsCallback}>Clear All</ClearButton>
           </div>
           <div>
             {renderTransactions(pendingTransactions)}
             {renderTransactions(confirmedTransactions)}
           </div>
-        </TransactionsWrapper>
+        </AllTransactions>
       ) : (
         <TransactionsWrapper>
           <div>Your transactions will appear here...</div>

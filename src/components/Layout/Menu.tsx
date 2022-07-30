@@ -36,7 +36,7 @@ const InlineModal = styled(Card)<{
   z-index: ${Z_INDEX.modal};
   gap: 12px;
   padding: 0.8rem;
-  border: 1px solid ${({ theme }) => theme.border2};
+  border: 1px solid ${({ theme }) => theme.border3};
   border-radius: 10px;
 `
 
