@@ -117,7 +117,7 @@ export default function Redemption() {
     state: redeemCallbackState,
     callback: redeemCallback,
     error: redeemCallbackError,
-  } = useRedemptionCallback(bdeiCurrency, usdcCurrency, bdeiAmount, usdcAmount, amountOut2)
+  } = useRedemptionCallback(bdeiCurrency, bdeiAmount, 10)
 
   const [awaitingApproveConfirmation, setAwaitingApproveConfirmation] = useState<boolean>(false)
   const [awaitingRedeemConfirmation, setAwaitingRedeemConfirmation] = useState<boolean>(false)

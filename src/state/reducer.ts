@@ -6,6 +6,7 @@ import transactions from './transactions/reducer'
 import user from './user/reducer'
 import dashboard from './dashboard/reducer'
 import mint from './mint/reducer'
+import redeem from './redeem/reducer'
 
 const reducer = combineReducers({
   dashboard,
@@ -14,6 +15,7 @@ const reducer = combineReducers({
   transactions,
   user,
   mint,
+  redeem,
 })
 
 export default reducer

@@ -31,6 +31,8 @@ export { default as ThemeToggle } from './ThemeToggle'
 export { default as Trade } from './Trade'
 export { Wallet } from './Wallet'
 export { default as Redeem } from './Redeem'
+export { default as Link } from './Link'
+export { default as Error } from './Error'
 
 // for wrapping react feather icons
 export const IconWrapper = styled.div<{ stroke?: string; size?: string; marginRight?: string; marginLeft?: string }>`
