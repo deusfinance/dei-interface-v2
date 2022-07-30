@@ -31,7 +31,6 @@ const Text = styled.div`
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
     position: relative;
-
   `}
 `
 

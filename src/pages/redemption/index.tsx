@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useCallback } from 'react'
 import styled from 'styled-components'
-import { darken } from 'polished'
 import { ArrowDown, Plus } from 'react-feather'
 import Image from 'next/image'
 
@@ -15,7 +14,7 @@ import { getRemainingTime } from 'utils/time'
 import { useCurrencyBalance } from 'state/wallet/hooks'
 import { useWalletModalToggle } from 'state/application/hooks'
 import useWeb3React from 'hooks/useWeb3'
-import useDebounce from 'hooks/useDebounce'
+// import useDebounce from 'hooks/useDebounce'
 import { useSupportedChainId } from 'hooks/useSupportedChainId'
 import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
 import useRedemptionCallback from 'hooks/useRedemptionCallback'
@@ -37,6 +36,11 @@ const MainWrap = styled.div`
   display: flex;
   align-items: flex-start;
   gap: -10px;
+
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    display: flex;
+    flex-direction: column;
+  `}
 `
 
 const RedemptionWrapper = styled(InputWrapper)`
@@ -52,12 +56,12 @@ const RedemptionWrapper = styled(InputWrapper)`
   }
 `
 
-const Description = styled.div`
-  font-size: 0.85rem;
-  line-height: 1.25rem;
-  margin-left: 10px;
-  color: ${({ theme }) => darken(0.4, theme.text1)};
-`
+// const Description = styled.div`
+//   font-size: 0.85rem;
+//   line-height: 1.25rem;
+//   margin-left: 10px;
+//   color: ${({ theme }) => darken(0.4, theme.text1)};
+// `
 
 const PlusIcon = styled(Plus)`
   margin: -12px auto;
@@ -79,7 +83,7 @@ export default function Redemption() {
   const toggleWalletModal = useWalletModalToggle()
   const isSupportedChainId = useSupportedChainId()
   const [amountIn, setAmountIn] = useState('')
-  const debouncedAmountIn = useDebounce(amountIn, 500)
+  // const debouncedAmountIn = useDebounce(amountIn, 500)
   const deiCurrency = DEI_TOKEN
   const usdcCurrency = USDC_TOKEN
   const deusCurrency = DEUS_TOKEN

@@ -5,12 +5,12 @@ import { ExplorerDataType, getExplorerLink } from 'utils/explorers'
 
 const StyledLink = styled.a`
   text-decoration: none;
-  color: ${({ theme }) => theme.yellow2};
+  /* color: ${({ theme }) => theme.white}; */
   font-weight: 500;
 
   :hover {
     cursor: pointer;
-    color: ${({ theme }) => theme.yellow1};
+    color: ${({ theme }) => theme.white};
   }
   :focus {
     outline: none;

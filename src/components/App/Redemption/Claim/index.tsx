@@ -26,6 +26,10 @@ const ActionWrap = styled(Card)`
   min-height: 370px;
   min-width: 220px;
   margin-top: 28px;
+
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    margin: 20px auto;
+  `}
 `
 const TitleWrap = styled(RowBetween)`
   border-bottom: 1px solid ${({ theme }) => theme.bg2};
