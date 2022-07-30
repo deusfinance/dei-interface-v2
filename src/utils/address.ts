@@ -30,3 +30,9 @@ export function constructSameAddressMap(address: string, chainMapping: number[])
     return acc
   }, {})
 }
+
+export interface ProxyPath {
+  [key: number]: {
+    [key: string]: string[]
+  }
+}

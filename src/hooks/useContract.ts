@@ -167,3 +167,10 @@ export function useProxyMinterContract() {
   const address = useMemo(() => (chainId ? MintProxy[chainId] : undefined), [chainId])
   return useContract(address, PROXY_MINTER_ABI)
 }
+
+export function useDeiContract() {
+  // FIXME: add dei contract address
+  const { chainId } = useWeb3React()
+  const address = useMemo(() => (chainId ? MintProxy[chainId] : undefined), [chainId])
+  return useContract(address, PROXY_MINTER_ABI)
+}
