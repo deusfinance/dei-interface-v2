@@ -54,8 +54,6 @@ const DeiInfo = styled(RowEnd)`
 `
 
 const Title = styled.div`
-  font-family: 'IBM Plex Mono';
-  font-weight: 400;
   font-size: 20px;
   color: ${({ theme }) => theme.text1};
   margin-bottom: 10px;
@@ -68,7 +66,6 @@ const Title = styled.div`
 
 const ClaimedDei = styled.div`
   font-family: 'Inter';
-  font-weight: 400;
   font-size: 12px;
   color: ${({ theme }) => theme.text2};
 
@@ -78,7 +75,6 @@ const ClaimedDei = styled.div`
 `
 
 const ClaimedValue = styled.span`
-  font-family: 'IBM Plex Mono';
   font-weight: 500;
   font-size: 14px;
   color: ${({ theme }) => theme.text1};

@@ -85,7 +85,6 @@ const ClearButton = styled(ActionButton)`
   font-size: 0.6rem;
   padding: 0.2rem 0.5rem;
   font-family: 'Inter';
-  font-weight: 400;
   font-size: 12px;
 
   color: ${({ theme }) => theme.text2};
@@ -190,8 +189,6 @@ const AllTransactions = styled.div`
 `
 
 const RecentTransactions = styled.div`
-  font-family: 'IBM Plex Mono';
-  font-weight: 400;
   font-size: 12px;
   color: ${({ theme }) => theme.text1};
 `

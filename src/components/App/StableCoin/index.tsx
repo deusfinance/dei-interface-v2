@@ -54,7 +54,6 @@ export const TopTableau = styled.div`
 `
 
 export const TableauTitle = styled.span`
-  font-family: 'IBM Plex Mono';
   font-weight: 600;
   font-size: 28px;
   text-align: center;
@@ -76,7 +75,6 @@ export const InfoWrapper = styled(RowBetween)`
 `
 
 export const Title = styled.div`
-  font-family: 'IBM Plex Mono';
   font-weight: 700;
   font-size: 32px;
   color: ${({ theme }) => theme.white};

@@ -174,7 +174,6 @@ const YieldTitle = styled.div`
   -webkit-text-fill-color: transparent;
   font-weight: 900;
   font-size: 24px;
-  font-family: 'IBM Plex Mono';
   word-spacing: -12px;
 `
 
@@ -183,13 +182,11 @@ const TitleInfo = styled.div`
   padding-top: 5px;
   display: flex;
   justify-content: space-between;
-  font-family: 'IBM Plex Mono';
 `
 
 const TimeTitle = styled.span`
   font-size: 24px;
   font-weight: 700;
-  font-family: 'IBM Plex Mono';
   word-spacing: -10px;
 `
 

@@ -17,7 +17,6 @@ export const InputField = styled.input<{
   background: transparent;
   font-size: 1.1rem;
   color: ${({ theme }) => theme.text1};
-  font-family: 'IBM Plex Mono';
   &:focus,
   &:hover {
     outline: none;

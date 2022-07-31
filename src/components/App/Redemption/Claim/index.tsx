@@ -38,7 +38,6 @@ const TitleWrap = styled(RowBetween)`
 
 const Title = styled.div`
   color: ${({ theme }) => theme.text1};
-  font-family: 'IBM Plex Mono';
   font-weight: 600;
   font-size: 16px;
   margin-top: 12px;

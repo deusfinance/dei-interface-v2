@@ -28,8 +28,6 @@ const Row = styled.div`
 `
 
 const Summary = styled.div`
-  font-family: 'IBM Plex Mono';
-  font-weight: 400;
   font-size: 12px;
   color: ${({ theme }) => theme.text1};
 `

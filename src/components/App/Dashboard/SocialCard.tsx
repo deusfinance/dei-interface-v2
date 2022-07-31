@@ -12,7 +12,6 @@ import { RowBetween } from 'components/Row'
 import { ExternalLink } from 'components/Link'
 
 const Wrapper = styled(RowBetween)`
-  font-family: 'IBM Plex Mono';
   color: ${({ theme }) => theme.text1};
   background: ${({ theme }) => theme.bg0};
   max-width: 360px;

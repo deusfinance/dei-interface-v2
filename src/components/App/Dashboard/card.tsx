@@ -38,8 +38,8 @@ const Wrapper = styled(RowBetween)`
   }
   `};
 `
+//Todo
 const LeftWrap = styled.div`
-  font-family: 'IBM Plex Mono';
   display: flex;
   flex-direction: column;
   justify-content: space-between;

@@ -64,7 +64,6 @@ const TopTableau = styled(Wrapper)`
 `
 
 const TableauTitle = styled.span`
-  font-family: 'IBM Plex Mono';
   font-weight: 600;
   font-size: 24px;
   text-align: center;
