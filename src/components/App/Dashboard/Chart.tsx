@@ -8,7 +8,7 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  padding: 38px 36px 38px 36px;
+  padding: 38px 36px;
   /* padding-top: 230px; */
   text-align: center;
   justify-content: center;

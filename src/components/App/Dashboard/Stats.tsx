@@ -3,16 +3,16 @@ import styled from 'styled-components'
 
 import StatsItem from './StatsItem'
 import Chart from './Chart'
+import { RowBetween } from 'components/Row'
 
-const Wrapper = styled.div`
+const Wrapper = styled(RowBetween)`
   background: ${({ theme }) => theme.bg0};
+  align-items: stretch;
   border-radius: 12px;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  padding: 38px 36px 38px 36px;
+  padding: 38px 36px;
+  padding-left: 14px;
 
-  ${({ theme }) => theme.mediaWidth.upToSmall`
+  ${({ theme }) => theme.mediaWidth.upToMedium`
     flex-direction: column;
   `};
 `
@@ -41,11 +41,9 @@ const StatsWrapper = styled.div`
   display: block;
 `
 
-const Info = styled.div`
+const Info = styled(RowBetween)`
   width: 100%;
-  display: flex;
-  justify-content: space-between;
-  margin: 20px -24px;
+  /* margin: 20px -24px; */
   flex-wrap: wrap;
   & > * {
     margin-top: 10px;
@@ -55,8 +53,11 @@ const Info = styled.div`
   }
   ${({ theme }) => theme.mediaWidth.upToMedium`
     margin:unset;
-    margin-left:-10px;
+    // margin-left:-10px;
       & > * {
+      &:nth-child(3n) {
+        border-right: 1px solid ${({ theme }) => theme.border1};
+      }
       &:nth-child(2n) {
         border-right: none;
       }
@@ -69,6 +70,7 @@ const Title = styled.span`
   font-weight: 400;
   font-size: 20px;
   background: ${({ theme }) => theme.specialBG1};
+  margin-left: 20px;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 `

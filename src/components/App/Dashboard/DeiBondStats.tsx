@@ -1,49 +1,50 @@
 import React from 'react'
 
-import { Row, RowStart } from 'components/Row'
+import { RowBetween, RowEnd } from 'components/Row'
 import styled from 'styled-components'
 import StatsItem from './StatsItem'
 
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+const Wrapper = styled(RowBetween)`
   border-radius: 12px;
   padding: 20px;
   background: ${({ theme }) => theme.bg0};
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
     flex-direction: column;
+    align-items: flex-start;
+    padding-left: 0;
   `};
 `
 
-const DeiStats = styled(Row)`
+const DeiStats = styled.div`
   white-space: nowrap;
-  flex-direction: column;
-  /* width: 40%; */
 
   & > * {
     margin: 2px auto;
   }
+
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+      margin-left: 24px;
+  `};
 `
 
-const DeiInfo = styled.div`
-  display: flex;
-  justify-content: center;
+const DeiInfo = styled(RowEnd)`
   width: 100%;
   white-space: nowrap;
   margin-top: 9px;
   & > * {
+    width: unset;
+    min-width: unset;
     &:nth-child(4) {
       border-right: none;
     }
   }
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
-    flex-wrap: wrap;
     margin-top:unset;
-    margin-left:-10px;
+    flex-wrap:wrap;
     & > * {
+      width: 50%;
         margin-top:14px;
         &:nth-child(2n){
             border-right:none
@@ -52,20 +53,20 @@ const DeiInfo = styled.div`
   `};
 `
 
-const Title = styled(RowStart)`
+const Title = styled.div`
   font-family: 'IBM Plex Mono';
   font-weight: 400;
   font-size: 20px;
   color: ${({ theme }) => theme.text1};
   margin-bottom: 10px;
-
+  text-align: left;
   ${({ theme }) => theme.mediaWidth.upToMedium`
     font-size: 16px;
 
   `};
 `
 
-const ClaimedDei = styled(RowStart)`
+const ClaimedDei = styled.div`
   font-family: 'Inter';
   font-weight: 400;
   font-size: 12px;
@@ -76,7 +77,7 @@ const ClaimedDei = styled(RowStart)`
   `};
 `
 
-const ClaimedValue = styled.div`
+const ClaimedValue = styled.span`
   font-family: 'IBM Plex Mono';
   font-weight: 500;
   font-size: 14px;

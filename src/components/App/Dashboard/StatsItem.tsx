@@ -1,20 +1,17 @@
 import { Link } from 'components/Icons'
 import styled from 'styled-components'
 
-const Item = styled.div<{ rightBorder?: boolean }>`
+const Item = styled.div`
   display: inline-block;
-  padding-left: 24px;
-  padding-right: 24px;
+  padding: 0 24px;
   border-right: 1px solid ${({ theme }) => theme.border1};
   white-space: nowrap;
   width: 33%;
+  min-width: 200px;
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
-  padding-left: 12px;
-  padding-right:12px;
-  flex-wrap: wrap;
+  padding:0 12px;
   width: 50%;
-
   `};
 `
 
