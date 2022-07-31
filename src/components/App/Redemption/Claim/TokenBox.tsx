@@ -12,6 +12,11 @@ const TokenInfo = styled.div`
   &:hover {
     color: ${({ theme }) => theme.bg1};
   }
+
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    display: flex;
+    flex-direction: row;
+  `}
 `
 
 const TokenName = styled.div`
@@ -19,11 +24,18 @@ const TokenName = styled.div`
   margin-left: 5px;
   color: ${({ theme }) => theme.text1};
 `
+
 const Amount = styled.div`
   font-size: 12px;
   margin-left: 10px;
   font-weight: 600;
   color: ${({ theme }) => theme.text1};
+`
+
+const TokenRow = styled(RowBetween)`
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    margin-top: 3px;
+  `}
 `
 
 export const TokenBox = ({
@@ -45,21 +57,21 @@ export const TokenBox = ({
   return (
     <>
       <TokenInfo>
-        <RowBetween>
+        <TokenRow>
           <RowStart alignItems="center">
             <Image width="20px" height="20px" src={logo} alt={'DEUS'} />
+            <Amount>{amount ? formatBalance(amount) : ''}</Amount>
             <TokenName>{symbol}</TokenName>
           </RowStart>
-          <Amount>{amount ? formatBalance(amount) : ''}</Amount>
-        </RowBetween>
-        <RowBetween mt={'15px'}>
+        </TokenRow>
+        <TokenRow mt={'15px'}>
           <ClaimButton
             claimableBlock={claimableBlock}
             currentBlock={currentBlock}
             onClaim={onClaim}
             onSwitchNetwork={onSwitchNetwork}
           />
-        </RowBetween>
+        </TokenRow>
       </TokenInfo>
     </>
   )
