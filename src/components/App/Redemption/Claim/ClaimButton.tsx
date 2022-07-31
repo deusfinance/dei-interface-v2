@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
+import { isMobile } from 'react-device-detect'
 
 import { PrimaryButton } from 'components/Button'
 import useWeb3React from 'hooks/useWeb3'
@@ -16,6 +17,8 @@ const RemainingWrap = styled(RowCenter)`
   color: ${({ theme }) => theme.white};
   height: 40px;
   font-size: 12px;
+  cursor: progress;
+
   & > * {
     &:first-child {
       z-index: 100;
@@ -86,7 +89,7 @@ export default function ClaimButton({
     const elapsed = (diff / Eight_hours) * 100
     return (
       <RemainingWrap>
-        <p>{`${hours}:${minutes}:${seconds} Remaining`}</p>
+        {isMobile ? <p>{`${hours}:${minutes}:${seconds}`}</p> : <p>{`${hours}:${minutes}:${seconds} Remaining`}</p>}
         <RemainingBlock width={elapsed.toFixed(0) + '%'}></RemainingBlock>
       </RemainingWrap>
     )

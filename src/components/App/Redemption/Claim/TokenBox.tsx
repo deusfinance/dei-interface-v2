@@ -19,10 +19,17 @@ const TokenInfo = styled.div`
   `}
 `
 
-const TokenName = styled.div`
+const TokenName = styled.div<{ type: string }>`
   font-size: 14px;
   margin-left: 5px;
-  color: ${({ theme }) => theme.text1};
+  color: ${({ theme, type }) => (type === 'USDC' ? '#56A5FA' : theme.text1)};
+  ${({ type }) =>
+    type === 'DEUS' &&
+    `
+    background: -webkit-linear-gradient(90deg, #0badf4 0%, #30efe4 93.4%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  `}
 `
 
 const Amount = styled.div`
@@ -34,7 +41,16 @@ const Amount = styled.div`
 
 const TokenRow = styled(RowBetween)`
   ${({ theme }) => theme.mediaWidth.upToSmall`
-    margin-top: 3px;
+    margin-top: 0;
+    flex: 2;
+  `}
+`
+
+const TokenRowRight = styled(RowBetween)`
+  margin-top: 15px;
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    margin-top: 0;
+    flex: 1;
   `}
 `
 
@@ -61,17 +77,17 @@ export const TokenBox = ({
           <RowStart alignItems="center">
             <Image width="20px" height="20px" src={logo} alt={'DEUS'} />
             <Amount>{amount ? formatBalance(amount) : ''}</Amount>
-            <TokenName>{symbol}</TokenName>
+            <TokenName type={symbol ?? 'USDC'}>{symbol}</TokenName>
           </RowStart>
         </TokenRow>
-        <TokenRow mt={'15px'}>
+        <TokenRowRight>
           <ClaimButton
             claimableBlock={claimableBlock}
             currentBlock={currentBlock}
             onClaim={onClaim}
             onSwitchNetwork={onSwitchNetwork}
           />
-        </TokenRow>
+        </TokenRowRight>
       </TokenInfo>
     </>
   )
