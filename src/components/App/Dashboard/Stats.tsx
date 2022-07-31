@@ -53,7 +53,6 @@ const Info = styled(RowBetween)`
   }
   ${({ theme }) => theme.mediaWidth.upToMedium`
     margin:unset;
-    // margin-left:-10px;
       & > * {
       &:nth-child(3n) {
         border-right: 1px solid ${({ theme }) => theme.border1};
@@ -73,6 +72,10 @@ const Title = styled.span`
   margin-left: 20px;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    margin-left:11px;
+  `};
 `
 
 const DeusTitle = styled(Title)`

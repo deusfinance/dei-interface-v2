@@ -13,7 +13,7 @@ import { Connected as ConnectedIcon, Link } from 'components/Icons'
 import { ExplorerLink } from 'components/Link'
 import Copy from 'components/Copy'
 import Transaction from './Transaction'
-import { RowEnd } from 'components/Row'
+import { RowEnd, RowStart } from 'components/Row'
 import { darken } from 'polished'
 
 const AccountWrapper = styled.div`
@@ -36,7 +36,7 @@ const Row = styled.div`
   display: flex;
   flex-flow: row nowrap;
   justify-content: space-between;
-  align-items: start;
+  align-items: center;
   width: 100%;
 `
 
@@ -91,12 +91,13 @@ const ClearButton = styled(ActionButton)`
   color: ${({ theme }) => theme.text2};
 `
 
-const MiddleRow = styled(Row)`
-  justify-content: flex-start;
-  align-items: center;
+const MiddleRow = styled(RowStart)`
   color: ${({ theme }) => theme.text1};
   gap: 5px;
   font-size: 1rem;
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+      font-size: 12px;
+  `}
 `
 
 const BottomRow = styled(Row)`
@@ -119,6 +120,7 @@ const AddressLink = styled.div`
   margin-left: 10px;
   font-weight: 500;
   font-size: 12px;
+  white-space: nowrap;
 
   color: ${({ theme }) => theme.text1};
 
@@ -126,6 +128,11 @@ const AddressLink = styled.div`
     color: ${({ theme }) => darken(0.2, theme.text1)};
     cursor: pointer;
   }
+
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+      margin-left:4px;
+      font-size: 8px;
+  `}
 `
 
 const TransactionsWrapper = styled.div`
@@ -133,7 +140,6 @@ const TransactionsWrapper = styled.div`
   flex-flow: column nowrap;
   background: ${({ theme }) => theme.bg1};
   color: ${({ theme }) => theme.text3};
-  /* padding: 1.5rem; */
   padding: 40px 4px;
 
   overflow: scroll;
@@ -254,7 +260,7 @@ export default function AccountDetails({
           </div>
         </Row>
         <MiddleRow>
-          {connector && <ConnectedIcon />}
+          {connector && <ConnectedIcon style={{ minWidth: '7px' }} />}
           {account && truncateAddress(account)}
           {account && <Copy toCopy={account} text={''} />}
           {chainId && account && (

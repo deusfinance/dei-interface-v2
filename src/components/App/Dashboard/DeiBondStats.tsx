@@ -24,7 +24,7 @@ const DeiStats = styled.div`
   }
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
-      margin-left: 24px;
+      margin-left: 11px;
   `};
 `
 

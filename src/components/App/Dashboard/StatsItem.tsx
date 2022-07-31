@@ -7,9 +7,9 @@ const Item = styled.div`
   border-right: 1px solid ${({ theme }) => theme.border1};
   white-space: nowrap;
   width: 33%;
-  min-width: 200px;
+  min-width: 150px;
 
-  ${({ theme }) => theme.mediaWidth.upToSmall`
+  ${({ theme }) => theme.mediaWidth.upToMedium`
   padding:0 12px;
   width: 50%;
   `};
