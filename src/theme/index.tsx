@@ -120,6 +120,7 @@ function colors(themeName: SupportedThemes): Colors {
       error: '#DF1F38',
       success: '#007D35',
       warning: '#FF8F00',
+      deusColor: 'linear-gradient(90deg, #0badf4 0%, #30efe4 93.4%)',
     },
     [SupportedThemes.DARK]: {
       themeName: SupportedThemes.DARK,
@@ -182,6 +183,8 @@ function colors(themeName: SupportedThemes): Colors {
       error: '#FD4040',
       success: '#27AE60',
       warning: '#FF8F00',
+
+      deusColor: 'linear-gradient(90deg, #0badf4 0%, #30efe4 93.4%)',
     },
   }
   // default the theme to light mode

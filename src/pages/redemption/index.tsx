@@ -39,7 +39,7 @@ const MainWrap = styled.div`
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
     display: flex;
-    flex-direction: column;
+    flex-direction: column-reverse;
   `}
 `
 
@@ -227,7 +227,11 @@ export default function Redemption() {
     )
   }
   // TODO: use useMemo for items
-  const items = [{ name: 'Total DEI Redeemed ', value: '$12M?' }]
+  const items = [
+    { name: 'DEI Price ', value: '$1.00' },
+    { name: 'USDC Price ', value: '$1.00' },
+    { name: 'Total DEI Redeemed ', value: '$12M' },
+  ]
 
   const info = useMemo(
     () => [
