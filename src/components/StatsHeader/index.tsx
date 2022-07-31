@@ -54,7 +54,7 @@ const CustomTooltip = styled(ToolTip)`
 `
 
 const InfoIcon = styled(Info)`
-  color: ${({ theme }) => theme.yellow2};
+  color: ${({ theme }) => theme.yellow4};
 `
 
 const AprWrapper = styled.a`
@@ -67,7 +67,7 @@ const AprWrapper = styled.a`
   :hover {
     opacity: 0.7;
     text-decoration: underline;
-    color: ${({ theme }) => theme.yellow2};
+    color: ${({ theme }) => theme.yellow4};
   }
   :focus {
     outline: none;

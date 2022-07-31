@@ -98,7 +98,7 @@ const Balance = styled(RowWrap)<{ disabled?: boolean }>`
     color: ${({ theme }) => theme.text1};
 
     &:hover {
-      background: ${({ theme }) => theme.secondary2};
+      background: ${({ theme }) => theme.primary1};
       cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
     }
   }

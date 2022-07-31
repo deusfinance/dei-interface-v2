@@ -87,7 +87,7 @@ const PaginationWrapper = styled.div`
 
 const CellAmount = styled.div`
   font-size: 0.85rem;
-  background: linear-gradient(90deg, #0badf4 0%, #30efe4 93.4%);
+  background: ${({ theme }) => theme.deusColor};
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
