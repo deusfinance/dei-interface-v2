@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
@@ -11,6 +11,7 @@ import Web3Network from 'components/Web3Network'
 import Web3Status from 'components/Web3Status'
 import Menu from './Menu'
 import NavLogo from './NavLogo'
+import InfoHeader from 'components/InfoHeader'
 
 const Wrapper = styled.div`
   padding: 0px 2rem;
@@ -150,84 +151,93 @@ const NavLink = styled.div<{
   }
 `
 
-const TitleSpan = styled.span<{ active: boolean }>`
-  ${({ active }) =>
-    active &&
-    `
-    font-family: 'Inter';
-    font-style: normal;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 19px;
-    background: -webkit-linear-gradient(1deg, #e29d52 -10.26%, #de4a7b 90%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-`};
-`
+// const TitleSpan = styled.span<{ active: boolean }>`
+//   ${({ active }) =>
+//     active &&
+//     `
+//     font-family: 'Inter';
+//     font-style: normal;
+//     font-weight: 600;
+//     font-size: 16px;
+//     line-height: 19px;
+//     background: -webkit-linear-gradient(1deg, #e29d52 -10.26%, #de4a7b 90%);
+//     -webkit-background-clip: text;
+//     -webkit-text-fill-color: transparent;
+// `};
+// `
 
 export default function NavBar() {
   const router = useRouter()
+  const [showTopBanner, setShowTopBanner] = useState(true)
+  const bannerText =
+    'DEI.finance was audited. However, it is still an experimental software. Please use at your own risk.'
 
   function getMobileContent() {
     return (
-      <MobileWrapper>
-        <NavLogo />
-        <Web3Network />
-        <Web3Status />
-        <Menu />
-      </MobileWrapper>
-    )
-  }
-
-  function isSubItemChosen(item: Array<any>) {
-    for (let i = 0; i < item.length; i++) {
-      if (item[i].path === router.route) return true
-    }
-    return false
-  }
-
-  function getDefaultContent() {
-    return (
-      <DefaultWrapper>
-        <NavLogo />
-        <Routes>
-          {routes.map((item, i) => {
-            // return item.children ? (
-            //   <NavbarContentWrap key={i}>
-            //     <TitleSpan active={isSubItemChosen(item.children)}>
-            //       {item.text}
-            //       <ChevronDown
-            //         color={isSubItemChosen(item.children) ? '#B63562' : 'white'}
-            //         disabled={true}
-            //         style={{ position: 'absolute', marginTop: '-2px' }}
-            //       />
-            //     </TitleSpan>
-            //     <SubNavbarContentWrap>
-            //       {item.children.map((subItem, j) => (
-            //         <li key={`${i}-${j}`}>
-            //           <Link href={subItem.path} passHref>
-            //             <NavLink active={router.route === subItem.path}>{subItem.text}</NavLink>
-            //           </Link>
-            //         </li>
-            //       ))}
-            //     </SubNavbarContentWrap>
-            //   </NavbarContentWrap>
-            // ) : (
-            return (
-              <SimpleLinkWrapper key={i}>
-                <Link href={item.path} passHref>
-                  <NavLink active={router.route === item.path}>{item.text}</NavLink>
-                </Link>
-              </SimpleLinkWrapper>
-            )
-          })}
-        </Routes>
-        <Items>
+      <>
+        <MobileWrapper>
+          <NavLogo />
           <Web3Network />
           <Web3Status />
           <Menu />
-        </Items>
-      </DefaultWrapper>
+        </MobileWrapper>
+        {showTopBanner && <InfoHeader onClose={setShowTopBanner} bg={'gray'} hasInfoIcon={true} text={bannerText} />}
+      </>
+    )
+  }
+
+  // function isSubItemChosen(item: Array<any>) {
+  //   for (let i = 0; i < item.length; i++) {
+  //     if (item[i].path === router.route) return true
+  //   }
+  //   return false
+  // }
+
+  function getDefaultContent() {
+    return (
+      <>
+        <DefaultWrapper>
+          <NavLogo />
+          <Routes>
+            {routes.map((item, i) => {
+              // return item.children ? (
+              //   <NavbarContentWrap key={i}>
+              //     <TitleSpan active={isSubItemChosen(item.children)}>
+              //       {item.text}
+              //       <ChevronDown
+              //         color={isSubItemChosen(item.children) ? '#B63562' : 'white'}
+              //         disabled={true}
+              //         style={{ position: 'absolute', marginTop: '-2px' }}
+              //       />
+              //     </TitleSpan>
+              //     <SubNavbarContentWrap>
+              //       {item.children.map((subItem, j) => (
+              //         <li key={`${i}-${j}`}>
+              //           <Link href={subItem.path} passHref>
+              //             <NavLink active={router.route === subItem.path}>{subItem.text}</NavLink>
+              //           </Link>
+              //         </li>
+              //       ))}
+              //     </SubNavbarContentWrap>
+              //   </NavbarContentWrap>
+              // ) : (
+              return (
+                <SimpleLinkWrapper key={i}>
+                  <Link href={item.path} passHref>
+                    <NavLink active={router.route === item.path}>{item.text}</NavLink>
+                  </Link>
+                </SimpleLinkWrapper>
+              )
+            })}
+          </Routes>
+          <Items>
+            <Web3Network />
+            <Web3Status />
+            <Menu />
+          </Items>
+        </DefaultWrapper>
+        {showTopBanner && <InfoHeader onClose={setShowTopBanner} bg={'gray'} hasInfoIcon={true} text={bannerText} />}
+      </>
     )
   }
 

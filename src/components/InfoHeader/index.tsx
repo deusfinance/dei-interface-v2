@@ -1,11 +1,12 @@
 import React from 'react'
 import styled from 'styled-components'
+import { Info } from 'components/Icons'
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ bg?: string }>`
   width: 100%;
   display: flex;
   justify-content: center;
-  background: ${({ theme }) => theme.primary6};
+  background: ${({ theme, bg }) => (bg ? (bg === 'gray' ? theme.text3 : bg) : theme.primary6)};
 `
 
 const Value = styled.div`
@@ -28,9 +29,30 @@ const CloseIcon = styled.button`
   `}
 `
 
-export default function InfoHeader({ text, onClose }: { text: string; onClose: (status: boolean) => void }) {
+const InfoIcon = styled(Info)`
+  color: ${({ theme }) => theme.white};
+  margin-top: 6px;
+  margin-right: -15px;
+
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    margin-left: 6px;
+  `}
+`
+
+export default function InfoHeader({
+  text,
+  onClose,
+  bg,
+  hasInfoIcon,
+}: {
+  text: string
+  onClose: (status: boolean) => void
+  bg?: string
+  hasInfoIcon?: boolean
+}) {
   return (
-    <Wrapper>
+    <Wrapper bg={bg}>
+      {hasInfoIcon && <InfoIcon size={20} />}
       <Value>{text}</Value>
       <CloseIcon onClick={() => onClose(false)}>X</CloseIcon>
     </Wrapper>
