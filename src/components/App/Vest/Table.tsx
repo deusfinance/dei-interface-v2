@@ -103,7 +103,6 @@ const CellAmount = styled.div`
 // `
 
 const Name = styled.div`
-  font-weight: 400;
   font-size: 12px;
   color: ${({ theme }) => theme.text2};
   white-space: nowrap;

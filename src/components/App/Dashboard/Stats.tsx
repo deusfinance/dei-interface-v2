@@ -67,7 +67,6 @@ const Info = styled(RowBetween)`
 
 const Title = styled.span`
   font-family: 'Inter';
-  font-weight: 400;
   font-size: 20px;
   background: ${({ theme }) => theme.specialBG1};
   margin-left: 20px;

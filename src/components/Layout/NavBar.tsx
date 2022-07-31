@@ -30,8 +30,6 @@ const DefaultWrapper = styled(Wrapper)`
   display: flex;
   flex-flow: row nowrap;
   font-family: 'Inter';
-  font-style: normal;
-  /* font-weight: 600; */
   font-size: 16px;
   line-height: 19px;
   & > * {
@@ -150,21 +148,6 @@ const NavLink = styled.div<{
   `};
   }
 `
-
-// const TitleSpan = styled.span<{ active: boolean }>`
-//   ${({ active }) =>
-//     active &&
-//     `
-//     font-family: 'Inter';
-//     font-style: normal;
-//     font-weight: 600;
-//     font-size: 16px;
-//     line-height: 19px;
-//     background: -webkit-linear-gradient(1deg, #e29d52 -10.26%, #de4a7b 90%);
-//     -webkit-background-clip: text;
-//     -webkit-text-fill-color: transparent;
-// `};
-// `
 
 export default function NavBar() {
   const router = useRouter()

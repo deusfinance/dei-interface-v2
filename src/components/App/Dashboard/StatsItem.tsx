@@ -24,7 +24,6 @@ const Name = styled.div`
 `
 
 const Value = styled.div`
-  font-family: 'IBM Plex Mono';
   font-weight: 500;
   font-size: 14px;
   color: ${({ theme }) => theme.yellow4};

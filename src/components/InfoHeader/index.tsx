@@ -10,8 +10,6 @@ const Wrapper = styled.div<{ bg?: string }>`
 `
 
 const Value = styled.div`
-  font-family: 'IBM Plex Mono';
-  font-style: normal;
   font-weight: 600;
   font-size: 12px;
   line-height: 16px;

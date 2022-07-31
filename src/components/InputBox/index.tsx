@@ -38,7 +38,6 @@ export const InputWrapper = styled.div`
 `
 
 export const CurrencySymbol = styled.div<{ active?: any }>`
-  font-family: 'IBM Plex Mono';
   font-weight: 600;
   font-size: 16px;
   margin-left: 5px;
@@ -88,7 +87,6 @@ export const ChevronDown = styled(ChevronDownIcon)`
 `
 
 const Balance = styled(RowWrap)<{ disabled?: boolean }>`
-  font-family: 'IBM Plex Mono';
   font-weight: 500;
   font-size: 10px;
   margin-left: 4px;

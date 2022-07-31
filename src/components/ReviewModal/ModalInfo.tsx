@@ -11,16 +11,12 @@ const Wrapper = styled.div`
 `
 
 const Title = styled(RowStart)`
-  font-family: 'IBM Plex Mono';
-  font-weight: 400;
   font-size: 12px;
   line-height: 16px;
   color: ${({ theme }) => theme.text2};
 `
 
 const Value = styled(RowEnd)`
-  font-family: 'IBM Plex Mono';
-  font-weight: 400;
   font-size: 12px;
   line-height: 16px;
   color: ${({ theme }) => theme.text1};

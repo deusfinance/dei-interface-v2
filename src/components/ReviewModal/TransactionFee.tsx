@@ -29,7 +29,6 @@ export const Option = styled(DefaultOptionButton)`
     width: 80px;
     height: 36px;
     margin: 0 auto;
-
   `}
 `
 
