@@ -15,13 +15,9 @@
     "exact": true
   },
   {
-    "text": "Bonds",
-    "exact": false,
-    "children": [
-      { "text": "Bonds", "path": "/deibonds" },
-      { "text": "Pools", "path": "/deibonds/pools" },
-      { "text": "Liquidity", "path": "/deibonds/liquidity" }
-    ]
+    "text": "Bond",
+    "path": "/bdei",
+    "exact": true
   },
   {
     "text": "veDEUS",
