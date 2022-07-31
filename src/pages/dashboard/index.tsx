@@ -22,6 +22,29 @@ import { RowCenter } from 'components/Row'
 import { Card } from 'components/App/Dashboard/card'
 import { SocialCard } from 'components/App/Dashboard/SocialCard'
 import Stats from 'components/App/Dashboard/Stats'
+import DeiBondStats from 'components/App/Dashboard/DeiBondStats'
+
+const Wrapper = styled(RowCenter)`
+  max-width: 1300px;
+  margin-top: 28px;
+  gap: 20px;
+  flex-wrap: wrap;
+  border-radius: 15px;
+  width: 100%;
+  overflow: hidden;
+  padding: 0 5px;
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+  gap: 10px;
+`};
+
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+  gap: 8px;
+`};
+
+  & > * {
+    width: 100%;
+  }
+`
 
 export default function Dashboard() {
   const items = [
@@ -31,28 +54,6 @@ export default function Dashboard() {
     { name: 'Total USDC Holdings', value: '72.53m' },
   ]
 
-  const Wrapper = styled(RowCenter)`
-    max-width: 1300px;
-    margin-top: 28px;
-    gap: 20px;
-    flex-wrap: wrap;
-    border-radius: 15px;
-    width: 100%;
-    overflow: hidden;
-    padding: 0 5px;
-    ${({ theme }) => theme.mediaWidth.upToMedium`
-      gap: 10px;
-  `};
-
-    ${({ theme }) => theme.mediaWidth.upToSmall`
-      gap: 8px;
-  `};
-
-    & > * {
-      width: 100%;
-    }
-  `
-
   return (
     <Container>
       <Hero>
@@ -60,6 +61,7 @@ export default function Dashboard() {
         <StatsHeader items={items} />
       </Hero>
       <Wrapper>
+        <DeiBondStats />
         <Card href="/mint" title={'Mint DEI'} subTitle="Mint DEI" MainIcon={MINT_LOGO} HoverIcon={MINT_HOVER_LOGO} />
         <Card
           href="/redemption"

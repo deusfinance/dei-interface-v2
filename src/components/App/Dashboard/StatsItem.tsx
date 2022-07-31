@@ -3,15 +3,18 @@ import styled from 'styled-components'
 
 const Item = styled.div<{ rightBorder?: boolean }>`
   display: inline-block;
-  padding: 0 24px;
-  border-right: ${({ theme, rightBorder }) => (rightBorder ? `1px solid ${theme.border1}` : 'unset')};
-  overflow-x: auto;
+  padding-left: 24px;
+  padding-right: 24px;
+  border-right: 1px solid ${({ theme }) => theme.border1};
   white-space: nowrap;
   width: 33%;
-  -webkit-overflow-scrolling: touch;
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
-    justify-content: stretch;
+  padding-left: 12px;
+  padding-right:12px;
+  flex-wrap: wrap;
+  width: 50%;
+
   `};
 `
 
@@ -31,20 +34,12 @@ const Value = styled.div`
   margin-top: 10px;
 `
 
-export default function StatsItem({
-  name,
-  value,
-  rightBorder,
-}: {
-  name: string
-  value: string
-  rightBorder?: boolean
-}) {
+export default function StatsItem({ name, value, linkIcon }: { name: string; value: string; linkIcon?: boolean }) {
   return (
-    <Item rightBorder={rightBorder}>
+    <Item>
       <Name>{name}</Name>
       <Value>
-        {value} <Link />
+        {value} {linkIcon ? <Link /> : ''}
       </Value>
     </Item>
   )

@@ -8,7 +8,7 @@ import { RowBetween } from 'components/Row'
 
 const Wrapper = styled(RowBetween)`
   color: ${({ theme }) => theme.text1};
-  background: ${({ theme }) => theme.bg2};
+  background: ${({ theme }) => theme.bg0};
   overflow: hidden;
   max-width: 360px;
   border-radius: 12px;
