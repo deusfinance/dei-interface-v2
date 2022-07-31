@@ -36,14 +36,14 @@ const Wrapper = styled.div`
   justify-content: space-between;
 `
 
-const TableWrapper = styled.table`
+const TableWrapper = styled.table<{ isEmpty?: boolean }>`
   width: 100%;
   overflow: hidden;
   table-layout: fixed;
   border-collapse: collapse;
   background: ${({ theme }) => theme.bg1};
-  /* border-bottom-right-radius: 12px; */
-  /* border-bottom-left-radius: 12px; */
+  border-bottom-right-radius: ${({ isEmpty }) => (isEmpty ? '12px' : '0')};
+  border-bottom-left-radius: ${({ isEmpty }) => (isEmpty ? '12px' : '0')};
 `
 
 const Row = styled.tr`
@@ -202,7 +202,7 @@ export default function Table({
   return (
     <>
       <Wrapper>
-        <TableWrapper>
+        <TableWrapper isEmpty={paginatedItems.length === 0}>
           <tbody>
             {paginatedItems.length > 0 &&
               paginatedItems.map((nftId: number, index) => (
@@ -217,7 +217,7 @@ export default function Table({
                 />
               ))}
           </tbody>
-          {paginatedItems.length == 0 && (
+          {paginatedItems.length === 0 && (
             <>
               <div style={{ margin: '0 auto' }}>
                 {isMobile ? (

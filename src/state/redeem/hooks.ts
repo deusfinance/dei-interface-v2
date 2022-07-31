@@ -56,8 +56,8 @@ export const useClaimableTokens = () => {
       symbol: deusToken.symbol,
       amount: 815.169,
       decimals: deusToken.decimals,
-      depositedBlock: 1659195305,
-      claimableBlock: 1659215605,
+      depositedBlock: Date.now() / 1000,
+      claimableBlock: Date.now() / 1000 + 5000,
       isClaimed: false,
     } as IClaimToken)
 

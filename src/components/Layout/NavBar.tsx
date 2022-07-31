@@ -11,7 +11,6 @@ import Web3Network from 'components/Web3Network'
 import Web3Status from 'components/Web3Status'
 import Menu from './Menu'
 import NavLogo from './NavLogo'
-import { ChevronDown } from 'components/Icons'
 
 const Wrapper = styled.div`
   padding: 0px 2rem;
@@ -193,27 +192,28 @@ export default function NavBar() {
         <NavLogo />
         <Routes>
           {routes.map((item, i) => {
-            return item.children ? (
-              <NavbarContentWrap key={i}>
-                <TitleSpan active={isSubItemChosen(item.children)}>
-                  {item.text}
-                  <ChevronDown
-                    color={isSubItemChosen(item.children) ? '#B63562' : 'white'}
-                    disabled={true}
-                    style={{ position: 'absolute', marginTop: '-2px' }}
-                  />
-                </TitleSpan>
-                <SubNavbarContentWrap>
-                  {item.children.map((subItem, j) => (
-                    <li key={`${i}-${j}`}>
-                      <Link href={subItem.path} passHref>
-                        <NavLink active={router.route === subItem.path}>{subItem.text}</NavLink>
-                      </Link>
-                    </li>
-                  ))}
-                </SubNavbarContentWrap>
-              </NavbarContentWrap>
-            ) : (
+            // return item.children ? (
+            //   <NavbarContentWrap key={i}>
+            //     <TitleSpan active={isSubItemChosen(item.children)}>
+            //       {item.text}
+            //       <ChevronDown
+            //         color={isSubItemChosen(item.children) ? '#B63562' : 'white'}
+            //         disabled={true}
+            //         style={{ position: 'absolute', marginTop: '-2px' }}
+            //       />
+            //     </TitleSpan>
+            //     <SubNavbarContentWrap>
+            //       {item.children.map((subItem, j) => (
+            //         <li key={`${i}-${j}`}>
+            //           <Link href={subItem.path} passHref>
+            //             <NavLink active={router.route === subItem.path}>{subItem.text}</NavLink>
+            //           </Link>
+            //         </li>
+            //       ))}
+            //     </SubNavbarContentWrap>
+            //   </NavbarContentWrap>
+            // ) : (
+            return (
               <SimpleLinkWrapper key={i}>
                 <Link href={item.path} passHref>
                   <NavLink active={router.route === item.path}>{item.text}</NavLink>

@@ -13,24 +13,24 @@ import { useClaimableTokens } from 'state/redeem/hooks'
 import useRpcChangerCallback from 'hooks/useRpcChangerCallback'
 import { useAppDispatch } from 'state'
 import { SupportedChainId } from 'constants/chains'
+import InfoItem from 'components/App/StableCoin/InfoItem'
 
 const ActionWrap = styled(Card)`
-  padding: 0;
-  max-height: 100%;
   box-shadow: ${({ theme }) => theme.boxShadow2};
   background: ${({ theme }) => theme.bg0};
   border: 1px solid ${({ theme }) => theme.border2};
   border-radius: 12px;
-  max-width: 320px;
-  width: 320px;
-  min-height: 370px;
-  min-width: 220px;
   margin-top: 28px;
+  width: 320px;
+  padding: 2px;
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
     margin: 20px auto;
-  `}
+    margin-bottom: 0;
+    width: 90%;
+  `};
 `
+
 const TitleWrap = styled(RowBetween)`
   border-bottom: 1px solid ${({ theme }) => theme.bg2};
   width: 100%;
@@ -56,6 +56,12 @@ export const ClaimBox = styled.div`
     padding: 15px 10px;
     border-bottom: 1px solid ${({ theme }) => theme.bg2};
   }
+
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    max-height: 180px;
+    overflow: auto;
+    // overflow-x: hidden;
+  `}
 `
 
 export const BottomRow = styled(Row)`
@@ -140,26 +146,32 @@ export default function RedeemClaim() {
       {!unClaimed || unClaimed.length == 0 ? (
         <ClaimBox style={{ justifyContent: 'center' }}>
           <Image src={CLAIM_LOGO} alt="claim" />
-          <EmptyToken> - nothing to claim -</EmptyToken>
+          <EmptyToken> nothing to claim </EmptyToken>
         </ClaimBox>
       ) : (
-        <ClaimBox>
-          {unClaimed.map((token: IClaimToken, index: number) => {
-            const { symbol, amount, claimableBlock } = token
-            const toChainId = SupportedChainId.FANTOM
-            return (
-              <TokenBox
-                key={index}
-                symbol={symbol}
-                claimableBlock={claimableBlock}
-                currentBlock={currentBlock}
-                amount={amount}
-                onSwitchNetwork={() => onSwitchNetwork(toChainId)}
-                onClaim={() => handleClaim(token)}
-              />
-            )
-          })}
-        </ClaimBox>
+        <>
+          <ClaimBox>
+            {unClaimed.map((token: IClaimToken, index: number) => {
+              const { symbol, amount, claimableBlock } = token
+              const toChainId = SupportedChainId.FANTOM
+              return (
+                <TokenBox
+                  key={index}
+                  symbol={symbol}
+                  claimableBlock={claimableBlock}
+                  currentBlock={currentBlock}
+                  amount={amount}
+                  onSwitchNetwork={() => onSwitchNetwork(toChainId)}
+                  onClaim={() => handleClaim(token)}
+                />
+              )
+            })}
+          </ClaimBox>
+          <div style={{ margin: '0 15px 10px 15px' }}>
+            <InfoItem name={'Ready to Claim:'} value={'2'} />
+            <InfoItem name={'Pending:'} value={'4'} />
+          </div>
+        </>
       )}
       {/* {unClaimed.length > 0 && <BottomRow>{getInfoComponent()}</BottomRow>} */}
     </ActionWrap>
