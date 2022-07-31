@@ -17,15 +17,15 @@ export const InputField = styled.input<{
   background: transparent;
   font-size: 1.1rem;
   color: ${({ theme }) => theme.text1};
-
+  font-family: 'IBM Plex Mono';
   &:focus,
   &:hover {
     outline: none;
   }
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    font-size: 0.9rem !important;
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    font-size: 16px !important;
     width: 85px;
-    height: 30px;
+    height: 40px;
   `}
 `
 

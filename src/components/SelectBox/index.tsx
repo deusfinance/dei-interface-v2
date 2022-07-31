@@ -4,7 +4,7 @@ import { isMobile } from 'react-device-detect'
 import { ChevronDown } from 'react-feather'
 
 import ImageWithFallback from 'components/ImageWithFallback'
-import { Row } from 'components/Row'
+import { Row, RowCenter } from 'components/Row'
 
 const Wrapper = styled(Row)`
   background: ${({ theme }) => theme.bg2};
@@ -12,11 +12,14 @@ const Wrapper = styled(Row)`
   color: ${({ theme }) => theme.text2};
   white-space: nowrap;
   height: 80px;
-  gap: 10px;
   border: 1px solid #444444;
   border-color: ${({ theme }) => theme.border1};
   position: relative;
   cursor: ${({ disabled }) => !disabled && 'pointer'};
+
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    height: 65px;
+  `}
 
   &:hover {
     border-color: ${({ theme }) => theme.border3};
@@ -33,7 +36,7 @@ const InputWrapper = styled.div<{
     width: 100%;
   }
 
-  ${({ theme }) => theme.mediaWidth.upToMedium`
+  ${({ theme }) => theme.mediaWidth.upToSmall`
     right: 0;
   `}
 `
@@ -41,15 +44,15 @@ const InputWrapper = styled.div<{
 const ItemWrapper = styled.div`
   width: 100%;
   padding: 6px;
+  padding-left: 16px;
   position: relative;
 `
 
-export const LogoWrapper = styled(Row)`
+export const LogoWrapper = styled(RowCenter)`
   height: 100%;
   border-right: 1px solid ${({ theme }) => theme.border1};
-  padding-left: 10px;
-  min-width: 48px;
-  max-width: 61px; //because of border-right
+  /* padding-left: 10px; */
+  width: 82px;
 `
 
 const StyledChevron = styled(ChevronDown)`

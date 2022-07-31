@@ -4,6 +4,7 @@ export const BaseButton = styled.div<{
   active?: boolean
   disabled?: boolean
 }>`
+  font-family: 'Inter';
   padding: 1rem;
   width: 100%;
   font-weight: 500;
@@ -61,6 +62,8 @@ export const NavButton = styled.button`
 export const PrimaryButton = styled(BaseButton)`
   background: ${({ theme }) => theme.specialBG1};
   color: ${({ theme }) => theme.text1};
+  font-weight: 600;
+  font-size: 20px;
   z-index: 0;
   &:focus {
     box-shadow: 0 0 0 1pt ${({ theme }) => theme.primary7};

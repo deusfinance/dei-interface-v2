@@ -50,7 +50,7 @@ const NFTsWrapper = styled(InputWrapper)`
     }
     &:nth-child(2) {
       margin: -12.5px auto;
-      margin-left: 49px;
+      margin-left: 57px;
     }
   }
 `

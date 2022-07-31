@@ -19,12 +19,11 @@ export const Wrapper = styled(Row)`
   color: ${({ theme }) => theme.text2};
   white-space: nowrap;
   height: 80px;
-  gap: 10px;
   border: 1px solid #444444;
   border-color: ${({ theme }) => theme.border1};
 
-  ${({ theme }) => theme.mediaWidth.upToMedium`
-    height: 60px;
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    height: 65px;
   `}
 `
 
@@ -33,7 +32,7 @@ export const InputWrapper = styled.div`
     width: 100%;
   }
 
-  ${({ theme }) => theme.mediaWidth.upToMedium`
+  ${({ theme }) => theme.mediaWidth.upToSmall`
     right: 0;
   `}
 `
@@ -45,19 +44,26 @@ export const CurrencySymbol = styled.div<{ active?: any }>`
   margin-left: 5px;
   color: ${({ theme }) => theme.text1};
   cursor: ${({ active }) => active && 'pointer'};
+
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    font-size: 12px;
+    margin-left: 6px;
+
+  `}
 `
 
 export const RightWrapper = styled.div`
   width: 100%;
   border-left: 1px solid ${({ theme }) => theme.border1};
-  padding: 6px;
+  padding: 8px;
+  padding-left: 10px;
   height: 100%;
   position: relative;
 `
 
 export const LogoWrapper = styled(RowCenter)<{ active?: any }>`
   height: 100%;
-  padding-left: 10px;
+  /* padding-left: 10px; */
   width: 80px;
   cursor: ${({ active }) => active && 'pointer'};
 `
@@ -66,7 +72,7 @@ export const RowWrap = styled(RowEnd)`
   gap: 10px;
   font-size: 1.5rem;
 
-  ${({ theme }) => theme.mediaWidth.upToMedium`
+  ${({ theme }) => theme.mediaWidth.upToSmall`
     gap: 3px;
   `}
 `

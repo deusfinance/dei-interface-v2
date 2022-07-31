@@ -12,7 +12,6 @@ import ANALYTICS_LOGO from '/public/static/images/pages/dashboard/ic_analytics_g
 import ANALYTICS_HOVER_LOGO from '/public/static/images/pages/dashboard/ic_analytics_hover.svg'
 import VEDEUS_LOGO from '/public/static/images/pages/dashboard/ic_vedeus_gray.svg'
 import VEDEUS_HOVER_LOGO from '/public/static/images/pages/dashboard/ic_vedeus_hover.svg'
-
 import DEI_LOGO from '/public/static/images/pages/dashboard/DEI_Dashboard.png'
 
 import Hero from 'components/Hero'

@@ -64,18 +64,14 @@ const RedemptionWrapper = styled(InputWrapper)`
 // `
 
 const PlusIcon = styled(Plus)`
-  margin: -12px auto;
-  margin-left: 67px;
+  margin: -12.5px auto;
+  margin-left: 57px;
   z-index: 1000;
   padding: 3px;
   border: 1px solid ${({ theme }) => theme.bg4};
   border-radius: 4px;
   background-color: ${({ theme }) => theme.bg4};
   color: ${({ theme }) => theme.text2};
-
-  ${({ theme }) => theme.mediaWidth.upToMedium`
-    margin-left: 62px;
-  `}
 `
 
 export default function Redemption() {
