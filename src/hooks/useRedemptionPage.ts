@@ -6,7 +6,8 @@ import debounce from 'lodash/debounce'
 
 import { useSingleContractMultipleMethods } from 'state/multicall/hooks'
 import { BN_TEN, removeTrailingZeros, toBN } from 'utils/numbers'
-import { useDynamicRedeemerContract } from 'hooks/useContract'
+import { useCollateralPoolContract, useDynamicRedeemerContract } from 'hooks/useContract'
+import { DEI_TOKEN, DEUS_TOKEN, USDC_TOKEN } from 'constants/tokens'
 
 export type RedeemTranche = {
   trancheId: number | null
@@ -235,5 +236,42 @@ export function useRedeemAmountsOut(
   return {
     amountOut1,
     amountOut2,
+  }
+}
+
+export function useRedeemAmountOut(amountIn: string): {
+  collateralAmount: string
+  deusValue: string
+} {
+  const amountInBN = amountIn ? toBN(amountIn).times(BN_TEN.pow(DEI_TOKEN.decimals)).toFixed(0) : ''
+  const contract = useCollateralPoolContract()
+
+  const amountOutCall = useMemo(
+    () =>
+      !amountInBN || amountInBN == '' || amountInBN == '0'
+        ? []
+        : [
+            {
+              methodName: 'collateralAndDeusValueForRedeeming',
+              callInputs: [amountInBN],
+            },
+          ],
+    [amountInBN]
+  )
+
+  const [mintAmountOuts] = useSingleContractMultipleMethods(contract, amountOutCall)
+
+  const collateralAmount =
+    !mintAmountOuts || !mintAmountOuts.result
+      ? ''
+      : toBN(formatUnits(mintAmountOuts.result[0].toString(), USDC_TOKEN.decimals)).toString()
+  const deusValue =
+    !mintAmountOuts || !mintAmountOuts.result
+      ? ''
+      : toBN(formatUnits(mintAmountOuts.result[1].toString(), DEUS_TOKEN.decimals)).toString()
+
+  return {
+    collateralAmount,
+    deusValue,
   }
 }

@@ -1,61 +1,77 @@
 [
   {
     "inputs": [
-      { "internalType": "address", "name": "dei_", "type": "address" },
-      { "internalType": "address", "name": "deus_", "type": "address" },
-      { "internalType": "address", "name": "collateral_", "type": "address" },
-      { "internalType": "address", "name": "muon_", "type": "address" },
-      { "internalType": "address", "name": "library_", "type": "address" },
       { "internalType": "address", "name": "admin", "type": "address" },
-      { "internalType": "uint256", "name": "minimumRequiredSignatures_", "type": "uint256" },
-      { "internalType": "uint256", "name": "collateralRedemptionDelay_", "type": "uint256" },
-      { "internalType": "uint256", "name": "deusRedemptionDelay_", "type": "uint256" },
-      { "internalType": "uint256", "name": "poolCeiling_", "type": "uint256" },
-      { "internalType": "uint32", "name": "appId_", "type": "uint32" }
+      { "internalType": "address", "name": "deiAddress", "type": "address" },
+      { "internalType": "address", "name": "deusAddress", "type": "address" },
+      { "internalType": "address", "name": "collateralAddress", "type": "address" },
+      { "internalType": "address", "name": "oracle_", "type": "address" },
+      { "internalType": "address", "name": "strategy_", "type": "address" }
     ],
     "stateMutability": "nonpayable",
     "type": "constructor"
   },
   {
     "anonymous": false,
-    "inputs": [{ "indexed": false, "internalType": "bool", "name": "toggled", "type": "bool" }],
-    "name": "BuybackToggled",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [{ "indexed": false, "internalType": "bool", "name": "toggled", "type": "bool" }],
-    "name": "MintingToggled",
+    "inputs": [
+      { "indexed": false, "internalType": "address", "name": "sender", "type": "address" },
+      { "indexed": false, "internalType": "address", "name": "to", "type": "address" },
+      { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }
+    ],
+    "name": "AMOWithdraw",
     "type": "event"
   },
   {
     "anonymous": false,
     "inputs": [
-      { "indexed": false, "internalType": "uint256", "name": "poolCeiling", "type": "uint256" },
-      { "indexed": false, "internalType": "uint256", "name": "bonusRate", "type": "uint256" },
-      { "indexed": false, "internalType": "uint256", "name": "collateralRedemptionDelay", "type": "uint256" },
-      { "indexed": false, "internalType": "uint256", "name": "deusRedemptionDelay", "type": "uint256" },
-      { "indexed": false, "internalType": "uint256", "name": "mintingFee", "type": "uint256" },
-      { "indexed": false, "internalType": "uint256", "name": "redemptionFee", "type": "uint256" },
-      { "indexed": false, "internalType": "uint256", "name": "buybackFee", "type": "uint256" },
-      { "indexed": false, "internalType": "uint256", "name": "recollatFee", "type": "uint256" },
-      { "indexed": false, "internalType": "address", "name": "muon", "type": "address" },
-      { "indexed": false, "internalType": "uint32", "name": "appId", "type": "uint32" },
-      { "indexed": false, "internalType": "uint256", "name": "minimumRequiredSignatures", "type": "uint256" }
+      { "indexed": false, "internalType": "address", "name": "user", "type": "address" },
+      { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }
     ],
-    "name": "PoolParametersSet",
+    "name": "CollectCollateral",
     "type": "event"
   },
   {
     "anonymous": false,
-    "inputs": [{ "indexed": false, "internalType": "bool", "name": "toggled", "type": "bool" }],
-    "name": "RecollateralizeToggled",
+    "inputs": [
+      { "indexed": false, "internalType": "address", "name": "sender", "type": "address" },
+      { "indexed": false, "internalType": "address", "name": "to", "type": "address" },
+      { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }
+    ],
+    "name": "CollectDaoShare",
     "type": "event"
   },
   {
     "anonymous": false,
-    "inputs": [{ "indexed": false, "internalType": "bool", "name": "toggled", "type": "bool" }],
-    "name": "RedeemingToggled",
+    "inputs": [
+      { "indexed": false, "internalType": "address", "name": "user", "type": "address" },
+      { "indexed": false, "internalType": "uint256", "name": "redeemId", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "deusAmount", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "twapDeus", "type": "uint256" }
+    ],
+    "name": "CollectDeus",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "address", "name": "user", "type": "address" },
+      { "indexed": false, "internalType": "uint256", "name": "deiAmount", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "deusPrice", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "collatAmount", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "deusAmount", "type": "uint256" }
+    ],
+    "name": "Mint",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "address", "name": "user", "type": "address" },
+      { "indexed": false, "internalType": "uint256", "name": "deiAmount", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "collateralAmount", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "deusValue", "type": "uint256" }
+    ],
+    "name": "Redeem",
     "type": "event"
   },
   {
@@ -91,15 +107,64 @@
   {
     "anonymous": false,
     "inputs": [
-      { "indexed": false, "internalType": "uint256", "name": "daoShare", "type": "uint256" },
-      { "indexed": false, "internalType": "address", "name": "to", "type": "address" }
+      { "indexed": false, "internalType": "uint256", "name": "oldCollateralCollectionDelay", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "newCollateralCollectionDelay", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "oldDeusCollectionDelay", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "newDeusCollectionDelay", "type": "uint256" }
     ],
-    "name": "daoShareCollected",
+    "name": "SetDelays",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "uint256", "name": "oldMintingFee", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "newMintingFee", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "oldRedemptionFee", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "newRedemptionFee", "type": "uint256" }
+    ],
+    "name": "SetFees",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "address", "name": "oldOracle", "type": "address" },
+      { "indexed": false, "internalType": "address", "name": "newOracle", "type": "address" }
+    ],
+    "name": "SetOracle",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "address", "name": "oldStrategy", "type": "address" },
+      { "indexed": false, "internalType": "address", "name": "newStrategy", "type": "address" }
+    ],
+    "name": "SetStrategy",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [{ "indexed": false, "internalType": "bool", "name": "collectStatus", "type": "bool" }],
+    "name": "ToggleCollecting",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [{ "indexed": false, "internalType": "bool", "name": "mintStatus", "type": "bool" }],
+    "name": "ToggleMinting",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [{ "indexed": false, "internalType": "bool", "name": "redeemStatus", "type": "bool" }],
+    "name": "ToggleRedeeming",
     "type": "event"
   },
   {
     "inputs": [],
-    "name": "DAO_SHARE_COLLECTOR",
+    "name": "AMO_ROLE",
     "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
     "stateMutability": "view",
     "type": "function"
@@ -113,98 +178,45 @@
   },
   {
     "inputs": [],
-    "name": "PARAMETER_SETTER_ROLE",
-    "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "PAUSER_ROLE",
     "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "components": [
-          { "internalType": "uint256", "name": "collateralAmount", "type": "uint256" },
-          { "internalType": "uint256", "name": "poolCollateralPrice", "type": "uint256" },
-          { "internalType": "uint256[]", "name": "collateralPrice", "type": "uint256[]" },
-          { "internalType": "uint256", "name": "deusPrice", "type": "uint256" },
-          { "internalType": "uint256", "name": "expireBlock", "type": "uint256" },
-          { "internalType": "bytes[]", "name": "sigs", "type": "bytes[]" }
-        ],
-        "internalType": "struct IDEIPool.RecollateralizeDeiParams",
-        "name": "inputs",
-        "type": "tuple"
-      }
-    ],
-    "name": "RecollateralizeDei",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [],
-    "name": "TRUSTY_ROLE",
+    "name": "SETTER_ROLE",
     "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
-    "name": "appId",
-    "outputs": [{ "internalType": "uint32", "name": "", "type": "uint32" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "internalType": "uint256[]", "name": "collateralPrice", "type": "uint256[]" }],
-    "name": "availableExcessCollatDV",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "bonusRate",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "name": "VERSION",
+    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      { "internalType": "uint256", "name": "deusAmount", "type": "uint256" },
-      { "internalType": "uint256[]", "name": "collateralPrice", "type": "uint256[]" },
-      { "internalType": "uint256", "name": "deusPrice", "type": "uint256" },
-      { "internalType": "uint256", "name": "expireBlock", "type": "uint256" },
-      { "internalType": "bytes[]", "name": "sigs", "type": "bytes[]" }
+      { "internalType": "address", "name": "to", "type": "address" },
+      { "internalType": "uint256", "name": "amount", "type": "uint256" }
     ],
-    "name": "buyBackDeus",
+    "name": "amoGateway",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "buyBackPaused",
-    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "buybackFee",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "internalType": "uint256", "name": "collateralPrice", "type": "uint256" }],
-    "name": "collatDollarBalance",
-    "outputs": [{ "internalType": "uint256", "name": "balance", "type": "uint256" }],
+    "inputs": [
+      { "internalType": "uint256", "name": "deiAmount", "type": "uint256" },
+      { "internalType": "uint256", "name": "deusPrice", "type": "uint256" }
+    ],
+    "name": "collatAndDeusAmountForMinting",
+    "outputs": [
+      { "internalType": "uint256", "name": "collatAmount", "type": "uint256" },
+      { "internalType": "uint256", "name": "deusAmount", "type": "uint256" }
+    ],
     "stateMutability": "view",
     "type": "function"
   },
@@ -216,8 +228,31 @@
     "type": "function"
   },
   {
+    "inputs": [
+      { "internalType": "uint256", "name": "deiAmount", "type": "uint256" },
+      { "internalType": "uint256", "name": "ratio", "type": "uint256" }
+    ],
+    "name": "collateralAndDeusValue",
+    "outputs": [
+      { "internalType": "uint256", "name": "collateralAmount", "type": "uint256" },
+      { "internalType": "uint256", "name": "deusValue", "type": "uint256" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "deiAmount", "type": "uint256" }],
+    "name": "collateralAndDeusValueForRedeeming",
+    "outputs": [
+      { "internalType": "uint256", "name": "collateralAmount", "type": "uint256" },
+      { "internalType": "uint256", "name": "deusValue", "type": "uint256" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
-    "name": "collateralRedemptionDelay",
+    "name": "collateralCollectionDelay",
     "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
@@ -225,32 +260,20 @@
   { "inputs": [], "name": "collectCollateral", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
   {
     "inputs": [
-      { "internalType": "uint256", "name": "amount", "type": "uint256" },
-      { "internalType": "address", "name": "to", "type": "address" }
+      { "internalType": "address", "name": "to", "type": "address" },
+      { "internalType": "uint256", "name": "amount", "type": "uint256" }
     ],
     "name": "collectDaoShare",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
+  { "inputs": [], "name": "collectDeus", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
   {
-    "inputs": [
-      { "internalType": "uint256", "name": "price", "type": "uint256" },
-      { "internalType": "bytes", "name": "_reqId", "type": "bytes" },
-      {
-        "components": [
-          { "internalType": "uint256", "name": "signature", "type": "uint256" },
-          { "internalType": "address", "name": "owner", "type": "address" },
-          { "internalType": "address", "name": "nonce", "type": "address" }
-        ],
-        "internalType": "struct SchnorrSign[]",
-        "name": "sigs",
-        "type": "tuple[]"
-      }
-    ],
-    "name": "collectDeus",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "inputs": [],
+    "name": "collectionPaused",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -262,20 +285,23 @@
   },
   {
     "inputs": [],
-    "name": "deusRedemptionDelay",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "name": "dei",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [
-      { "internalType": "address", "name": "token", "type": "address" },
-      { "internalType": "uint256", "name": "amount", "type": "uint256" },
-      { "internalType": "address", "name": "to", "type": "address" }
-    ],
-    "name": "emergencyWithdrawERC20",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "inputs": [],
+    "name": "deus",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "deusCollectionDelay",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -284,11 +310,11 @@
     "outputs": [
       {
         "components": [
-          { "internalType": "uint256", "name": "amount", "type": "uint256" },
+          { "internalType": "uint256", "name": "usdAmount", "type": "uint256" },
           { "internalType": "uint256", "name": "timestamp", "type": "uint256" }
         ],
-        "internalType": "struct IDEIPool.RedeemPosition[]",
-        "name": "positions",
+        "internalType": "struct DEIPool.RedeemPosition[]",
+        "name": "positinos",
         "type": "tuple[]"
       }
     ],
@@ -308,11 +334,11 @@
     "outputs": [
       {
         "components": [
-          { "internalType": "uint256", "name": "amount", "type": "uint256" },
+          { "internalType": "uint256", "name": "usdAmount", "type": "uint256" },
           { "internalType": "uint256", "name": "timestamp", "type": "uint256" }
         ],
-        "internalType": "struct IDEIPool.RedeemPosition[]",
-        "name": "",
+        "internalType": "struct DEIPool.RedeemPosition[]",
+        "name": "positions",
         "type": "tuple[]"
       }
     ],
@@ -341,40 +367,25 @@
   },
   {
     "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
-    "name": "lastCollateralRedeemed",
+    "name": "lastRedeemedTimestamp",
     "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [{ "internalType": "uint256", "name": "collateralAmount", "type": "uint256" }],
-    "name": "mint1t1DEI",
-    "outputs": [{ "internalType": "uint256", "name": "deiAmount", "type": "uint256" }],
-    "stateMutability": "nonpayable",
+    "inputs": [
+      { "internalType": "uint256", "name": "a", "type": "uint256" },
+      { "internalType": "uint256", "name": "b", "type": "uint256" }
+    ],
+    "name": "min",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "pure",
     "type": "function"
   },
   {
-    "inputs": [
-      { "internalType": "uint256", "name": "deusAmount", "type": "uint256" },
-      { "internalType": "uint256", "name": "deusPrice", "type": "uint256" },
-      { "internalType": "uint256", "name": "expireBlock", "type": "uint256" },
-      { "internalType": "bytes[]", "name": "sigs", "type": "bytes[]" }
-    ],
-    "name": "mintAlgorithmicDEI",
-    "outputs": [{ "internalType": "uint256", "name": "deiAmount", "type": "uint256" }],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "uint256", "name": "collateralAmount", "type": "uint256" },
-      { "internalType": "uint256", "name": "deusAmount", "type": "uint256" },
-      { "internalType": "uint256", "name": "deusPrice", "type": "uint256" },
-      { "internalType": "uint256", "name": "expireBlock", "type": "uint256" },
-      { "internalType": "bytes[]", "name": "sigs", "type": "bytes[]" }
-    ],
-    "name": "mintFractionalDEI",
-    "outputs": [{ "internalType": "uint256", "name": "mintAmount", "type": "uint256" }],
+    "inputs": [{ "internalType": "uint256", "name": "deiAmount", "type": "uint256" }],
+    "name": "mint",
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -394,8 +405,8 @@
   },
   {
     "inputs": [],
-    "name": "muon",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "name": "netCollateralBalance",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
@@ -408,14 +419,7 @@
   },
   {
     "inputs": [],
-    "name": "poolCeiling",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "poolLibrary",
+    "name": "oracle",
     "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
@@ -428,29 +432,8 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "recollatFee",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "recollateralizePaused",
-    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [{ "internalType": "uint256", "name": "deiAmount", "type": "uint256" }],
-    "name": "redeem1t1DEI",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "internalType": "uint256", "name": "deiAmount", "type": "uint256" }],
-    "name": "redeemAlgorithmicDEI",
+    "name": "redeem",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -460,13 +443,6 @@
     "name": "redeemCollateralBalances",
     "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "internalType": "uint256", "name": "deiAmount", "type": "uint256" }],
-    "name": "redeemFractionalDEI",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -483,7 +459,7 @@
     ],
     "name": "redeemPositions",
     "outputs": [
-      { "internalType": "uint256", "name": "amount", "type": "uint256" },
+      { "internalType": "uint256", "name": "usdAmount", "type": "uint256" },
       { "internalType": "uint256", "name": "timestamp", "type": "uint256" }
     ],
     "stateMutability": "view",
@@ -518,21 +494,43 @@
   },
   {
     "inputs": [
-      { "internalType": "uint256", "name": "poolCeiling_", "type": "uint256" },
-      { "internalType": "uint256", "name": "bonusRate_", "type": "uint256" },
-      { "internalType": "uint256", "name": "collateralRedemptionDelay_", "type": "uint256" },
-      { "internalType": "uint256", "name": "deusRedemptionDelay_", "type": "uint256" },
-      { "internalType": "uint256", "name": "mintingFee_", "type": "uint256" },
-      { "internalType": "uint256", "name": "redemptionFee_", "type": "uint256" },
-      { "internalType": "uint256", "name": "buybackFee_", "type": "uint256" },
-      { "internalType": "uint256", "name": "recollatFee_", "type": "uint256" },
-      { "internalType": "address", "name": "muon_", "type": "address" },
-      { "internalType": "uint32", "name": "appId_", "type": "uint32" },
-      { "internalType": "uint256", "name": "minimumRequiredSignatures_", "type": "uint256" }
+      { "internalType": "uint256", "name": "collateralDelay", "type": "uint256" },
+      { "internalType": "uint256", "name": "deusDelay", "type": "uint256" }
     ],
-    "name": "setPoolParameters",
+    "name": "setDelays",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "mintingFee_", "type": "uint256" },
+      { "internalType": "uint256", "name": "redemptionFee_", "type": "uint256" }
+    ],
+    "name": "setFees",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "oracle_", "type": "address" }],
+    "name": "setOracle",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "strategy_", "type": "address" }],
+    "name": "setStrategy",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "strategy",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -542,13 +540,12 @@
     "stateMutability": "view",
     "type": "function"
   },
-  { "inputs": [], "name": "toggleBuyBack", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+  { "inputs": [], "name": "toggleCollecting", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
   { "inputs": [], "name": "toggleMinting", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
-  { "inputs": [], "name": "toggleRecollateralize", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
   { "inputs": [], "name": "toggleRedeeming", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
   {
     "inputs": [],
-    "name": "unclaimedPoolCollateral",
+    "name": "unclaimedCollateralAmount",
     "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"

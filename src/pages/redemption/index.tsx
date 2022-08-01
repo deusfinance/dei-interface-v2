@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react'
+import React, { useState, useMemo, useCallback, useEffect } from 'react'
 import styled from 'styled-components'
 import { ArrowDown, Plus } from 'react-feather'
 import Image from 'next/image'
@@ -18,7 +18,7 @@ import useWeb3React from 'hooks/useWeb3'
 import { useSupportedChainId } from 'hooks/useSupportedChainId'
 import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
 import useRedemptionCallback from 'hooks/useRedemptionCallback'
-import { useRedeemData } from 'hooks/useRedemptionPage'
+import { useRedeemAmountOut, useRedeemData } from 'hooks/useRedemptionPage'
 
 import { DotFlashing } from 'components/Icons'
 import Hero from 'components/Hero'
@@ -27,7 +27,7 @@ import { BottomWrapper, Container, InputWrapper, Title, Wrapper, MainButton } fr
 import InputBox from 'components/InputBox'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
-import { toBN } from 'utils/numbers'
+// import { toBN } from 'utils/numbers'
 import { useCollateralRatio } from 'state/dei/hooks'
 import DefaultReviewModal from 'components/ReviewModal/DefaultReviewModal'
 import Claim from 'components/App/Redemption/Claim'
@@ -85,20 +85,29 @@ export default function Redemption() {
   const deusCurrency = DEUS_TOKEN
   const deiCurrencyBalance = useCurrencyBalance(account ?? undefined, deiCurrency)
   const [isOpenReviewModal, toggleReviewModal] = useState(false)
+  const [amountOut1, setAmountOut1] = useState('')
+  const [amountOut2, setAmountOut2] = useState('')
 
   const collatRatio = useCollateralRatio()
-  const collatRatioBN = toBN(collatRatio)
-  const oneHundred = toBN(100)
+  // const collatRatioBN = toBN(collatRatio)
+  // const oneHundred = toBN(100)
 
-  const amountOut1 = useMemo(() => {
-    if (!collatRatioBN || !amountIn) return '0'
-    return toBN(amountIn).times(collatRatioBN).div(oneHundred).toString()
-  }, [amountIn, collatRatioBN, oneHundred])
+  const { collateralAmount, deusValue } = useRedeemAmountOut(amountIn)
 
-  const amountOut2 = useMemo(() => {
-    if (!collatRatioBN || !amountIn) return '0'
-    return toBN(amountIn).times(oneHundred.minus(collatRatioBN)).div(oneHundred).toString()
-  }, [amountIn, oneHundred, collatRatioBN])
+  useEffect(() => {
+    setAmountOut1(collateralAmount)
+    setAmountOut2(deusValue)
+  }, [collateralAmount, deusValue])
+
+  // const amountOut1 = useMemo(() => {
+  //   if (!collatRatioBN || !amountIn) return '0'
+  //   return toBN(amountIn).times(collatRatioBN).div(oneHundred).toString()
+  // }, [amountIn, collatRatioBN, oneHundred])
+
+  // const amountOut2 = useMemo(() => {
+  //   if (!collatRatioBN || !amountIn) return '0'
+  //   return toBN(amountIn).times(oneHundred.minus(collatRatioBN)).div(oneHundred).toString()
+  // }, [amountIn, oneHundred, collatRatioBN])
 
   const { redeemPaused, redeemTranche } = useRedeemData()
   // console.log({ redeemPaused, rest })
@@ -121,7 +130,7 @@ export default function Redemption() {
     state: redeemCallbackState,
     callback: redeemCallback,
     error: redeemCallbackError,
-  } = useRedemptionCallback(deiCurrency, deiAmount, collatRatio)
+  } = useRedemptionCallback(deiAmount)
 
   const [awaitingApproveConfirmation, setAwaitingApproveConfirmation] = useState<boolean>(false)
   const [awaitingRedeemConfirmation, setAwaitingRedeemConfirmation] = useState<boolean>(false)

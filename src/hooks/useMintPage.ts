@@ -7,13 +7,18 @@ import { Token } from '@sushiswap/core-sdk'
 
 import useWeb3React from './useWeb3'
 // import useProxiedAmountOutCallback from './useProxiedAmountOutCallback'
-import { useCollateralRatio, useCollateralPrice, useDeusPrice } from 'state/dei/hooks'
+import { useCollateralRatio, useCollateralPrice } from 'state/dei/hooks'
 import { useMintingFee } from 'state/dei/hooks'
 
 import { Collateral } from 'constants/addresses'
-import { BN_ONE } from 'utils/numbers'
+import { BN_ONE, BN_TEN, toBN } from 'utils/numbers'
 // import { setIsProxyMinter, setProxyLoading, setProxyValues, useMintState } from 'state/mint/reducer'
 import { useMintState } from 'state/mint/reducer'
+import { DEI_TOKEN, DEUS_TOKEN, USDC_TOKEN } from 'constants/tokens'
+import { useCollateralPoolContract, useOracleContract } from './useContract'
+import { useSingleContractMultipleMethods } from 'state/multicall/hooks'
+import { formatUnits } from '@ethersproject/units'
+import { useDeusPrice } from 'hooks/useCoingeckoPrice'
 
 // TODO calculate price impact here
 
@@ -197,12 +202,98 @@ export function useMintPage(
   }
 }
 
-export default function useMintAmountOut(
-  TokenIn1: Token | null,
-  TokenIn2: Token | null,
-  amountIn1: string,
-  amountIn2: string,
-  fee: number
-): string {
-  return (Number(amountIn1) + Number(amountIn2)).toString()
+// export default function useMintAmountOut(
+//   TokenIn1: Token | null,
+//   TokenIn2: Token | null,
+//   amountIn1: string,
+//   amountIn2: string,
+//   fee: number
+// ): string {
+//   return (Number(amountIn1) + Number(amountIn2)).toString()
+// }
+
+export function useMintAmountOut(
+  amountIn: string,
+  deusPrice: string
+): {
+  collatAmount: string
+  deusAmount: string
+} {
+  const amountInBN = amountIn ? toBN(amountIn).times(BN_TEN.pow(DEI_TOKEN.decimals)).toFixed(0) : ''
+  const contract = useCollateralPoolContract()
+
+  const amountOutCall = useMemo(
+    () =>
+      !amountInBN || amountInBN == '' || amountInBN == '0' || deusPrice === '0' || !deusPrice
+        ? []
+        : [
+            {
+              methodName: 'collatAndDeusAmountForMinting',
+              callInputs: [amountInBN, deusPrice],
+            },
+          ],
+    [amountInBN, deusPrice]
+  )
+  console.log({ amountOutCall })
+  const [mintAmountIns] = useSingleContractMultipleMethods(contract, amountOutCall)
+
+  const collatAmount =
+    !mintAmountIns || !mintAmountIns.result
+      ? ''
+      : toBN(formatUnits(mintAmountIns.result[0].toString(), USDC_TOKEN.decimals)).toString()
+  const deusAmount =
+    !mintAmountIns || !mintAmountIns.result
+      ? ''
+      : toBN(formatUnits(mintAmountIns.result[1].toString(), DEUS_TOKEN.decimals)).toString()
+
+  return {
+    collatAmount,
+    deusAmount,
+  }
+}
+
+export function useGetOracleAddress(): string {
+  const contract = useCollateralPoolContract()
+
+  const call = useMemo(
+    () => [
+      {
+        methodName: 'oracle',
+        callInputs: [],
+      },
+    ],
+    []
+  )
+
+  const [oracleAddressRes] = useSingleContractMultipleMethods(contract, call)
+
+  return !oracleAddressRes || !oracleAddressRes.result ? '' : oracleAddressRes.result[0].toString()
+}
+
+export function useGetDeusPrice(): string {
+  const address = useGetOracleAddress()
+  const contract = useOracleContract(address)
+  const coinGeckoDeusPrice = useDeusPrice()
+  console.log({ contract, coinGeckoDeusPrice })
+
+  const call = useMemo(
+    () => [
+      {
+        methodName: 'getPrice',
+        callInputs: [],
+      },
+    ],
+    []
+  )
+
+  const [deusPriceRes] = useSingleContractMultipleMethods(contract, call)
+
+  const deusPrice =
+    !deusPriceRes || !deusPriceRes.result
+      ? coinGeckoDeusPrice
+        ? toBN(coinGeckoDeusPrice).times(BN_TEN.pow(DEUS_TOKEN.decimals)).toFixed(0)
+        : ''
+      : toBN(formatUnits(deusPriceRes.result[0].toString(), DEUS_TOKEN.decimals)).toString()
+
+  return deusPrice
 }
