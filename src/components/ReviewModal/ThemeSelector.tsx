@@ -27,7 +27,6 @@ const HorizontalLine = styled.div`
 `
 
 const Title = styled.div`
-  font-family: 'Roboto';
   font-weight: 400;
   color: ${({ theme }) => theme.text2};
   ${({ theme }) => theme.mediaWidth.upToMedium`

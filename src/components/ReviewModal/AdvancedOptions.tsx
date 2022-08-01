@@ -23,7 +23,6 @@ const Wrapper = styled.div`
 const UnlockDateValue = styled.div`
   color: ${({ theme }) => theme.border2};
   margin-top: 6px;
-  font-family: 'Space Grotesk';
   font-weight: 400;
   font-size: 12px;
 `

@@ -42,7 +42,6 @@ const TokenResultWrapper = styled(Column)`
 `
 
 const Data = styled(RowCenter)`
-  font-family: 'Roboto';
   font-style: italic;
   font-weight: 300;
   font-size: 12px;

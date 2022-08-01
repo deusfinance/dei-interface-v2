@@ -11,7 +11,6 @@ const Wrapper = styled.div`
 `
 
 export const Title = styled.div`
-  font-family: 'Roboto';
   font-weight: 400;
   color: ${({ theme }) => theme.text1};
 
