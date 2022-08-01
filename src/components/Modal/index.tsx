@@ -54,7 +54,7 @@ const HeaderWrapper = styled.div<{
   justify-content: space-between;
   width: 100%;
   align-items: center;
-  padding: 1.3rem;
+  padding: 16px 24px;
   color: ${({ theme }) => theme.text1};
   border-bottom: 1px solid ${({ theme, border }) => (border ? theme.bg2 : 'transparent')};
   background: ${({ theme }) => theme.bg0};

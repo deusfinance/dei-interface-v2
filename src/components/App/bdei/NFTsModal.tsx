@@ -13,14 +13,15 @@ const Wrapper = styled.div`
   display: flex;
   flex-flow: column nowrap;
   justify-content: flex-start;
-  gap: 0.8rem;
-  /* padding: 1.5rem 0; */
-  padding: 0px 0px 28px 0px;
-
+  padding: 16px 12px;
+  max-height: 400px;
+  overflow-y: auto;
   & > * {
     &:first-child {
       width: unset;
       margin: 0 9px;
+      min-height: 54px;
+      margin-bottom: 12px;
     }
   }
 
@@ -56,6 +57,7 @@ const TokenResultWrapper = styled(Column)`
   border-top: 1px solid ${({ theme }) => theme.border1};
   padding: 1rem 9px;
   padding-bottom: 0;
+  overflow-y: auto;
 `
 
 export default function NFTsModal({

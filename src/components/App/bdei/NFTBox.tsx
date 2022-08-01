@@ -15,13 +15,12 @@ const Wrapper = styled(RowBetween).attrs({
   border-radius: 15px;
   color: ${({ theme }) => theme.text2};
   white-space: nowrap;
-  height: 64px;
+  min-height: 60px;
   gap: 10px;
   padding: 0px 1rem;
   margin: 0 auto;
   border: 1px solid ${({ theme }) => theme.border3};
   background: ${({ theme }) => theme.bg1};
-
   &:hover {
     background: ${({ theme }) => theme.bg3};
     cursor: pointer;
