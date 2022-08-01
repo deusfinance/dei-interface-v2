@@ -151,9 +151,17 @@ const NavLink = styled.div<{
 
 export default function NavBar() {
   const router = useRouter()
-  const [showTopBanner, setShowTopBanner] = useState(true)
-  const bannerText =
-    'DEI.finance was audited. However, it is still an experimental software. Please use at your own risk.'
+
+  const showBanner = localStorage.getItem('HideInfoBanner') === 'true' ? false : true
+  const [showTopBanner, setShowTopBanner] = useState(showBanner)
+  const bannerText = 'DEI.finance is still an experimental software. Please use at your own risk.'
+
+  function setShowBanner(inp: boolean) {
+    if (!inp) {
+      localStorage.setItem('HideInfoBanner', 'true')
+      setShowTopBanner(false)
+    }
+  }
 
   function getMobileContent() {
     return (
@@ -164,7 +172,7 @@ export default function NavBar() {
           <Web3Status />
           <Menu />
         </MobileWrapper>
-        {showTopBanner && <InfoHeader onClose={setShowTopBanner} bg={'gray'} hasInfoIcon={true} text={bannerText} />}
+        {showTopBanner && <InfoHeader onClose={setShowBanner} bg={'gray'} hasInfoIcon={true} text={bannerText} />}
       </>
     )
   }
@@ -219,7 +227,7 @@ export default function NavBar() {
             <Menu />
           </Items>
         </DefaultWrapper>
-        {showTopBanner && <InfoHeader onClose={setShowTopBanner} bg={'gray'} hasInfoIcon={true} text={bannerText} />}
+        {showTopBanner && <InfoHeader onClose={setShowBanner} bg={'gray'} hasInfoIcon={true} text={bannerText} />}
       </>
     )
   }
