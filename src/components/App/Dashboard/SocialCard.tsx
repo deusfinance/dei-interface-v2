@@ -14,12 +14,13 @@ import { ExternalLink } from 'components/Link'
 const Wrapper = styled(RowBetween)`
   color: ${({ theme }) => theme.text1};
   background: ${({ theme }) => theme.bg0};
-  max-width: 360px;
+  /* max-width: 400px; */
+  min-width: 302px;
   border-radius: 12px;
   border: 2px solid ${({ theme }) => theme.border2};
   overflow: hidden;
   ${({ theme }) => theme.mediaWidth.upToSmall`
-    max-width: 170px;
+      min-width:160px;
   `};
 `
 
@@ -57,7 +58,7 @@ const DiscordWrap = styled(TelegramWrap)`
     }
     border-right: 1px solid #101116;
     &:hover {
-      background: #2986b2;
+      background: #8f97e9;
     }
   }
 `

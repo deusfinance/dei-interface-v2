@@ -17,7 +17,7 @@ import DEI_LOGO from '/public/static/images/pages/dashboard/DEI_Dashboard.png'
 import Hero from 'components/Hero'
 import StatsHeader from 'components/StatsHeader'
 import { Container } from 'components/App/StableCoin'
-import { RowCenter } from 'components/Row'
+import { RowBetween, RowCenter } from 'components/Row'
 import { Card } from 'components/App/Dashboard/card'
 import { SocialCard } from 'components/App/Dashboard/SocialCard'
 import Stats from 'components/App/Dashboard/Stats'
@@ -31,7 +31,7 @@ const Wrapper = styled(RowCenter)`
   border-radius: 15px;
   width: 100%;
   overflow: hidden;
-  padding: 0 5px;
+  padding: 0 20px;
   ${({ theme }) => theme.mediaWidth.upToMedium`
   gap: 10px;
 `};
@@ -43,6 +43,21 @@ const Wrapper = styled(RowCenter)`
   & > * {
     width: 100%;
   }
+`
+
+const CardWrapper = styled(RowBetween)`
+  width: 100%;
+  flex-wrap: wrap;
+  gap: 20px;
+  & > * {
+    flex: 1;
+  }
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+  gap: 12px;
+  & > * {
+    // flex: none;
+  }
+`};
 `
 
 export default function Dashboard() {
@@ -61,36 +76,38 @@ export default function Dashboard() {
       </Hero>
       <Wrapper>
         <DeiBondStats />
-        <Card href="/mint" title={'Mint DEI'} subTitle="Mint DEI" MainIcon={MINT_LOGO} HoverIcon={MINT_HOVER_LOGO} />
-        <Card
-          href="/redemption"
-          title={'Redeem DEI'}
-          subTitle="Redeem DEI"
-          MainIcon={REDEEM_LOGO}
-          HoverIcon={REDEEM_HOVER_LOGO}
-        />
-        <Card
-          href="/bdei"
-          title={'DEI Bonds'}
-          subTitle="Redeem your DEI Bonds"
-          MainIcon={BOND_LOGO}
-          HoverIcon={BOND_HOVER_LOGO}
-        />
-        <Card
-          href="/vest"
-          title={'veDEUS'}
-          subTitle="Lock your deus and earn rewards"
-          MainIcon={VEDEUS_LOGO}
-          HoverIcon={VEDEUS_HOVER_LOGO}
-        />
-        <Card
-          href="/analytics"
-          title={'Analytics'}
-          subTitle="DEI and DEUS Stats"
-          MainIcon={ANALYTICS_LOGO}
-          HoverIcon={ANALYTICS_HOVER_LOGO}
-        />
-        <SocialCard />
+        <CardWrapper>
+          <Card href="/mint" title={'Mint DEI'} subTitle="Mint DEI" MainIcon={MINT_LOGO} HoverIcon={MINT_HOVER_LOGO} />
+          <Card
+            href="/redemption"
+            title={'Redeem DEI'}
+            subTitle="Redeem DEI"
+            MainIcon={REDEEM_LOGO}
+            HoverIcon={REDEEM_HOVER_LOGO}
+          />
+          <Card
+            href="/bdei"
+            title={'DEI Bonds'}
+            subTitle="Redeem your DEI Bonds"
+            MainIcon={BOND_LOGO}
+            HoverIcon={BOND_HOVER_LOGO}
+          />
+          <Card
+            href="/vest"
+            title={'veDEUS'}
+            subTitle="Lock your deus and earn rewards"
+            MainIcon={VEDEUS_LOGO}
+            HoverIcon={VEDEUS_HOVER_LOGO}
+          />
+          <Card
+            href="/analytics"
+            title={'Analytics'}
+            subTitle="DEI and DEUS Stats"
+            MainIcon={ANALYTICS_LOGO}
+            HoverIcon={ANALYTICS_HOVER_LOGO}
+          />
+          <SocialCard />
+        </CardWrapper>
         <Stats />
       </Wrapper>
     </Container>
