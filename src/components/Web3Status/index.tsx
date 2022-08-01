@@ -21,6 +21,7 @@ const ConnectButtonWrap = styled.div`
   padding: 1px;
   border-radius: 8px;
   width: 148px;
+  height: 36px;
 
   &:hover,
   &:focus {
