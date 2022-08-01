@@ -10,7 +10,7 @@ const Wrapper = styled(RowBetween)`
   color: ${({ theme }) => theme.text1};
   background: ${({ theme }) => theme.bg0};
   overflow: hidden;
-  max-width: 360px;
+  min-width: 302px;
   border-radius: 12px;
   border: 2px solid ${({ theme }) => theme.border2};
 
@@ -29,7 +29,7 @@ const Wrapper = styled(RowBetween)`
   }
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
-    max-width: 170px;
+    min-width:160px;
     & > * {
       &:first-child {
         height: 78px;
@@ -67,7 +67,7 @@ const LeftWrap = styled.div`
 `
 
 export const getImageSize = () => {
-  return isMobile ? 36 : 90
+  return isMobile ? 50 : 90
 }
 
 export const Card = ({
