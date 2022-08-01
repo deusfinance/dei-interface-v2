@@ -355,6 +355,7 @@ export const ThemedGlobalStyle = createGlobalStyle`
 
   /* Firefox */
   input[type=number] {
+    font-family: 'IBM Plex Mono';
     -moz-appearance: textfield;
   }
 `

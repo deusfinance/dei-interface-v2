@@ -39,7 +39,7 @@ const ConnectButton = styled(RowCenter)`
 `
 
 const ConnectButtonText = styled.span`
-  background: -webkit-linear-gradient(92.33deg, #e29d52 -10.26%, #de4a7b 80%);
+  background: -webkit-linear-gradient(0deg, #e29d52 -10.26%, #de4a7b 80%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 `

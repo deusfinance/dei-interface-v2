@@ -3,7 +3,6 @@ import styled from 'styled-components'
 import Image from 'next/image'
 import { isMobile } from 'react-device-detect'
 
-import { useIsDarkMode } from 'state/user/hooks'
 import { ExternalLink } from 'components/Link'
 
 const Container = styled.div`
@@ -30,8 +29,6 @@ const Wrapper = styled.div`
 `
 
 export default function NavLogo() {
-  const darkMode = useIsDarkMode()
-
   function getImageSize() {
     return isMobile ? 30 : 45
   }

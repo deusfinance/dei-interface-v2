@@ -16,11 +16,11 @@ const Wrapper = styled(RowBetween)`
 
   & > * {
     &:first-child {
-      padding: 24px;
-      height: 100px;
       display: flex;
-      width: 100%;
       justify-content: space-between;
+      padding: 16px;
+      height: 100px;
+      width: 100%;
     }
   }
   &:hover {
@@ -67,7 +67,7 @@ const LeftWrap = styled.div`
 `
 
 export const getImageSize = () => {
-  return isMobile ? 50 : 90
+  return isMobile ? 50 : 80
 }
 
 export const Card = ({

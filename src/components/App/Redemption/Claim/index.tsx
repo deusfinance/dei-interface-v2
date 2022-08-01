@@ -9,16 +9,13 @@ import { Row, RowBetween } from 'components/Row'
 import { TokenBox } from './TokenBox'
 import { IClaimToken, setAttemptingTxn } from 'state/redeem/reducer'
 import { useClaimableTokens } from 'state/redeem/hooks'
-// import { useClaimCallback } from 'hooks/useBridgeCallback'
 import useRpcChangerCallback from 'hooks/useRpcChangerCallback'
 import { useAppDispatch } from 'state'
 import { SupportedChainId } from 'constants/chains'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 
 const ActionWrap = styled(Card)`
-  box-shadow: ${({ theme }) => theme.boxShadow2};
-  background: ${({ theme }) => theme.bg0};
-  border: 1px solid ${({ theme }) => theme.border2};
+  background: ${({ theme }) => theme.bg2};
   border-radius: 12px;
   margin-top: 28px;
   width: 320px;
@@ -72,11 +69,6 @@ export const BottomRow = styled(Row)`
   margin-bottom: auto;
 `
 
-const BottomWrap = styled.div`
-  text-align: center;
-  /* vertical-align: bottom; */
-`
-
 export const InfoHeader = styled.p`
   font-size: 10px;
   color: ${({ theme }) => theme.text1};
@@ -93,15 +85,11 @@ const EmptyToken = styled.p`
   text-align: center;
   color: ${({ theme }) => theme.text4};
 `
-
-const getInfoComponent = (): JSX.Element => {
-  return (
-    <BottomWrap>
-      <InfoHeader>Change to the destination Network</InfoHeader>
-      <InfoSubHeader>to claim your token on respective networks.</InfoSubHeader>
-    </BottomWrap>
-  )
-}
+const InfoWrap = styled.div`
+  background: ${({ theme }) => theme.bg1};
+  padding: 0 15px 10px 15px;
+  width: 100%;
+`
 
 export default function RedeemClaim() {
   const unClaimed = useClaimableTokens()
@@ -166,10 +154,10 @@ export default function RedeemClaim() {
               )
             })}
           </ClaimBox>
-          <div style={{ margin: '0 15px 10px 15px' }}>
+          <InfoWrap>
             <InfoItem name={'Ready to Claim:'} value={'2'} />
             <InfoItem name={'Pending:'} value={'4'} />
-          </div>
+          </InfoWrap>
         </>
       )}
       {/* {unClaimed.length > 0 && <BottomRow>{getInfoComponent()}</BottomRow>} */}

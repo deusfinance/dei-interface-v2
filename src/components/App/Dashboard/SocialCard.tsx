@@ -37,7 +37,7 @@ const TelegramWrap = styled.div`
       align-items: center;
       gap: 3px;
       justify-content: center;
-      border-left: 1px solid #101116;
+      border-left: 2px solid ${({ theme }) => theme.bg2};
     }
     &:hover {
       background: #2986b2;
@@ -56,7 +56,6 @@ const DiscordWrap = styled(TelegramWrap)`
     &:first-child {
       border-left: 0;
     }
-    border-right: 1px solid #101116;
     &:hover {
       background: #8f97e9;
     }

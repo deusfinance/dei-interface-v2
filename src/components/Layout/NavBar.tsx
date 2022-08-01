@@ -52,7 +52,7 @@ const Routes = styled.div`
   display: flex;
   flex-flow: row nowrap;
   justify-content: center;
-  gap: 15px;
+  gap: 4px;
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
     & > * {
@@ -118,7 +118,10 @@ const Items = styled.div`
   display: flex;
   flex-flow: row nowrap;
   justify-content: flex-end;
-  gap: 5px;
+  gap: 8px;
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+      gap: 5px;
+  `};
 `
 
 const NavLink = styled.div<{

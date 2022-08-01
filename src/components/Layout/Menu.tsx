@@ -54,7 +54,7 @@ const Row = styled.div<{
 
   ${({ active, theme }) =>
     active &&
-    ` color: ${theme.yellow4};
+    ` color: ${theme.darkPink};
       pointer-events: none;
   `};
 `

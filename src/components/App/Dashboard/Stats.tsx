@@ -29,7 +29,7 @@ const AllStats = styled.div`
   width: 100%;
   & > * {
     &:nth-child(2) {
-      margin-top: 30px;
+      margin-top: 36px;
     }
   }
   ${({ theme }) => theme.mediaWidth.upToMedium`
@@ -44,9 +44,11 @@ const StatsWrapper = styled.div`
 const Info = styled(RowBetween)`
   width: 100%;
   /* margin: 20px -24px; */
+
+  gap: 16px 0;
   flex-wrap: wrap;
   & > * {
-    margin-top: 10px;
+    margin-top: 16px;
     &:nth-child(3n) {
       border-right: none;
     }
