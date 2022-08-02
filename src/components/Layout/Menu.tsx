@@ -7,7 +7,7 @@ import { Z_INDEX } from 'theme'
 import useOnOutsideClick from 'hooks/useOnOutsideClick'
 
 import {
-  NavToggle,
+  NavToggle as NavToggleIcon,
   IconWrapper,
   Dashboard as DashboardIcon,
   VeDeus as VeDeusIcon,
@@ -57,6 +57,13 @@ const Row = styled.div<{
     ` color: ${theme.darkPink};
       pointer-events: none;
   `};
+`
+
+const NavToggle = styled(NavToggleIcon)`
+  &:hover {
+    cursor: pointer;
+    opacity: 0.6;
+  }
 `
 
 // TODO ADD PROPER ICONS

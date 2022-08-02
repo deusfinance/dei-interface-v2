@@ -23,6 +23,7 @@ const ChartWrapper = styled.div`
   width: 100%;
   min-width: 200px;
   min-height: 200px;
+  margin-left: 15px;
 `
 
 const AllStats = styled.div`
@@ -70,7 +71,6 @@ const Title = styled.span`
   font-family: 'Inter';
   font-size: 20px;
   background: ${({ theme }) => theme.specialBG1};
-  margin-left: 20px;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 
