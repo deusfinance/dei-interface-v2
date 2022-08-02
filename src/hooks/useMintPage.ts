@@ -273,8 +273,6 @@ export function useGetOracleAddress(): string {
 export function useGetDeusPrice(): string {
   const address = useGetOracleAddress()
   const contract = useOracleContract(address)
-  const coinGeckoDeusPrice = useDeusPrice()
-  // console.log({ contract, coinGeckoDeusPrice })
 
   const call = useMemo(
     () => [
@@ -288,6 +286,7 @@ export function useGetDeusPrice(): string {
 
   const [deusPriceRes] = useSingleContractMultipleMethods(contract, call)
 
+  const coinGeckoDeusPrice = useDeusPrice()
   const deusPrice =
     !deusPriceRes || !deusPriceRes.result
       ? coinGeckoDeusPrice
