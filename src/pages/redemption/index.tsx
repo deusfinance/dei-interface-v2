@@ -7,7 +7,7 @@ import REDEEM_IMG from '/public/static/images/pages/redemption/TableauBackground
 import DEUS_LOGO from '/public/static/images/pages/redemption/DEUS_logo.svg'
 
 import { DEI_TOKEN, DEUS_TOKEN, USDC_TOKEN } from 'constants/tokens'
-import { DynamicRedeemer } from 'constants/addresses'
+import { CollateralPool, DynamicRedeemer } from 'constants/addresses'
 import { tryParseAmount } from 'utils/parse'
 import { getRemainingTime } from 'utils/time'
 
@@ -28,9 +28,13 @@ import InputBox from 'components/InputBox'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
 // import { toBN } from 'utils/numbers'
-import { useCollateralRatio } from 'state/dei/hooks'
+// import { useCollateralRatio } from 'state/dei/hooks'
 import DefaultReviewModal from 'components/ReviewModal/DefaultReviewModal'
 import Claim from 'components/App/Redemption/Claim'
+import { useDeiPrice, useDeusPrice, useUSDCPrice } from 'hooks/useCoingeckoPrice'
+import { formatDollarAmount } from 'utils/numbers'
+import { SupportedChainId } from 'constants/chains'
+import { truncateAddress } from 'utils/address'
 
 const MainWrap = styled.div`
   display: flex;
@@ -88,7 +92,11 @@ export default function Redemption() {
   const [amountOut1, setAmountOut1] = useState('')
   const [amountOut2, setAmountOut2] = useState('')
 
-  const collatRatio = useCollateralRatio()
+  const deiPrice = useDeiPrice()
+  const usdcPrice = useUSDCPrice()
+  const deusCoingeckoPrice = useDeusPrice()
+
+  // const collatRatio = useCollateralRatio()
   // const collatRatioBN = toBN(collatRatio)
   // const oneHundred = toBN(100)
 
@@ -235,11 +243,12 @@ export default function Redemption() {
       </MainButton>
     )
   }
-  // TODO: use useMemo for items
+
   const items = [
-    { name: 'DEI Price ', value: '$1.00' },
-    { name: 'USDC Price ', value: '$1.00' },
-    { name: 'Total DEI Redeemed ', value: '$12M' },
+    { name: 'DEI Price', value: formatDollarAmount(parseFloat(deiPrice), 2) ?? '-' },
+    { name: 'USDC Price', value: formatDollarAmount(parseFloat(usdcPrice), 2) ?? '-' },
+    { name: 'DEUS Price', value: formatDollarAmount(parseFloat(deusCoingeckoPrice), 2) ?? '-' },
+    { name: 'Pool(V3)', value: truncateAddress(CollateralPool[chainId ?? SupportedChainId.FANTOM]) ?? '-' },
   ]
 
   const info = useMemo(

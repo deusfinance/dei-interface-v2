@@ -94,7 +94,16 @@ const InfoWrap = styled.div`
 export default function RedeemClaim() {
   const unClaimed = useClaimableTokens()
   // const currentBlocks = useCurrentBlocks()
-  const currentBlock = Date.now() / 1000
+
+  const currentBlock = Math.floor(Date.now() / 1000)
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     currentBlock = Math.floor(Date.now() / 1000)
+  //     console.log(currentBlock)
+  //   }, 3000)
+  //   return () => clearInterval(interval)
+  // }, [])
+
   const dispatch = useAppDispatch()
   const onSwitchNetwork = useRpcChangerCallback()
 
@@ -155,8 +164,8 @@ export default function RedeemClaim() {
             })}
           </ClaimBox>
           <InfoWrap>
-            <InfoItem name={'Ready to Claim:'} value={'2'} />
-            <InfoItem name={'Pending:'} value={'4'} />
+            <InfoItem name={'Ready to Claim:'} value={unClaimed.length.toString()} />
+            <InfoItem name={'Pending:'} value={'0'} />
           </InfoWrap>
         </>
       )}

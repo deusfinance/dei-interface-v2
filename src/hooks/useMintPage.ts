@@ -234,7 +234,7 @@ export function useMintAmountOut(
           ],
     [amountInBN, deusPrice]
   )
-  console.log({ amountOutCall })
+  // console.log({ amountOutCall })
   const [mintAmountIns] = useSingleContractMultipleMethods(contract, amountOutCall)
 
   const collatAmount =
@@ -274,7 +274,7 @@ export function useGetDeusPrice(): string {
   const address = useGetOracleAddress()
   const contract = useOracleContract(address)
   const coinGeckoDeusPrice = useDeusPrice()
-  console.log({ contract, coinGeckoDeusPrice })
+  // console.log({ contract, coinGeckoDeusPrice })
 
   const call = useMemo(
     () => [

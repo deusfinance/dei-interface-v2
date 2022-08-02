@@ -30,8 +30,10 @@ import useMintCallback from 'hooks/useMintCallback'
 import { useGetDeusPrice, useMintAmountOut } from 'hooks/useMintPage'
 import { DEUS_TOKEN } from 'constants/tokens'
 import DefaultReviewModal from 'components/ReviewModal/DefaultReviewModal'
+import { useDeiPrice, useDeusPrice, useUSDCPrice } from 'hooks/useCoingeckoPrice'
+import { formatDollarAmount } from 'utils/numbers'
+import { truncateAddress } from 'utils/address'
 // import { useCollateralRatio } from 'state/dei/hooks'
-// import { useDeusPrice, useUSDCPrice } from 'hooks/useCoingeckoPrice'
 
 const SlippageWrapper = styled(RowBetween)`
   margin-top: 10px;
@@ -87,6 +89,10 @@ export default function Mint() {
   const [isOpenTokensModal, toggleTokensModal] = useState(false)
   const [inputTokenIndex, setInputTokenIndex] = useState<number>(0)
   const [isOpenReviewModal, toggleReviewModal] = useState(false)
+
+  const deiPrice = useDeiPrice()
+  const usdcPrice = useUSDCPrice()
+  const deusCoingeckoPrice = useDeusPrice()
 
   // const collateralRatio = useCollateralRatio()
 
@@ -292,13 +298,11 @@ export default function Mint() {
     )
   }
 
-  // TODO: move items to use memo
   const items = [
-    { name: 'DEI Price', value: '$0.5?' },
-    { name: 'Collateral Ratio', value: '99.00%?' },
-    { name: 'Available to Mint', value: '72.53m?' },
-    { name: 'Pool Balance', value: '24.64m?' },
-    { name: 'Ceiling', value: '18.88m?' },
+    { name: 'DEI Price', value: formatDollarAmount(parseFloat(deiPrice), 2) ?? '-' },
+    { name: 'USDC Price', value: formatDollarAmount(parseFloat(usdcPrice), 2) ?? '-' },
+    { name: 'DEUS Price', value: formatDollarAmount(parseFloat(deusCoingeckoPrice), 2) ?? '-' },
+    { name: 'Pool(V3)', value: truncateAddress(CollateralPool[chainId ?? SupportedChainId.FANTOM]) ?? '-' },
   ]
   const info = useMemo(
     () => [
