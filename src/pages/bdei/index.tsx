@@ -33,7 +33,7 @@ import InputBox from 'components/InputBox'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
 import NFTsModal from 'components/App/bdei/NFTsModal'
-import { formatAmount, formatDollarAmount } from 'utils/numbers'
+import { formatAmount } from 'utils/numbers'
 import { useDeiPrice } from 'hooks/useCoingeckoPrice'
 import { useBonderData } from 'hooks/useBondsPage'
 import { useDeiStats } from 'hooks/useDeiStats'
@@ -234,9 +234,12 @@ export default function Redemption() {
   }
 
   const items = [
-    { name: 'DEI Price', value: formatDollarAmount(parseFloat(deiPrice), 2) ?? '-' },
-    { name: 'Total DEI Bonded', value: formatAmount(deiBonded) ?? '-' },
-    { name: 'bDEI Liquidity', value: formatAmount(sPoolbDEILiquidity, 2) ?? '-' },
+    // { name: 'DEI Price', value: formatDollarAmount(parseFloat(deiPrice), 2) ?? '-' },
+    { name: 'Total DEI Claimed', value: formatAmount(deiBonded) ?? '-' },
+    { name: 'Your bDEI Balance', value: formatAmount(sPoolbDEILiquidity, 2) + ' DEI' ?? '-' },
+    { name: 'Your NFT Value', value: formatAmount(sPoolbDEILiquidity, 2) + ' DEI' ?? '-' },
+    { name: 'Your NFT Maturity', value: 'in 139 days' },
+    { name: 'Your Claimable DEI', value: '0.73m' },
   ]
 
   return (

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import Image from 'next/image'
 
@@ -22,6 +22,9 @@ import { Card } from 'components/App/Dashboard/card'
 import { SocialCard } from 'components/App/Dashboard/SocialCard'
 import Stats from 'components/App/Dashboard/Stats'
 import DeiBondStats from 'components/App/Dashboard/DeiBondStats'
+import { formatAmount, formatDollarAmount } from 'utils/numbers'
+import { useDeiPrice } from 'hooks/useCoingeckoPrice'
+import { useDeiStats } from 'hooks/useDeiStats'
 
 const Wrapper = styled(RowCenter)`
   max-width: 1300px;
@@ -61,11 +64,18 @@ const CardWrapper = styled(RowBetween)`
 `
 
 export default function Dashboard() {
+  const deiPrice = useDeiPrice()
+  const { totalSupply, circulatingSupply, totalUSDCReserves } = useDeiStats()
+
+  const usdcBackingPerDei = useMemo(() => {
+    return (totalUSDCReserves / circulatingSupply) * 100
+  }, [totalUSDCReserves, circulatingSupply])
+
   const items = [
-    { name: 'DEI Price', value: '$0.5' },
-    { name: 'DEI Total Supply', value: '0.77m' },
-    { name: 'Collateral Ratio', value: '72.53m' },
-    { name: 'Total USDC Holdings', value: '72.53m' },
+    { name: 'DEI Price', value: formatDollarAmount(parseFloat(deiPrice), 2) ?? '-' },
+    { name: 'DEI Total Supply', value: formatDollarAmount(totalSupply, 2) ?? '-' },
+    { name: 'Collateral Ratio', value: formatAmount(usdcBackingPerDei, 1).toString() + '%' ?? '-' },
+    { name: 'Total USDC Holdings', value: formatAmount(totalUSDCReserves, 2) },
   ]
 
   return (

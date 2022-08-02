@@ -1,9 +1,12 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import styled from 'styled-components'
 
 import StatsItem from './StatsItem'
 import Chart from './Chart'
 import { RowBetween } from 'components/Row'
+import { useDeiPrice, useDeusPrice } from 'hooks/useCoingeckoPrice'
+import { formatAmount, formatDollarAmount } from 'utils/numbers'
+import { useDeiStats } from 'hooks/useDeiStats'
 
 const Wrapper = styled(RowBetween)`
   background: ${({ theme }) => theme.bg0};
@@ -86,27 +89,51 @@ const DeusTitle = styled(Title)`
 `
 
 export default function Stats() {
+  const deiPrice = useDeiPrice()
+  const deusPrice = useDeusPrice()
+  const {
+    totalSupply,
+    totalProtocolHoldings,
+    circulatingSupply,
+    totalUSDCReserves,
+    sPoolDEILiquidity,
+    sPoolbDEILiquidity,
+    sPoolLiquidity,
+  } = useDeiStats()
+
+  const usdcBackingPerDei = useMemo(() => {
+    return (totalUSDCReserves / circulatingSupply) * 100
+  }, [totalUSDCReserves, circulatingSupply])
+
   return (
     <Wrapper>
       <AllStats>
         <StatsWrapper>
           <Title>DEI Stats</Title>
           <Info>
-            <StatsItem name="DEI Price" value="$1.00" linkIcon={true} />
-            <StatsItem name="Total Supply" value="21.01m" linkIcon={true} />
-            <StatsItem name="Total Protocol Holdings" value="0m" linkIcon={true} />
-            <StatsItem name="Circulating Supply" value="21.01" linkIcon={true} />
-            <StatsItem name="Total Reserve Assets" value="21.01" linkIcon={true} />
-            <StatsItem name="USDC Baking Per DEI" value="91%" linkIcon={true} />
+            <StatsItem name="DEI Price" value={formatDollarAmount(parseFloat(deiPrice), 2)} linkIcon={true} />
+            <StatsItem name="Total Supply" value={formatDollarAmount(totalSupply, 2)} linkIcon={true} />
+            <StatsItem
+              name="Total Protocol Holdings"
+              value={formatDollarAmount(totalProtocolHoldings, 2)}
+              linkIcon={true}
+            />
+            <StatsItem name="Circulating Supply" value={formatDollarAmount(circulatingSupply, 2)} linkIcon={true} />
+            <StatsItem name="Total Reserve Assets" value={formatDollarAmount(totalUSDCReserves, 2)} linkIcon={true} />
+            <StatsItem
+              name="USDC Baking Per DEI"
+              value={formatAmount(usdcBackingPerDei, 1).toString() + '%'}
+              linkIcon={true}
+            />
           </Info>
         </StatsWrapper>
         <StatsWrapper>
           <DeusTitle>DEUS Stats</DeusTitle>
           <Info>
-            <StatsItem name="DEUS Price" value="128$" linkIcon={true} />
-            <StatsItem name="Total Supply" value="21.01" linkIcon={true} />
-            <StatsItem name="Market Cap" value="0m" linkIcon={true} />
-            <StatsItem name="veDEUS Supplu" value="21.01m" linkIcon={true} />
+            <StatsItem name="DEUS Price" value={formatDollarAmount(parseFloat(deusPrice), 2)} linkIcon={true} />
+            <StatsItem name="Total Supply" value="-" linkIcon={true} />
+            <StatsItem name="Market Cap" value="-" linkIcon={true} />
+            <StatsItem name="veDEUS Supply" value="-" linkIcon={true} />
           </Info>
         </StatsWrapper>
       </AllStats>

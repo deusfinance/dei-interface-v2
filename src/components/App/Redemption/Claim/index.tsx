@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import Image from 'next/image'
 
@@ -93,21 +93,23 @@ const InfoWrap = styled.div`
 
 export default function RedeemClaim() {
   const unClaimed = useClaimableTokens()
-  // const currentBlocks = useCurrentBlocks()
 
-  const currentBlock = Math.floor(Date.now() / 1000)
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     currentBlock = Math.floor(Date.now() / 1000)
-  //     console.log(currentBlock)
-  //   }, 3000)
-  //   return () => clearInterval(interval)
-  // }, [])
+  const [currentBlock, setCurrentBlock] = useState(Math.floor(Date.now() / 1000))
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentBlock(Math.floor(Date.now() / 1000))
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [])
+
+  const pendingTokens = unClaimed.filter((token) => {
+    return token.claimableBlock > currentBlock
+  })
 
   const dispatch = useAppDispatch()
   const onSwitchNetwork = useRpcChangerCallback()
 
-  const [token, setToken] = useState<IClaimToken | null>(null)
+  // const [token, setToken] = useState<IClaimToken | null>(null)
   // const { state: claimCallbackState, callback: claimCallback, error: claimCallbackError } = useClaimCallback()
 
   const handleClaim = useCallback(
@@ -164,8 +166,8 @@ export default function RedeemClaim() {
             })}
           </ClaimBox>
           <InfoWrap>
-            <InfoItem name={'Ready to Claim:'} value={unClaimed.length.toString()} />
-            <InfoItem name={'Pending:'} value={'0'} />
+            <InfoItem name={'Ready to Claim:'} value={(unClaimed.length - pendingTokens.length).toString()} />
+            <InfoItem name={'Pending:'} value={pendingTokens.length.toString()} />
           </InfoWrap>
         </>
       )}
