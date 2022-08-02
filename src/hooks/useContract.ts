@@ -20,6 +20,7 @@ import MasterChefV2_ABI from 'constants/abi/MasterChefV2_ABI.json'
 import VDEUS_STAKING_ABI from 'constants/abi/VDEUS_STAKING.json'
 import COLLATERAL_POOL_ABI from 'constants/abi/COLLATERAL_POOL_ABI.json'
 import PROXY_MINTER_ABI from 'constants/abi/PROXY_MINTER_ABI.json'
+import ORACLE_ABI from 'constants/abi/ORACLE_ABI.json'
 
 import { Providers } from 'constants/providers'
 import {
@@ -173,4 +174,8 @@ export function useDeiContract() {
   const { chainId } = useWeb3React()
   const address = useMemo(() => (chainId ? MintProxy[chainId] : undefined), [chainId])
   return useContract(address, PROXY_MINTER_ABI)
+}
+
+export function useOracleContract(address: string) {
+  return useContract(address, ORACLE_ABI)
 }

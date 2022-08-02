@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { useCurrencyBalance } from 'state/wallet/hooks'
 import { useWalletModalToggle } from 'state/application/hooks'
 import useWeb3React from 'hooks/useWeb3'
-import useDebounce from 'hooks/useDebounce'
+// import useDebounce from 'hooks/useDebounce'
 import { useSupportedChainId } from 'hooks/useSupportedChainId'
 import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
 import { tryParseAmount } from 'utils/parse'
@@ -16,7 +16,7 @@ import DEI_LOGO from '/public/static/images/pages/mint/DEI_Logo.svg'
 
 import { DotFlashing } from 'components/Icons'
 import Hero from 'components/Hero'
-import InputBox from 'components/App/mint/InputBox'
+import InputBox from 'components/InputBox'
 import { RowBetween } from 'components/Row'
 import AdvancedOptions from 'components/App/Swap/AdvancedOptions'
 import StatsHeader from 'components/StatsHeader'
@@ -27,11 +27,10 @@ import TokensModal from 'components/App/StableCoin/TokensModal'
 import { MINT__INPUTS, MINT__OUTPUTS } from 'constants/inputs'
 import { SupportedChainId } from 'constants/chains'
 import useMintCallback from 'hooks/useMintCallback'
-import useMintAmountOut from 'hooks/useMintPage'
+import { useGetDeusPrice, useMintAmountOut } from 'hooks/useMintPage'
 import { DEUS_TOKEN } from 'constants/tokens'
-import { useCollateralRatio } from 'state/dei/hooks'
-import { toBN } from 'utils/numbers'
 import DefaultReviewModal from 'components/ReviewModal/DefaultReviewModal'
+// import { useCollateralRatio } from 'state/dei/hooks'
 // import { useDeusPrice, useUSDCPrice } from 'hooks/useCoingeckoPrice'
 
 const SlippageWrapper = styled(RowBetween)`
@@ -39,8 +38,6 @@ const SlippageWrapper = styled(RowBetween)`
 `
 
 const PlusIcon = styled(Plus)`
-  margin: -14px auto;
-  margin-left: 67px;
   z-index: 1000;
   padding: 3px;
   border: 1px solid ${({ theme }) => theme.bg4};
@@ -59,7 +56,7 @@ const ComboInputBox = styled.div`
       border-bottom-right-radius: 0;
     }
     &:nth-child(2) {
-      margin: -12px auto -12px 67px;
+      margin: -12px auto -12px 57px;
     }
     &:nth-child(3) {
       margin-top: -1px;
@@ -82,28 +79,16 @@ export default function Mint() {
   const toggleWalletModal = useWalletModalToggle()
   const isSupportedChainId = useSupportedChainId()
 
-  // FIXME: set correct fee
-  const [mintingFee, setMintingFee] = useState(0.5)
-
-  // const USDC_Price = useUSDCPrice().toString()
-  // const USDC_Price = useUSDCPrice().toString()
-
-  // FIXME: set correct deiPrices
-  const [deiPrices, setDeiPrices] = useState({
-    collateral_price: '1',
-    deus_price: '40',
-  })
-
   const [amountIn1, setAmountIn1] = useState('')
   const [amountIn2, setAmountIn2] = useState('')
-  const [hasPair, setHasPair] = useState(false)
-  const debouncedAmountIn1 = useDebounce(amountIn1, 500)
-  const debouncedAmountIn2 = useDebounce(amountIn2, 500)
+  const [hasPair, setHasPair] = useState(true)
+  // const debouncedAmountIn1 = useDebounce(amountIn1, 500)
+  // const debouncedAmountIn2 = useDebounce(amountIn2, 500)
   const [isOpenTokensModal, toggleTokensModal] = useState(false)
   const [inputTokenIndex, setInputTokenIndex] = useState<number>(0)
   const [isOpenReviewModal, toggleReviewModal] = useState(false)
 
-  const collateralRatio = useCollateralRatio()
+  // const collateralRatio = useCollateralRatio()
 
   const tokens = useMemo(() => MINT__INPUTS[chainId ?? SupportedChainId.FANTOM], [chainId])
   const inputToken = tokens[inputTokenIndex]
@@ -119,61 +104,70 @@ export default function Mint() {
 
   const [slippage, setSlippage] = useState(0.5)
 
+  // useEffect(() => {
+  //   if (inputToken.length > 1) {
+  //     setAmountIn2('')
+  //     setHasPair(true)
+  //   } else {
+  //     setAmountIn2('')
+  //     setHasPair(false)
+  //   }
+  // }, [inputToken.length, inputTokenIndex, tokens])
+
+  // const [focusType, setFocusType] = useState('from1')
+
+  // useEffect(() => {
+  //   if (amountIn1 === '' && focusType === 'from1') {
+  //     setAmountIn2('')
+  //   } else if (amountIn2 === '' && focusType === 'from2') {
+  //     setAmountIn1('')
+  //   }
+  // }, [amountIn1, amountIn2, focusType])
+
+  // useEffect(() => {
+  //   if (deiPrices && hasPair) {
+  //     const { collateral_price, deus_price } = deiPrices
+
+  //     const in1Unit = collateralRatio === 0 ? deus_price : collateral_price
+  //     const in2Unit = deus_price
+  //     let a1 = ''
+  //     let a2 = ''
+
+  //     if (focusType === 'from1' && amountIn1 !== '') {
+  //       a1 = amountIn1
+  //       a2 =
+  //         collateralRatio > 0 && collateralRatio < 100
+  //           ? toBN(a1)
+  //               .times(in1Unit)
+  //               .times(100 - collateralRatio)
+  //               .div(collateralRatio)
+  //               .div(in2Unit)
+  //               .toString()
+  //           : '0'
+  //     } else if (focusType === 'from2' && amountIn2 !== '') {
+  //       a2 = amountIn2
+  //       a1 = toBN(a2)
+  //         .times(in2Unit)
+  //         .times(collateralRatio)
+  //         .div(100 - collateralRatio)
+  //         .div(in1Unit)
+  //         .toString()
+  //     }
+  //     setAmountIn1(a1)
+  //     setAmountIn2(a2)
+  //   }
+  // }, [debouncedAmountIn1, amountIn2, focusType, amountIn1, debouncedAmountIn2, deiPrices, hasPair, collateralRatio])
+
+  // const amountOut = useMintAmountOut(token1Currency, token2Currency, debouncedAmountIn1, debouncedAmountIn2, mintingFee)
+
+  const [amountOut, setAmountOut] = useState('')
+  const deusPrice = useGetDeusPrice()
+
+  const { collatAmount, deusAmount } = useMintAmountOut(amountOut, deusPrice)
   useEffect(() => {
-    if (inputToken.length > 1) {
-      setAmountIn2('')
-      setHasPair(true)
-    } else {
-      setAmountIn2('')
-      setHasPair(false)
-    }
-  }, [inputToken.length, inputTokenIndex, tokens])
-
-  const [focusType, setFocusType] = useState('from1')
-
-  useEffect(() => {
-    if (amountIn1 === '' && focusType === 'from1') {
-      setAmountIn2('')
-    } else if (amountIn2 === '' && focusType === 'from2') {
-      setAmountIn1('')
-    }
-  }, [amountIn1, amountIn2, focusType])
-
-  useEffect(() => {
-    if (deiPrices && hasPair) {
-      const { collateral_price, deus_price } = deiPrices
-
-      const in1Unit = collateralRatio === 0 ? deus_price : collateral_price
-      const in2Unit = deus_price
-      let a1 = ''
-      let a2 = ''
-
-      if (focusType === 'from1' && amountIn1 !== '') {
-        a1 = amountIn1
-        a2 =
-          collateralRatio > 0 && collateralRatio < 100
-            ? toBN(a1)
-                .times(in1Unit)
-                .times(100 - collateralRatio)
-                .div(collateralRatio)
-                .div(in2Unit)
-                .toString()
-            : '0'
-      } else if (focusType === 'from2' && amountIn2 !== '') {
-        a2 = amountIn2
-        a1 = toBN(a2)
-          .times(in2Unit)
-          .times(collateralRatio)
-          .div(100 - collateralRatio)
-          .div(in1Unit)
-          .toString()
-      }
-      setAmountIn1(a1)
-      setAmountIn2(a2)
-    }
-  }, [debouncedAmountIn1, amountIn2, focusType, amountIn1, debouncedAmountIn2, deiPrices, hasPair, collateralRatio])
-
-  const amountOut = useMintAmountOut(token1Currency, token2Currency, debouncedAmountIn1, debouncedAmountIn2, mintingFee)
+    setAmountIn1(collatAmount)
+    setAmountIn2(deusAmount)
+  }, [collatAmount, deusAmount])
 
   const token1Amount = useMemo(() => {
     return tryParseAmount(amountIn1, token1Currency || undefined)
@@ -194,18 +188,11 @@ export default function Mint() {
     return token2CurrencyBalance?.lessThan(token2Amount)
   }, [token2Amount, hasPair, token2CurrencyBalance])
 
-  const {
-    state: mintCallbackState,
-    callback: mintCallback,
-    error: mintCallbackError,
-  } = useMintCallback(
-    token1Currency,
-    token2Currency,
-    outputTokenCurrency,
-    debouncedAmountIn1,
-    debouncedAmountIn2,
-    amountOut
-  )
+  const deiAmount = useMemo(() => {
+    return tryParseAmount(amountOut, outputTokenCurrency || undefined)
+  }, [amountOut, outputTokenCurrency])
+
+  const { state: mintCallbackState, callback: mintCallback, error: mintCallbackError } = useMintCallback(deiAmount)
 
   const [awaitingApproveConfirmation, setAwaitingApproveConfirmation] = useState<boolean>(false)
   const [awaitingMintConfirmation, setAwaitingMintConfirmation] = useState<boolean>(false)
@@ -220,7 +207,7 @@ export default function Mint() {
   }, [token1Currency, approvalState1, amountIn1])
 
   const [showApprove2, showApproveLoader2] = useMemo(() => {
-    if (hasPair) [false, false]
+    if (hasPair) return [false, false]
     const show = token2Currency && approvalState2 !== ApprovalState.APPROVED && !!amountIn2
     return [show, show && approvalState2 === ApprovalState.PENDING]
   }, [hasPair, token2Currency, approvalState2, amountIn2])
@@ -341,8 +328,9 @@ export default function Mint() {
                   currency={token1Currency}
                   value={amountIn1}
                   onChange={(value: string) => setAmountIn1(value)}
-                  setFocusType={setFocusType}
-                  focusType="from1"
+                  // setFocusType={setFocusType}
+                  // focusType="from1"
+                  disabled={true}
                   onTokenSelect={() => {
                     toggleTokensModal(true)
                     setInputTokenIndex(inputTokenIndex)
@@ -353,8 +341,9 @@ export default function Mint() {
                   currency={token2Currency}
                   value={amountIn2}
                   onChange={(value: string) => setAmountIn2(value)}
-                  setFocusType={setFocusType}
-                  focusType="from2"
+                  // setFocusType={setFocusType}
+                  // focusType="from2"
+                  disabled={true}
                   onTokenSelect={() => {
                     toggleTokensModal(true)
                     setInputTokenIndex(inputTokenIndex)
@@ -366,8 +355,9 @@ export default function Mint() {
                 currency={token1Currency}
                 value={amountIn1}
                 onChange={(value: string) => setAmountIn1(value)}
-                setFocusType={setFocusType}
-                focusType="from1"
+                // setFocusType={setFocusType}
+                // focusType="from1"
+                disabled={true}
                 onTokenSelect={() => {
                   toggleTokensModal(true)
                   setInputTokenIndex(inputTokenIndex)
@@ -379,10 +369,9 @@ export default function Mint() {
             <InputBox
               currency={outputTokenCurrency}
               value={amountOut}
-              onChange={(value: string) => console.log(value)}
-              setFocusType={setFocusType}
-              focusType="to"
-              disabled={true}
+              onChange={(value: string) => setAmountOut(value)}
+              // setFocusType={setFocusType}
+              // focusType="to"
             />
             <div style={{ marginTop: '30px' }}></div>
             {getApproveButton()}

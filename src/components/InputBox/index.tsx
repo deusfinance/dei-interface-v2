@@ -133,6 +133,8 @@ export default function InputBox({
   const logo = useCurrencyLogo((currency as Token)?.address)
   const currencyBalance = useCurrencyBalance(account ?? undefined, currency ?? undefined)
 
+  const placeholder = disabled ? '0.0' : 'Enter an amount'
+
   const [balanceExact, balanceDisplay] = useMemo(() => {
     return [maxAmountSpend(currencyBalance)?.toExact(), currencyBalance?.toSignificant(6)]
   }, [currencyBalance])
@@ -153,7 +155,7 @@ export default function InputBox({
             alt={`${currency?.symbol} Logo`}
             round
           />
-          {onTokenSelect ? <ChevronDown /> : <></>}
+          {onTokenSelect ? <ChevronDown /> : null}
         </LogoWrapper>
 
         <RightWrapper>
@@ -173,7 +175,7 @@ export default function InputBox({
             <NumericalInput
               value={value || ''}
               onUserInput={onChange}
-              placeholder="0.0"
+              placeholder={placeholder}
               autoFocus
               disabled={disabled}
               style={{ textAlign: 'left', fontSize: '24px', marginLeft: '5px' }}
