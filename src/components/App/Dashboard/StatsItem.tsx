@@ -7,11 +7,11 @@ const Item = styled.div`
   border-right: 1px solid ${({ theme }) => theme.border1};
   white-space: nowrap;
   width: 33%;
-  min-width: 150px;
+  min-width: 130px;
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
-  padding:0 12px;
-  width: 50%;
+    padding:0 12px;
+    width: 50%;
   `};
 `
 
@@ -21,6 +21,10 @@ const Name = styled.div`
   font-size: 12px;
   color: ${({ theme }) => theme.text1};
   white-space: nowrap;
+
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    white-space: break-spaces;
+  `};
 `
 
 const Value = styled.div`

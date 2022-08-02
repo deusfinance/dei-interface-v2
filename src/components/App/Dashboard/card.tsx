@@ -55,6 +55,7 @@ const LeftWrap = styled.div`
   }
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
+    width:130px;
     & > * {
     &:nth-child(1) {
       font-size: 16px;

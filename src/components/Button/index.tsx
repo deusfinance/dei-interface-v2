@@ -87,7 +87,7 @@ export const PrimaryButton = styled(BaseButton)`
 `
 
 export const PrimaryButtonWide = styled(BaseButton)<{ isSmall?: boolean; width?: string }>`
-  background: ${({ theme }) => theme.primary6};
+  background: ${({ theme }) => theme.specialBG1};
   white-space: nowrap;
   border-radius: 8px;
   height: 54%;
