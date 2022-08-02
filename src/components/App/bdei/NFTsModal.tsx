@@ -73,7 +73,7 @@ export default function NFTsModal({
 }) {
   const { snapshot, searchProps } = useSearch()
   const result = snapshot.options.map((nft) => nft)
-  console.log({ result })
+  // console.log({ result })
 
   function getImageSize() {
     return isMobile ? 28 : 36

@@ -106,7 +106,7 @@ export default function Stats() {
             <StatsItem name="DEUS Price" value="128$" linkIcon={true} />
             <StatsItem name="Total Supply" value="21.01" linkIcon={true} />
             <StatsItem name="Market Cap" value="0m" linkIcon={true} />
-            <StatsItem name="veDEUS Supplu" value="21.01m" linkIcon={true} />
+            <StatsItem name="veDEUS Supply" value="21.01m" linkIcon={true} />
           </Info>
         </StatsWrapper>
       </AllStats>

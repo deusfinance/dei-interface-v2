@@ -33,6 +33,10 @@ import InputBox from 'components/InputBox'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
 import NFTsModal from 'components/App/bdei/NFTsModal'
+import { formatAmount } from 'utils/numbers'
+import { useDeiPrice } from 'hooks/useCoingeckoPrice'
+import { useBonderData } from 'hooks/useBondsPage'
+import { useDeiStats } from 'hooks/useDeiStats'
 
 const NFTsWrapper = styled(InputWrapper)`
   & > * {
@@ -93,6 +97,10 @@ export default function Redemption() {
   // console.log({ redeemPaused, rest })
   const [selectedNftId, setSelectedNftId] = useState('0')
   const { listOfVouchers, numberOfVouchers } = useVDeusStats()
+
+  const deiPrice = useDeiPrice()
+  const { deiBonded } = useBonderData()
+  const { sPoolbDEILiquidity } = useDeiStats()
 
   // const dropdownOptions = listOfVouchers.map((tokenId: number) => ({
   //   label: `vDEUS #${tokenId}`,
@@ -225,11 +233,13 @@ export default function Redemption() {
     return <MainButton onClick={() => handleRedeem()}>Redeem DEI</MainButton>
   }
 
-  // TODO: use useMemo for items
   const items = [
-    { name: 'DEI Price', value: '$0.5?' },
-    { name: 'Total DEI Bonded', value: '0.77m?' },
-    { name: 'bDEI Liquidity', value: '72.53m?' },
+    // { name: 'DEI Price', value: formatDollarAmount(parseFloat(deiPrice), 2) ?? '-' },
+    { name: 'Total DEI Claimed', value: formatAmount(deiBonded) ?? '-' },
+    { name: 'Your bDEI Balance', value: formatAmount(sPoolbDEILiquidity, 2) + ' DEI' ?? '-' },
+    { name: 'Your NFT Value', value: formatAmount(sPoolbDEILiquidity, 2) + ' DEI' ?? '-' },
+    { name: 'Your NFT Maturity', value: 'in 139 days' },
+    { name: 'Your Claimable DEI', value: '0.73m' },
   ]
 
   return (
