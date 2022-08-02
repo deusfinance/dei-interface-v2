@@ -331,10 +331,10 @@ export default function Mint() {
                   // setFocusType={setFocusType}
                   // focusType="from1"
                   disabled={true}
-                  onTokenSelect={() => {
-                    toggleTokensModal(true)
-                    setInputTokenIndex(inputTokenIndex)
-                  }}
+                  // onTokenSelect={() => {
+                  //   toggleTokensModal(true)
+                  //   setInputTokenIndex(inputTokenIndex)
+                  // }}
                 />
                 <PlusIcon size={'24px'} />
                 <InputBox
@@ -344,10 +344,10 @@ export default function Mint() {
                   // setFocusType={setFocusType}
                   // focusType="from2"
                   disabled={true}
-                  onTokenSelect={() => {
-                    toggleTokensModal(true)
-                    setInputTokenIndex(inputTokenIndex)
-                  }}
+                  // onTokenSelect={() => {
+                  //   toggleTokensModal(true)
+                  //   setInputTokenIndex(inputTokenIndex)
+                  // }}
                 />
               </ComboInputBox>
             ) : (
@@ -358,10 +358,10 @@ export default function Mint() {
                 // setFocusType={setFocusType}
                 // focusType="from1"
                 disabled={true}
-                onTokenSelect={() => {
-                  toggleTokensModal(true)
-                  setInputTokenIndex(inputTokenIndex)
-                }}
+                // onTokenSelect={() => {
+                //   toggleTokensModal(true)
+                //   setInputTokenIndex(inputTokenIndex)
+                // }}
               />
             )}
 

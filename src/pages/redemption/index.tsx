@@ -244,12 +244,12 @@ export default function Redemption() {
 
   const info = useMemo(
     () => [
-      { title: 'Max Slippage', value: '0.5' + ' %' },
-      { title: 'Txn Deadline', value: '20 min' },
-      { title: 'Network Fee', value: 'N/A' },
-      { title: 'Min Received', value: amountOut1 + ' USDC + ' + amountOut2 + ' DEUS' },
+      { title: 'USDC claimable time', value: '30s' },
+      { title: 'DEUS claimable time', value: '8h' },
+      // { title: 'Network Fee', value: 'N/A' },
+      // { title: 'Min Received', value: amountOut1 + ' USDC + ' + amountOut2 + ' DEUS' },
     ],
-    [amountOut1, amountOut2]
+    []
   )
   return (
     <>

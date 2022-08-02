@@ -185,7 +185,6 @@ export default function InputDate({
         </Column>
       )}
       <DatePickerWrapper>
-        {/* TODO: #M add some style to this ugly datePicker */}
         <DatePicker
           selected={selectedDate}
           className="styled-date-picker"
