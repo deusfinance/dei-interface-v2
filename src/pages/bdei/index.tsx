@@ -89,7 +89,7 @@ export default function Redemption() {
   const bdeiCurrencyBalance = useCurrencyBalance(account ?? undefined, bdeiCurrency)
   const deiCurrencyBalance = useCurrencyBalance(account ?? undefined, deiCurrency)
   const [isOpenNFTsModal, toggleNFTsModal] = useState(false)
-  const [inputNFT, setInputNFT] = useState<number>(10)
+  const [inputNFT, setInputNFT] = useState<number>(-1)
 
   /* const { amountIn, amountOut1, amountOut2, onUserInput, onUserOutput1, onUserOutput2 } = useRedeemAmounts() */
   const { amountOut1, amountOut2 } = useRedeemAmountsOut(debouncedAmountIn, bdeiCurrency)
@@ -245,14 +245,19 @@ export default function Redemption() {
   return (
     <Container>
       <Hero>
-        <Image src={DEI_LOGO} height={'90px'} alt="DEI logo" onClick={() => toggleNFTsModal(true)} />
+        <Image src={DEI_LOGO} height={'90px'} alt="DEI logo" />
         <Title>DEI Bond</Title>
         <StatsHeader items={items} />
       </Hero>
       <Wrapper>
         <Tableau title={'Redemption'} imgSrc={REDEEM_IMG} />
         <NFTsWrapper>
-          <SelectBox icon={BOND_NFT_LOGO} placeholder="Select an NFT" value="" />
+          <SelectBox
+            icon={BOND_NFT_LOGO}
+            placeholder="Select an NFT"
+            value={inputNFT > -1 ? `vDeus #${inputNFT}` : ''}
+            onSelect={() => toggleNFTsModal(true)}
+          />
           <PlusIcon size={'24px'} />
           <InputBox currency={bdeiCurrency} value={amountOut2} onChange={(value: string) => console.log(value)} />
           <ArrowDown />

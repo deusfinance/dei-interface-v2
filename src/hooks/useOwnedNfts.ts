@@ -1,11 +1,13 @@
 import { useMemo } from 'react'
-import { useSingleContractMultipleData } from 'state/multicall/hooks'
+import { useSingleContractMultipleData, useSingleContractMultipleMethods } from 'state/multicall/hooks'
 import useWeb3React from 'hooks/useWeb3'
 import { useSupportedChainId } from 'hooks/useSupportedChainId'
 import { useContract, useVeDeusContract } from 'hooks/useContract'
 
-import VEDEUS_ABI from 'constants/abi/VEDEUS.json'
-import { DeiBonder } from 'constants/addresses'
+import DEI_BOND_REDEEM_NFT from 'constants/abi/DEI_BOND_REDEEM_NFT.json'
+import { DeiBondRedeemNFT } from 'constants/addresses'
+import { toBN } from 'utils/numbers'
+import { formatUnits } from '@ethersproject/units'
 
 //TODO: build an array with balanceOf(account) size
 const idMapping = Array.from(Array(100).keys())
@@ -40,6 +42,27 @@ export function useOwnerNfts(address: string | null | undefined, ABI: any): numb
   const isSupportedChainId = useSupportedChainId()
   const ERC721Contract = useContract(address, ABI)
 
+  const calls = !account
+    ? []
+    : [
+        {
+          methodName: 'balanceOf',
+          callInputs: [account],
+        },
+      ]
+
+  const [vDeusBalance] = useSingleContractMultipleMethods(ERC721Contract, calls)
+
+  const { numberOfVouchers } = useMemo(() => {
+    return {
+      numberOfVouchers: vDeusBalance?.result ? toBN(formatUnits(vDeusBalance.result[0], 0)).toNumber() : 0,
+    }
+  }, [vDeusBalance])
+
+  // console.log({ calls, vDeusBalance, numberOfVouchers })
+
+  const idMapping = Array.from(Array(numberOfVouchers).keys())
+
   const callInputs = useMemo(() => {
     return !chainId || !isSupportedChainId || !account ? [] : idMapping.map((id) => [account, id])
   }, [account, chainId, isSupportedChainId])
@@ -61,6 +84,6 @@ export function useOwnerNfts(address: string | null | undefined, ABI: any): numb
 
 export function useOwnerBondNFT(): number[] {
   const { chainId } = useWeb3React()
-  const address = useMemo(() => (chainId ? DeiBonder[chainId] : undefined), [chainId])
-  return useOwnerNfts(address, VEDEUS_ABI) //use erc721 abi
+  const address = useMemo(() => (chainId ? DeiBondRedeemNFT[chainId] : undefined), [chainId])
+  return useOwnerNfts(address, DEI_BOND_REDEEM_NFT) //use erc721 abi
 }

@@ -1,13 +1,14 @@
 import styled from 'styled-components'
 
 import { Modal, ModalHeader } from 'components/Modal'
-import { SearchField, useSearch } from 'components/App/Vest/Search'
+import { SearchField, useSearch } from 'components/App/bdei/Search'
 import Column from 'components/Column'
 import NFTBox from 'components/App/bdei/NFTBox'
 import { RowBetween, RowCenter } from 'components/Row'
 import ImageWithFallback from 'components/ImageWithFallback'
 import Disabled_BDEI_NFT from '/public/static/images/pages/bdei/Disabled_BDEI_nft.svg'
 import { isMobile } from 'react-device-detect'
+import { useOwnerBondNFT } from 'hooks/useOwnedNfts'
 
 const Wrapper = styled.div`
   display: flex;
@@ -73,7 +74,9 @@ export default function NFTsModal({
 }) {
   const { snapshot, searchProps } = useSearch()
   const result = snapshot.options.map((nft) => nft)
-  // console.log({ result })
+  const test = useOwnerBondNFT()
+
+  console.log({ test })
 
   function getImageSize() {
     return isMobile ? 28 : 36
@@ -93,13 +96,12 @@ export default function NFTsModal({
                   toggleModal={toggleModal}
                   tokenId={nft.value as number}
                   setNFT={setNFT}
-                  disabled={index < 2}
+                  disabled={nft.value === selectedNFT}
                 />
               )
             })
           ) : (
             <NotFoundWrapper>
-              {/* <RowStart> */}
               <ImageWithFallback
                 src={Disabled_BDEI_NFT}
                 width={getImageSize()}
@@ -107,7 +109,6 @@ export default function NFTsModal({
                 alt={`nft`}
                 round
               />
-              {/* </RowStart> */}
               <Text>NFT Not FOUND</Text>
             </NotFoundWrapper>
           )}

@@ -165,3 +165,7 @@ export const CollateralPool: AddressMap = {
 export const Collateral: AddressMap = {
   [SupportedChainId.FANTOM]: '0x04068DA6C83AFCFA0e13ba15A6696662335D5B75',
 }
+
+export const DeiBondRedeemNFT: AddressMap = {
+  [SupportedChainId.FANTOM]: '0x44656b5f0454b3ddbc03471dc391056331f19476',
+}
