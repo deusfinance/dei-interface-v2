@@ -274,7 +274,6 @@ export function useGetDeusPrice(): string {
   const address = useGetOracleAddress()
   const contract = useOracleContract(address)
   const coinGeckoDeusPrice = useDeusPrice()
-  // console.log({ contract, coinGeckoDeusPrice })
 
   const call = useMemo(
     () => [
@@ -285,15 +284,25 @@ export function useGetDeusPrice(): string {
     ],
     []
   )
-
   const [deusPriceRes] = useSingleContractMultipleMethods(contract, call)
+
+  // if (deusPriceRes.result)
+  //   console.log(
+  //     'contract',
+  //     toBN(deusPriceRes.result[0].toString())
+  //       .times(BN_TEN.pow(DEUS_TOKEN.decimals - 6))
+  //       .toFixed(0)
+  //   )
+  // console.log('coingecko', toBN(coinGeckoDeusPrice).times(BN_TEN.pow(DEUS_TOKEN.decimals)).toFixed(0))
 
   const deusPrice =
     !deusPriceRes || !deusPriceRes.result
       ? coinGeckoDeusPrice
         ? toBN(coinGeckoDeusPrice).times(BN_TEN.pow(DEUS_TOKEN.decimals)).toFixed(0)
         : ''
-      : toBN(formatUnits(deusPriceRes.result[0].toString(), DEUS_TOKEN.decimals)).toString()
+      : toBN(deusPriceRes.result[0].toString())
+          .times(BN_TEN.pow(DEUS_TOKEN.decimals - 6))
+          .toFixed(0)
 
   return deusPrice
 }

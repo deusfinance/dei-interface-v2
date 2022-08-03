@@ -179,5 +179,6 @@
     "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
     "stateMutability": "view",
     "type": "function"
-  }
+  },
+  { "inputs": [], "name": "update", "outputs": [], "stateMutability": "nonpayable", "type": "function" }
 ]

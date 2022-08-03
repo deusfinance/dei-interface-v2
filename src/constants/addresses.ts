@@ -21,7 +21,7 @@ export const USDC_ADDRESS = {
                 DEI ADDRESS
 ===================================== */
 export const DEI_ADDRESS: AddressMap = {
-  ...constructSameAddressMap('0xDE12c7959E1a72bbe8a5f7A1dc8f8EeF9Ab011B3', [
+  ...constructSameAddressMap('0xd358f17774B69A8c06cfAA0d4402D2F604d4a4bF', [
     SupportedChainId.MAINNET,
     SupportedChainId.POLYGON,
     SupportedChainId.FANTOM,

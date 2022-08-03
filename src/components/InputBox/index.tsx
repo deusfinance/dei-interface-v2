@@ -140,9 +140,9 @@ export default function InputBox({
   }, [currencyBalance])
 
   const handleClick = useCallback(() => {
-    if (!balanceExact || !onChange) return
+    if (!balanceExact || !onChange || disabled) return
     onChange(balanceExact)
-  }, [balanceExact, onChange])
+  }, [balanceExact, disabled, onChange])
 
   return (
     <>
@@ -166,7 +166,7 @@ export default function InputBox({
             >
               {currency?.symbol}
             </CurrencySymbol>
-            <Balance onClick={handleClick}>
+            <Balance disabled={disabled} onClick={handleClick}>
               balance: {balanceDisplay ? balanceDisplay : '0.00'}
               {!disabled && <span>MAX</span>}
             </Balance>

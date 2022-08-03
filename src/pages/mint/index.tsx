@@ -385,8 +385,8 @@ export default function Mint() {
             <SlippageWrapper>
               <AdvancedOptions slippage={slippage} setSlippage={setSlippage} />
             </SlippageWrapper>
-            <InfoItem name={'Minter Contract'} value={'Proxy'} />
-            <InfoItem name={'Minting Fee'} value={'Zero'} />
+            <InfoItem name={'Minter Contract'} value={'CollateralPool'} />
+            <InfoItem name={'Minting Fee'} value={'0.5%'} />
           </BottomWrapper>
         </Wrapper>
         <TokensModal
