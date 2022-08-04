@@ -6,7 +6,7 @@ import debounce from 'lodash/debounce'
 
 import { useSingleContractMultipleMethods } from 'state/multicall/hooks'
 import { BN_TEN, removeTrailingZeros, toBN } from 'utils/numbers'
-import { useCollateralPoolContract, useDynamicRedeemerContract } from 'hooks/useContract'
+import { useCollateralPoolContract, useDynamicRedeemerContract, useStrategyContract } from 'hooks/useContract'
 import { DEI_TOKEN, DEUS_TOKEN, USDC_TOKEN } from 'constants/tokens'
 import useWeb3React from './useWeb3'
 
@@ -320,4 +320,51 @@ export function useGetPoolData() {
     nextRedeemId: nextRedeemIdRes,
     redeemCollateralBalances: redeemCollateralBalancesRes,
   }
+}
+
+export function useGetStrategyAddress(): string {
+  const contract = useCollateralPoolContract()
+
+  const call = useMemo(
+    () => [
+      {
+        methodName: 'strategy',
+        callInputs: [],
+      },
+    ],
+    []
+  )
+
+  const [strategyAddressRes] = useSingleContractMultipleMethods(contract, call)
+
+  return !strategyAddressRes || !strategyAddressRes.result ? '' : strategyAddressRes.result[0].toString()
+}
+
+export function useGetCollateralRatios() {
+  const address = useGetStrategyAddress()
+  const contract = useStrategyContract(address)
+
+  const call = useMemo(
+    () => [
+      {
+        methodName: 'mintCollateralRatio',
+        callInputs: [],
+      },
+      {
+        methodName: 'redeemCollateralRatio',
+        callInputs: [],
+      },
+    ],
+    []
+  )
+  const [mintCollateralRatio, redeemCollateralRatio] = useSingleContractMultipleMethods(contract, call)
+
+  const mintCollateralRatioRes =
+    !mintCollateralRatio || !mintCollateralRatio.result ? '' : formatUnits(mintCollateralRatio.result[0]?.toString(), 4)
+  const redeemCollateralRatioRes =
+    !redeemCollateralRatio || !redeemCollateralRatio.result
+      ? ''
+      : formatUnits(redeemCollateralRatio.result[0]?.toString(), 4)
+
+  return { mintCollateralRatio: mintCollateralRatioRes, redeemCollateralRatio: redeemCollateralRatioRes }
 }

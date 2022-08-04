@@ -20,6 +20,7 @@ import VDEUS_STAKING_ABI from 'constants/abi/VDEUS_STAKING.json'
 import COLLATERAL_POOL_ABI from 'constants/abi/COLLATERAL_POOL_ABI.json'
 import PROXY_MINTER_ABI from 'constants/abi/PROXY_MINTER_ABI.json'
 import ORACLE_ABI from 'constants/abi/ORACLE_ABI.json'
+import DEIStrategy from 'constants/abi/DEIStrategy.json'
 
 import { Providers } from 'constants/providers'
 import {
@@ -170,4 +171,8 @@ export function useDeiContract() {
 
 export function useOracleContract(address: string) {
   return useContract(address, ORACLE_ABI)
+}
+
+export function useStrategyContract(address: string) {
+  return useContract(address, DEIStrategy)
 }
