@@ -13,11 +13,10 @@ import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
 import useRedemptionCallback from 'hooks/useRedemptionCallback'
 import { useRedeemAmountsOut, useRedeemData } from 'hooks/useRedemptionPage'
 import { useERC721ApproveAllCallback } from 'hooks/useApproveNftCallback2'
-import { useVDeusStats } from 'hooks/useVDeusStats'
 
 import { tryParseAmount } from 'utils/parse'
 import { BDEI_TOKEN, DEI_TOKEN, USDC_TOKEN } from 'constants/tokens'
-import { vDeus, bDeiRedeemer } from 'constants/addresses'
+import { DeiBondRedeemNFT, bDeiRedeemer } from 'constants/addresses'
 
 import REDEEM_IMG from '/public/static/images/pages/bdei/TableauBackground.svg'
 import DEI_LOGO from '/public/static/images/pages/bdei/DEI_logo.svg'
@@ -96,7 +95,6 @@ export default function Redemption() {
   const { redeemPaused, redeemTranche } = useRedeemData()
   // console.log({ redeemPaused, rest })
   const [selectedNftId, setSelectedNftId] = useState('0')
-  const { listOfVouchers, numberOfVouchers } = useVDeusStats()
 
   const deiPrice = useDeiPrice()
   const { deiBonded } = useBonderData()
@@ -132,7 +130,7 @@ export default function Redemption() {
 
   const spender = useMemo(() => (chainId ? bDeiRedeemer[chainId] : undefined), [chainId])
   const [approvalStateERC721, approveCallbackERC721] = useERC721ApproveAllCallback(
-    chainId ? vDeus[chainId] : undefined,
+    chainId ? DeiBondRedeemNFT[chainId] : undefined,
     spender
   )
   const showApproveERC721 = useMemo(() => approvalStateERC721 !== ApprovalState.APPROVED, [approvalStateERC721])
@@ -255,7 +253,7 @@ export default function Redemption() {
           <SelectBox
             icon={BOND_NFT_LOGO}
             placeholder="Select an NFT"
-            value={inputNFT > -1 ? `vDeus #${inputNFT}` : ''}
+            value={inputNFT > -1 ? `DeiBond #${inputNFT}` : ''}
             onSelect={() => toggleNFTsModal(true)}
           />
           <PlusIcon size={'24px'} />

@@ -10,7 +10,6 @@ import ERC20_ABI from 'constants/abi/ERC20.json'
 import ERC20_BYTES32_ABI from 'constants/abi/ERC20'
 import MULTICALL2_ABI from 'constants/abi/MULTICALL2.json'
 import VEDEUS_ABI from 'constants/abi/VEDEUS.json'
-import VDEUS_ABI from 'constants/abi/VDEUS.json'
 import VE_DIST_ABI from 'constants/abi/VE_DIST.json'
 import DYNAMIC_REDEEMER_ABI from 'constants/abi/DYNAMIC_REDEEMER.json'
 import DEI_BONDER_ABI from 'constants/abi/DEI_Bonder.json'
@@ -32,7 +31,6 @@ import {
   veDist,
   SwapFlashLoan,
   MasterChefV2,
-  vDeus,
   vDeusStaking,
   vDeusMasterChefV2,
   CollateralPool,
@@ -102,12 +100,6 @@ export function useVeDeusContract() {
   const { chainId } = useWeb3React()
   const address = useMemo(() => (chainId ? veDEUS[chainId] : undefined), [chainId])
   return useContract(address, VEDEUS_ABI)
-}
-
-export function useVDeusContract() {
-  const { chainId } = useWeb3React()
-  const address = useMemo(() => (chainId ? vDeus[chainId] : undefined), [chainId])
-  return useContract(address, VDEUS_ABI)
 }
 
 export function useVeDistContract() {

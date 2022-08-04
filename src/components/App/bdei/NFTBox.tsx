@@ -99,7 +99,7 @@ export default function NFTBox({
       <div>
         <Row>
           <ImageWithFallback src={BDEI_NFT} width={getImageSize()} height={getImageSize()} alt={`nft`} round />
-          <TokenId>vDeus #{tokenId}</TokenId>
+          <TokenId>DeiBond #{tokenId}</TokenId>
         </Row>
       </div>
       {/* <Balance>{balanceDisplay ? balanceDisplay : '0.00'}</Balance> */}
