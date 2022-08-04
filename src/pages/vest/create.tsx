@@ -27,11 +27,10 @@ import { getMaximumDate, getMinimumDate } from 'utils/vest'
 import InputBox from 'components/InputBox'
 import { SelectDatePresets, UserLockInformation } from 'components/App/Vest'
 import Hero, { HeroSubtext } from 'components/Hero'
-import { PrimaryButton, PrimaryButtonWide } from 'components/Button'
 import { Card } from 'components/Card'
 import { ArrowBubble, DotFlashing } from 'components/Icons'
 import Image from 'next/image'
-import { Title } from 'components/App/StableCoin'
+import { BottomWrapper, MainButton, Title } from 'components/App/StableCoin'
 import StatsHeader from 'components/StatsHeader'
 import { formatAmount, formatDollarAmount } from 'utils/numbers'
 import { useVestedAPY } from 'hooks/useVested'
@@ -91,20 +90,12 @@ const CardWrapper = styled(Card)`
   justify-content: center;
   align-items: center;
   gap: 10px;
-
-  & > * {
-    flex: 1;
-  }
+  padding: 20px 15px;
+  margin-bottom: -1px;
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
     flex-flow: column nowrap;
   `}
-`
-
-const ActionButton = styled(PrimaryButtonWide)`
-  font-family: 'Inter';
-  font-weight: 600;
-  margin-top: 15px;
 `
 
 export default function Create() {
@@ -180,53 +171,41 @@ export default function Create() {
     // approve
     if (awaitingApproveConfirmation) {
       return (
-        <ActionButton width={'100%'} active>
+        <MainButton>
           Awaiting Confirmation <DotFlashing style={{ marginLeft: '10px' }} />
-        </ActionButton>
+        </MainButton>
       )
     }
     if (showApproveLoader) {
       return (
-        <ActionButton width={'100%'} active>
+        <MainButton>
           Approving <DotFlashing style={{ marginLeft: '10px' }} />
-        </ActionButton>
+        </MainButton>
       )
     }
     if (showApprove) {
-      return (
-        <ActionButton width={'100%'} onClick={handleApprove}>
-          Approve
-        </ActionButton>
-      )
+      return <MainButton onClick={handleApprove}>Approve</MainButton>
     }
     // lock
     if (INSUFFICIENT_BALANCE) {
-      return (
-        <ActionButton width={'100%'} disabled>
-          INSUFFICIENT BALANCE
-        </ActionButton>
-      )
+      return <MainButton disabled>INSUFFICIENT BALANCE</MainButton>
     }
     if (awaitingConfirmation) {
       return (
-        <ActionButton width={'100%'} active>
+        <MainButton active>
           Awaiting Confirmation <DotFlashing style={{ marginLeft: '10px' }} />
-        </ActionButton>
+        </MainButton>
       )
     }
     if (showTransactionPending) {
       return (
-        <ActionButton width={'100%'} active>
+        <MainButton>
           Locking <DotFlashing style={{ marginLeft: '10px' }} />
-        </ActionButton>
+        </MainButton>
       )
     }
 
-    return (
-      <ActionButton width={'100%'} onClick={onLock}>
-        Lock DEUS
-      </ActionButton>
-    )
+    return <MainButton onClick={onLock}>Lock DEUS</MainButton>
   }
 
   function getMainContent() {
@@ -234,19 +213,17 @@ export default function Create() {
       return (
         <>
           <div>Connect your Wallet in order to vest your DEUS.</div>
-          <PrimaryButton onClick={toggleWalletModal}>Connect Wallet</PrimaryButton>
+          <MainButton onClick={toggleWalletModal}>Connect Wallet</MainButton>
         </>
       )
-    }
-    if (!isSupportedChainId) {
+    } else if (!isSupportedChainId) {
       return (
         <>
           <div style={{ marginBottom: '30px' }}>You are not connected to the Fantom Opera Network.</div>
-          <PrimaryButton onClick={() => rpcChangerCallback(SupportedChainId.FANTOM)}>Switch to Fantom</PrimaryButton>
+          <MainButton onClick={() => rpcChangerCallback(SupportedChainId.FANTOM)}>Switch to Fantom</MainButton>
         </>
       )
-    }
-    if (!deusCurrency) {
+    } else if (!deusCurrency) {
       return (
         <div>
           Experiencing issues with the Fantom RPC, unable to load this page. If this issue persist, try to refresh the
@@ -254,7 +231,6 @@ export default function Create() {
         </div>
       )
     }
-
     return (
       <>
         <Tableau title={'Create Lock'} imgSrc={CREATE_LOCK_IMG} />
@@ -277,10 +253,12 @@ export default function Create() {
             disabled={true}
           />
 
+          <div style={{ marginTop: '20px' }}></div>
           {getActionButton()}
-          <UserLockInformation amount={typedValue} selectedDate={selectedDate} />
-          {/* <GeneralLockInformation /> */}
         </CardWrapper>
+        <BottomWrapper>
+          <UserLockInformation amount={typedValue} selectedDate={selectedDate} />
+        </BottomWrapper>
       </>
     )
   }

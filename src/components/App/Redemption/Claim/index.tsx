@@ -126,8 +126,9 @@ export default function RedeemClaim({ redeemCollateralRatio }: { redeemCollatera
 
   const [unClaimed, setUnClaimed] = useState<IToken[]>([])
   useEffect(() => {
+    setUnClaimed([])
     if (allPositions?.length) {
-      if (redeemCollateralBalances) {
+      if (redeemCollateralBalances && redeemCollateralBalances !== '0') {
         const lastRedeemTimestamp = allPositions[allPositions.length - 1].timestamp
         const usdcToken: IToken = {
           symbol: 'USDC',
