@@ -6,8 +6,9 @@ import debounce from 'lodash/debounce'
 
 import { useSingleContractMultipleMethods } from 'state/multicall/hooks'
 import { BN_TEN, removeTrailingZeros, toBN } from 'utils/numbers'
-import { useCollateralPoolContract, useDynamicRedeemerContract } from 'hooks/useContract'
+import { useCollateralPoolContract, useDynamicRedeemerContract, useStrategyContract } from 'hooks/useContract'
 import { DEI_TOKEN, DEUS_TOKEN, USDC_TOKEN } from 'constants/tokens'
+import useWeb3React from './useWeb3'
 
 export type RedeemTranche = {
   trancheId: number | null
@@ -274,4 +275,96 @@ export function useRedeemAmountOut(amountIn: string): {
     collateralAmount,
     deusValue,
   }
+}
+
+export function useGetPoolData() {
+  const contract = useCollateralPoolContract()
+  const { account } = useWeb3React()
+
+  const call = useMemo(
+    () =>
+      !account
+        ? []
+        : [
+            {
+              methodName: 'getAllPositions',
+              callInputs: [account],
+            },
+            {
+              methodName: 'nextRedeemId',
+              callInputs: [account],
+            },
+            {
+              methodName: 'redeemCollateralBalances',
+              callInputs: [account],
+            },
+          ],
+    [account]
+  )
+
+  const [allPositions, nextRedeemId, redeemCollateralBalances] = useSingleContractMultipleMethods(contract, call)
+
+  const allPositionsRes = !allPositions || !allPositions.result ? '' : allPositions.result[0]
+
+  const nextRedeemIdRes = !nextRedeemId || !nextRedeemId.result ? '' : nextRedeemId.result[0].toString()
+
+  const redeemCollateralBalancesRes =
+    !redeemCollateralBalances || !redeemCollateralBalances.result
+      ? ''
+      : toBN(formatUnits(redeemCollateralBalances?.result[0].toString(), USDC_TOKEN.decimals)).toString()
+
+  // console.log(allPositionsRes, nextRedeemIdRes, redeemCollateralBalancesRes)
+
+  return {
+    allPositions: allPositionsRes,
+    nextRedeemId: nextRedeemIdRes,
+    redeemCollateralBalances: redeemCollateralBalancesRes,
+  }
+}
+
+export function useGetStrategyAddress(): string {
+  const contract = useCollateralPoolContract()
+
+  const call = useMemo(
+    () => [
+      {
+        methodName: 'strategy',
+        callInputs: [],
+      },
+    ],
+    []
+  )
+
+  const [strategyAddressRes] = useSingleContractMultipleMethods(contract, call)
+
+  return !strategyAddressRes || !strategyAddressRes.result ? '' : strategyAddressRes.result[0].toString()
+}
+
+export function useGetCollateralRatios() {
+  const address = useGetStrategyAddress()
+  const contract = useStrategyContract(address)
+
+  const call = useMemo(
+    () => [
+      {
+        methodName: 'mintCollateralRatio',
+        callInputs: [],
+      },
+      {
+        methodName: 'redeemCollateralRatio',
+        callInputs: [],
+      },
+    ],
+    []
+  )
+  const [mintCollateralRatio, redeemCollateralRatio] = useSingleContractMultipleMethods(contract, call)
+
+  const mintCollateralRatioRes =
+    !mintCollateralRatio || !mintCollateralRatio.result ? '' : formatUnits(mintCollateralRatio.result[0]?.toString(), 4)
+  const redeemCollateralRatioRes =
+    !redeemCollateralRatio || !redeemCollateralRatio.result
+      ? ''
+      : formatUnits(redeemCollateralRatio.result[0]?.toString(), 4)
+
+  return { mintCollateralRatio: mintCollateralRatioRes, redeemCollateralRatio: redeemCollateralRatioRes }
 }

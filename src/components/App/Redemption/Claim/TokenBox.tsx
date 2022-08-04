@@ -5,7 +5,7 @@ import { RowBetween, RowStart } from 'components/Row'
 
 import ClaimButton from './ClaimButton'
 import { formatBalance } from 'utils/numbers'
-import DEUS_LOGO from '/public/static/images/tokens/deus.svg'
+import useCurrencyLogo from 'hooks/useCurrencyLogo'
 
 const TokenInfo = styled.div`
   color: ${({ theme }) => theme.bg0};
@@ -69,7 +69,7 @@ export const TokenBox = ({
   onSwitchNetwork?: () => void
   onClaim?: () => void
 }): JSX.Element => {
-  const logo = DEUS_LOGO
+  const logo = useCurrencyLogo(symbol ?? 'usdc')
   return (
     <>
       <TokenInfo>
@@ -86,6 +86,7 @@ export const TokenBox = ({
             currentBlock={currentBlock}
             onClaim={onClaim}
             onSwitchNetwork={onSwitchNetwork}
+            isUSDC={symbol === 'USDC'}
           />
         </TokenRowRight>
       </TokenInfo>

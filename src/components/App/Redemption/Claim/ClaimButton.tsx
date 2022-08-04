@@ -8,6 +8,7 @@ import { SupportedChainId } from 'constants/chains'
 import { RowCenter } from 'components/Row'
 import { DotFlashing } from 'components/Icons'
 import { getRemainingTime } from 'utils/time'
+import { collateralRedemptionDelay, deusRedemptionDelay } from '.'
 
 const RemainingWrap = styled(RowCenter)`
   position: relative;
@@ -51,11 +52,13 @@ export default function ClaimButton({
   currentBlock,
   onClaim,
   onSwitchNetwork,
+  isUSDC,
 }: {
   claimableBlock?: number
   currentBlock?: number
   onClaim?: () => void
   onSwitchNetwork?: () => void
+  isUSDC?: boolean
 }): JSX.Element {
   const { chainId } = useWeb3React()
   const [awaitingClaimConfirmation, setAwaitingClaimConfirmation] = useState<boolean>(false)
@@ -83,10 +86,12 @@ export default function ClaimButton({
   }
 
   const diff = claimableBlock - currentBlock
-  const { hours, minutes, seconds } = getRemainingTime(diff)
   if (diff > 0) {
-    const Eight_hours = 8 * 60 * 60
-    const elapsed = (diff / Eight_hours) * 100
+    const { hours, minutes, seconds } = getRemainingTime(claimableBlock * 1000)
+    const elapsed = isUSDC
+      ? ((collateralRedemptionDelay - diff) / collateralRedemptionDelay) * 100
+      : ((deusRedemptionDelay - diff) / deusRedemptionDelay) * 100
+
     return (
       <RemainingWrap>
         {isMobile ? <p>{`${hours}:${minutes}:${seconds}`}</p> : <p>{`${hours}:${minutes}:${seconds} Remaining`}</p>}
