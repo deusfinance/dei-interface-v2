@@ -7,12 +7,13 @@ import CLAIM_LOGO from '/public/static/images/pages/redemption/claim.svg'
 import { Card } from 'components/Card'
 import { Row, RowBetween } from 'components/Row'
 import { TokenBox } from './TokenBox'
-import { IClaimToken, setAttemptingTxn } from 'state/redeem/reducer'
-import { useClaimableTokens } from 'state/redeem/hooks'
 import useRpcChangerCallback from 'hooks/useRpcChangerCallback'
-import { useAppDispatch } from 'state'
 import { SupportedChainId } from 'constants/chains'
 import InfoItem from 'components/App/StableCoin/InfoItem'
+import { useGetPoolData } from 'hooks/useRedemptionPage'
+import { DEUS_TOKEN } from 'constants/tokens'
+import { formatUnits } from '@ethersproject/units'
+import { toBN } from 'utils/numbers'
 
 const ActionWrap = styled(Card)`
   background: ${({ theme }) => theme.bg2};
@@ -92,7 +93,12 @@ const InfoWrap = styled.div`
 `
 
 export default function RedeemClaim() {
-  const unClaimed = useClaimableTokens()
+  const {
+    allPositions,
+    nextRedeemId,
+    redeemCollateralBalances,
+  }: { allPositions: IPositions[]; nextRedeemId: any; redeemCollateralBalances: any } = useGetPoolData()
+  const onSwitchNetwork = useRpcChangerCallback()
 
   const [currentBlock, setCurrentBlock] = useState(Math.floor(Date.now() / 1000))
   useEffect(() => {
@@ -102,39 +108,58 @@ export default function RedeemClaim() {
     return () => clearInterval(interval)
   }, [])
 
+  interface IPositions {
+    usdAmount: string
+    timestamp: string
+  }
+  interface IToken {
+    symbol: string
+    claimableBlock: number
+    amount: number
+  }
+
+  const [unClaimed, setUnClaimed] = useState<IToken[]>([])
+
+  // FIXME: get from contract
+  const redeemCollateralRatio = 95
+
+  const collateralRedemptionDelay = 30 // in second
+  const deusRedemptionDelay = 8 * 60 * 60 // in second
+
+  useEffect(() => {
+    if (allPositions?.length) {
+      const lastRedeemTimestamp = allPositions[allPositions.length - 1].timestamp
+      const usdcToken: IToken = {
+        symbol: 'USDC',
+        claimableBlock: Number(lastRedeemTimestamp) + collateralRedemptionDelay,
+        amount: redeemCollateralBalances,
+      }
+      setUnClaimed([usdcToken])
+
+      const deusTokens = allPositions.map((position) => {
+        const usdAmount = position.usdAmount.toString()
+        const timestamp = position.timestamp.toString()
+        const deusAmount = toBN(formatUnits(usdAmount.toString(), DEUS_TOKEN.decimals))
+          .times(100 - redeemCollateralRatio)
+          .toString()
+        const claimableBlock = Number(timestamp) + deusRedemptionDelay
+        return {
+          symbol: 'DEUS',
+          claimableBlock,
+          amount: Number(deusAmount),
+        }
+      })
+      setUnClaimed((current) => [...current, ...deusTokens])
+    }
+  }, [allPositions, deusRedemptionDelay, redeemCollateralBalances])
+
   const pendingTokens = unClaimed.filter((token) => {
     return token.claimableBlock > currentBlock
   })
 
-  const dispatch = useAppDispatch()
-  const onSwitchNetwork = useRpcChangerCallback()
+  // FIXME: only the first deus is claimable
 
-  // const [token, setToken] = useState<IClaimToken | null>(null)
-  // const { state: claimCallbackState, callback: claimCallback, error: claimCallbackError } = useClaimCallback()
-
-  const handleClaim = useCallback(
-    async (token: IClaimToken | null) => {
-      // console.log('called handleClaim')
-      // console.log(claimCallbackState, claimCallback, claimCallbackError)
-
-      // if (!claimCallback) return
-      dispatch(setAttemptingTxn(true))
-
-      let error = ''
-      try {
-        // const txHash = await claimCallback(token)
-        // setTxHash(txHash)
-      } catch (e) {
-        if (e instanceof Error) {
-          error = e.message
-        } else {
-          console.error(e)
-          error = 'An unknown error occurred.'
-        }
-      }
-    },
-    [dispatch]
-  )
+  const handleClaim = useCallback((token) => console.log('Hi from ' + token.symbol), [])
 
   return (
     <ActionWrap>
@@ -149,7 +174,7 @@ export default function RedeemClaim() {
       ) : (
         <>
           <ClaimBox>
-            {unClaimed.map((token: IClaimToken, index: number) => {
+            {unClaimed.map((token: IToken, index: number) => {
               const { symbol, amount, claimableBlock } = token
               const toChainId = SupportedChainId.FANTOM
               return (

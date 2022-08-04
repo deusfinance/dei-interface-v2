@@ -8,6 +8,7 @@ import { useSingleContractMultipleMethods } from 'state/multicall/hooks'
 import { BN_TEN, removeTrailingZeros, toBN } from 'utils/numbers'
 import { useCollateralPoolContract, useDynamicRedeemerContract } from 'hooks/useContract'
 import { DEI_TOKEN, DEUS_TOKEN, USDC_TOKEN } from 'constants/tokens'
+import useWeb3React from './useWeb3'
 
 export type RedeemTranche = {
   trancheId: number | null
@@ -273,5 +274,50 @@ export function useRedeemAmountOut(amountIn: string): {
   return {
     collateralAmount,
     deusValue,
+  }
+}
+
+export function useGetPoolData() {
+  const contract = useCollateralPoolContract()
+  const { account } = useWeb3React()
+
+  const call = useMemo(
+    () =>
+      !account
+        ? []
+        : [
+            {
+              methodName: 'getAllPositions',
+              callInputs: [account],
+            },
+            {
+              methodName: 'nextRedeemId',
+              callInputs: [account],
+            },
+            {
+              methodName: 'redeemCollateralBalances',
+              callInputs: [account],
+            },
+          ],
+    [account]
+  )
+
+  const [allPositions, nextRedeemId, redeemCollateralBalances] = useSingleContractMultipleMethods(contract, call)
+
+  const allPositionsRes = !allPositions || !allPositions.result ? '' : allPositions.result[0]
+
+  const nextRedeemIdRes = !nextRedeemId || !nextRedeemId.result ? '' : nextRedeemId.result[0].toString()
+
+  const redeemCollateralBalancesRes =
+    !redeemCollateralBalances || !redeemCollateralBalances.result
+      ? ''
+      : toBN(formatUnits(redeemCollateralBalances?.result[0].toString(), USDC_TOKEN.decimals)).toString()
+
+  // console.log(allPositionsRes, nextRedeemIdRes, redeemCollateralBalancesRes)
+
+  return {
+    allPositions: allPositionsRes,
+    nextRedeemId: nextRedeemIdRes,
+    redeemCollateralBalances: redeemCollateralBalancesRes,
   }
 }

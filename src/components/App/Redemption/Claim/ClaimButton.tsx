@@ -51,11 +51,13 @@ export default function ClaimButton({
   currentBlock,
   onClaim,
   onSwitchNetwork,
+  isUSDC,
 }: {
   claimableBlock?: number
   currentBlock?: number
   onClaim?: () => void
   onSwitchNetwork?: () => void
+  isUSDC?: boolean
 }): JSX.Element {
   const { chainId } = useWeb3React()
   const [awaitingClaimConfirmation, setAwaitingClaimConfirmation] = useState<boolean>(false)
@@ -83,10 +85,12 @@ export default function ClaimButton({
   }
 
   const diff = claimableBlock - currentBlock
-  const { hours, minutes, seconds } = getRemainingTime(diff)
   if (diff > 0) {
-    const Eight_hours = 8 * 60 * 60
-    const elapsed = (diff / Eight_hours) * 100
+    const { hours, minutes, seconds } = getRemainingTime(diff)
+    const hour_to_second = 60 * 60
+    const eight_hours = 8 * hour_to_second
+    const elapsed = isUSDC ? (diff / 30) * 100 : ((eight_hours - diff) / eight_hours) * 100
+
     return (
       <RemainingWrap>
         {isMobile ? <p>{`${hours}:${minutes}:${seconds}`}</p> : <p>{`${hours}:${minutes}:${seconds} Remaining`}</p>}

@@ -18,7 +18,7 @@ import { DotFlashing } from 'components/Icons'
 import Hero from 'components/Hero'
 import InputBox from 'components/InputBox'
 import { RowBetween } from 'components/Row'
-import AdvancedOptions from 'components/App/Swap/AdvancedOptions'
+// import AdvancedOptions from 'components/App/Swap/AdvancedOptions'
 import StatsHeader from 'components/StatsHeader'
 import { BottomWrapper, Container, InputWrapper, Title, Wrapper, MainButton } from 'components/App/StableCoin'
 import InfoItem from 'components/App/StableCoin/InfoItem'
@@ -306,10 +306,10 @@ export default function Mint() {
   ]
   const info = useMemo(
     () => [
-      { title: 'Max Slippage', value: slippage.toString() + ' %' },
+      // { title: 'Max Slippage', value: slippage.toString() + ' %' },
       { title: 'Txn Deadline', value: '20 min' },
-      { title: 'Network Fee', value: 'N/A' },
-      { title: 'Min Received', value: amountOut },
+      // { title: 'Network Fee', value: 'N/A' },
+      // { title: 'Min Received', value: amountOut },
     ],
     [amountOut, slippage]
   )
@@ -382,9 +382,9 @@ export default function Mint() {
             {getActionButton()}
           </InputWrapper>
           <BottomWrapper>
-            <SlippageWrapper>
+            {/* <SlippageWrapper>
               <AdvancedOptions slippage={slippage} setSlippage={setSlippage} />
-            </SlippageWrapper>
+            </SlippageWrapper> */}
             <InfoItem name={'Minter Contract'} value={'CollateralPool'} />
             <InfoItem name={'Minting Fee'} value={'0.5%'} />
           </BottomWrapper>

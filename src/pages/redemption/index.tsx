@@ -301,8 +301,8 @@ export default function Redemption() {
               } */}
             </RedemptionWrapper>
             <BottomWrapper>
-              <InfoItem name={'USDC Ratio'} value={'0.1???'} />
-              <InfoItem name={'DEUS Ratio'} value={'0.9???'} />
+              <InfoItem name={'USDC Ratio'} value={'0.1?'} />
+              <InfoItem name={'DEUS Ratio'} value={'0.9?'} />
             </BottomWrapper>
           </Wrapper>
           <Claim />
