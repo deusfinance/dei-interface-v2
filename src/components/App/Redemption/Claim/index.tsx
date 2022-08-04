@@ -14,6 +14,8 @@ import { useGetPoolData } from 'hooks/useRedemptionPage'
 import { DEUS_TOKEN } from 'constants/tokens'
 import { formatUnits } from '@ethersproject/units'
 import { toBN } from 'utils/numbers'
+import { useCollectCollateralCallback, useCollectDeusCallback } from 'hooks/useRedemptionCallback'
+import toast from 'react-hot-toast'
 
 const ActionWrap = styled(Card)`
   background: ${({ theme }) => theme.bg2};
@@ -161,21 +163,61 @@ export default function RedeemClaim({ redeemCollateralRatio }: { redeemCollatera
     return token.claimableBlock > currentBlock
   })
 
-  // TODO: add claim functions
+  const {
+    state: CollectCollateralCallbackState,
+    callback: collectCollateralCallback,
+    error: collectCollateralCallbackError,
+  } = useCollectCollateralCallback()
+
+  const {
+    state: CollectDeusCallbackState,
+    callback: collectDeusCallback,
+    error: collectDeusCallbackError,
+  } = useCollectDeusCallback()
+
   const handleClaim = useCallback(
-    (token) => {
+    async (token) => {
+      console.log('called handleClaim')
       if (token.symbol === 'USDC') {
         console.log('Claim USDC')
-        return
+        console.log(CollectCollateralCallbackState, collectCollateralCallback, collectCollateralCallbackError)
+        if (!collectCollateralCallback) return
+        try {
+          const txHash = await collectCollateralCallback()
+          console.log({ txHash })
+        } catch (e) {
+          if (e instanceof Error) {
+          } else {
+            console.error(e)
+          }
+        }
       } else if (token.symbol === 'DEUS' && token.index == nextRedeemId) {
         console.log('Claim DEUS')
-        return
+        console.log(CollectDeusCallbackState, collectDeusCallback, collectDeusCallbackError)
+        if (!collectDeusCallback) return
+        try {
+          const txHash = await collectDeusCallback()
+          console.log({ txHash })
+        } catch (e) {
+          if (e instanceof Error) {
+          } else {
+            console.error(e)
+          }
+        }
       } else {
-        console.log('Please claim the first redeemed DEUS first')
+        toast.error('Claim the first redeemed DEUS first')
         return
       }
     },
-    [nextRedeemId]
+    [
+      CollectCollateralCallbackState,
+      CollectDeusCallbackState,
+      collectCollateralCallback,
+      collectCollateralCallbackError,
+      collectDeusCallback,
+      collectDeusCallbackError,
+      nextRedeemId,
+    ]
   )
 
   return (
