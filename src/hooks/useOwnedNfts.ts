@@ -4,7 +4,7 @@ import useWeb3React from 'hooks/useWeb3'
 import { useSupportedChainId } from 'hooks/useSupportedChainId'
 import { useContract, useVeDeusContract } from 'hooks/useContract'
 
-import DEI_BOND_REDEEM_NFT from 'constants/abi/DEI_BOND_REDEEM_NFT.json'
+import ERC721_ABI from 'constants/abi/ERC721.json'
 import { DeiBondRedeemNFT } from 'constants/addresses'
 import { toBN } from 'utils/numbers'
 import { formatUnits } from '@ethersproject/units'
@@ -37,10 +37,10 @@ export default function useOwnedNfts(): number[] {
   }, [results])
 }
 
-export function useOwnerNfts(address: string | null | undefined, ABI: any): number[] {
+export function useOwnerNfts(address: string | null | undefined, ABI?: any): number[] {
   const { account, chainId } = useWeb3React()
   const isSupportedChainId = useSupportedChainId()
-  const ERC721Contract = useContract(address, ABI)
+  const ERC721Contract = useContract(address, ABI || ERC721_ABI)
 
   const calls = !account
     ? []
@@ -51,21 +51,21 @@ export function useOwnerNfts(address: string | null | undefined, ABI: any): numb
         },
       ]
 
-  const [vDeusBalance] = useSingleContractMultipleMethods(ERC721Contract, calls)
+  const [balanceOf] = useSingleContractMultipleMethods(ERC721Contract, calls)
 
-  const { numberOfVouchers } = useMemo(() => {
+  const { balanceOfValue } = useMemo(() => {
     return {
-      numberOfVouchers: vDeusBalance?.result ? toBN(formatUnits(vDeusBalance.result[0], 0)).toNumber() : 0,
+      balanceOfValue: balanceOf?.result ? toBN(formatUnits(balanceOf.result[0], 0)).toNumber() : 0,
     }
-  }, [vDeusBalance])
+  }, [balanceOf])
 
-  // console.log({ calls, vDeusBalance, numberOfVouchers })
-
-  const idMapping = Array.from(Array(numberOfVouchers).keys())
+  const idMapping2 = useMemo(() => {
+    return Array.from(Array(balanceOfValue).keys())
+  }, [balanceOfValue])
 
   const callInputs = useMemo(() => {
-    return !chainId || !isSupportedChainId || !account ? [] : idMapping.map((id) => [account, id])
-  }, [account, chainId, isSupportedChainId])
+    return !chainId || !isSupportedChainId || !account ? [] : idMapping2.map((id) => [account, id])
+  }, [account, chainId, isSupportedChainId, idMapping2])
 
   const results = useSingleContractMultipleData(ERC721Contract, 'tokenOfOwnerByIndex', callInputs)
 
@@ -85,5 +85,5 @@ export function useOwnerNfts(address: string | null | undefined, ABI: any): numb
 export function useOwnerBondNFT(): number[] {
   const { chainId } = useWeb3React()
   const address = useMemo(() => (chainId ? DeiBondRedeemNFT[chainId] : undefined), [chainId])
-  return useOwnerNfts(address, DEI_BOND_REDEEM_NFT) //use erc721 abi
+  return useOwnerNfts(address) //use erc721 abi
 }
