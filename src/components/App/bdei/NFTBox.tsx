@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import { isMobile } from 'react-device-detect'
 
-import useWeb3React from 'hooks/useWeb3'
 import BDEI_NFT from '/public/static/images/pages/bdei/BDEI_nft.svg'
+import { BondNFT } from 'hooks/useBondsPage'
+import { getRemainingTime } from 'utils/time'
 
 import ImageWithFallback from 'components/ImageWithFallback'
 import { RowBetween } from 'components/Row'
@@ -68,22 +69,24 @@ const RemainingDays = styled.p`
 `
 
 export default function NFTBox({
-  tokenId,
+  nft,
   toggleModal,
   setNFT,
   disabled,
 }: {
-  tokenId: number
+  nft: BondNFT
   toggleModal: (action: boolean) => void
   setNFT: (tokenId: number) => void
   disabled?: boolean
 }) {
-  const { account } = useWeb3React()
-  //   TODO: correct balance
-  //   const nftBalance = useCurrencyBalance(account ?? undefined, currency ?? undefined)
-  //   const balanceDisplay = useMemo(() => nftBalance?.toSignificant(6), [nftBalance])
-  const balanceDisplay = 102131
+  const balanceDisplay = nft.deiAmount
+  const [diff, day] = useMemo(() => {
+    if (!nft.redeemTime) return [null, null]
+    const { diff, day } = getRemainingTime(nft.redeemTime)
+    return [diff, day]
+  }, [nft])
 
+  // const disabled = !diff || diff > 0
   function getImageSize() {
     return isMobile ? 28 : 36
   }
@@ -92,22 +95,22 @@ export default function NFTBox({
     <Wrapper
       onClick={() => {
         toggleModal(false)
-        if (!disabled) setNFT(tokenId)
+        if (!disabled) setNFT(nft.tokenId)
         // if (!disabled) console.log('not disabled')
       }}
     >
       <div>
         <Row>
           <ImageWithFallback src={BDEI_NFT} width={getImageSize()} height={getImageSize()} alt={`nft`} round />
-          <TokenId>DeiBond #{tokenId}</TokenId>
+          <TokenId>DeiBond #{nft.tokenId}</TokenId>
         </Row>
       </div>
       {/* <Balance>{balanceDisplay ? balanceDisplay : '0.00'}</Balance> */}
 
-      {disabled ? (
+      {disabled && nft.redeemTime ? (
         <RemainingBox>
           <Balance active={disabled}>{balanceDisplay ? `Redeemable: ${balanceDisplay} bDEI` : '0.00'}</Balance>
-          <RemainingDays>in 13 days</RemainingDays>
+          <RemainingDays>in {day} days</RemainingDays>
         </RemainingBox>
       ) : (
         <Balance>{balanceDisplay ? `Redeemable: ${balanceDisplay} bDEI` : '0.00'}</Balance>

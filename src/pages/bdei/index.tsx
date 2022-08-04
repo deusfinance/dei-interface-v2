@@ -272,13 +272,12 @@ export default function Redemption() {
           {
             <Row mt={'8px'}>
               <Info data-for="id" data-tip={'Tool tip for hint client'} size={15} />
-              <Description>you will spend an {`"Time Reduction NFT"`} to redeem your bDEI.</Description>
+              <Description>you will spend an {`"DeiBond NFT"`} to redeem your bDEI.</Description>
             </Row>
           }
         </NFTsWrapper>
         <BottomWrapper>
-          <InfoItem name={'USDC Ratio'} value={'0.1???'} />
-          <InfoItem name={'DEUS Ratio'} value={'0.9???'} />
+          <InfoItem name={'DEI Ratio'} value={'5 bDEI'} />
         </BottomWrapper>
       </Wrapper>
 
