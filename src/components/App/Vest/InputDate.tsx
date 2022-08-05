@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import DatePicker from 'react-datepicker'
 import { Calendar } from 'react-feather'
@@ -7,7 +7,7 @@ import utc from 'dayjs/plugin/utc'
 import Box from 'components/Box'
 
 import 'react-datepicker/dist/react-datepicker.css'
-import { addMonth, addWeek, addYear, VestOptions } from 'utils/vest'
+import { addMonth, addYear, VestOptions } from 'utils/vest'
 import { isMobile } from 'react-device-detect'
 
 dayjs.extend(utc)
@@ -66,6 +66,8 @@ const Wrapper = styled(Box)<{ isMobileSize?: boolean }>`
 `
 
 const TimePeriodWrapper = styled.div<{ isMobileSize?: boolean }>`
+  width: 100%;
+
   ${({ isMobileSize }) =>
     isMobileSize &&
     `
@@ -81,7 +83,7 @@ const Column = styled.div`
   cursor: default;
 `
 
-const ExpirationWrapper = styled(Box)`
+const ExpirationWrapper = styled(Box)<{ isMobileSize?: boolean }>`
   display: flex;
   flex-flow: row nowrap;
   gap: 5px;
@@ -90,6 +92,7 @@ const ExpirationWrapper = styled(Box)`
   background: ${({ theme }) => theme.bg0};
   border: 0;
   padding: 5px;
+  margin-left: ${({ isMobileSize }) => (isMobileSize ? '0' : '-12px')};
 
   & > * {
     margin-left: auto;
@@ -100,7 +103,9 @@ const Label = styled.div<{ isMobileSize?: boolean }>`
   align-self: flex-start;
   margin-top: 18px;
   margin-bottom: 8px;
-  font-size: 0.85rem;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 16px;
 
   ${({ isMobileSize }) =>
     isMobileSize &&
@@ -130,8 +135,7 @@ const Toggle = styled.div<{ active?: any }>`
   line-height: 1.85rem;
   text-align: center;
   font-size: 0.8rem;
-  width: 68px;
-  max-width: 85px;
+  min-width: 70px;
   color: ${({ theme }) => theme.text1};
   background: ${({ theme, active }) => (active ? theme.bg0 : theme.bg3)};
   border-radius: 6px;
@@ -254,7 +258,7 @@ export function SelectDatePresets({
   return (
     <TimePeriodWrapper isMobileSize={MobileSize}>
       <Label isMobileSize={MobileSize}>Expiration:</Label>
-      <ExpirationWrapper>
+      <ExpirationWrapper isMobileSize={MobileSize}>
         {!MobileSize && (
           <TopBorderWrap active={dayjs.utc(selectedDate).isSame(minimumDate, 'day')}>
             <TopBorder>
@@ -318,70 +322,70 @@ export function SelectDatePresets({
   )
 }
 
-export function IncreaseDatePresets({
-  selectedDate,
-  lockEnd,
-  minimumDate,
-  maximumDate,
-  onDateSelect,
-}: {
-  selectedDate: Date
-  lockEnd: Date
-  minimumDate: Date
-  maximumDate: Date
-  onDateSelect: (x: Date) => void
-}) {
-  const [showMinimum, showMonth, showYear, showMax] = useMemo(() => {
-    return [
-      dayjs.utc(minimumDate).isBefore(dayjs.utc().add(14, 'days'), 'day'),
-      dayjs.utc(addMonth(lockEnd)).isBefore(maximumDate, 'day'),
-      dayjs.utc(addYear(lockEnd)).isBefore(maximumDate, 'day'),
-      true,
-    ]
-  }, [lockEnd, minimumDate, maximumDate])
+// export function IncreaseDatePresets({
+//   selectedDate,
+//   lockEnd,
+//   minimumDate,
+//   maximumDate,
+//   onDateSelect,
+// }: {
+//   selectedDate: Date
+//   lockEnd: Date
+//   minimumDate: Date
+//   maximumDate: Date
+//   onDateSelect: (x: Date) => void
+// }) {
+//   const [showMinimum, showMonth, showYear, showMax] = useMemo(() => {
+//     return [
+//       dayjs.utc(minimumDate).isBefore(dayjs.utc().add(14, 'days'), 'day'),
+//       dayjs.utc(addMonth(lockEnd)).isBefore(maximumDate, 'day'),
+//       dayjs.utc(addYear(lockEnd)).isBefore(maximumDate, 'day'),
+//       true,
+//     ]
+//   }, [lockEnd, minimumDate, maximumDate])
 
-  const onSelect = (checked: VestOptions) => {
-    if (checked === VestOptions.MIN) {
-      return onDateSelect(minimumDate)
-    }
-    if (checked === VestOptions.MONTH) {
-      return onDateSelect(addMonth(lockEnd))
-    }
-    if (checked === VestOptions.YEAR) {
-      return onDateSelect(addYear(lockEnd))
-    }
-    return onDateSelect(maximumDate)
-  }
+//   const onSelect = (checked: VestOptions) => {
+//     if (checked === VestOptions.MIN) {
+//       return onDateSelect(minimumDate)
+//     }
+//     if (checked === VestOptions.MONTH) {
+//       return onDateSelect(addMonth(lockEnd))
+//     }
+//     if (checked === VestOptions.YEAR) {
+//       return onDateSelect(addYear(lockEnd))
+//     }
+//     return onDateSelect(maximumDate)
+//   }
 
-  return (
-    <ExpirationWrapper>
-      <Label isMobileSize={isMobile}>Add Expiration:</Label>
-      {showMinimum && (
-        <Toggle active={dayjs.utc(selectedDate).isSame(minimumDate, 'day')} onClick={() => onSelect(VestOptions.MIN)}>
-          {dayjs.utc(addWeek(lockEnd)).fromNow(true)}
-        </Toggle>
-      )}
-      {showMonth && (
-        <Toggle
-          active={dayjs.utc(selectedDate).isSame(addMonth(lockEnd), 'day')}
-          onClick={() => onSelect(VestOptions.MONTH)}
-        >
-          1 Month
-        </Toggle>
-      )}
-      {showYear && (
-        <Toggle
-          active={dayjs.utc(selectedDate).isSame(addYear(lockEnd), 'day')}
-          onClick={() => onSelect(VestOptions.YEAR)}
-        >
-          1 Year
-        </Toggle>
-      )}
-      {showMax && (
-        <Toggle active={dayjs.utc(selectedDate).isSame(maximumDate, 'day')} onClick={() => onSelect(VestOptions.MAX)}>
-          Max
-        </Toggle>
-      )}
-    </ExpirationWrapper>
-  )
-}
+//   return (
+//     <ExpirationWrapper>
+//       <Label isMobileSize={isMobile}>Add Expiration:</Label>
+//       {showMinimum && (
+//         <Toggle active={dayjs.utc(selectedDate).isSame(minimumDate, 'day')} onClick={() => onSelect(VestOptions.MIN)}>
+//           {dayjs.utc(addWeek(lockEnd)).fromNow(true)}
+//         </Toggle>
+//       )}
+//       {showMonth && (
+//         <Toggle
+//           active={dayjs.utc(selectedDate).isSame(addMonth(lockEnd), 'day')}
+//           onClick={() => onSelect(VestOptions.MONTH)}
+//         >
+//           1 Month
+//         </Toggle>
+//       )}
+//       {showYear && (
+//         <Toggle
+//           active={dayjs.utc(selectedDate).isSame(addYear(lockEnd), 'day')}
+//           onClick={() => onSelect(VestOptions.YEAR)}
+//         >
+//           1 Year
+//         </Toggle>
+//       )}
+//       {showMax && (
+//         <Toggle active={dayjs.utc(selectedDate).isSame(maximumDate, 'day')} onClick={() => onSelect(VestOptions.MAX)}>
+//           Max
+//         </Toggle>
+//       )}
+//     </ExpirationWrapper>
+//   )
+// }

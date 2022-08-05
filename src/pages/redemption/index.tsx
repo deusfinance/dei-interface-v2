@@ -164,7 +164,6 @@ export default function Redemption() {
     console.log(redeemCallbackState, redeemCallback, redeemCallbackError)
     if (!redeemCallback) return
 
-    // let error = ''
     try {
       setAwaitingRedeemConfirmation(true)
       const txHash = await redeemCallback()
@@ -173,10 +172,8 @@ export default function Redemption() {
     } catch (e) {
       setAwaitingRedeemConfirmation(false)
       if (e instanceof Error) {
-        // error = e.message
       } else {
         console.error(e)
-        // error = 'An unknown error occurred.'
       }
     }
   }, [redeemCallbackState, redeemCallback, redeemCallbackError])
