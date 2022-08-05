@@ -25,14 +25,14 @@ function fuzzySearch(options: SelectSearchOption[]): any {
 }
 
 export function useSearch() {
-  const nftIds = useUserBondNFTs()
+  const nfts = useUserBondNFTs()
   const nftIdsList = useMemo(() => {
     return [
-      ...nftIds.map((nft) => {
+      ...nfts.map((nft) => {
         return { nftId: nft.tokenId, ...nft }
       }),
     ]
-  }, [nftIds])
+  }, [nfts])
 
   const list: SelectSearchOption[] = useMemo(() => {
     return nftIdsList.map((o) => ({ ...o, name: 'DeiBond #' + o.nftId.toString(), value: o.nftId }))
