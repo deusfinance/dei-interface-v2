@@ -82,7 +82,7 @@ export function useOwnerNfts(address: string | null | undefined, ABI?: any): num
   }, [results])
 }
 
-export function useOwnerBondNFT(): number[] {
+export function useOwnerBondNFTs(): number[] {
   const { chainId } = useWeb3React()
   const address = useMemo(() => (chainId ? DeiBondRedeemNFT[chainId] : undefined), [chainId])
   return useOwnerNfts(address) //use erc721 abi

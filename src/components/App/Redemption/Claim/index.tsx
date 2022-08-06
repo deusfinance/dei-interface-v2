@@ -14,6 +14,8 @@ import { useGetPoolData } from 'hooks/useRedemptionPage'
 import { DEUS_TOKEN } from 'constants/tokens'
 import { formatUnits } from '@ethersproject/units'
 import { toBN } from 'utils/numbers'
+import { useCollectCollateralCallback, useCollectDeusCallback } from 'hooks/useRedemptionCallback'
+import toast from 'react-hot-toast'
 
 const ActionWrap = styled(Card)`
   background: ${({ theme }) => theme.bg2};
@@ -85,6 +87,7 @@ const EmptyToken = styled.p`
   font-size: 14px;
   text-align: center;
   color: ${({ theme }) => theme.text4};
+  margin-bottom: 1rem;
 `
 const InfoWrap = styled.div`
   background: ${({ theme }) => theme.bg1};
@@ -92,12 +95,27 @@ const InfoWrap = styled.div`
   width: 100%;
 `
 
-export default function RedeemClaim() {
+export const collateralRedemptionDelay = 30 + 5 // in seconds
+export const deusRedemptionDelay = 8 * 60 * 60 + 5 // in seconds
+
+interface IPositions {
+  usdAmount: string
+  timestamp: string
+}
+interface IToken {
+  symbol: string
+  index: number
+  claimableBlock: number
+  amount: number
+}
+
+export default function RedeemClaim({ redeemCollateralRatio }: { redeemCollateralRatio: string }) {
   const {
     allPositions,
     nextRedeemId,
     redeemCollateralBalances,
   }: { allPositions: IPositions[]; nextRedeemId: any; redeemCollateralBalances: any } = useGetPoolData()
+
   const onSwitchNetwork = useRpcChangerCallback()
 
   const [currentBlock, setCurrentBlock] = useState(Math.floor(Date.now() / 1000))
@@ -108,58 +126,99 @@ export default function RedeemClaim() {
     return () => clearInterval(interval)
   }, [])
 
-  interface IPositions {
-    usdAmount: string
-    timestamp: string
-  }
-  interface IToken {
-    symbol: string
-    claimableBlock: number
-    amount: number
-  }
-
   const [unClaimed, setUnClaimed] = useState<IToken[]>([])
-
-  // FIXME: get from contract
-  const redeemCollateralRatio = 95
-
-  const collateralRedemptionDelay = 30 // in second
-  const deusRedemptionDelay = 8 * 60 * 60 // in second
-
   useEffect(() => {
+    setUnClaimed([])
     if (allPositions?.length) {
-      const lastRedeemTimestamp = allPositions[allPositions.length - 1].timestamp
-      const usdcToken: IToken = {
-        symbol: 'USDC',
-        claimableBlock: Number(lastRedeemTimestamp) + collateralRedemptionDelay,
-        amount: redeemCollateralBalances,
+      if (redeemCollateralBalances && redeemCollateralBalances !== '0') {
+        const lastRedeemTimestamp = allPositions[allPositions.length - 1].timestamp
+        const usdcToken: IToken = {
+          symbol: 'USDC',
+          index: 0,
+          claimableBlock: Number(lastRedeemTimestamp) + collateralRedemptionDelay,
+          amount: redeemCollateralBalances,
+        }
+        setUnClaimed([usdcToken])
       }
-      setUnClaimed([usdcToken])
 
-      const deusTokens = allPositions.map((position) => {
+      const deusTokens = allPositions.map((position, index) => {
         const usdAmount = position.usdAmount.toString()
         const timestamp = position.timestamp.toString()
-        const deusAmount = toBN(formatUnits(usdAmount.toString(), DEUS_TOKEN.decimals))
-          .times(100 - redeemCollateralRatio)
+        const deusAmount = toBN(formatUnits(usdAmount, DEUS_TOKEN.decimals))
+          .times(100 - Number(redeemCollateralRatio))
           .toString()
         const claimableBlock = Number(timestamp) + deusRedemptionDelay
         return {
           symbol: 'DEUS',
+          index,
           claimableBlock,
           amount: Number(deusAmount),
         }
       })
       setUnClaimed((current) => [...current, ...deusTokens])
     }
-  }, [allPositions, deusRedemptionDelay, redeemCollateralBalances])
+  }, [allPositions, redeemCollateralBalances, redeemCollateralRatio])
 
   const pendingTokens = unClaimed.filter((token) => {
     return token.claimableBlock > currentBlock
   })
 
-  // FIXME: only the first deus is claimable
+  const {
+    state: CollectCollateralCallbackState,
+    callback: collectCollateralCallback,
+    error: collectCollateralCallbackError,
+  } = useCollectCollateralCallback()
 
-  const handleClaim = useCallback((token) => console.log('Hi from ' + token.symbol), [])
+  const {
+    state: CollectDeusCallbackState,
+    callback: collectDeusCallback,
+    error: collectDeusCallbackError,
+  } = useCollectDeusCallback()
+
+  const handleClaim = useCallback(
+    async (token) => {
+      console.log('called handleClaim')
+      if (token.symbol === 'USDC') {
+        console.log('Claim USDC')
+        console.log(CollectCollateralCallbackState, collectCollateralCallback, collectCollateralCallbackError)
+        if (!collectCollateralCallback) return
+        try {
+          const txHash = await collectCollateralCallback()
+          console.log({ txHash })
+        } catch (e) {
+          if (e instanceof Error) {
+          } else {
+            console.error(e)
+          }
+        }
+      } else if (token.symbol === 'DEUS' && token.index == nextRedeemId) {
+        console.log('Claim DEUS')
+        console.log(CollectDeusCallbackState, collectDeusCallback, collectDeusCallbackError)
+        if (!collectDeusCallback) return
+        try {
+          const txHash = await collectDeusCallback()
+          console.log({ txHash })
+        } catch (e) {
+          if (e instanceof Error) {
+          } else {
+            console.error(e)
+          }
+        }
+      } else {
+        toast.error('Claim the first redeemed DEUS first')
+        return
+      }
+    },
+    [
+      CollectCollateralCallbackState,
+      CollectDeusCallbackState,
+      collectCollateralCallback,
+      collectCollateralCallbackError,
+      collectDeusCallback,
+      collectDeusCallbackError,
+      nextRedeemId,
+    ]
+  )
 
   return (
     <ActionWrap>
@@ -167,7 +226,7 @@ export default function RedeemClaim() {
         <Title>Claim tokens</Title>
       </TitleWrap>
       {!unClaimed || unClaimed.length == 0 ? (
-        <ClaimBox style={{ justifyContent: 'center' }}>
+        <ClaimBox style={{ justifyContent: 'center', margin: '1rem' }}>
           <Image src={CLAIM_LOGO} alt="claim" />
           <EmptyToken> nothing to claim </EmptyToken>
         </ClaimBox>

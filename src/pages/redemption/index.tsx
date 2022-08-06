@@ -18,7 +18,7 @@ import useWeb3React from 'hooks/useWeb3'
 import { useSupportedChainId } from 'hooks/useSupportedChainId'
 import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
 import useRedemptionCallback from 'hooks/useRedemptionCallback'
-import { useRedeemAmountOut, useRedeemData } from 'hooks/useRedemptionPage'
+import { useGetCollateralRatios, useRedeemAmountOut, useRedeemData } from 'hooks/useRedemptionPage'
 
 import { DotFlashing } from 'components/Icons'
 import Hero from 'components/Hero'
@@ -140,6 +140,8 @@ export default function Redemption() {
     error: redeemCallbackError,
   } = useRedemptionCallback(deiAmount)
 
+  const { redeemCollateralRatio } = useGetCollateralRatios()
+
   const [awaitingApproveConfirmation, setAwaitingApproveConfirmation] = useState<boolean>(false)
   const [awaitingRedeemConfirmation, setAwaitingRedeemConfirmation] = useState<boolean>(false)
   const spender = useMemo(() => (chainId ? DynamicRedeemer[chainId] : undefined), [chainId])
@@ -162,7 +164,6 @@ export default function Redemption() {
     console.log(redeemCallbackState, redeemCallback, redeemCallbackError)
     if (!redeemCallback) return
 
-    // let error = ''
     try {
       setAwaitingRedeemConfirmation(true)
       const txHash = await redeemCallback()
@@ -171,10 +172,8 @@ export default function Redemption() {
     } catch (e) {
       setAwaitingRedeemConfirmation(false)
       if (e instanceof Error) {
-        // error = e.message
       } else {
         console.error(e)
-        // error = 'An unknown error occurred.'
       }
     }
   }, [redeemCallbackState, redeemCallback, redeemCallbackError])
@@ -301,11 +300,11 @@ export default function Redemption() {
               } */}
             </RedemptionWrapper>
             <BottomWrapper>
-              <InfoItem name={'USDC Ratio'} value={'0.1?'} />
-              <InfoItem name={'DEUS Ratio'} value={'0.9?'} />
+              <InfoItem name={'USDC Ratio'} value={(Number(redeemCollateralRatio) / 100).toString()} />
+              <InfoItem name={'DEUS Ratio'} value={((100 - Number(redeemCollateralRatio)) / 100).toString()} />
             </BottomWrapper>
           </Wrapper>
-          <Claim />
+          <Claim redeemCollateralRatio={redeemCollateralRatio} />
         </MainWrap>
       </Container>
 

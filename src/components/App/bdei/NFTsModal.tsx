@@ -1,14 +1,15 @@
 import styled from 'styled-components'
+import { isMobile } from 'react-device-detect'
+
+import Disabled_BDEI_NFT from '/public/static/images/pages/bdei/Disabled_BDEI_nft.svg'
 
 import { Modal, ModalHeader } from 'components/Modal'
-import { SearchField, useSearch } from 'components/App/bdei/Search'
 import Column from 'components/Column'
-import NFTBox from 'components/App/bdei/NFTBox'
 import { RowBetween, RowCenter } from 'components/Row'
 import ImageWithFallback from 'components/ImageWithFallback'
-import Disabled_BDEI_NFT from '/public/static/images/pages/bdei/Disabled_BDEI_nft.svg'
-import { isMobile } from 'react-device-detect'
-import { useOwnerBondNFT } from 'hooks/useOwnedNfts'
+import { SearchField, useSearch } from 'components/App/bdei/Search'
+import NFTBox from 'components/App/bdei/NFTBox'
+import { BondNFT } from 'hooks/useBondsPage'
 
 const Wrapper = styled.div`
   display: flex;
@@ -74,9 +75,6 @@ export default function NFTsModal({
 }) {
   const { snapshot, searchProps } = useSearch()
   const result = snapshot.options.map((nft) => nft)
-  const test = useOwnerBondNFT()
-
-  console.log({ test })
 
   function getImageSize() {
     return isMobile ? 28 : 36
@@ -89,12 +87,12 @@ export default function NFTsModal({
         <SearchField searchProps={searchProps} modalSearch={true} />
         <TokenResultWrapper>
           {result.length ? (
-            result.map((nft, index) => {
+            result.map((nft: any, index) => {
               return (
                 <NFTBox
                   key={index}
                   toggleModal={toggleModal}
-                  tokenId={nft.value as number}
+                  nft={{ tokenId: nft?.tokenId, redeemTime: nft?.redeemTime, deiAmount: nft?.deiAmount } as BondNFT}
                   setNFT={setNFT}
                   disabled={nft.value === selectedNFT}
                 />

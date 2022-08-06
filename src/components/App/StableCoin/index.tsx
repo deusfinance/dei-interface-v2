@@ -32,10 +32,11 @@ export const InputWrapper = styled(Container)`
 
 export const BottomWrapper = styled(Container)`
   padding: 20px 15px;
+  padding-top: 10px;
   width: 100%;
   background: ${({ theme }) => theme.bg1};
-  border-bottom-right-radius: 13px;
-  border-bottom-left-radius: 13px;
+  border-bottom-right-radius: 12px;
+  border-bottom-left-radius: 12px;
 `
 
 export const TopTableau = styled.div`

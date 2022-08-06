@@ -8,6 +8,7 @@ import { SupportedChainId } from 'constants/chains'
 import { RowCenter } from 'components/Row'
 import { DotFlashing } from 'components/Icons'
 import { getRemainingTime } from 'utils/time'
+import { collateralRedemptionDelay, deusRedemptionDelay } from '.'
 
 const RemainingWrap = styled(RowCenter)`
   position: relative;
@@ -86,10 +87,10 @@ export default function ClaimButton({
 
   const diff = claimableBlock - currentBlock
   if (diff > 0) {
-    const { hours, minutes, seconds } = getRemainingTime(diff)
-    const hour_to_second = 60 * 60
-    const eight_hours = 8 * hour_to_second
-    const elapsed = isUSDC ? (diff / 30) * 100 : ((eight_hours - diff) / eight_hours) * 100
+    const { hours, minutes, seconds } = getRemainingTime(claimableBlock * 1000)
+    const elapsed = isUSDC
+      ? ((collateralRedemptionDelay - diff) / collateralRedemptionDelay) * 100
+      : ((deusRedemptionDelay - diff) / deusRedemptionDelay) * 100
 
     return (
       <RemainingWrap>

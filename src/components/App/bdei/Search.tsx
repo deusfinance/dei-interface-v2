@@ -4,11 +4,11 @@ import { useSelect, SelectSearchOption } from 'react-select-search'
 
 import { Search as SearchIcon } from 'components/Icons'
 import { InputWrapper, InputField } from 'components/Input'
-import { useOwnerBondNFT } from 'hooks/useOwnedNfts'
+import { useUserBondNFTs } from 'hooks/useBondsPage'
 
 function fuzzySearch(options: SelectSearchOption[]): any {
   const config = {
-    keys: ['name', 'value', 'nftId'],
+    keys: ['name', 'value', 'tokenId'],
     isCaseSensitive: false,
     threshold: 0.15,
   }
@@ -25,17 +25,17 @@ function fuzzySearch(options: SelectSearchOption[]): any {
 }
 
 export function useSearch() {
-  const nftIds = useOwnerBondNFT()
+  const nftIds = useUserBondNFTs()
   const nftIdsList = useMemo(() => {
     return [
-      ...nftIds.map((id) => {
-        return { nftId: id }
+      ...nftIds.map((nft) => {
+        return { nftId: nft.tokenId, ...nft }
       }),
     ]
   }, [nftIds])
 
   const list: SelectSearchOption[] = useMemo(() => {
-    return nftIdsList.map((o) => ({ ...o, name: 'vDeus #' + o.nftId.toString(), value: o.nftId }))
+    return nftIdsList.map((o) => ({ ...o, name: 'DeiBond #' + o.nftId.toString(), value: o.nftId }))
   }, [nftIdsList])
 
   const [snapshot, searchProps, optionProps] = useSelect({
