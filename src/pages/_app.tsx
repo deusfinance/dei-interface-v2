@@ -4,6 +4,7 @@ import { ModalProvider } from 'styled-react-modal'
 import dynamic from 'next/dynamic'
 import type { AppProps } from 'next/app'
 import { Toaster } from 'react-hot-toast'
+import Script from 'next/script'
 
 import Web3ReactManager from '../components/Web3ReactManager'
 import ThemeProvider, { ThemedGlobalStyle } from '../theme'
@@ -13,6 +14,9 @@ import { ModalBackground } from '../components/Modal'
 
 import store from '../state'
 import { getLibrary } from '../utils/library'
+
+// TODO: set gtag here
+const NEXT_PUBLIC_GOOGLE_ANALYTICS = 'xxx'
 
 const Updaters = dynamic(() => import('../state/updaters'), { ssr: false })
 const Web3ProviderNetwork = dynamic(() => import('../components/Web3ProviderNetwork'), {
@@ -26,6 +30,20 @@ if (typeof window !== 'undefined' && !!window.ethereum) {
 export default function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ReduxProvider store={store}>
+      <Script
+        strategy="lazyOnload"
+        src={`https://www.googletagmanager.com/gtag/js?id=${NEXT_PUBLIC_GOOGLE_ANALYTICS}`}
+      />
+      <Script id="google-analytics" strategy="lazyOnload">
+        {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${NEXT_PUBLIC_GOOGLE_ANALYTICS}', {
+              page_path: window.location.pathname,
+            });
+                `}
+      </Script>
       <Web3ReactProvider getLibrary={getLibrary}>
         <Web3ProviderNetwork getLibrary={getLibrary}>
           <Web3ReactManager>
