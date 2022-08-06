@@ -1,5 +1,8 @@
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
+import Image from 'next/image'
+
+import BG_DASHBOARD from '/public/static/images/pages/dashboard/bg.svg'
 
 import { useDeusPrice } from 'hooks/useCoingeckoPrice'
 import { useDeiStats } from 'hooks/useDeiStats'
@@ -15,6 +18,8 @@ const Wrapper = styled(RowBetween)`
   border-radius: 12px;
   padding: 38px 36px;
   padding-left: 14px;
+  margin-bottom: 80px;
+  position: relative;
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
     flex-direction: column;
@@ -23,11 +28,13 @@ const Wrapper = styled(RowBetween)`
 
 const ChartWrapper = styled.div`
   border: 1px solid ${({ theme }) => theme.border1};
+  background-color: ${({ theme }) => theme.bg0};
   border-radius: 12px;
   width: 100%;
   min-width: 200px;
   min-height: 200px;
   margin-left: 15px;
+  z-index: 1;
 `
 
 const AllStats = styled.div`
@@ -48,7 +55,6 @@ const StatsWrapper = styled.div`
 
 const Info = styled(RowBetween)`
   width: 100%;
-  /* margin: 20px -24px; */
 
   gap: 16px 0;
   flex-wrap: wrap;
@@ -88,6 +94,18 @@ const DeusTitle = styled(Title)`
   background: ${({ theme }) => theme.deusColor};
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+`
+
+const BackgroundImageWrapper = styled.div`
+  position: absolute;
+  bottom: 0;
+  width: 50%;
+  height: 100%;
+  right: 10px;
+
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    display:none;
+  `};
 `
 
 export default function Stats() {
@@ -133,6 +151,9 @@ export default function Stats() {
       <ChartWrapper>
         <Chart />
       </ChartWrapper>
+      <BackgroundImageWrapper>
+        <Image src={BG_DASHBOARD} alt="swap bg" layout="fill" objectFit="cover" />
+      </BackgroundImageWrapper>
     </Wrapper>
   )
 }

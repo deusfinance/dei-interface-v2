@@ -55,7 +55,7 @@ export const NavButton = styled.button`
   &:hover,
   &:focus {
     cursor: pointer;
-    border: 1px solid ${({ theme }) => theme.border1};
+    border: 1px solid ${({ theme }) => theme.text1};
   }
 `
 
