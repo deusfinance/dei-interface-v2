@@ -4,22 +4,23 @@ import { isMobile } from 'react-device-detect'
 
 import BDEI_NFT from '/public/static/images/pages/bdei/BDEI_nft.svg'
 import { BondNFT } from 'hooks/useBondsPage'
-import { getRemainingTime } from 'utils/time'
 
 import ImageWithFallback from 'components/ImageWithFallback'
 import { RowBetween } from 'components/Row'
 
+import { getRemainingTime } from 'utils/time'
+import { formatBalance } from 'utils/numbers'
+
 const Wrapper = styled(RowBetween).attrs({
   align: 'center',
 })`
-  display: flex;
   border-radius: 15px;
-  color: ${({ theme }) => theme.text2};
   white-space: nowrap;
   min-height: 60px;
   gap: 10px;
   padding: 0px 1rem;
   margin: 0 auto;
+  color: ${({ theme }) => theme.text2};
   border: 1px solid ${({ theme }) => theme.border3};
   background: ${({ theme }) => theme.bg1};
   &:hover {
@@ -79,14 +80,13 @@ export default function NFTBox({
   setNFT: (tokenId: number) => void
   disabled?: boolean
 }) {
-  const balanceDisplay = nft.deiAmount
+  const balanceDisplay = nft.deiAmount ? formatBalance(nft.deiAmount) : null
   const [diff, day] = useMemo(() => {
     if (!nft.redeemTime) return [null, null]
     const { diff, day } = getRemainingTime(nft.redeemTime)
     return [diff, day]
   }, [nft])
 
-  // const disabled = !diff || diff > 0
   function getImageSize() {
     return isMobile ? 28 : 36
   }
@@ -96,19 +96,14 @@ export default function NFTBox({
       onClick={() => {
         toggleModal(false)
         if (!disabled) setNFT(nft.tokenId)
-        // if (!disabled) console.log('not disabled')
       }}
     >
-      <div>
-        <Row>
-          <ImageWithFallback src={BDEI_NFT} width={getImageSize()} height={getImageSize()} alt={`nft`} round />
-          {/* <TokenId>DeiBond #{nft.tokenId}</TokenId> */}
-          <TokenId>#{nft.tokenId}</TokenId>
-        </Row>
-      </div>
-      {/* <Balance>{balanceDisplay ? balanceDisplay : '0.00'}</Balance> */}
+      <Row>
+        <ImageWithFallback src={BDEI_NFT} width={getImageSize()} height={getImageSize()} alt={`nft`} round />
+        <TokenId>#{nft.tokenId}</TokenId>
+      </Row>
 
-      {disabled || true ? (
+      {disabled || (diff && diff > 0) ? (
         <RemainingBox>
           <Balance active={disabled}>{balanceDisplay ? `Redeemable: ${balanceDisplay} bDEI` : '0.00'}</Balance>
           <RemainingDays>in {day} days</RemainingDays>

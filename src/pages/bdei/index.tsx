@@ -15,8 +15,9 @@ import { useRedeemAmountsOut, useRedeemData } from 'hooks/useRedemptionPage'
 import { useERC721ApproveAllCallback } from 'hooks/useApproveNftCallback2'
 
 import { tryParseAmount } from 'utils/parse'
-import { BDEI_TOKEN, DEI_TOKEN, USDC_TOKEN } from 'constants/tokens'
+import { BDEI_TOKEN, DEI_TOKEN } from 'constants/tokens'
 import { DeiBondRedeemNFT, bDeiRedeemer } from 'constants/addresses'
+import { useUserDeiBondInfo } from 'hooks/useBondsPage'
 
 import REDEEM_IMG from '/public/static/images/pages/bdei/TableauBackground.svg'
 import DEI_LOGO from '/public/static/images/pages/bdei/DEI_logo.svg'
@@ -32,10 +33,6 @@ import InputBox from 'components/InputBox'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
 import NFTsModal from 'components/App/bdei/NFTsModal'
-import { formatAmount } from 'utils/numbers'
-import { useDeiPrice } from 'hooks/useCoingeckoPrice'
-import { useBonderData } from 'hooks/useBondsPage'
-import { useDeiStats } from 'hooks/useDeiStats'
 
 const NFTsWrapper = styled(InputWrapper)`
   & > * {
@@ -84,9 +81,7 @@ export default function Redemption() {
   const debouncedAmountIn = useDebounce(amountIn, 500)
   const deiCurrency = DEI_TOKEN
   const bdeiCurrency = BDEI_TOKEN
-  const usdcCurrency = USDC_TOKEN
   const bdeiCurrencyBalance = useCurrencyBalance(account ?? undefined, bdeiCurrency)
-  const deiCurrencyBalance = useCurrencyBalance(account ?? undefined, deiCurrency)
   const [isOpenNFTsModal, toggleNFTsModal] = useState(false)
   const [inputNFT, setInputNFT] = useState<number>(-1)
 
@@ -94,16 +89,7 @@ export default function Redemption() {
   const { amountOut1, amountOut2 } = useRedeemAmountsOut(debouncedAmountIn, bdeiCurrency)
   const { redeemPaused, redeemTranche } = useRedeemData()
   // console.log({ redeemPaused, rest })
-  const [selectedNftId, setSelectedNftId] = useState('0')
-
-  const deiPrice = useDeiPrice()
-  const { deiBonded } = useBonderData()
-  const { sPoolbDEILiquidity } = useDeiStats()
-
-  // const dropdownOptions = listOfVouchers.map((tokenId: number) => ({
-  //   label: `vDEUS #${tokenId}`,
-  //   value: `${tokenId}`,
-  // }))
+  // const [selectedNftId, setSelectedNftId] = useState('0')
 
   // Amount typed in either fields
   const bdeiAmount = useMemo(() => {
@@ -114,10 +100,6 @@ export default function Redemption() {
     if (!bdeiAmount) return false
     return bdeiCurrencyBalance?.lessThan(bdeiAmount)
   }, [bdeiCurrencyBalance, bdeiAmount])
-
-  const usdcAmount = useMemo(() => {
-    return tryParseAmount(amountOut1, usdcCurrency || undefined)
-  }, [amountOut1, usdcCurrency])
 
   const {
     state: redeemCallbackState,
@@ -231,14 +213,9 @@ export default function Redemption() {
     return <MainButton onClick={() => handleRedeem()}>Redeem DEI</MainButton>
   }
 
-  const items = [
-    // { name: 'DEI Price', value: formatDollarAmount(parseFloat(deiPrice), 2) ?? '-' },
-    { name: 'Total DEI Claimed', value: formatAmount(deiBonded) ?? '-' },
-    { name: 'Your bDEI Balance', value: formatAmount(sPoolbDEILiquidity, 2) + ' DEI' ?? '-' },
-    { name: 'Your NFT Value', value: formatAmount(sPoolbDEILiquidity, 2) + ' DEI' ?? '-' },
-    { name: 'Your NFT Maturity', value: 'in 139 days' },
-    { name: 'Your Claimable DEI', value: '0.73m' },
-  ]
+  const userStats = useUserDeiBondInfo()
+
+  const items = useMemo(() => [{ name: 'Total DEI Claimed', value: '0' }, ...userStats], [userStats])
 
   return (
     <Container>
@@ -277,7 +254,7 @@ export default function Redemption() {
           }
         </NFTsWrapper>
         <BottomWrapper>
-          <InfoItem name={'DEI Ratio'} value={'5 bDEI'} />
+          <InfoItem name={'DEI Ratio'} value={'N/A'} />
         </BottomWrapper>
       </Wrapper>
 

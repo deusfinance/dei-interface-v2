@@ -77,7 +77,13 @@ const TextContent = styled.p`
   font-size: 14px;
 `
 
-export default function StatsHeader({ items, hasBox }: { items: { name: string; value: string }[]; hasBox?: boolean }) {
+export default function StatsHeader({
+  items,
+  hasBox,
+}: {
+  items: { name: string; value: string | number }[]
+  hasBox?: boolean
+}) {
   return (
     <Wrapper>
       {items.map((item, index) => (

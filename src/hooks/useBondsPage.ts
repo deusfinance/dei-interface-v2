@@ -1,11 +1,17 @@
 import { useMemo } from 'react'
 import { formatUnits } from '@ethersproject/units'
 
+import { BDEI_TOKEN } from 'constants/tokens'
+
 import { useSingleContractMultipleMethods } from 'state/multicall/hooks'
+import { useCurrencyBalance } from 'state/wallet/hooks'
+import useWeb3React from 'hooks/useWeb3'
 import { useDeiBonderContract } from 'hooks/useContract'
 import { useOwnerBondNFTs } from 'hooks/useOwnedNfts'
 
 import { toBN } from 'utils/numbers'
+import { getRemainingTime } from 'utils/time'
+import { formatBalance } from 'utils/numbers'
 
 export type BondNFT = {
   tokenId: number
@@ -96,4 +102,64 @@ export function useUserBondNFTs(): BondNFT[] {
       redeemTime: item.result ? toBN(item.result['redeemTime'].toString()).times(1000).toNumber() : null,
     }))
   }, [result, userBondNFTs])
+}
+
+export function useUserNextMaturity(): {
+  redeemTime: number | null
+  deiAmount: number | null
+} {
+  const nfts = useUserBondNFTs()
+  let redeemTime = 0
+  let deiAmount = 0
+  if (!nfts.length) return { redeemTime: null, deiAmount: null }
+  for (let i = 0; nfts.length > i; i++) {
+    if (nfts[i].deiAmount === null || nfts[i].redeemTime === null) return { redeemTime: null, deiAmount: null }
+    const { day, diff } = getRemainingTime(nfts[i]?.redeemTime ?? 0)
+    if (diff > 0 && !redeemTime) {
+      redeemTime = day
+      deiAmount = nfts[i]?.deiAmount ?? 0
+    }
+  }
+  return { redeemTime, deiAmount }
+}
+
+export function useUserBondStats(): {
+  redeemTime: number | null
+  deiAmount: number | null
+  bDeiBalance: number | null
+  totalDeiClaimed: number | null
+  claimableDei: number | null
+} {
+  const { account } = useWeb3React()
+  const { redeemTime, deiAmount } = useUserNextMaturity()
+  const bdeiCurrencyBalance = useCurrencyBalance(account ?? undefined, BDEI_TOKEN)
+
+  return {
+    redeemTime,
+    deiAmount,
+    bDeiBalance: bdeiCurrencyBalance ? Number(bdeiCurrencyBalance.toExact()) : null,
+    totalDeiClaimed: 0,
+    claimableDei: 0,
+  }
+}
+
+export function useUserDeiBondInfo(): { name: string; value: number | string }[] {
+  const { account } = useWeb3React()
+  const { redeemTime, deiAmount, bDeiBalance } = useUserBondStats()
+
+  return useMemo(
+    () =>
+      !account
+        ? []
+        : [
+            {
+              name: 'Your bDEI Balance',
+              value: bDeiBalance ? formatBalance(bDeiBalance, 2) + ' bDEI' : 'N/A',
+            },
+            { name: 'Next Maturity Amount', value: deiAmount ? `${formatBalance(deiAmount, 6)} bDEI` : 'N/A' },
+            { name: 'Next Maturity Time', value: redeemTime ? `in ${redeemTime?.toFixed(0)} days` : 'N/A' },
+            { name: 'Your Claimable DEI', value: 'N/A' },
+          ],
+    [account, redeemTime, deiAmount, bDeiBalance]
+  )
 }

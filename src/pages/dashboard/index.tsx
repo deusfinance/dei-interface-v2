@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import Image from 'next/image'
 
@@ -14,6 +14,10 @@ import VEDEUS_LOGO from '/public/static/images/pages/dashboard/ic_vedeus_gray.sv
 import VEDEUS_HOVER_LOGO from '/public/static/images/pages/dashboard/ic_vedeus_hover.svg'
 import DEI_LOGO from '/public/static/images/pages/dashboard/DEI_Dashboard.png'
 
+import { useDeiStats } from 'hooks/useDeiStats'
+import useWeb3React from 'hooks/useWeb3'
+import { formatAmount, formatDollarAmount } from 'utils/numbers'
+
 import Hero from 'components/Hero'
 import StatsHeader from 'components/StatsHeader'
 import { Container } from 'components/App/StableCoin'
@@ -22,9 +26,6 @@ import { Card } from 'components/App/Dashboard/card'
 import { SocialCard } from 'components/App/Dashboard/SocialCard'
 import Stats from 'components/App/Dashboard/Stats'
 import DeiBondStats from 'components/App/Dashboard/DeiBondStats'
-import { formatAmount, formatDollarAmount } from 'utils/numbers'
-import { useDeiPrice } from 'hooks/useCoingeckoPrice'
-import { useDeiStats } from 'hooks/useDeiStats'
 
 const Wrapper = styled(RowCenter)`
   max-width: 1300px;
@@ -57,24 +58,17 @@ const CardWrapper = styled(RowBetween)`
   }
   ${({ theme }) => theme.mediaWidth.upToSmall`
   gap: 12px;
-  & > * {
-    // flex: none;
-  }
 `};
 `
 
 export default function Dashboard() {
-  const deiPrice = useDeiPrice()
-  const { totalSupply, circulatingSupply, totalUSDCReserves } = useDeiStats()
-
-  const usdcBackingPerDei = useMemo(() => {
-    return (totalUSDCReserves / circulatingSupply) * 100
-  }, [totalUSDCReserves, circulatingSupply])
+  const { account } = useWeb3React()
+  const { totalSupply, totalUSDCReserves } = useDeiStats()
 
   const items = [
-    { name: 'DEI Price', value: formatDollarAmount(parseFloat(deiPrice), 2) ?? '-' },
+    { name: 'DEI Price', value: '$1.00' },
     { name: 'DEI Total Supply', value: formatDollarAmount(totalSupply, 2) ?? '-' },
-    { name: 'Collateral Ratio', value: formatAmount(usdcBackingPerDei, 1).toString() + '%' ?? '-' },
+    { name: 'Collateral Ratio', value: '100%' },
     { name: 'Total USDC Holdings', value: formatAmount(totalUSDCReserves, 2) },
   ]
 
@@ -85,7 +79,7 @@ export default function Dashboard() {
         <StatsHeader items={items} />
       </Hero>
       <Wrapper>
-        <DeiBondStats />
+        {account && <DeiBondStats />}
         <CardWrapper>
           <Card href="/mint" title={'Mint DEI'} subTitle="Mint DEI" MainIcon={MINT_LOGO} HoverIcon={MINT_HOVER_LOGO} />
           <Card

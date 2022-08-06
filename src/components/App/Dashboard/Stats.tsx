@@ -1,12 +1,13 @@
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
 
+import { useDeusPrice } from 'hooks/useCoingeckoPrice'
+import { useDeiStats } from 'hooks/useDeiStats'
+import { formatAmount, formatDollarAmount } from 'utils/numbers'
+
+import { RowBetween } from 'components/Row'
 import StatsItem from './StatsItem'
 import Chart from './Chart'
-import { RowBetween } from 'components/Row'
-import { useDeiPrice, useDeusPrice } from 'hooks/useCoingeckoPrice'
-import { formatAmount, formatDollarAmount } from 'utils/numbers'
-import { useDeiStats } from 'hooks/useDeiStats'
 
 const Wrapper = styled(RowBetween)`
   background: ${({ theme }) => theme.bg0};
@@ -90,17 +91,8 @@ const DeusTitle = styled(Title)`
 `
 
 export default function Stats() {
-  const deiPrice = useDeiPrice()
   const deusPrice = useDeusPrice()
-  const {
-    totalSupply,
-    totalProtocolHoldings,
-    circulatingSupply,
-    totalUSDCReserves,
-    sPoolDEILiquidity,
-    sPoolbDEILiquidity,
-    sPoolLiquidity,
-  } = useDeiStats()
+  const { totalSupply, totalProtocolHoldings, circulatingSupply, totalUSDCReserves } = useDeiStats()
 
   const usdcBackingPerDei = useMemo(() => {
     return (totalUSDCReserves / circulatingSupply) * 100
@@ -112,7 +104,7 @@ export default function Stats() {
         <StatsWrapper>
           <Title>DEI Stats</Title>
           <Info>
-            <StatsItem name="DEI Price" value={formatDollarAmount(parseFloat(deiPrice), 2)} linkIcon={true} />
+            <StatsItem name="DEI Price" value={'$1.00'} linkIcon={true} />
             <StatsItem name="Total Supply" value={formatDollarAmount(totalSupply, 2)} linkIcon={true} />
             <StatsItem
               name="Total Protocol Holdings"

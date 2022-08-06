@@ -81,7 +81,9 @@ export function dynamicPrecision(
   return part.toString()
 }
 
-export const formatBalance = (balance: BigNumber.Value, fixed = 6): string => {
+export const formatBalance = (balance: BigNumber.Value | undefined | null, fixed = 6): string => {
+  if (balance === null || balance === undefined) return ''
+
   const bnBalance = toBN(balance)
   if (
     toBN(10)

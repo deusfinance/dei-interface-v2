@@ -1,7 +1,9 @@
 import React from 'react'
+import styled from 'styled-components'
+
+import { useUserDeiBondInfo } from 'hooks/useBondsPage'
 
 import { RowBetween, RowEnd } from 'components/Row'
-import styled from 'styled-components'
 import StatsItem from './StatsItem'
 
 const Wrapper = styled(RowBetween)`
@@ -86,19 +88,20 @@ const ClaimedValue = styled.span`
 `
 
 export default function DeiBondStats() {
+  const userStats = useUserDeiBondInfo()
+
   return (
     <Wrapper>
       <DeiStats>
         <Title>Your DEI Bond stats</Title>
         <ClaimedDei>
-          Total Dei Claimed: <ClaimedValue>12m</ClaimedValue>
+          Total Dei Claimed: <ClaimedValue>0</ClaimedValue>
         </ClaimedDei>
       </DeiStats>
       <DeiInfo>
-        <StatsItem name="Your bDEI balance" value="$1.00?" />
-        <StatsItem name="Your NFT value" value="$1.00?" />
-        <StatsItem name="Your NFT maturity" value="$1.00?" />
-        <StatsItem name="Your DEI claimable" value="$1.00?s" />
+        {userStats.map((stat: any) => (
+          <StatsItem key={stat.name} name={stat.name} value={stat.value} />
+        ))}
       </DeiInfo>
     </Wrapper>
   )

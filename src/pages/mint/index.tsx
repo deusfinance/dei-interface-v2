@@ -17,7 +17,6 @@ import DEI_LOGO from '/public/static/images/pages/mint/DEI_Logo.svg'
 import { DotFlashing } from 'components/Icons'
 import Hero from 'components/Hero'
 import InputBox from 'components/InputBox'
-import { RowBetween } from 'components/Row'
 // import AdvancedOptions from 'components/App/Swap/AdvancedOptions'
 import StatsHeader from 'components/StatsHeader'
 import { BottomWrapper, Container, InputWrapper, Title, Wrapper, MainButton } from 'components/App/StableCoin'
@@ -30,14 +29,14 @@ import useMintCallback from 'hooks/useMintCallback'
 import { useGetDeusPrice, useMintAmountOut } from 'hooks/useMintPage'
 import { DEUS_TOKEN } from 'constants/tokens'
 import DefaultReviewModal from 'components/ReviewModal/DefaultReviewModal'
-import { useDeiPrice, useDeusPrice, useUSDCPrice } from 'hooks/useCoingeckoPrice'
+import { useDeusPrice, useUSDCPrice } from 'hooks/useCoingeckoPrice'
 import { formatDollarAmount } from 'utils/numbers'
 import { truncateAddress } from 'utils/address'
 // import { useCollateralRatio } from 'state/dei/hooks'
 
-const SlippageWrapper = styled(RowBetween)`
-  margin-top: 10px;
-`
+// const SlippageWrapper = styled(RowBetween)`
+//   margin-top: 10px;
+// `
 
 const PlusIcon = styled(Plus)`
   z-index: 1000;
@@ -90,7 +89,7 @@ export default function Mint() {
   const [inputTokenIndex, setInputTokenIndex] = useState<number>(0)
   const [isOpenReviewModal, toggleReviewModal] = useState(false)
 
-  const deiPrice = useDeiPrice()
+  // const deiPrice = useDeiPrice()
   const usdcPrice = useUSDCPrice()
   const deusCoingeckoPrice = useDeusPrice()
 
@@ -108,7 +107,7 @@ export default function Mint() {
   const token1CurrencyBalance = useCurrencyBalance(account ?? undefined, token1Currency)
   const token2CurrencyBalance = useCurrencyBalance(account ?? undefined, token2Currency)
 
-  const [slippage, setSlippage] = useState(0.5)
+  // const [slippage, setSlippage] = useState(0.5)
 
   // useEffect(() => {
   //   if (inputToken.length > 1) {
@@ -299,7 +298,7 @@ export default function Mint() {
   }
 
   const items = [
-    { name: 'DEI Price', value: formatDollarAmount(parseFloat(deiPrice), 2) ?? '-' },
+    { name: 'DEI Price', value: '$1.00' },
     { name: 'USDC Price', value: formatDollarAmount(parseFloat(usdcPrice), 2) ?? '-' },
     { name: 'DEUS Price', value: formatDollarAmount(parseFloat(deusCoingeckoPrice), 2) ?? '-' },
     { name: 'Pool(V3)', value: truncateAddress(CollateralPool[chainId ?? SupportedChainId.FANTOM]) ?? '-' },
@@ -311,7 +310,7 @@ export default function Mint() {
       // { title: 'Network Fee', value: 'N/A' },
       // { title: 'Min Received', value: amountOut },
     ],
-    [amountOut, slippage]
+    []
   )
   return (
     <>
