@@ -31,7 +31,7 @@ export const BDEI_TOKEN = new Token(SupportedChainId.FANTOM, BDEI_ADDRESS[Suppor
 
 export const DEI_BDEI_LP_TOKEN = new Token(
   SupportedChainId.FANTOM,
-  '0xdce9ec1eb454829b6fe0f54f504fef3c3c0642fc',
+  '0xDce9EC1eB454829B6fe0f54F504FEF3c3C0642Fc',
   18,
   'DB-LP',
   'DB-LP'
@@ -42,7 +42,7 @@ export const DEI_BDEI_LP_TOKEN = new Token(
 ===================================== */
 export const WETH = {
   [SupportedChainId.MAINNET]: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
-  [SupportedChainId.POLYGON]: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+  [SupportedChainId.POLYGON]: '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',
   [SupportedChainId.FANTOM]: '0x74b23882a30290451A17c44f4F05243b6b58C76d',
 }
 

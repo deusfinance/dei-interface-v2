@@ -217,16 +217,24 @@ export default function Table({
               ))}
           </tbody>
           {paginatedItems.length === 0 && (
-            <>
-              <div style={{ margin: '0 auto' }}>
-                {isMobile ? (
-                  <Image src={EMPTY_LOCK_MOBILE} alt="empty-lock-mobile" />
-                ) : (
-                  <Image src={EMPTY_LOCK} alt="empty-lock" />
-                )}
-              </div>
-              <NoResults>You have no lock!</NoResults>
-            </>
+            <tbody>
+              <tr>
+                <td>
+                  <div style={{ margin: '0 auto' }}>
+                    {isMobile ? (
+                      <Image src={EMPTY_LOCK_MOBILE} alt="empty-lock-mobile" />
+                    ) : (
+                      <Image src={EMPTY_LOCK} alt="empty-lock" />
+                    )}
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <NoResults>You have no lock!</NoResults>
+                </td>
+              </tr>
+            </tbody>
           )}
         </TableWrapper>
         <PaginationWrapper>

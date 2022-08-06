@@ -32,7 +32,7 @@ const ActionWrap = styled(Card)`
 `
 
 const TitleWrap = styled(RowBetween)`
-  border-bottom: 1px solid ${({ theme }) => theme.bg2};
+  border-bottom: 1px solid ${({ theme }) => theme.bg4};
   width: 100%;
 `
 
@@ -49,8 +49,9 @@ export const ClaimBox = styled.div`
   display: flex;
   flex-flow: column nowrap;
   flex: 1;
-  overflow: hidden;
-  overflow-y: auto;
+  max-height: 385px;
+  overflow: auto;
+
   & > div {
     padding: 15px 10px;
     border-bottom: 1px solid ${({ theme }) => theme.bg2};
@@ -58,15 +59,12 @@ export const ClaimBox = styled.div`
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
     max-height: 180px;
-    overflow: auto;
-    // overflow-x: hidden;
   `}
 `
 
 export const BottomRow = styled(Row)`
   flex-wrap: wrap;
   padding: 10px 10px;
-  /* align-items: flex-end; */
   position: relative;
   background: ${({ theme }) => theme.bg2};
   margin-bottom: auto;
@@ -86,13 +84,18 @@ const EmptyToken = styled.p`
   margin-top: 0.75rem;
   font-size: 14px;
   text-align: center;
-  color: ${({ theme }) => theme.text4};
+  color: ${({ theme }) => theme.text2};
   margin-bottom: 1rem;
 `
 const InfoWrap = styled.div`
   background: ${({ theme }) => theme.bg1};
   padding: 0 15px 10px 15px;
   width: 100%;
+`
+
+const NoResultWrapper = styled.div`
+  text-align: center;
+  padding: 12px;
 `
 
 export const collateralRedemptionDelay = 30 + 5 // in seconds
@@ -199,13 +202,11 @@ export default function RedeemClaim({ redeemCollateralRatio }: { redeemCollatera
           const txHash = await collectDeusCallback()
           console.log({ txHash })
         } catch (e) {
-          if (e instanceof Error) {
-          } else {
-            console.error(e)
-          }
+          if (e instanceof Error) console.log(e)
+          else console.error(e)
         }
       } else {
-        toast.error('Claim the first redeemed DEUS first')
+        toast.error('Claim tokens in the given order.')
         return
       }
     },
@@ -223,13 +224,16 @@ export default function RedeemClaim({ redeemCollateralRatio }: { redeemCollatera
   return (
     <ActionWrap>
       <TitleWrap>
-        <Title>Claim tokens</Title>
+        <Title>Claim your tokens</Title>
       </TitleWrap>
       {!unClaimed || unClaimed.length == 0 ? (
-        <ClaimBox style={{ justifyContent: 'center', margin: '1rem' }}>
-          <Image src={CLAIM_LOGO} alt="claim" />
-          <EmptyToken> nothing to claim </EmptyToken>
-        </ClaimBox>
+        <>
+          <ClaimBox style={{ justifyContent: 'center', margin: '1rem' }}>
+            <Image src={CLAIM_LOGO} alt="claim" />
+            <EmptyToken> Nothing to claim! </EmptyToken>
+          </ClaimBox>
+          <NoResultWrapper>You have no redemption!</NoResultWrapper>
+        </>
       ) : (
         <>
           <ClaimBox>
