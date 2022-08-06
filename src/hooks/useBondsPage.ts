@@ -3,6 +3,8 @@ import { formatUnits } from '@ethersproject/units'
 
 import { useSingleContractMultipleMethods } from 'state/multicall/hooks'
 import { useDeiBonderContract } from 'hooks/useContract'
+import { useOwnerBondNFTs } from 'hooks/useOwnedNfts'
+
 import { toBN } from 'utils/numbers'
 
 export type BondNFT = {
@@ -78,19 +80,20 @@ export function useBondsAmountsOut(amountIn: string): {
 }
 
 export function useUserBondNFTs(): BondNFT[] {
-  return useMemo(
-    () => [
-      {
-        tokenId: 1,
-        deiAmount: 10000,
-        redeemTime: 16684698464,
-      },
-      {
-        tokenId: 3,
-        deiAmount: 20000,
-        redeemTime: 13333698464,
-      },
-    ],
-    []
-  )
+  const userBondNFTs = useOwnerBondNFTs()
+  const DeiBonderContract = useDeiBonderContract()
+
+  const call = useMemo(() => {
+    return userBondNFTs.map((tokenId) => ({ methodName: 'bondRedeems', callInputs: [tokenId] }))
+  }, [userBondNFTs])
+
+  const result = useSingleContractMultipleMethods(DeiBonderContract, call)
+
+  return useMemo(() => {
+    return result.map((item, index) => ({
+      tokenId: userBondNFTs[index],
+      deiAmount: item.result ? toBN(item.result['deiAmount'].toString()).div(1e18).toNumber() : null,
+      redeemTime: item.result ? toBN(item.result['redeemTime'].toString()).times(1000).toNumber() : null,
+    }))
+  }, [result, userBondNFTs])
 }

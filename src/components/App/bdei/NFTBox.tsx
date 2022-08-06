@@ -102,12 +102,13 @@ export default function NFTBox({
       <div>
         <Row>
           <ImageWithFallback src={BDEI_NFT} width={getImageSize()} height={getImageSize()} alt={`nft`} round />
-          <TokenId>DeiBond #{nft.tokenId}</TokenId>
+          {/* <TokenId>DeiBond #{nft.tokenId}</TokenId> */}
+          <TokenId>#{nft.tokenId}</TokenId>
         </Row>
       </div>
       {/* <Balance>{balanceDisplay ? balanceDisplay : '0.00'}</Balance> */}
 
-      {disabled && nft.redeemTime ? (
+      {disabled || true ? (
         <RemainingBox>
           <Balance active={disabled}>{balanceDisplay ? `Redeemable: ${balanceDisplay} bDEI` : '0.00'}</Balance>
           <RemainingDays>in {day} days</RemainingDays>
