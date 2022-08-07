@@ -9,6 +9,7 @@ import { BN_TEN, removeTrailingZeros, toBN } from 'utils/numbers'
 import { useCollateralPoolContract, useDynamicRedeemerContract, useStrategyContract } from 'hooks/useContract'
 import { DEI_TOKEN, DEUS_TOKEN, USDC_TOKEN } from 'constants/tokens'
 import useWeb3React from './useWeb3'
+import useDebounce from './useDebounce'
 
 export type RedeemTranche = {
   trancheId: number | null
@@ -303,6 +304,7 @@ export function useGetPoolData() {
   )
 
   const [allPositions, nextRedeemId, redeemCollateralBalances] = useSingleContractMultipleMethods(contract, call)
+  const isLoading = useDebounce(allPositions.loading || nextRedeemId.loading || redeemCollateralBalances.loading, 500)
 
   const allPositionsRes = !allPositions || !allPositions.result ? '' : allPositions.result[0]
 
@@ -313,12 +315,11 @@ export function useGetPoolData() {
       ? ''
       : toBN(formatUnits(redeemCollateralBalances?.result[0].toString(), USDC_TOKEN.decimals)).toString()
 
-  // console.log(allPositionsRes, nextRedeemIdRes, redeemCollateralBalancesRes)
-
   return {
     allPositions: allPositionsRes,
     nextRedeemId: nextRedeemIdRes,
     redeemCollateralBalances: redeemCollateralBalancesRes,
+    isLoading,
   }
 }
 

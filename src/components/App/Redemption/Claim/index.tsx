@@ -117,7 +117,9 @@ export default function RedeemClaim({ redeemCollateralRatio }: { redeemCollatera
     allPositions,
     nextRedeemId,
     redeemCollateralBalances,
-  }: { allPositions: IPositions[]; nextRedeemId: any; redeemCollateralBalances: any } = useGetPoolData()
+    isLoading,
+  }: { allPositions: IPositions[]; nextRedeemId: any; redeemCollateralBalances: any; isLoading: boolean } =
+    useGetPoolData()
 
   const onSwitchNetwork = useRpcChangerCallback()
 
@@ -232,7 +234,11 @@ export default function RedeemClaim({ redeemCollateralRatio }: { redeemCollatera
             <Image src={CLAIM_LOGO} alt="claim" />
             <EmptyToken> Nothing to claim! </EmptyToken>
           </ClaimBox>
-          <NoResultWrapper>You have no redemption!</NoResultWrapper>
+          {isLoading ? (
+            <NoResultWrapper>Loading...</NoResultWrapper>
+          ) : (
+            <NoResultWrapper>You have no redemption!</NoResultWrapper>
+          )}
         </>
       ) : (
         <>

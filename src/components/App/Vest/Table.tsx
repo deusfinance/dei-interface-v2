@@ -22,6 +22,9 @@ import { DotFlashing } from 'components/Icons'
 import DEUS_LOGO from '/public/static/images/tokens/deus.svg'
 import EMPTY_LOCK from '/public/static/images/pages/veDEUS/emptyLock.svg'
 import EMPTY_LOCK_MOBILE from '/public/static/images/pages/veDEUS/emptyLockMobile.svg'
+import LOADING_LOCK from '/public/static/images/pages/veDEUS/loadingLock.svg'
+import LOADING_LOCK_MOBILE from '/public/static/images/pages/veDEUS/loadingLockMobile.svg'
+
 import { formatAmount } from 'utils/numbers'
 import { DefaultHandlerError } from 'utils/parseError'
 import { ButtonText } from 'pages/vest'
@@ -177,12 +180,14 @@ export default function Table({
   toggleAPYManager,
   isMobile,
   rewards,
+  isLoading,
 }: {
   nftIds: number[]
   toggleLockManager: (nftId: number) => void
   toggleAPYManager: (nftId: number) => void
   isMobile?: boolean
   rewards: number[]
+  isLoading: boolean
 }) {
   const [offset, setOffset] = useState(0)
 
@@ -221,18 +226,16 @@ export default function Table({
               <tr>
                 <td>
                   <div style={{ margin: '0 auto' }}>
-                    {isMobile ? (
-                      <Image src={EMPTY_LOCK_MOBILE} alt="empty-lock-mobile" />
+                    {isLoading ? (
+                      <Image src={isMobile ? LOADING_LOCK_MOBILE : LOADING_LOCK} alt="loading-lock" />
                     ) : (
-                      <Image src={EMPTY_LOCK} alt="empty-lock" />
+                      <Image src={isMobile ? EMPTY_LOCK_MOBILE : EMPTY_LOCK} alt="empty-lock" />
                     )}
                   </div>
                 </td>
               </tr>
               <tr>
-                <td>
-                  <NoResults>You have no lock!</NoResults>
-                </td>
+                <td>{isLoading ? <NoResults>Loading...</NoResults> : <NoResults>You have no lock!</NoResults>}</td>
               </tr>
             </tbody>
           )}

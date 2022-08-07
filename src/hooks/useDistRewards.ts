@@ -6,7 +6,7 @@ import { toBN } from 'utils/numbers'
 
 export default function useDistRewards(): number[] {
   const veDistContract = useVeDistContract()
-  const nftIds = useOwnedNfts()
+  const nftIds = useOwnedNfts().results
 
   const callInputs = useMemo(() => (!nftIds.length ? [] : nftIds.map((id) => [id])), [nftIds])
 

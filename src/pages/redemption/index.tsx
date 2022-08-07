@@ -14,7 +14,6 @@ import { getRemainingTime } from 'utils/time'
 import { useCurrencyBalance } from 'state/wallet/hooks'
 import { useWalletModalToggle } from 'state/application/hooks'
 import useWeb3React from 'hooks/useWeb3'
-// import useDebounce from 'hooks/useDebounce'
 import { useSupportedChainId } from 'hooks/useSupportedChainId'
 import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
 import useRedemptionCallback from 'hooks/useRedemptionCallback'
@@ -27,8 +26,6 @@ import { BottomWrapper, Container, InputWrapper, Title, Wrapper, MainButton } fr
 import InputBox from 'components/InputBox'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
-// import { toBN } from 'utils/numbers'
-// import { useCollateralRatio } from 'state/dei/hooks'
 import DefaultReviewModal from 'components/ReviewModal/DefaultReviewModal'
 import Claim from 'components/App/Redemption/Claim'
 import { useDeiPrice, useDeusPrice, useUSDCPrice } from 'hooks/useCoingeckoPrice'
@@ -60,13 +57,6 @@ const RedemptionWrapper = styled(InputWrapper)`
   }
 `
 
-// const Description = styled.div`
-//   font-size: 0.85rem;
-//   line-height: 1.25rem;
-//   margin-left: 10px;
-//   color: ${({ theme }) => darken(0.4, theme.text1)};
-// `
-
 const PlusIcon = styled(Plus)`
   margin: -12.5px auto;
   margin-left: 57px;
@@ -96,26 +86,12 @@ export default function Redemption() {
   const usdcPrice = useUSDCPrice()
   const deusCoingeckoPrice = useDeusPrice()
 
-  // const collatRatio = useCollateralRatio()
-  // const collatRatioBN = toBN(collatRatio)
-  // const oneHundred = toBN(100)
-
   const { collateralAmount, deusValue } = useRedeemAmountOut(amountIn)
 
   useEffect(() => {
     setAmountOut1(collateralAmount)
     setAmountOut2(deusValue)
   }, [collateralAmount, deusValue])
-
-  // const amountOut1 = useMemo(() => {
-  //   if (!collatRatioBN || !amountIn) return '0'
-  //   return toBN(amountIn).times(collatRatioBN).div(oneHundred).toString()
-  // }, [amountIn, collatRatioBN, oneHundred])
-
-  // const amountOut2 = useMemo(() => {
-  //   if (!collatRatioBN || !amountIn) return '0'
-  //   return toBN(amountIn).times(oneHundred.minus(collatRatioBN)).div(oneHundred).toString()
-  // }, [amountIn, oneHundred, collatRatioBN])
 
   const { redeemPaused, redeemTranche } = useRedeemData()
   // console.log({ redeemPaused, rest })
@@ -254,7 +230,6 @@ export default function Redemption() {
     () => [
       { title: 'USDC claimable time', value: '30s' },
       { title: 'DEUS claimable time', value: '8h' },
-      // { title: 'Network Fee', value: 'N/A' },
       // { title: 'Min Received', value: amountOut1 + ' USDC + ' + amountOut2 + ' DEUS' },
     ],
     []
@@ -290,14 +265,6 @@ export default function Redemption() {
               <div style={{ marginTop: '20px' }}></div>
               {getApproveButton()}
               {getActionButton()}
-              {/* <div style={{ marginTop: '20px' }}></div>
-
-              {
-                <Row mt={'8px'}>
-                  <Info data-for="id" data-tip={'Tool tip for hint client'} size={15} />
-                  <Description>you will get an NFT {`"DEUS voucher"`} that will let you claim DEUS later .</Description>
-                </Row>
-              } */}
             </RedemptionWrapper>
             <BottomWrapper>
               <InfoItem name={'USDC Ratio'} value={(Number(redeemCollateralRatio) / 100).toString()} />

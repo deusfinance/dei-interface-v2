@@ -17,12 +17,12 @@ const Wrapper = styled(RowCenter)`
   text-align: center;
   gap: 20px;
   font-size: 13px;
-  padding: 20px 100px;
+  padding: 12px 100px;
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
     flex-direction: column;
     margin-top: 20px;
-    padding: 20px;
+    padding: 10px;
   `}
 `
 

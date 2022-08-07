@@ -25,7 +25,7 @@ function fuzzySearch(options: SelectSearchOption[]): any {
 }
 
 export function useSearch() {
-  const nftIds = useOwnedNfts()
+  const nftIds = useOwnedNfts().results
   const nftIdsList = useMemo(() => {
     return [
       ...nftIds.map((id) => {

@@ -142,8 +142,11 @@ export default function Vest() {
   const showTransactionPending = useIsTransactionPending(pendingTxHash)
   const isSupportedChainId = useSupportedChainId()
   const veDistContract = useVeDistContract()
-  const nftIds = useOwnedNfts()
+  const ownedNfts = useOwnedNfts()
+  const nftIds = ownedNfts.results
   const rewards = useDistRewards()
+
+  const [showTopBanner, setShowTopBanner] = useState(false)
 
   const { snapshot, searchProps } = useSearch()
   const snapshotList = useMemo(() => {
@@ -323,8 +326,6 @@ export default function Vest() {
     return !!snapshotList.length && !!totalRewards
   }, [totalRewards, snapshotList.length])
 
-  const [showTopBanner, setShowTopBanner] = useState(false)
-
   return (
     <Container>
       {showTopBanner && (
@@ -344,6 +345,7 @@ export default function Vest() {
           toggleAPYManager={toggleAPYManager}
           isMobile={isMobile}
           rewards={rewards}
+          isLoading={ownedNfts.isLoading}
         />
       </Wrapper>
       <LockManager isOpen={showLockManager} onDismiss={() => setShowLockManager(false)} nftId={nftId} />

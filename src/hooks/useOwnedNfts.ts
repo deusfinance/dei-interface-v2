@@ -8,12 +8,13 @@ import ERC721_ABI from 'constants/abi/ERC721.json'
 import { DeiBondRedeemNFT } from 'constants/addresses'
 import { toBN } from 'utils/numbers'
 import { formatUnits } from '@ethersproject/units'
+import useDebounce from './useDebounce'
 
 //TODO: build an array with balanceOf(account) size
 const idMapping = Array.from(Array(100).keys())
 
 //TODO: remove it and use useOwnerNfts()
-export default function useOwnedNfts(): number[] {
+export default function useOwnedNfts(): { results: number[]; isLoading: boolean } {
   const { account, chainId } = useWeb3React()
   const isSupportedChainId = useSupportedChainId()
   const veDEUSContract = useVeDeusContract()
@@ -23,18 +24,22 @@ export default function useOwnedNfts(): number[] {
   }, [account, chainId, isSupportedChainId])
 
   const results = useSingleContractMultipleData(veDEUSContract, 'tokenOfOwnerByIndex', callInputs)
+  const isLoading = useDebounce(results[0].loading, 2000)
 
   return useMemo(() => {
-    return results
-      .reduce((acc: number[], value) => {
-        if (!value.result) return acc
-        const result = value.result[0].toString()
-        if (!result || result === '0') return acc
-        acc.push(parseInt(result))
-        return acc
-      }, [])
-      .sort((a: number, b: number) => (a > b ? 1 : -1))
-  }, [results])
+    return {
+      results: results
+        .reduce((acc: number[], value) => {
+          if (!value.result) return acc
+          const result = value.result[0].toString()
+          if (!result || result === '0') return acc
+          acc.push(parseInt(result))
+          return acc
+        }, [])
+        .sort((a: number, b: number) => (a > b ? 1 : -1)),
+      isLoading,
+    }
+  }, [isLoading, results])
 }
 
 export function useOwnerNfts(address: string | null | undefined, ABI?: any): number[] {
