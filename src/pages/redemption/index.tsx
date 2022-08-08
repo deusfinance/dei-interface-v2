@@ -94,9 +94,7 @@ export default function Redemption() {
   }, [collateralAmount, deusValue])
 
   const { redeemPaused, redeemTranche } = useRedeemData()
-  // console.log({ redeemPaused, rest })
 
-  // Amount typed in either fields
   const deiAmount = useMemo(() => {
     return tryParseAmount(amountIn, deiCurrency || undefined)
   }, [amountIn, deiCurrency])
@@ -105,10 +103,6 @@ export default function Redemption() {
     if (!deiAmount) return false
     return deiCurrencyBalance?.lessThan(deiAmount)
   }, [deiCurrencyBalance, deiAmount])
-
-  // const usdcAmount = useMemo(() => {
-  //   return tryParseAmount(amountOut1, usdcCurrency || undefined)
-  // }, [amountOut1, usdcCurrency])
 
   const {
     state: redeemCallbackState,
@@ -120,6 +114,7 @@ export default function Redemption() {
 
   const [awaitingApproveConfirmation, setAwaitingApproveConfirmation] = useState<boolean>(false)
   const [awaitingRedeemConfirmation, setAwaitingRedeemConfirmation] = useState<boolean>(false)
+
   const spender = useMemo(() => (chainId ? DynamicRedeemer[chainId] : undefined), [chainId])
   const [approvalState, approveCallback] = useApproveCallback(deiCurrency ?? undefined, spender)
   const [showApprove, showApproveLoader] = useMemo(() => {
@@ -137,9 +132,8 @@ export default function Redemption() {
 
   const handleRedeem = useCallback(async () => {
     console.log('called handleRedeem')
-    console.log(redeemCallbackState, redeemCallback, redeemCallbackError)
+    console.log(redeemCallbackState, redeemCallbackError)
     if (!redeemCallback) return
-
     try {
       setAwaitingRedeemConfirmation(true)
       const txHash = await redeemCallback()
@@ -148,6 +142,7 @@ export default function Redemption() {
     } catch (e) {
       setAwaitingRedeemConfirmation(false)
       if (e instanceof Error) {
+        console.error(e)
       } else {
         console.error(e)
       }
@@ -157,22 +152,19 @@ export default function Redemption() {
   function getApproveButton(): JSX.Element | null {
     if (!isSupportedChainId || !account) {
       return null
-    }
-    if (awaitingApproveConfirmation) {
+    } else if (awaitingApproveConfirmation) {
       return (
         <MainButton active>
           Awaiting Confirmation <DotFlashing style={{ marginLeft: '10px' }} />
         </MainButton>
       )
-    }
-    if (showApproveLoader) {
+    } else if (showApproveLoader) {
       return (
         <MainButton active>
           Approving <DotFlashing style={{ marginLeft: '10px' }} />
         </MainButton>
       )
-    }
-    if (showApprove) {
+    } else if (showApprove) {
       return <MainButton onClick={handleApprove}>Allow us to spend {deiCurrency?.symbol}</MainButton>
     }
     return null
@@ -181,23 +173,15 @@ export default function Redemption() {
   function getActionButton(): JSX.Element | null {
     if (!chainId || !account) {
       return <MainButton onClick={toggleWalletModal}>Connect Wallet</MainButton>
-    }
-    if (showApprove) {
+    } else if (showApprove) {
       return null
-    }
-    if (redeemPaused) {
+    } else if (redeemPaused) {
       return <MainButton disabled>Redeem Paused</MainButton>
-    }
-
-    if (diff < 0 && redeemTranche.trancheId != null) {
+    } else if (diff < 0 && redeemTranche.trancheId != null) {
       return <MainButton disabled>Tranche Ended</MainButton>
-    }
-
-    if (Number(amountOut1) > redeemTranche.amountRemaining) {
+    } else if (Number(amountOut1) > redeemTranche.amountRemaining) {
       return <MainButton disabled>Exceeds Available Amount</MainButton>
-    }
-
-    if (insufficientBalance) {
+    } else if (insufficientBalance) {
       return <MainButton disabled>Insufficient {deiCurrency?.symbol} Balance</MainButton>
     }
     // if (awaitingRedeemConfirmation) {
@@ -207,7 +191,6 @@ export default function Redemption() {
     //     </MainButton>
     //   )
     // }
-
     return (
       <MainButton
         onClick={() => {

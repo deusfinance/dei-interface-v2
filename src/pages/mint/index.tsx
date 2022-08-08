@@ -67,11 +67,11 @@ const ComboInputBox = styled.div`
   }
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
-  & > * {
-    &:nth-child(2) {
-      margin: -12px auto -12px 62px;
+    & > * {
+      &:nth-child(2) {
+        margin: -12px auto -12px 62px;
+      }
     }
-  }
   `}
 `
 
@@ -105,10 +105,13 @@ export default function Mint() {
   const [inputTokenIndex, setInputTokenIndex] = useState<number>(fullCollateralIndex)
   const [hasPair, setHasPair] = useState(!!inputTokenIndex)
   const [isOpenReviewModal, toggleReviewModal] = useState(false)
+  const [slippage, setSlippage] = useState(0.5)
+  const [amountOut, setAmountOut] = useState('')
 
   // const deiPrice = useDeiPrice()
   const usdcPrice = useUSDCPrice()
   const deusCoingeckoPrice = useDeusPrice()
+  const deusPrice = useGetDeusPrice()
 
   const inputToken = tokens[inputTokenIndex]
   const token1Currency = inputToken[0]
@@ -132,8 +135,6 @@ export default function Mint() {
       setInputTokenIndex(partialCollateralIndex)
     }
   }, [fullCollateralIndex, mintCollateralRatio, partialCollateralIndex])
-
-  // const [slippage, setSlippage] = useState(0.5)
 
   // useEffect(() => {
   //   if (inputToken.length > 1) {
@@ -191,9 +192,6 @@ export default function Mint() {
 
   // const amountOut = useMintAmountOut(token1Currency, token2Currency, debouncedAmountIn1, debouncedAmountIn2, mintingFee)
 
-  const [amountOut, setAmountOut] = useState('')
-  const deusPrice = useGetDeusPrice()
-
   const { collatAmount, deusAmount } = useMintAmountOut(amountOut, deusPrice)
   useEffect(() => {
     setAmountIn1(collatAmount)
@@ -243,23 +241,17 @@ export default function Mint() {
     return [show, show && approvalState2 === ApprovalState.PENDING]
   }, [hasPair, token2Currency, approvalState2, amountIn2])
 
-  const handleApprove1 = async () => {
+  const handleApprove = async (focusType: string) => {
     setAwaitingApproveConfirmation(true)
-    await approveCallback1()
-    setAwaitingApproveConfirmation(false)
-  }
-
-  const handleApprove2 = async () => {
-    setAwaitingApproveConfirmation(true)
-    await approveCallback2()
+    if (focusType === '2') await approveCallback2()
+    else await approveCallback1()
     setAwaitingApproveConfirmation(false)
   }
 
   const handleMint = useCallback(async () => {
     console.log('called handleMint')
-    console.log(mintCallbackState, mintCallback, mintCallbackError)
+    console.log(mintCallbackState, mintCallbackError)
     if (!mintCallback) return
-
     try {
       setAwaitingMintConfirmation(true)
       const txHash = await mintCallback()
@@ -268,10 +260,9 @@ export default function Mint() {
     } catch (e) {
       setAwaitingMintConfirmation(false)
       if (e instanceof Error) {
-        // error = e.message
+        console.error(e)
       } else {
         console.error(e)
-        // error = 'An unknown error occurred.'
       }
     }
   }, [mintCallback, mintCallbackError, mintCallbackState])
@@ -291,9 +282,9 @@ export default function Mint() {
         </MainButton>
       )
     } else if (showApprove1)
-      return <MainButton onClick={handleApprove1}>Allow us to spend {token1Currency?.symbol}</MainButton>
+      return <MainButton onClick={() => handleApprove('1')}>Allow us to spend {token1Currency?.symbol}</MainButton>
     else if (showApprove2)
-      return <MainButton onClick={handleApprove2}>Allow us to spend {token2Currency?.symbol}</MainButton>
+      return <MainButton onClick={() => handleApprove('2')}>Allow us to spend {token2Currency?.symbol}</MainButton>
 
     return null
   }
@@ -331,9 +322,7 @@ export default function Mint() {
   ]
   const info = useMemo(
     () => [
-      // { title: 'Max Slippage', value: slippage.toString() + ' %' },
       { title: 'Txn Deadline', value: '20 min' },
-      // { title: 'Network Fee', value: 'N/A' },
       // { title: 'Min Received', value: amountOut },
     ],
     []
@@ -411,7 +400,7 @@ export default function Mint() {
               <AdvancedOptions slippage={slippage} setSlippage={setSlippage} />
             </SlippageWrapper> */}
             <InfoItem name={'Minter Contract'} value={'CollateralPool'} />
-            <InfoItem name={'Minting Fee'} value={'0.5%'} />
+            <InfoItem name={'Minting Fee'} value={slippage + '%'} />
           </BottomWrapper>
         </Wrapper>
         <TokensModal
