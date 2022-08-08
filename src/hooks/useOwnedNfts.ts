@@ -24,7 +24,7 @@ export default function useOwnedNfts(): { results: number[]; isLoading: boolean 
   }, [account, chainId, isSupportedChainId])
 
   const results = useSingleContractMultipleData(veDEUSContract, 'tokenOfOwnerByIndex', callInputs)
-  const isLoading = useDebounce(results[0].loading, 2000)
+  const isLoading = useDebounce(results[0]?.loading, 2000)
 
   return useMemo(() => {
     return {

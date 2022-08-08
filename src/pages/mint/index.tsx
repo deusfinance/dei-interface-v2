@@ -32,7 +32,7 @@ import DefaultReviewModal from 'components/ReviewModal/DefaultReviewModal'
 import { useDeusPrice, useUSDCPrice } from 'hooks/useCoingeckoPrice'
 import { formatDollarAmount } from 'utils/numbers'
 import { truncateAddress } from 'utils/address'
-// import { useCollateralRatio } from 'state/dei/hooks'
+import { useGetCollateralRatios } from 'hooks/useRedemptionPage'
 
 // const SlippageWrapper = styled(RowBetween)`
 //   margin-top: 10px;
@@ -79,23 +79,37 @@ export default function Mint() {
   const { chainId, account } = useWeb3React()
   const toggleWalletModal = useWalletModalToggle()
   const isSupportedChainId = useSupportedChainId()
+  const tokens = useMemo(() => MINT__INPUTS[chainId ?? SupportedChainId.FANTOM], [chainId])
+
+  const [fullCollateralIndex, partialCollateralIndex] = useMemo(() => {
+    let fullCollateralIndex = tokens.indexOf(
+      tokens.filter((item) => {
+        return item.length === 1 && item[0]?.symbol === 'USDC'
+      })[0]
+    )
+    let partialCollateralIndex = tokens.indexOf(
+      tokens.filter((item) => {
+        return item.length > 1 && item[0]?.symbol === 'USDC' && item[1]?.symbol === 'DEUS'
+      })[0]
+    )
+    if (fullCollateralIndex === -1) fullCollateralIndex = 1
+    if (partialCollateralIndex === -1) partialCollateralIndex = 0
+    return [fullCollateralIndex, partialCollateralIndex]
+  }, [tokens])
 
   const [amountIn1, setAmountIn1] = useState('')
   const [amountIn2, setAmountIn2] = useState('')
-  const [hasPair, setHasPair] = useState(true)
   // const debouncedAmountIn1 = useDebounce(amountIn1, 500)
   // const debouncedAmountIn2 = useDebounce(amountIn2, 500)
   const [isOpenTokensModal, toggleTokensModal] = useState(false)
-  const [inputTokenIndex, setInputTokenIndex] = useState<number>(0)
+  const [inputTokenIndex, setInputTokenIndex] = useState<number>(fullCollateralIndex)
+  const [hasPair, setHasPair] = useState(!!inputTokenIndex)
   const [isOpenReviewModal, toggleReviewModal] = useState(false)
 
   // const deiPrice = useDeiPrice()
   const usdcPrice = useUSDCPrice()
   const deusCoingeckoPrice = useDeusPrice()
 
-  // const collateralRatio = useCollateralRatio()
-
-  const tokens = useMemo(() => MINT__INPUTS[chainId ?? SupportedChainId.FANTOM], [chainId])
   const inputToken = tokens[inputTokenIndex]
   const token1Currency = inputToken[0]
   const token2Currency = hasPair ? inputToken[1] : DEUS_TOKEN
@@ -106,6 +120,18 @@ export default function Mint() {
 
   const token1CurrencyBalance = useCurrencyBalance(account ?? undefined, token1Currency)
   const token2CurrencyBalance = useCurrencyBalance(account ?? undefined, token2Currency)
+
+  const { mintCollateralRatio } = useGetCollateralRatios()
+
+  useEffect(() => {
+    if (Number(mintCollateralRatio) === 100) {
+      setHasPair(false)
+      setInputTokenIndex(fullCollateralIndex)
+    } else if (Number(mintCollateralRatio) < 100 && Number(mintCollateralRatio) > 0) {
+      setHasPair(true)
+      setInputTokenIndex(partialCollateralIndex)
+    }
+  }, [fullCollateralIndex, mintCollateralRatio, partialCollateralIndex])
 
   // const [slippage, setSlippage] = useState(0.5)
 
@@ -212,8 +238,8 @@ export default function Mint() {
   }, [token1Currency, approvalState1, amountIn1])
 
   const [showApprove2, showApproveLoader2] = useMemo(() => {
-    if (hasPair) return [false, false]
-    const show = token2Currency && approvalState2 !== ApprovalState.APPROVED && !!amountIn2
+    if (!hasPair) return [false, false]
+    const show = token2Currency && approvalState2 !== ApprovalState.APPROVED && !!amountIn2 && Number(amountIn2) !== 0
     return [show, show && approvalState2 === ApprovalState.PENDING]
   }, [hasPair, token2Currency, approvalState2, amountIn2])
 

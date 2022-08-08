@@ -304,7 +304,10 @@ export function useGetPoolData() {
   )
 
   const [allPositions, nextRedeemId, redeemCollateralBalances] = useSingleContractMultipleMethods(contract, call)
-  const isLoading = useDebounce(allPositions.loading || nextRedeemId.loading || redeemCollateralBalances.loading, 500)
+  const isLoading = useDebounce(
+    allPositions?.loading || nextRedeemId?.loading || redeemCollateralBalances?.loading,
+    500
+  )
 
   const allPositionsRes = !allPositions || !allPositions.result ? '' : allPositions.result[0]
 
