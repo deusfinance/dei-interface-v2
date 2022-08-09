@@ -41,9 +41,9 @@ const RemainingBlock = styled.div<{ width?: string }>`
 const Button = styled(PrimaryButton)`
   font-family: 'Inter';
   font-weight: 700;
-  height: 40px;
+  height: 45px;
   padding: 0;
-  font-size: 12px;
+  font-size: 14px;
   border-radius: 8px;
 `
 
@@ -71,17 +71,13 @@ export default function ClaimButton({
 
   if (chainId && chainId !== SupportedChainId.FANTOM) {
     return <Button onClick={onSwitchNetwork}>Switch to FANTOM</Button>
-  }
-
-  if (awaitingClaimConfirmation) {
+  } else if (awaitingClaimConfirmation) {
     return (
       <Button active>
         Awaiting Confirmation <DotFlashing style={{ marginLeft: '10px' }} />
       </Button>
     )
-  }
-
-  if (!claimableBlock || !currentBlock) {
+  } else if (!claimableBlock || !currentBlock) {
     return <Button disabled>Claim</Button>
   }
 
