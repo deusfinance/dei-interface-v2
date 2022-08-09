@@ -24,7 +24,7 @@ export const Dot = styled.div<{
   gap: string
   delay: string
 }>`
-  background-color: black;
+  background-color: ${({ theme }) => theme.text1};
   border-radius: 50%;
   width: ${(props) => props.size};
   height: ${(props) => props.size};

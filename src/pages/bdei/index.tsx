@@ -1,268 +1,326 @@
-import React, { useState, useMemo, useCallback } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import Link from 'next/link'
 import styled from 'styled-components'
-import { darken } from 'polished'
-import { ArrowDown, Plus } from 'react-feather'
 import Image from 'next/image'
+import { isMobile } from 'react-device-detect'
+import toast from 'react-hot-toast'
 
-import { useCurrencyBalance } from 'state/wallet/hooks'
-import { useWalletModalToggle } from 'state/application/hooks'
+import { useDeusPrice } from 'hooks/useCoingeckoPrice'
 import useWeb3React from 'hooks/useWeb3'
-import useDebounce from 'hooks/useDebounce'
-import { useSupportedChainId } from 'hooks/useSupportedChainId'
-import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
-import useRedemptionCallback from 'hooks/useRedemptionCallback'
-import { useRedeemAmountsOut, useRedeemData } from 'hooks/useRedemptionPage'
-import { useERC721ApproveAllCallback } from 'hooks/useApproveNftCallback2'
+import { useVestedAPY } from 'hooks/useVested'
 
-import { tryParseAmount } from 'utils/parse'
-import { BDEI_TOKEN, DEI_TOKEN } from 'constants/tokens'
-import { DeiBondRedeemNFT, bDeiRedeemer } from 'constants/addresses'
-import { useUserDeiBondInfo } from 'hooks/useBondsPage'
+import { formatAmount } from 'utils/numbers'
+import { getMaximumDate } from 'utils/vest'
 
-import REDEEM_IMG from '/public/static/images/pages/bdei/TableauBackground.svg'
 import DEI_LOGO from '/public/static/images/pages/bdei/DEI_logo.svg'
-import BOND_NFT_LOGO from '/public/static/images/pages/bdei/BondNFT.svg'
 
-import { DotFlashing, Info } from 'components/Icons'
-import { Row } from 'components/Row'
 import Hero from 'components/Hero'
+import { useSearch, SearchField, Table } from 'components/App/bdei'
+import { PrimaryButtonWide } from 'components/Button'
+import LockManager from 'components/App/Vest/LockManager'
+import APYManager from 'components/App/Vest/APYManager'
+import { RowFixed, RowBetween } from 'components/Row'
 import StatsHeader from 'components/StatsHeader'
-import SelectBox from 'components/SelectBox'
-import { BottomWrapper, Container, InputWrapper, Title, Wrapper, MainButton } from 'components/App/StableCoin'
-import InputBox from 'components/InputBox'
-import InfoItem from 'components/App/StableCoin/InfoItem'
-import Tableau from 'components/App/StableCoin/Tableau'
-import NFTsModal from 'components/App/bdei/NFTsModal'
+import { Container, Title } from 'components/App/StableCoin'
 
-const NFTsWrapper = styled(InputWrapper)`
+import { useVeDistContract } from 'hooks/useContract'
+import useOwnedNfts from 'hooks/useOwnedNfts'
+import { useSupportedChainId } from 'hooks/useSupportedChainId'
+import useDistRewards from 'hooks/useDistRewards'
+
+import { DefaultHandlerError } from 'utils/parseError'
+import { useIsTransactionPending, useTransactionAdder } from 'state/transactions/hooks'
+import { DotFlashing } from 'components/Icons'
+import InfoHeader from 'components/InfoHeader'
+
+const Wrapper = styled(Container)`
+  margin: 0 auto;
+  margin-top: 50px;
+  width: clamp(250px, 90%, 1168px);
+
   & > * {
-    &:nth-child(1) {
-      border-bottom-left-radius: 0;
-      border-bottom-right-radius: 0;
-    }
     &:nth-child(3) {
-      border-top-left-radius: 0;
-      border-top-right-radius: 0;
-    }
-
-    &:nth-child(4) {
-      margin: 15px auto;
-    }
-    &:nth-child(2) {
-      margin: -12.5px auto;
-      margin-left: 57px;
-    }
-  }
-`
-
-const Description = styled.div`
-  font-size: 0.85rem;
-  line-height: 1.25rem;
-  margin-left: 10px;
-  color: ${({ theme }) => darken(0.4, theme.text1)};
-`
-
-const PlusIcon = styled(Plus)`
-  margin: -14px auto;
-  margin-left: 27px;
-  z-index: 1000;
-  padding: 3px;
-  border: 1px solid ${({ theme }) => theme.bg4};
-  border-radius: 4px;
-  background-color: ${({ theme }) => theme.bg4};
-  color: ${({ theme }) => theme.text2};
-`
-
-export default function Redemption() {
-  const { chainId, account } = useWeb3React()
-  const toggleWalletModal = useWalletModalToggle()
-  const isSupportedChainId = useSupportedChainId()
-  const [amountIn, setAmountIn] = useState('')
-  const debouncedAmountIn = useDebounce(amountIn, 500)
-  const deiCurrency = DEI_TOKEN
-  const bdeiCurrency = BDEI_TOKEN
-  const bdeiCurrencyBalance = useCurrencyBalance(account ?? undefined, bdeiCurrency)
-  const [isOpenNFTsModal, toggleNFTsModal] = useState(false)
-  const [inputNFT, setInputNFT] = useState<number>(-1)
-
-  /* const { amountIn, amountOut1, amountOut2, onUserInput, onUserOutput1, onUserOutput2 } = useRedeemAmounts() */
-  const { amountOut1, amountOut2 } = useRedeemAmountsOut(debouncedAmountIn, bdeiCurrency)
-  const { redeemPaused, redeemTranche } = useRedeemData()
-  // console.log({ redeemPaused, rest })
-  // const [selectedNftId, setSelectedNftId] = useState('0')
-
-  // Amount typed in either fields
-  const bdeiAmount = useMemo(() => {
-    return tryParseAmount(amountIn, bdeiCurrency || undefined)
-  }, [amountIn, bdeiCurrency])
-
-  const insufficientBalance = useMemo(() => {
-    if (!bdeiAmount) return false
-    return bdeiCurrencyBalance?.lessThan(bdeiAmount)
-  }, [bdeiCurrencyBalance, bdeiAmount])
-
-  const {
-    state: redeemCallbackState,
-    callback: redeemCallback,
-    error: redeemCallbackError,
-  } = useRedemptionCallback(bdeiAmount)
-
-  const [awaitingApproveConfirmation, setAwaitingApproveConfirmation] = useState<boolean>(false)
-  const [awaitingRedeemConfirmation, setAwaitingRedeemConfirmation] = useState<boolean>(false)
-
-  const spender = useMemo(() => (chainId ? bDeiRedeemer[chainId] : undefined), [chainId])
-  const [approvalStateERC721, approveCallbackERC721] = useERC721ApproveAllCallback(
-    chainId ? DeiBondRedeemNFT[chainId] : undefined,
-    spender
-  )
-  const showApproveERC721 = useMemo(() => approvalStateERC721 !== ApprovalState.APPROVED, [approvalStateERC721])
-
-  const [approvalStateERC20, approveCallbackERC20] = useApproveCallback(bdeiCurrency ?? undefined, spender)
-
-  const [showApproveERC20, showApproveLoaderERC20] = useMemo(() => {
-    const show = bdeiCurrency && approvalStateERC20 !== ApprovalState.APPROVED && !!amountIn
-    return [show, show && approvalStateERC20 === ApprovalState.PENDING]
-  }, [bdeiCurrency, approvalStateERC20, amountIn])
-
-  const handleApproveERC20 = async () => {
-    setAwaitingApproveConfirmation(true)
-    await approveCallbackERC20()
-    setAwaitingApproveConfirmation(false)
-  }
-  const handleApproveERC721 = async () => {
-    setAwaitingApproveConfirmation(true)
-    await approveCallbackERC721()
-    setAwaitingApproveConfirmation(false)
-  }
-
-  const handleRedeem = useCallback(async () => {
-    console.log('called handleRedeem')
-    console.log(redeemCallbackState, redeemCallback, redeemCallbackError)
-    if (!redeemCallback) return
-
-    // let error = ''
-    try {
-      setAwaitingRedeemConfirmation(true)
-      const txHash = await redeemCallback()
-      setAwaitingRedeemConfirmation(false)
-      console.log({ txHash })
-    } catch (e) {
-      setAwaitingRedeemConfirmation(false)
-      if (e instanceof Error) {
-        // error = e.message
-      } else {
-        console.error(e)
-        // error = 'An unknown error occurred.'
+      margin-bottom: 25px;
+      display: flex;
+      flex-flow: row nowrap;
+      width: 100%;
+      gap: 15px;
+      & > * {
+        &:last-child {
+          max-width: 300px;
+        }
       }
     }
-  }, [redeemCallbackState, redeemCallback, redeemCallbackError])
+  }
 
-  function getApproveButton(): JSX.Element | null {
-    if (!isSupportedChainId || !account) {
-      return null
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    margin-top: 20px;
+  `}
+`
+
+const UpperRow = styled(RowBetween)`
+  background: ${({ theme }) => theme.bg0};
+  border-top-right-radius: 12px;
+  border-top-left-radius: 12px;
+  flex-wrap: wrap;
+
+  & > * {
+    margin: 10px 10px;
+  }
+`
+
+const ButtonWrapper = styled(RowFixed)`
+  gap: 10px;
+  & > * {
+    height: 50px;
+  }
+`
+
+export const ButtonText = styled.span<{ disabled?: boolean }>`
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 17px;
+
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    font-size: 14px;
+  `}
+
+  ${({ disabled }) =>
+    disabled &&
+    `
+    background: -webkit-linear-gradient(92.33deg, #e29d52 -10.26%, #de4a7b 80%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  `}
+`
+
+const TopBorderWrap = styled.div<{ active?: any }>`
+  background: ${({ theme }) => theme.primary2};
+  padding: 1px;
+  border-radius: 8px;
+  margin-right: 4px;
+  margin-left: 3px;
+  border: 1px solid ${({ theme }) => theme.bg0};
+  flex: 1;
+
+  &:hover {
+    border: 1px solid ${({ theme, active }) => (active ? theme.bg0 : theme.warning)};
+  }
+`
+
+const TopBorder = styled.div`
+  background: ${({ theme }) => theme.bg0};
+  border-radius: 6px;
+  height: 100%;
+  width: 100%;
+  display: flex;
+`
+
+const FirstRowWrapper = styled.div`
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  width: 100%;
+  gap: 10px;
+`
+
+const UpperRowMobile = styled(UpperRow)<{ hasSecondRow?: boolean }>`
+  /* margin-bottom: ${({ hasSecondRow }) => (hasSecondRow ? '0' : '-20px')}; */
+`
+
+export default function bDei() {
+  const { chainId, account } = useWeb3React()
+  const [showLockManager, setShowLockManager] = useState(false)
+  const [showAPYManager, setShowAPYManager] = useState(false)
+  const [nftId, setNftId] = useState(0)
+  const { lockedVeDEUS } = useVestedAPY(undefined, getMaximumDate())
+  const deusPrice = useDeusPrice()
+  const addTransaction = useTransactionAdder()
+  const [awaitingConfirmation, setAwaitingConfirmation] = useState(false)
+  const [pendingTxHash, setPendingTxHash] = useState('')
+  const showTransactionPending = useIsTransactionPending(pendingTxHash)
+  const isSupportedChainId = useSupportedChainId()
+  const veDistContract = useVeDistContract()
+  const ownedNfts = useOwnedNfts()
+  const nftIds = ownedNfts.results
+  const rewards = useDistRewards()
+
+  const [showTopBanner, setShowTopBanner] = useState(false)
+
+  const { snapshot, searchProps } = useSearch()
+  const snapshotList = useMemo(() => {
+    return snapshot.options.map((obj) => {
+      return obj.value
+    })
+  }, [snapshot])
+
+  useEffect(() => {
+    setShowLockManager(false)
+    setShowAPYManager(false)
+  }, [chainId, account])
+
+  const toggleLockManager = (nftId: number) => {
+    setShowLockManager(true)
+    setShowAPYManager(false)
+    setNftId(nftId)
+  }
+
+  const toggleAPYManager = (nftId: number) => {
+    setShowLockManager(false)
+    setShowAPYManager(true)
+    setNftId(nftId)
+  }
+
+  //pass just unclaimed tokenIds to claimAll method
+  const [unClaimedIds, totalRewards] = useMemo(() => {
+    if (!nftIds.length || !rewards.length) return [[], 0]
+    let total = 0
+    return [
+      rewards.reduce((acc: number[], value: number, index: number) => {
+        if (!value) return acc
+        acc.push(nftIds[index])
+        total += value
+        return acc
+      }, []),
+      total,
+    ]
+  }, [nftIds, rewards])
+
+  const onClaimAll = useCallback(async () => {
+    try {
+      if (!veDistContract || !account || !isSupportedChainId || !unClaimedIds.length) return
+      setAwaitingConfirmation(true)
+      const response = await veDistContract.claimAll(unClaimedIds)
+      addTransaction(response, { summary: `Claim All veDEUS rewards`, vest: { hash: response.hash } })
+      setAwaitingConfirmation(false)
+      setPendingTxHash(response.hash)
+    } catch (err) {
+      console.log(err)
+      toast.error(DefaultHandlerError(err))
+      setAwaitingConfirmation(false)
+      setPendingTxHash('')
     }
-    if (awaitingApproveConfirmation) {
+  }, [veDistContract, unClaimedIds, addTransaction, account, isSupportedChainId])
+
+  function getClaimAllButton() {
+    if (awaitingConfirmation) {
       return (
-        <MainButton active>
-          Awaiting Confirmation <DotFlashing style={{ marginLeft: '10px' }} />
-        </MainButton>
+        <PrimaryButtonWide active>
+          <ButtonText>
+            Confirming <DotFlashing style={{ marginLeft: '10px' }} />
+          </ButtonText>
+        </PrimaryButtonWide>
       )
-    }
-    if (showApproveLoaderERC20) {
+    } else if (showTransactionPending) {
       return (
-        <MainButton active>
-          Approving <DotFlashing style={{ marginLeft: '10px' }} />
-        </MainButton>
+        <PrimaryButtonWide active>
+          <ButtonText>
+            Claiming <DotFlashing style={{ marginLeft: '10px' }} />
+          </ButtonText>
+        </PrimaryButtonWide>
       )
-    }
-    if (showApproveERC721) {
-      return <MainButton onClick={handleApproveERC721}>Approve NFT</MainButton>
-    }
-    if (showApproveERC20) {
-      return <MainButton onClick={handleApproveERC20}>Approve {bdeiCurrency?.symbol}</MainButton>
+    } else if (totalRewards) {
+      return (
+        <PrimaryButtonWide onClick={onClaimAll}>
+          <ButtonText>Claim all {formatAmount(totalRewards)} veDEUS</ButtonText>
+        </PrimaryButtonWide>
+      )
     }
     return null
   }
 
-  function getActionButton(): JSX.Element | null {
-    if (!chainId || !account) {
-      return <MainButton onClick={toggleWalletModal}>Connect Wallet</MainButton>
-    }
-    if (showApproveERC20 || showApproveERC721) {
-      return null
-    }
-    if (redeemPaused) {
-      return <MainButton disabled>Redeem Paused</MainButton>
-    }
-
-    if (Number(amountOut1) > redeemTranche.amountRemaining) {
-      return <MainButton disabled>Exceeds Available Amount</MainButton>
-    }
-
-    if (insufficientBalance) {
-      return <MainButton disabled>Insufficient {deiCurrency?.symbol} Balance</MainButton>
-    }
-    if (awaitingRedeemConfirmation) {
+  function getClaimAllButtonMobile() {
+    if (awaitingConfirmation) {
       return (
-        <MainButton>
-          Redeeming DEI <DotFlashing style={{ marginLeft: '10px' }} />
-        </MainButton>
+        <PrimaryButtonWide width={'100%'} active style={{ marginTop: '2px', marginBottom: '12px' }}>
+          <ButtonText>
+            Confirming <DotFlashing style={{ marginLeft: '10px' }} />
+          </ButtonText>
+        </PrimaryButtonWide>
+      )
+    } else if (showTransactionPending) {
+      return (
+        <PrimaryButtonWide width={'100%'} active style={{ marginTop: '2px', marginBottom: '12px' }}>
+          <ButtonText>
+            Claiming <DotFlashing style={{ marginLeft: '10px' }} />
+          </ButtonText>
+        </PrimaryButtonWide>
+      )
+    } else if (totalRewards) {
+      return (
+        <PrimaryButtonWide width={'100%'} onClick={onClaimAll} style={{ marginTop: '2px', marginBottom: '12px' }}>
+          <ButtonText>Claim all {formatAmount(totalRewards)} veDEUS</ButtonText>
+        </PrimaryButtonWide>
       )
     }
-
-    return <MainButton onClick={() => handleRedeem()}>Redeem DEI</MainButton>
+    return null
   }
 
-  const userStats = useUserDeiBondInfo()
+  function getUpperRow() {
+    return (
+      <UpperRow>
+        <div>
+          <SearchField searchProps={searchProps} />
+        </div>
 
-  const items = useMemo(() => [{ name: 'Total DEI Claimed', value: '0' }, ...userStats], [userStats])
+        <ButtonWrapper>{hasClaimAll && getClaimAllButton()}</ButtonWrapper>
+      </UpperRow>
+    )
+  }
+
+  function getUpperRowMobile() {
+    return (
+      <UpperRowMobile hasSecondRow={!!snapshotList.length}>
+        <FirstRowWrapper>
+          <SearchField searchProps={searchProps} />
+        </FirstRowWrapper>
+
+        {hasClaimAll && getClaimAllButtonMobile()}
+      </UpperRowMobile>
+    )
+  }
+
+  const items = [
+    { name: 'Total  DEI Claimed', value: '1' },
+    { name: 'Your bDEI Balance', value: '1' },
+    { name: 'Your NFT Value', value: '1' },
+    { name: 'Your Next Maturity', value: '1' },
+    { name: 'Your Claimable DEI', value: '1' },
+  ]
+  const hasClaimAll: boolean = useMemo(() => {
+    return !!snapshotList.length && !!totalRewards
+  }, [totalRewards, snapshotList.length])
 
   return (
     <Container>
+      {showTopBanner && (
+        <InfoHeader onClose={setShowTopBanner} text={'Some random text! some random text! some random text!'} />
+      )}
       <Hero>
-        <Image src={DEI_LOGO} height={'90px'} alt="DEI logo" />
+        <Image src={DEI_LOGO} width={'76px'} height={'90px'} alt="Logo" />
         <Title>DEI Bond</Title>
         <StatsHeader items={items} />
       </Hero>
       <Wrapper>
-        <Tableau title={'Redemption'} imgSrc={REDEEM_IMG} />
-        <NFTsWrapper>
-          <SelectBox
-            icon={BOND_NFT_LOGO}
-            placeholder="Select an NFT"
-            value={inputNFT > -1 ? `DeiBond #${inputNFT}` : ''}
-            onSelect={() => toggleNFTsModal(true)}
-          />
-          <PlusIcon size={'24px'} />
-          <InputBox currency={bdeiCurrency} value={amountOut2} onChange={(value: string) => console.log(value)} />
-          <ArrowDown />
-          <InputBox
-            currency={deiCurrency}
-            value={amountIn}
-            onChange={(value: string) => setAmountIn(value)}
-            disabled={true}
-          />
-          <div style={{ marginTop: '20px' }}></div>
-          {getApproveButton()}
-          {getActionButton()}
-          <div style={{ marginTop: '20px' }}></div>
-          {
-            <Row mt={'8px'}>
-              <Info data-for="id" data-tip={'Tool tip for hint client'} size={15} />
-              <Description>you will spend an {`"DeiBond NFT"`} to redeem your bDEI.</Description>
-            </Row>
-          }
-        </NFTsWrapper>
-        <BottomWrapper>
-          <InfoItem name={'DEI Ratio'} value={'N/A'} />
-        </BottomWrapper>
-      </Wrapper>
+        {isMobile ? getUpperRowMobile() : getUpperRow()}
 
-      <NFTsModal
-        isOpen={isOpenNFTsModal}
-        toggleModal={(action: boolean) => toggleNFTsModal(action)}
-        selectedNFT={inputNFT}
-        setNFT={setInputNFT}
+        <Table
+          nftIds={snapshotList as number[]}
+          toggleLockManager={toggleLockManager}
+          toggleAPYManager={toggleAPYManager}
+          isMobile={isMobile}
+          rewards={rewards}
+          isLoading={ownedNfts.isLoading}
+        />
+      </Wrapper>
+      <LockManager isOpen={showLockManager} onDismiss={() => setShowLockManager(false)} nftId={nftId} />
+      <APYManager
+        isOpen={showAPYManager}
+        onDismiss={() => setShowAPYManager(false)}
+        nftId={nftId}
+        toggleLockManager={toggleLockManager}
       />
     </Container>
   )
