@@ -7,9 +7,9 @@ import ANALYTICS_LOGO from '/public/static/images/pages/analytics/DEI_Analytics.
 import Hero from 'components/Hero'
 import { Container, Title } from 'components/App/StableCoin'
 import { RowCenter } from 'components/Row'
-import DeusStats from 'components/App/Analytics/DEUSStats'
 import VeDeusStats from 'components/App/Analytics/VeDeusStats'
-import DeiStats from 'components/App/Analytics/DEIStats'
+import DeiStats from 'components/App/Analytics/DeiStats'
+import DeusStats from 'components/App/Analytics/DeusStats'
 
 const Wrapper = styled(RowCenter)`
   max-width: 1300px;
