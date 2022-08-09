@@ -49,6 +49,7 @@
     "react-tooltip": "^4.2.21",
     "react-window": "^1.8.6",
     "rebass": "^4.0.7",
+    "recharts": "^2.1.13",
     "redux": "^4.1.1",
     "redux-localstorage-simple": "^2.4.1",
     "redux-persist": "^6.0.0",
