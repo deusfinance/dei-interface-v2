@@ -28,6 +28,7 @@ import LOADING_LOCK_MOBILE from '/public/static/images/pages/veDEUS/loadingLockM
 import { formatAmount } from 'utils/numbers'
 import { DefaultHandlerError } from 'utils/parseError'
 import { ButtonText } from 'pages/vest'
+import useWeb3React from 'hooks/useWeb3'
 
 dayjs.extend(utc)
 dayjs.extend(relativeTime)
@@ -71,9 +72,10 @@ const Cell = styled.td<{
   height: 90px;
 `
 
-const NoResults = styled.div`
+const NoResults = styled.div<{ warning?: boolean }>`
   text-align: center;
   padding: 20px;
+  color: ${({ theme, warning }) => (warning ? theme.warning : 'white')};
 `
 
 const NFTWrap = styled(Column)`
@@ -99,11 +101,6 @@ const CellAmount = styled.div`
     font-size: 0.95rem;
   `};
 `
-
-// const CellDescription = styled.div`
-//   font-size: 0.6rem;
-//   color: ${({ theme }) => theme.text2};
-// `
 
 const Name = styled.div`
   font-size: 12px;
@@ -190,6 +187,7 @@ export default function Table({
   isLoading: boolean
 }) {
   const [offset, setOffset] = useState(0)
+  const { account } = useWeb3React()
 
   const paginatedItems = useMemo(() => {
     return nftIds.slice(offset, offset + itemsPerPage)
@@ -235,7 +233,15 @@ export default function Table({
                 </td>
               </tr>
               <tr>
-                <td>{isLoading ? <NoResults>Loading...</NoResults> : <NoResults>You have no lock!</NoResults>}</td>
+                <td>
+                  {!account ? (
+                    <NoResults warning>Wallet is not connected!</NoResults>
+                  ) : isLoading ? (
+                    <NoResults>Loading...</NoResults>
+                  ) : (
+                    <NoResults>You have no lock!</NoResults>
+                  )}
+                </td>
               </tr>
             </tbody>
           )}
