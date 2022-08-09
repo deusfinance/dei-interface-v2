@@ -45,9 +45,12 @@ export const ClaimBox = styled.div`
 `
 
 const DeusBox = styled.div`
-  margin-top: 12px;
   background: ${({ theme }) => theme.bg2};
   border-radius: 12px;
+`
+
+const UsdcBox = styled.div`
+  margin-bottom: 12px;
 `
 
 export const BottomRow = styled(Row)`
@@ -126,6 +129,7 @@ export default function RedeemClaim({ redeemCollateralRatio }: { redeemCollatera
 
   const [unClaimedCollateral, setUnClaimedCollateral] = useState<IToken>()
   useEffect(() => {
+    setUnClaimedCollateral(undefined)
     if (redeemCollateralBalances && redeemCollateralBalances !== '0') {
       const lastRedeemTimestamp = allPositions[allPositions.length - 1].timestamp
       const usdcToken: IToken = {
@@ -216,14 +220,16 @@ export default function RedeemClaim({ redeemCollateralRatio }: { redeemCollatera
       ) : (
         <ClaimBox>
           {unClaimedCollateral && (
-            <TokenBox
-              symbol={unClaimedCollateral.symbol}
-              claimableBlock={unClaimedCollateral.claimableBlock}
-              currentBlock={currentBlock}
-              amount={unClaimedCollateral.amount}
-              onSwitchNetwork={() => onSwitchNetwork(SupportedChainId.FANTOM)}
-              onClaim={() => handleClaim(unClaimedCollateral)}
-            />
+            <UsdcBox>
+              <TokenBox
+                symbol={unClaimedCollateral.symbol}
+                claimableBlock={unClaimedCollateral.claimableBlock}
+                currentBlock={currentBlock}
+                amount={unClaimedCollateral.amount}
+                onSwitchNetwork={() => onSwitchNetwork(SupportedChainId.FANTOM)}
+                onClaim={() => handleClaim(unClaimedCollateral)}
+              />
+            </UsdcBox>
           )}
           <DeusBox>
             {unClaimed.map((token: IToken, index: number) => {

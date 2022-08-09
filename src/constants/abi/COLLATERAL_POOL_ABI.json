@@ -314,7 +314,7 @@
           { "internalType": "uint256", "name": "timestamp", "type": "uint256" }
         ],
         "internalType": "struct DEIPool.RedeemPosition[]",
-        "name": "positinos",
+        "name": "positions",
         "type": "tuple[]"
       }
     ],

@@ -15,6 +15,7 @@ import { USDC_ADDRESS, DEUS_ADDRESS, DEI_ADDRESS, BDEI_ADDRESS } from './address
 
 export const DEI_TOKEN = new Token(SupportedChainId.FANTOM, DEI_ADDRESS[SupportedChainId.FANTOM], 18, 'DEI', 'DEI')
 
+// FIXME: this token is only used in migration page, do we need this?
 export const DEIv2_TOKEN = new Token(
   SupportedChainId.FANTOM,
   '0xd358f17774B69A8c06cfAA0d4402D2F604d4a4bF',
@@ -114,7 +115,7 @@ export const Tokens: { [key: string]: TokenMap } = {
   // },
   WETH: duplicateTokenByAddressMap(WETH, 18, 'WETH', 'wETH'),
   USDC: duplicateTokenByAddressMap(USDC, 6, 'USDC', 'USD//C', { [SupportedChainId.BSC]: 18 }),
-  DEI: duplicateTokenByChainId('0xd358f17774B69A8c06cfAA0d4402D2F604d4a4bF', 18, 'DEI', 'DEI'),
+  DEI: duplicateTokenByChainId(DEI_ADDRESS[SupportedChainId.FANTOM], 18, 'DEI', 'DEI'),
   DEUS: duplicateTokenByChainId('0xDE5ed76E7c05eC5e4572CfC88d1ACEA165109E44', 18, 'DEUS', 'DEUS'),
   WNATIVE: {
     [SupportedChainId.MAINNET]: new Token(1, WRAPPED_NATIVE[1], 18, 'WETH', 'Wrapped Ether'),
