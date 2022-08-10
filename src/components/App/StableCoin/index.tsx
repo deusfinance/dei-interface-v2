@@ -1,7 +1,8 @@
 import styled from 'styled-components'
 
 import { PrimaryButton } from 'components/Button'
-import { Row, RowBetween, RowEnd } from 'components/Row'
+import { Row, RowBetween, RowEnd, RowCenter } from 'components/Row'
+import { useWalletModalToggle } from 'state/application/hooks'
 
 export const Container = styled(Row)`
   flex-flow: column nowrap;
@@ -94,3 +95,42 @@ export const MainButton = styled(PrimaryButton)`
     height: 60px;
   `}
 `
+
+const ConnectButtonWrap = styled(PrimaryButton)`
+  background: ${({ theme }) => theme.specialBG1};
+  border-radius: 12px;
+  padding: 2px;
+  width: 100%;
+  height: 72px;
+  cursor: pointer;
+`
+
+export const ConnectButton = styled(RowCenter)`
+  background: ${({ theme }) => theme.bg2};
+  border-radius: 8px;
+  height: 100%;
+  width: 100%;
+  white-space: nowrap;
+`
+
+export const ConnectButtonText = styled.span`
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 24px;
+  background: -webkit-linear-gradient(0deg, #e29d52 -10.26%, #de4a7b 80%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+`
+
+export function ConnectWallet() {
+  const toggleWalletModal = useWalletModalToggle()
+  return (
+    <ConnectButtonWrap onClick={toggleWalletModal}>
+      <ConnectButton>
+        <ConnectButtonText>Connect Wallet</ConnectButtonText>
+      </ConnectButton>
+    </ConnectButtonWrap>
+  )
+}

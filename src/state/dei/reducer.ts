@@ -77,6 +77,9 @@ const initialState = {
   poolCeiling: 0,
   mintPaused: false,
   redeemPaused: false,
+  collectionPaused: false,
+  collateralCollectionDelay: 0,
+  deusCollectionDelay: 0,
 }
 
 export const fetchPrices = createAsyncThunk<Prices, { chainId: number }>('dei/fetchPrices', async ({ chainId }) => {
@@ -102,17 +105,20 @@ const deiSlice = createSlice({
     updateCollateralRatio: (state, { payload }) => {
       state.collateralRatio = payload
     },
-    updatePoolBalance: (state, { payload }) => {
-      state.poolBalance = payload
+    updateCollateralCollectionDelay: (state, { payload }) => {
+      state.collateralCollectionDelay = payload
     },
-    updatePoolCeiling: (state, { payload }) => {
-      state.poolCeiling = payload
+    updateDeusCollectionDelay: (state, { payload }) => {
+      state.deusCollectionDelay = payload
     },
     updateMintingFee: (state, { payload }) => {
       state.mintingFee = payload
     },
     updateRedemptionFee: (state, { payload }) => {
       state.redemptionFee = payload
+    },
+    updateCollectionPaused: (state, { payload }) => {
+      state.collectionPaused = payload
     },
     updateMintPaused: (state, { payload }) => {
       state.mintPaused = payload
@@ -148,8 +154,9 @@ const { actions, reducer } = deiSlice
 export const {
   updateStatus,
   updateCollateralRatio,
-  updatePoolBalance,
-  updatePoolCeiling,
+  updateDeusCollectionDelay,
+  updateCollateralCollectionDelay,
+  updateCollectionPaused,
   updateMintingFee,
   updateRedemptionFee,
   updateMintPaused,

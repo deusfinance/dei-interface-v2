@@ -8,30 +8,37 @@ import DEUS_LOGO from '/public/static/images/pages/redemption/DEUS_logo.svg'
 
 import { DEI_TOKEN, DEUS_TOKEN, USDC_TOKEN } from 'constants/tokens'
 import { CollateralPool, DynamicRedeemer } from 'constants/addresses'
+import { SupportedChainId } from 'constants/chains'
 import { tryParseAmount } from 'utils/parse'
-import { getRemainingTime } from 'utils/time'
+import { truncateAddress } from 'utils/address'
+import { formatDollarAmount } from 'utils/numbers'
 
 import { useCurrencyBalance } from 'state/wallet/hooks'
-import { useWalletModalToggle } from 'state/application/hooks'
+import { useRedemptionFee, useRedeemPaused } from 'state/dei/hooks'
 import useWeb3React from 'hooks/useWeb3'
 import { useSupportedChainId } from 'hooks/useSupportedChainId'
 import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
 import useRedemptionCallback from 'hooks/useRedemptionCallback'
-import { useGetCollateralRatios, useRedeemAmountOut, useRedeemData } from 'hooks/useRedemptionPage'
+import { useGetCollateralRatios, useRedeemAmountOut } from 'hooks/useRedemptionPage'
+import { useDeusPrice, useUSDCPrice } from 'hooks/useCoingeckoPrice'
 
 import { DotFlashing } from 'components/Icons'
 import Hero from 'components/Hero'
 import StatsHeader from 'components/StatsHeader'
-import { BottomWrapper, Container, InputWrapper, Title, Wrapper, MainButton } from 'components/App/StableCoin'
+import {
+  BottomWrapper,
+  Container,
+  InputWrapper,
+  Title,
+  Wrapper,
+  MainButton,
+  ConnectWallet,
+} from 'components/App/StableCoin'
 import InputBox from 'components/InputBox'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
 import DefaultReviewModal from 'components/ReviewModal/DefaultReviewModal'
 import Claim from 'components/App/Redemption/Claim'
-import { useDeusPrice, useUSDCPrice } from 'hooks/useCoingeckoPrice'
-import { formatDollarAmount } from 'utils/numbers'
-import { SupportedChainId } from 'constants/chains'
-import { truncateAddress } from 'utils/address'
 
 const MainWrap = styled.div`
   display: flex;
@@ -70,9 +77,10 @@ const PlusIcon = styled(Plus)`
 
 export default function Redemption() {
   const { chainId, account } = useWeb3React()
-  const toggleWalletModal = useWalletModalToggle()
   const isSupportedChainId = useSupportedChainId()
   const [amountIn, setAmountIn] = useState('')
+  const redemptionFee = useRedemptionFee()
+  const redeemPaused = useRedeemPaused()
   // const debouncedAmountIn = useDebounce(amountIn, 500)
   const deiCurrency = DEI_TOKEN
   const usdcCurrency = USDC_TOKEN
@@ -92,8 +100,6 @@ export default function Redemption() {
     setAmountOut1(collateralAmount)
     setAmountOut2(deusValue)
   }, [collateralAmount, deusValue])
-
-  const { redeemPaused, redeemTranche } = useRedeemData()
 
   const deiAmount = useMemo(() => {
     return tryParseAmount(amountIn, deiCurrency || undefined)
@@ -121,8 +127,6 @@ export default function Redemption() {
     const show = deiCurrency && approvalState !== ApprovalState.APPROVED && !!amountIn
     return [show, show && approvalState === ApprovalState.PENDING]
   }, [deiCurrency, approvalState, amountIn])
-
-  const { diff } = getRemainingTime(redeemTranche.endTime)
 
   const handleApprove = async () => {
     setAwaitingApproveConfirmation(true)
@@ -174,15 +178,11 @@ export default function Redemption() {
 
   function getActionButton(): JSX.Element | null {
     if (!chainId || !account) {
-      return <MainButton onClick={toggleWalletModal}>Connect Wallet</MainButton>
+      return <ConnectWallet />
     } else if (showApprove) {
       return null
     } else if (redeemPaused) {
       return <MainButton disabled>Redeem Paused</MainButton>
-    } else if (diff < 0 && redeemTranche.trancheId != null) {
-      return <MainButton disabled>Tranche Ended</MainButton>
-    } else if (Number(amountOut1) > redeemTranche.amountRemaining) {
-      return <MainButton disabled>Exceeds Available Amount</MainButton>
     } else if (insufficientBalance) {
       return <MainButton disabled>Insufficient {deiCurrency?.symbol} Balance</MainButton>
     }
@@ -211,11 +211,11 @@ export default function Redemption() {
     { name: 'Pool(V3)', value: truncateAddress(CollateralPool[chainId ?? SupportedChainId.FANTOM]) ?? '-' },
   ]
 
+  //TODO: after adding loading animation please read this data from contract in /src/state/dei
   const info = useMemo(
     () => [
       { title: 'USDC claimable time', value: '30s' },
       { title: 'DEUS claimable time', value: '8h' },
-      // { title: 'Min Received', value: amountOut1 + ' USDC + ' + amountOut2 + ' DEUS' },
     ],
     []
   )
@@ -252,8 +252,9 @@ export default function Redemption() {
               {getActionButton()}
             </RedemptionWrapper>
             <BottomWrapper>
+              <InfoItem name={'Redemption Fee'} value={redemptionFee + '%'} />
               <InfoItem name={'USDC Ratio'} value={(Number(redeemCollateralRatio) / 100).toString()} />
-              <InfoItem name={'DEUS Ratio'} value={((100 - Number(redeemCollateralRatio)) / 100).toString()} />
+              <InfoItem name={'DEUS Ratio($)'} value={((100 - Number(redeemCollateralRatio)) / 100).toString()} />
             </BottomWrapper>
           </Wrapper>
           <Claim redeemCollateralRatio={redeemCollateralRatio} />
