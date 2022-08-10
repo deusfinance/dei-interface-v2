@@ -57,16 +57,17 @@ export function useSearch() {
 export function SearchField({ searchProps, modalSearch }: { searchProps: any; modalSearch?: boolean }) {
   return (
     <InputWrapper ModalSearch={modalSearch}>
+      <SearchIcon />
       <InputField
         {...searchProps}
         title="Search"
         autoFocus
         type="text"
-        placeholder="Search"
+        placeholder="Search NFT"
         spellCheck="false"
         onBlur={() => null}
+        style={{ marginLeft: '20px' }}
       />
-      <SearchIcon />
     </InputWrapper>
   )
 }
