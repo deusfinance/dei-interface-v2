@@ -1,33 +1,30 @@
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import styled from 'styled-components'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import utc from 'dayjs/plugin/utc'
 import Image from 'next/image'
-import toast from 'react-hot-toast'
 
-import { useVeDeusContract } from 'hooks/useContract'
-import { useHasPendingVest, useTransactionAdder } from 'state/transactions/hooks'
-import { useVestedInformation } from 'hooks/useVested'
-import { useVeDistContract } from 'hooks/useContract'
+import { useHasPendingVest } from 'state/transactions/hooks'
 
 import Pagination from 'components/Pagination'
 import ImageWithFallback from 'components/ImageWithFallback'
 import { RowCenter } from 'components/Row'
 import Column from 'components/Column'
-import { PrimaryButtonWhite, PrimaryButtonWide } from 'components/Button'
+import { PrimaryButton, PrimaryButtonWide } from 'components/Button'
 import { DotFlashing } from 'components/Icons'
 import BOND_NFT_LOGO from '/public/static/images/pages/bdei/BondNFT.svg'
 
-import EMPTY_LOCK from '/public/static/images/pages/veDEUS/emptyLock.svg'
-import EMPTY_LOCK_MOBILE from '/public/static/images/pages/veDEUS/emptyLockMobile.svg'
-import LOADING_LOCK from '/public/static/images/pages/veDEUS/loadingLock.svg'
-import LOADING_LOCK_MOBILE from '/public/static/images/pages/veDEUS/loadingLockMobile.svg'
+import EMPTY_BOND from '/public/static/images/pages/bdei/emptyBond.svg'
+import EMPTY_BOND_MOBILE from '/public/static/images/pages/bdei/emptyBondMobile.svg'
+import LOADING_BOND from '/public/static/images/pages/bdei/loadingBond.svg'
+import LOADING_BOND_MOBILE from '/public/static/images/pages/bdei/loadingBondMobile.svg'
 
 import { formatAmount } from 'utils/numbers'
-import { DefaultHandlerError } from 'utils/parseError'
 import { ButtonText } from 'pages/vest'
+import { BondNFT } from 'hooks/useBondsPage'
+import { getRemainingTime } from 'utils/time'
 
 dayjs.extend(utc)
 dayjs.extend(relativeTime)
@@ -172,32 +169,46 @@ const TopBorder = styled.div`
   display: flex;
 `
 
+const RedeemButton = styled(PrimaryButton)`
+  border-radius: 8px;
+
+  ${({ theme, disabled }) =>
+    disabled &&
+    `
+      background: ${theme.border3};
+      border: 1px solid ${theme.border1};
+
+      &:focus,
+      &:hover {
+        background: inherit;
+      }
+  `}
+`
+
 const itemsPerPage = 10
 
 export default function Table({
-  nftIds,
+  nfts,
   toggleLockManager,
   toggleAPYManager,
   isMobile,
-  rewards,
   isLoading,
 }: {
-  nftIds: number[]
+  nfts: BondNFT[]
   toggleLockManager: (nftId: number) => void
   toggleAPYManager: (nftId: number) => void
   isMobile?: boolean
-  rewards: number[]
   isLoading: boolean
 }) {
   const [offset, setOffset] = useState(0)
 
   const paginatedItems = useMemo(() => {
-    return nftIds.slice(offset, offset + itemsPerPage)
-  }, [nftIds, offset])
+    return nfts.slice(offset, offset + itemsPerPage)
+  }, [nfts, offset])
 
   const pageCount = useMemo(() => {
-    return Math.ceil(nftIds.length / itemsPerPage)
-  }, [nftIds])
+    return Math.ceil(nfts.length / itemsPerPage)
+  }, [nfts])
 
   const onPageChange = ({ selected }: { selected: number }) => {
     setOffset(Math.ceil(selected * itemsPerPage))
@@ -209,15 +220,14 @@ export default function Table({
         <TableWrapper isEmpty={paginatedItems.length === 0}>
           <tbody>
             {paginatedItems.length > 0 &&
-              paginatedItems.map((nftId: number, index) => (
+              paginatedItems.map((nft: BondNFT, index) => (
                 <TableRow
                   key={index}
                   index={index}
-                  nftId={nftId}
+                  nft={nft}
                   toggleLockManager={toggleLockManager}
                   toggleAPYManager={toggleAPYManager}
                   isMobile={isMobile}
-                  reward={rewards[index] ?? 0}
                 />
               ))}
           </tbody>
@@ -227,22 +237,24 @@ export default function Table({
                 <td>
                   <div style={{ margin: '0 auto' }}>
                     {isLoading ? (
-                      <Image src={isMobile ? LOADING_LOCK_MOBILE : LOADING_LOCK} alt="loading-lock" />
+                      <Image src={isMobile ? LOADING_BOND_MOBILE : LOADING_BOND} alt="loading-bond" />
                     ) : (
-                      <Image src={isMobile ? EMPTY_LOCK_MOBILE : EMPTY_LOCK} alt="empty-lock" />
+                      <Image src={isMobile ? EMPTY_BOND_MOBILE : EMPTY_BOND} alt="empty-bond" />
                     )}
                   </div>
                 </td>
               </tr>
               <tr>
-                <td>{isLoading ? <NoResults>Loading...</NoResults> : <NoResults>You have no lock!</NoResults>}</td>
+                <td>
+                  {isLoading ? <NoResults>Loading...</NoResults> : <NoResults>You have no Dei Bond Nft!</NoResults>}
+                </td>
               </tr>
             </tbody>
           )}
         </TableWrapper>
         <PaginationWrapper>
           {paginatedItems.length > 0 && (
-            <Pagination count={nftIds.length} pageCount={pageCount} onPageChange={onPageChange} />
+            <Pagination count={nfts.length} pageCount={pageCount} onPageChange={onPageChange} />
           )}
         </PaginationWrapper>
       </Wrapper>
@@ -251,78 +263,81 @@ export default function Table({
 }
 
 function TableRow({
-  nftId,
+  nft,
   toggleLockManager,
   toggleAPYManager,
   index,
   isMobile,
-  reward,
 }: {
-  nftId: number
+  nft: BondNFT
   toggleLockManager: (nftId: number) => void
   toggleAPYManager: (nftId: number) => void
   index: number
   isMobile?: boolean
-  reward: number
 }) {
   const [awaitingConfirmation, setAwaitingConfirmation] = useState(false)
   const [ClaimAwaitingConfirmation, setClaimAwaitingConfirmation] = useState(false)
   const [pendingTxHash, setPendingTxHash] = useState('')
-  const { deusAmount, veDEUSAmount, lockEnd } = useVestedInformation(nftId)
-  const veDEUSContract = useVeDeusContract()
-  const addTransaction = useTransactionAdder()
+  // const addTransaction = useTransactionAdder()
   const showTransactionPending = useHasPendingVest(pendingTxHash)
-  const veDistContract = useVeDistContract()
+
+  // const DeiBonderContract = useDeiBonderContract()
+  const { tokenId, deiAmount, redeemTime } = nft
+  const [diff, day] = useMemo(() => {
+    if (!nft.redeemTime) return [null, null]
+    const { diff, day } = getRemainingTime(nft.redeemTime)
+    return [diff, day]
+  }, [nft])
 
   // subtracting 10 seconds to mitigate this from being true on page load
-  const lockHasEnded = useMemo(() => dayjs.utc(lockEnd).isBefore(dayjs.utc().subtract(10, 'seconds')), [lockEnd])
+  const lockHasEnded = useMemo(() => dayjs.utc(redeemTime).isBefore(dayjs.utc().subtract(10, 'seconds')), [redeemTime])
 
-  const onClaim = useCallback(async () => {
-    try {
-      if (!veDistContract) return
-      setClaimAwaitingConfirmation(true)
-      const response = await veDistContract.claim(nftId)
-      addTransaction(response, { summary: `Claim #${nftId} reward`, vest: { hash: response.hash } })
-      setPendingTxHash(response.hash)
-      setClaimAwaitingConfirmation(false)
-    } catch (err) {
-      console.log(DefaultHandlerError(err))
-      setClaimAwaitingConfirmation(false)
-      setPendingTxHash('')
-      if (err?.code === 4001) {
-        toast.error('Transaction rejected.')
-      } else toast.error(DefaultHandlerError(err))
-    }
-  }, [veDistContract, nftId, addTransaction])
+  // const onClaim = useCallback(async () => {
+  //   try {
+  //     if (!veDistContract) return
+  //     setClaimAwaitingConfirmation(true)
+  //     const response = await veDistContract.claim(tokenId)
+  //     addTransaction(response, { summary: `Claim #${tokenId} reward`, vest: { hash: response.hash } })
+  //     setPendingTxHash(response.hash)
+  //     setClaimAwaitingConfirmation(false)
+  //   } catch (err) {
+  //     console.log(DefaultHandlerError(err))
+  //     setClaimAwaitingConfirmation(false)
+  //     setPendingTxHash('')
+  //     if (err?.code === 4001) {
+  //       toast.error('Transaction rejected.')
+  //     } else toast.error(DefaultHandlerError(err))
+  //   }
+  // }, [veDistContract, tokenId, addTransaction])
 
-  const onWithdraw = useCallback(async () => {
-    try {
-      if (!veDEUSContract || !lockHasEnded) return
-      setAwaitingConfirmation(true)
-      const response = await veDEUSContract.withdraw(nftId)
-      addTransaction(response, { summary: `Withdraw #${nftId} from Vesting`, vest: { hash: response.hash } })
-      setPendingTxHash(response.hash)
-      setAwaitingConfirmation(false)
-    } catch (err) {
-      console.error(err)
-      setAwaitingConfirmation(false)
-      setPendingTxHash('')
-    }
-  }, [veDEUSContract, lockHasEnded, nftId, addTransaction])
+  // const onWithdraw = useCallback(async () => {
+  //   try {
+  //     if (!veDEUSContract || !lockHasEnded) return
+  //     setAwaitingConfirmation(true)
+  //     const response = await veDEUSContract.withdraw(tokenId)
+  //     addTransaction(response, { summary: `Withdraw #${tokenId} from Vesting`, vest: { hash: response.hash } })
+  //     setPendingTxHash(response.hash)
+  //     setAwaitingConfirmation(false)
+  //   } catch (err) {
+  //     console.error(err)
+  //     setAwaitingConfirmation(false)
+  //     setPendingTxHash('')
+  //   }
+  // }, [veDEUSContract, lockHasEnded, tokenId, addTransaction])
 
   function getMaturityTimeCell() {
     if (!lockHasEnded)
       return (
         <>
           <Name>Maturity Time</Name>
-          <Value>{dayjs.utc(lockEnd).format('LLL')}</Value>
+          <Value>{dayjs.utc(redeemTime).format('LLL')}</Value>
           {/* <CellDescription>Expires in {dayjs.utc(lockEnd).fromNow(true)}</CellDescription> */}
         </>
       )
     return (
       <MaturityTimePassed>
         <Name>Expired in</Name>
-        <Value>{dayjs.utc(lockEnd).format('LLL')}</Value>
+        <Value>{dayjs.utc(redeemTime).format('LLL')}</Value>
       </MaturityTimePassed>
     )
   }
@@ -347,8 +362,9 @@ function TableRow({
       )
     }
     return (
-      <PrimaryButtonWide style={{ margin: '0 auto' }} isSmall={true} onClick={onClaim}>
-        <ButtonText>Claim {formatAmount(reward, 3)}</ButtonText>
+      // <PrimaryButtonWide style={{ margin: '0 auto' }} isSmall={true} onClick={onClaim}>
+      <PrimaryButtonWide style={{ margin: '0 auto' }} isSmall={true} onClick={() => console.log('')}>
+        <ButtonText>Claim {formatAmount(323, 3)}</ButtonText> {/* reward */}
       </PrimaryButtonWide>
     )
   }
@@ -382,7 +398,8 @@ function TableRow({
       return (
         <TopBorderWrap>
           <TopBorder>
-            <PrimaryButtonWide width={'100%'} disabled onClick={onWithdraw}>
+            {/* <PrimaryButtonWide width={'100%'} disabled onClick={onWithdraw}> */}
+            <PrimaryButtonWide width={'100%'} disabled onClick={() => console.log('')}>
               <ButtonText style={{ margin: '-6px' }} disabled>
                 Withdraw
               </ButtonText>
@@ -390,7 +407,8 @@ function TableRow({
           </TopBorder>
         </TopBorderWrap>
       )
-    } else if (reward) return getClaimButton()
+    }
+    // } else if (reward) return getClaimButton()
     return null
   }
 
@@ -401,19 +419,19 @@ function TableRow({
           <RowCenter>
             <ImageWithFallback src={BOND_NFT_LOGO} alt={`Bond logo`} width={30} height={30} />
             <NFTWrap>
-              <CellAmount>DEI Bond #{nftId}</CellAmount>
+              <CellAmount>DEI Bond #{tokenId}</CellAmount>
             </NFTWrap>
           </RowCenter>
         </Cell>
 
         <Cell>
           <Name>Bond Value</Name>
-          <Value>{formatAmount(parseFloat(deusAmount), 8)} DEUS</Value>
+          <Value>{formatAmount(parseFloat(deiAmount ? deiAmount.toString() : ''), 8)} bDEI</Value>
         </Cell>
 
         <Cell>
           <Name>Claimable DEI</Name>
-          <Value>{formatAmount(parseFloat(veDEUSAmount), 6)} veDEUS</Value>
+          <Value>{formatAmount(parseFloat(deiAmount ? deiAmount.toString() : ''), 6)} bDEI</Value>
         </Cell>
 
         <Cell style={{ padding: '5px 10px' }}>{getMaturityTimeCell()}</Cell>
@@ -421,9 +439,9 @@ function TableRow({
         <Cell style={{ padding: '5px 10px' }}>{getClaimWithdrawCell()}</Cell>
 
         <Cell style={{ padding: '5px 10px' }}>
-          <PrimaryButtonWhite disabled onClick={() => toggleLockManager(nftId)}>
-            <ButtonText>Update Lock</ButtonText>
-          </PrimaryButtonWhite>
+          <RedeemButton disabled={diff && diff > 0 ? true : false} onClick={() => console.log('')}>
+            <ButtonText>{diff && diff > 0 ? `Redeem in ${day} days` : 'Redeem BDEI'}</ButtonText>
+          </RedeemButton>
         </Cell>
       </>
     )
@@ -436,27 +454,27 @@ function TableRow({
           <RowCenter>
             <ImageWithFallback src={BOND_NFT_LOGO} alt={`Bond logo`} width={30} height={30} />
             <NFTWrap>
-              <CellAmount>DEI Bond #{nftId}</CellAmount>
+              <CellAmount>DEI Bond #{tokenId}</CellAmount>
             </NFTWrap>
           </RowCenter>
 
           <RowCenter style={{ padding: '5px 10px' }}>{getClaimWithdrawCell()}</RowCenter>
 
           <RowCenter style={{ padding: '5px 10px' }}>
-            <PrimaryButtonWhite disabled onClick={() => toggleLockManager(nftId)}>
-              <ButtonText>Update Lock</ButtonText>
-            </PrimaryButtonWhite>
+            <RedeemButton disabled={diff && diff > 0 ? true : false} onClick={() => console.log('')}>
+              <ButtonText>{diff && diff > 0 ? `Redeem in ${day} days` : 'Redeem BDEI'}</ButtonText>
+            </RedeemButton>
           </RowCenter>
         </FirstRow>
 
         <MobileCell>
           <Name>Bond Value</Name>
-          <Value>{formatAmount(parseFloat(deusAmount), 8)} DEUS</Value>
+          <Value>{formatAmount(parseFloat(deiAmount ? deiAmount.toString() : ''), 8)} bDEI</Value>
         </MobileCell>
 
         <MobileCell>
           <Name>Claimable DEI</Name>
-          <Value>{formatAmount(parseFloat(veDEUSAmount), 6)} veDEUS</Value>
+          <Value>{formatAmount(parseFloat(deiAmount ? deiAmount.toString() : ''), 6)} bDEI</Value>
         </MobileCell>
 
         <MobileCell>{getMaturityTimeCell()}</MobileCell>

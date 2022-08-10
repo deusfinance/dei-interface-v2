@@ -42,7 +42,7 @@ export default function useOwnedNfts(): { results: number[]; isLoading: boolean 
   }, [isLoading, results])
 }
 
-export function useOwnerNfts(address: string | null | undefined, ABI?: any): number[] {
+export function useOwnerNfts(address: string | null | undefined, ABI?: any): { results: number[]; isLoading: boolean } {
   const { account, chainId } = useWeb3React()
   const isSupportedChainId = useSupportedChainId()
   const ERC721Contract = useContract(address, ABI || ERC721_ABI)
@@ -73,21 +73,25 @@ export function useOwnerNfts(address: string | null | undefined, ABI?: any): num
   }, [account, chainId, isSupportedChainId, idMapping2])
 
   const results = useSingleContractMultipleData(ERC721Contract, 'tokenOfOwnerByIndex', callInputs)
+  const isLoading = useDebounce(results[0]?.loading, 2000)
 
   return useMemo(() => {
-    return results
-      .reduce((acc: number[], value) => {
-        if (!value.result) return acc
-        const result = value.result[0].toString()
-        if (!result || result === '0') return acc
-        acc.push(parseInt(result))
-        return acc
-      }, [])
-      .sort((a: number, b: number) => (a > b ? 1 : -1))
+    return {
+      results: results
+        .reduce((acc: number[], value) => {
+          if (!value.result) return acc
+          const result = value.result[0].toString()
+          if (!result || result === '0') return acc
+          acc.push(parseInt(result))
+          return acc
+        }, [])
+        .sort((a: number, b: number) => (a > b ? 1 : -1)),
+      isLoading,
+    }
   }, [results])
 }
 
-export function useOwnerBondNFTs(): number[] {
+export function useOwnerBondNFTs(): { results: number[]; isLoading: boolean } {
   const { chainId } = useWeb3React()
   const address = useMemo(() => (chainId ? DeiBondRedeemNFT[chainId] : undefined), [chainId])
   return useOwnerNfts(address) //use erc721 abi

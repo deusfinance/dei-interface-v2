@@ -82,6 +82,7 @@ export const ButtonText = styled.span<{ disabled?: boolean }>`
   font-weight: 600;
   font-size: 15px;
   line-height: 17px;
+  color: ${({ theme }) => theme.text1};
 
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     font-size: 14px;

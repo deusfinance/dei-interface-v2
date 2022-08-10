@@ -86,7 +86,7 @@ export function useBondsAmountsOut(amountIn: string): {
 }
 
 export function useUserBondNFTs(): BondNFT[] {
-  const userBondNFTs = useOwnerBondNFTs()
+  const { results: userBondNFTs } = useOwnerBondNFTs()
   const DeiBonderContract = useDeiBonderContract()
 
   const call = useMemo(() => {

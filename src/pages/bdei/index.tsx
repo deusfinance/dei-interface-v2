@@ -1,37 +1,26 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import Link from 'next/link'
+import React, { useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import Image from 'next/image'
 import { isMobile } from 'react-device-detect'
-import toast from 'react-hot-toast'
 
-import { useDeusPrice } from 'hooks/useCoingeckoPrice'
 import useWeb3React from 'hooks/useWeb3'
-import { useVestedAPY } from 'hooks/useVested'
-
-import { formatAmount } from 'utils/numbers'
-import { getMaximumDate } from 'utils/vest'
 
 import DEI_LOGO from '/public/static/images/pages/bdei/DEI_logo.svg'
 
 import Hero from 'components/Hero'
 import { useSearch, SearchField, Table } from 'components/App/bdei'
-import { PrimaryButtonWide } from 'components/Button'
 import LockManager from 'components/App/Vest/LockManager'
 import APYManager from 'components/App/Vest/APYManager'
 import { RowFixed, RowBetween } from 'components/Row'
 import StatsHeader from 'components/StatsHeader'
 import { Container, Title } from 'components/App/StableCoin'
 
-import { useVeDistContract } from 'hooks/useContract'
-import useOwnedNfts from 'hooks/useOwnedNfts'
+import { useOwnerBondNFTs } from 'hooks/useOwnedNfts'
 import { useSupportedChainId } from 'hooks/useSupportedChainId'
-import useDistRewards from 'hooks/useDistRewards'
 
-import { DefaultHandlerError } from 'utils/parseError'
 import { useIsTransactionPending, useTransactionAdder } from 'state/transactions/hooks'
-import { DotFlashing } from 'components/Icons'
 import InfoHeader from 'components/InfoHeader'
+import { BondNFT } from 'hooks/useBondsPage'
 
 const Wrapper = styled(Container)`
   margin: 0 auto;
@@ -130,29 +119,28 @@ const UpperRowMobile = styled(UpperRow)<{ hasSecondRow?: boolean }>`
   /* margin-bottom: ${({ hasSecondRow }) => (hasSecondRow ? '0' : '-20px')}; */
 `
 
-export default function bDei() {
+export default function BDei() {
   const { chainId, account } = useWeb3React()
   const [showLockManager, setShowLockManager] = useState(false)
+  const isSupportedChainId = useSupportedChainId()
   const [showAPYManager, setShowAPYManager] = useState(false)
   const [nftId, setNftId] = useState(0)
-  const { lockedVeDEUS } = useVestedAPY(undefined, getMaximumDate())
-  const deusPrice = useDeusPrice()
+  // const { lockedVeDEUS } = useVestedAPY(undefined, getMaximumDate())
   const addTransaction = useTransactionAdder()
   const [awaitingConfirmation, setAwaitingConfirmation] = useState(false)
   const [pendingTxHash, setPendingTxHash] = useState('')
   const showTransactionPending = useIsTransactionPending(pendingTxHash)
-  const isSupportedChainId = useSupportedChainId()
-  const veDistContract = useVeDistContract()
-  const ownedNfts = useOwnedNfts()
+
+  const ownedNfts = useOwnerBondNFTs()
   const nftIds = ownedNfts.results
-  const rewards = useDistRewards()
 
   const [showTopBanner, setShowTopBanner] = useState(false)
 
   const { snapshot, searchProps } = useSearch()
+  const result = snapshot.options.map((nft) => nft)
   const snapshotList = useMemo(() => {
-    return snapshot.options.map((obj) => {
-      return obj.value
+    return result.map((obj: any) => {
+      return { tokenId: obj?.tokenId, redeemTime: obj?.redeemTime, deiAmount: obj?.deiAmount }
     })
   }, [snapshot])
 
@@ -173,99 +161,12 @@ export default function bDei() {
     setNftId(nftId)
   }
 
-  //pass just unclaimed tokenIds to claimAll method
-  const [unClaimedIds, totalRewards] = useMemo(() => {
-    if (!nftIds.length || !rewards.length) return [[], 0]
-    let total = 0
-    return [
-      rewards.reduce((acc: number[], value: number, index: number) => {
-        if (!value) return acc
-        acc.push(nftIds[index])
-        total += value
-        return acc
-      }, []),
-      total,
-    ]
-  }, [nftIds, rewards])
-
-  const onClaimAll = useCallback(async () => {
-    try {
-      if (!veDistContract || !account || !isSupportedChainId || !unClaimedIds.length) return
-      setAwaitingConfirmation(true)
-      const response = await veDistContract.claimAll(unClaimedIds)
-      addTransaction(response, { summary: `Claim All veDEUS rewards`, vest: { hash: response.hash } })
-      setAwaitingConfirmation(false)
-      setPendingTxHash(response.hash)
-    } catch (err) {
-      console.log(err)
-      toast.error(DefaultHandlerError(err))
-      setAwaitingConfirmation(false)
-      setPendingTxHash('')
-    }
-  }, [veDistContract, unClaimedIds, addTransaction, account, isSupportedChainId])
-
-  function getClaimAllButton() {
-    if (awaitingConfirmation) {
-      return (
-        <PrimaryButtonWide active>
-          <ButtonText>
-            Confirming <DotFlashing style={{ marginLeft: '10px' }} />
-          </ButtonText>
-        </PrimaryButtonWide>
-      )
-    } else if (showTransactionPending) {
-      return (
-        <PrimaryButtonWide active>
-          <ButtonText>
-            Claiming <DotFlashing style={{ marginLeft: '10px' }} />
-          </ButtonText>
-        </PrimaryButtonWide>
-      )
-    } else if (totalRewards) {
-      return (
-        <PrimaryButtonWide onClick={onClaimAll}>
-          <ButtonText>Claim all {formatAmount(totalRewards)} veDEUS</ButtonText>
-        </PrimaryButtonWide>
-      )
-    }
-    return null
-  }
-
-  function getClaimAllButtonMobile() {
-    if (awaitingConfirmation) {
-      return (
-        <PrimaryButtonWide width={'100%'} active style={{ marginTop: '2px', marginBottom: '12px' }}>
-          <ButtonText>
-            Confirming <DotFlashing style={{ marginLeft: '10px' }} />
-          </ButtonText>
-        </PrimaryButtonWide>
-      )
-    } else if (showTransactionPending) {
-      return (
-        <PrimaryButtonWide width={'100%'} active style={{ marginTop: '2px', marginBottom: '12px' }}>
-          <ButtonText>
-            Claiming <DotFlashing style={{ marginLeft: '10px' }} />
-          </ButtonText>
-        </PrimaryButtonWide>
-      )
-    } else if (totalRewards) {
-      return (
-        <PrimaryButtonWide width={'100%'} onClick={onClaimAll} style={{ marginTop: '2px', marginBottom: '12px' }}>
-          <ButtonText>Claim all {formatAmount(totalRewards)} veDEUS</ButtonText>
-        </PrimaryButtonWide>
-      )
-    }
-    return null
-  }
-
   function getUpperRow() {
     return (
       <UpperRow>
         <div>
           <SearchField searchProps={searchProps} />
         </div>
-
-        <ButtonWrapper>{hasClaimAll && getClaimAllButton()}</ButtonWrapper>
       </UpperRow>
     )
   }
@@ -276,8 +177,6 @@ export default function bDei() {
         <FirstRowWrapper>
           <SearchField searchProps={searchProps} />
         </FirstRowWrapper>
-
-        {hasClaimAll && getClaimAllButtonMobile()}
       </UpperRowMobile>
     )
   }
@@ -289,9 +188,6 @@ export default function bDei() {
     { name: 'Your Next Maturity', value: '1' },
     { name: 'Your Claimable DEI', value: '1' },
   ]
-  const hasClaimAll: boolean = useMemo(() => {
-    return !!snapshotList.length && !!totalRewards
-  }, [totalRewards, snapshotList.length])
 
   return (
     <Container>
@@ -307,11 +203,10 @@ export default function bDei() {
         {isMobile ? getUpperRowMobile() : getUpperRow()}
 
         <Table
-          nftIds={snapshotList as number[]}
+          nfts={snapshotList as BondNFT[]}
           toggleLockManager={toggleLockManager}
           toggleAPYManager={toggleAPYManager}
           isMobile={isMobile}
-          rewards={rewards}
           isLoading={ownedNfts.isLoading}
         />
       </Wrapper>

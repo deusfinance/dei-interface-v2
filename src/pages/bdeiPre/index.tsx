@@ -73,7 +73,7 @@ const PlusIcon = styled(Plus)`
   color: ${({ theme }) => theme.text2};
 `
 
-export default function bDei() {
+export default function BDei() {
   const { chainId, account } = useWeb3React()
   const toggleWalletModal = useWalletModalToggle()
   const isSupportedChainId = useSupportedChainId()
