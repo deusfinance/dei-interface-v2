@@ -20,7 +20,7 @@ import { useSupportedChainId } from 'hooks/useSupportedChainId'
 
 import { useIsTransactionPending, useTransactionAdder } from 'state/transactions/hooks'
 import InfoHeader from 'components/InfoHeader'
-import { BondNFT } from 'hooks/useBondsPage'
+import { BondNFT, useUserDeiBondInfo } from 'hooks/useBondsPage'
 
 const Wrapper = styled(Container)`
   margin: 0 auto;
@@ -181,13 +181,9 @@ export default function BDei() {
     )
   }
 
-  const items = [
-    { name: 'Total  DEI Claimed', value: '1' },
-    { name: 'Your bDEI Balance', value: '1' },
-    { name: 'Your NFT Value', value: '1' },
-    { name: 'Your Next Maturity', value: '1' },
-    { name: 'Your Claimable DEI', value: '1' },
-  ]
+  const userStats = useUserDeiBondInfo()
+
+  const items = useMemo(() => [{ name: 'Total DEI Claimed', value: '0' }, ...userStats], [userStats])
 
   return (
     <Container>

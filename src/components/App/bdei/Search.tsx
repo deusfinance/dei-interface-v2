@@ -66,6 +66,7 @@ export function SearchField({ searchProps, modalSearch }: { searchProps: any; mo
         placeholder="Search NFT"
         spellCheck="false"
         onBlur={() => null}
+        style={{ marginLeft: '20px' }}
       />
     </InputWrapper>
   )

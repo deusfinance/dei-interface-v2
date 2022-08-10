@@ -25,6 +25,7 @@ import { formatAmount } from 'utils/numbers'
 import { ButtonText } from 'pages/vest'
 import { BondNFT } from 'hooks/useBondsPage'
 import { getRemainingTime } from 'utils/time'
+import useWeb3React from 'hooks/useWeb3'
 
 dayjs.extend(utc)
 dayjs.extend(relativeTime)
@@ -68,9 +69,10 @@ const Cell = styled.td<{
   height: 90px;
 `
 
-const NoResults = styled.div`
+const NoResults = styled.div<{ warning?: boolean }>`
   text-align: center;
   padding: 20px;
+  color: ${({ theme, warning }) => (warning ? theme.warning : 'white')};
 `
 
 const NFTWrap = styled(Column)`
@@ -200,6 +202,8 @@ export default function Table({
   isMobile?: boolean
   isLoading: boolean
 }) {
+  const { account } = useWeb3React()
+
   const [offset, setOffset] = useState(0)
 
   const paginatedItems = useMemo(() => {
@@ -246,7 +250,13 @@ export default function Table({
               </tr>
               <tr>
                 <td>
-                  {isLoading ? <NoResults>Loading...</NoResults> : <NoResults>You have no Dei Bond Nft!</NoResults>}
+                  {!account ? (
+                    <NoResults warning>Wallet is not connected!</NoResults>
+                  ) : isLoading ? (
+                    <NoResults>Loading...</NoResults>
+                  ) : (
+                    <NoResults>You have no DEI Bond NFT!</NoResults>
+                  )}
                 </td>
               </tr>
             </tbody>
@@ -435,8 +445,6 @@ function TableRow({
         </Cell>
 
         <Cell style={{ padding: '5px 10px' }}>{getMaturityTimeCell()}</Cell>
-
-        <Cell style={{ padding: '5px 10px' }}>{getClaimWithdrawCell()}</Cell>
 
         <Cell style={{ padding: '5px 10px' }}>
           <RedeemButton disabled={diff && diff > 0 ? true : false} onClick={() => console.log('')}>
