@@ -78,7 +78,7 @@ export default function TokensModal({
   selectedTokenIndex: number
   setToken: (index: number) => void
 }) {
-  const { chainId, account } = useWeb3React()
+  const { chainId } = useWeb3React()
 
   const tokens = useMemo(() => MINT__INPUTS[chainId ?? SupportedChainId.FANTOM], [chainId])
 

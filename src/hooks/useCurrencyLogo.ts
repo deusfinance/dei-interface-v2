@@ -15,8 +15,7 @@ const LogoMap: { [contractOrSymbol: string]: string } = {
   // make sure these values are checksummed! https://ethsum.netlify.app/
   '0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83': 'https://assets.spooky.fi/tokens/wFTM.png', // wFTM
   '0x04068DA6C83AFCFA0e13ba15A6696662335D5B75': USDC_LOGO, // USDC
-  '0xDE12c7959E1a72bbe8a5f7A1dc8f8EeF9Ab011B3': DEI_LOGO,
-  '0xd358f17774B69A8c06cfAA0d4402D2F604d4a4bF': DEI_LOGO, // dei-v2
+  '0x899f68B2F5203B52Ddd241276F03F65af189F26B': DEI_LOGO,
   '0xDE5ed76E7c05eC5e4572CfC88d1ACEA165109E44': DEUS_LOGO,
   '0x05f6ea7F80BDC07f6E0728BbBBAbebEA4E142eE8': BDEI_LOGO,
   usdc: USDC_LOGO,

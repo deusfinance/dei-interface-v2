@@ -87,7 +87,7 @@ export default function Migration() {
   const usdcCurrency = USDC_TOKEN
   const deiCurrencyBalance = useCurrencyBalance(account ?? undefined, deiCurrency)
 
-  const { amountOut1, amountOut2 } = useRedeemAmountsOut(debouncedAmountIn, deiCurrency)
+  const { amountOut1 } = useRedeemAmountsOut(debouncedAmountIn, deiCurrency)
 
   const deiAmount = useMemo(() => {
     return tryParseAmount(amountIn, deiCurrency || undefined)
