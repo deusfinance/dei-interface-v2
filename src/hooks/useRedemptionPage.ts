@@ -292,6 +292,10 @@ export function useGetPoolData() {
               callInputs: [account],
             },
             {
+              methodName: 'getUnRedeemedPositions',
+              callInputs: [account],
+            },
+            {
               methodName: 'nextRedeemId',
               callInputs: [account],
             },
@@ -303,13 +307,19 @@ export function useGetPoolData() {
     [account]
   )
 
-  const [allPositions, nextRedeemId, redeemCollateralBalances] = useSingleContractMultipleMethods(contract, call)
+  const [allPositions, unRedeemedPositions, nextRedeemId, redeemCollateralBalances] = useSingleContractMultipleMethods(
+    contract,
+    call
+  )
   const isLoading = useDebounce(
-    allPositions?.loading || nextRedeemId?.loading || redeemCollateralBalances?.loading,
+    allPositions?.loading || nextRedeemId?.loading || redeemCollateralBalances?.loading || unRedeemedPositions?.loading,
     500
   )
 
   const allPositionsRes = !allPositions || !allPositions.result ? '' : allPositions.result[0]
+
+  const unRedeemedPositionsRes =
+    !unRedeemedPositions || !unRedeemedPositions.result ? '' : unRedeemedPositions.result[0]
 
   const nextRedeemIdRes = !nextRedeemId || !nextRedeemId.result ? '' : nextRedeemId.result[0].toString()
 
@@ -320,6 +330,7 @@ export function useGetPoolData() {
 
   return {
     allPositions: allPositionsRes,
+    unRedeemedPositions: unRedeemedPositionsRes,
     nextRedeemId: nextRedeemIdRes,
     redeemCollateralBalances: redeemCollateralBalancesRes,
     isLoading,

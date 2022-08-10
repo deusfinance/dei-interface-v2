@@ -21,7 +21,6 @@ import { DEUS_TOKEN } from 'constants/tokens'
 import { formatUnits } from '@ethersproject/units'
 import { toBN } from 'utils/numbers'
 import { useCollectCollateralCallback, useCollectDeusCallback } from 'hooks/useRedemptionCallback'
-import toast from 'react-hot-toast'
 import useWeb3React from 'hooks/useWeb3'
 
 const ActionWrap = styled(Card)`
@@ -73,6 +72,7 @@ export const InfoSubHeader = styled.p`
 
 export const collateralRedemptionDelay = 30 + 5 // in seconds
 export const deusRedemptionDelay = 8 * 60 * 60 + 5 // in seconds
+// export const deusRedemptionDelay = 20 + 5 // for test only
 
 interface IPositions {
   usdAmount: string
@@ -88,11 +88,17 @@ interface IToken {
 export default function RedeemClaim({ redeemCollateralRatio }: { redeemCollateralRatio: string }) {
   const {
     allPositions,
+    unRedeemedPositions,
     nextRedeemId,
     redeemCollateralBalances,
     isLoading,
-  }: { allPositions: IPositions[]; nextRedeemId: any; redeemCollateralBalances: any; isLoading: boolean } =
-    useGetPoolData()
+  }: {
+    allPositions: IPositions[]
+    unRedeemedPositions: IPositions[]
+    nextRedeemId: any
+    redeemCollateralBalances: any
+    isLoading: boolean
+  } = useGetPoolData()
 
   const onSwitchNetwork = useRpcChangerCallback()
   const { account } = useWeb3React()
@@ -108,8 +114,8 @@ export default function RedeemClaim({ redeemCollateralRatio }: { redeemCollatera
   const [unClaimed, setUnClaimed] = useState<IToken[]>([])
   useEffect(() => {
     setUnClaimed([])
-    if (allPositions?.length) {
-      const deusTokens = allPositions.map((position, index) => {
+    if (unRedeemedPositions?.length) {
+      const deusTokens = unRedeemedPositions.map((position, index) => {
         const usdAmount = position.usdAmount.toString()
         const timestamp = position.timestamp.toString()
         const deusAmount = toBN(formatUnits(usdAmount, DEUS_TOKEN.decimals))
@@ -125,7 +131,7 @@ export default function RedeemClaim({ redeemCollateralRatio }: { redeemCollatera
       })
       setUnClaimed((current) => [...current, ...deusTokens])
     }
-  }, [allPositions, redeemCollateralBalances, redeemCollateralRatio])
+  }, [nextRedeemId, redeemCollateralBalances, redeemCollateralRatio, unRedeemedPositions])
 
   const [unClaimedCollateral, setUnClaimedCollateral] = useState<IToken>()
   useEffect(() => {
@@ -141,10 +147,6 @@ export default function RedeemClaim({ redeemCollateralRatio }: { redeemCollatera
       setUnClaimedCollateral(usdcToken)
     }
   }, [allPositions, redeemCollateralBalances])
-
-  // const pendingTokens = unClaimed.filter((token) => {
-  //   return token.claimableBlock > currentBlock
-  // })
 
   const {
     state: CollectCollateralCallbackState,
@@ -174,7 +176,7 @@ export default function RedeemClaim({ redeemCollateralRatio }: { redeemCollatera
             console.error(e)
           }
         }
-      } else if (token.symbol === 'DEUS' && token.index == nextRedeemId) {
+      } else if (token.symbol === 'DEUS') {
         console.log('Claim DEUS')
         console.log(CollectDeusCallbackState, collectDeusCallbackError)
         if (!collectDeusCallback) return
@@ -185,9 +187,6 @@ export default function RedeemClaim({ redeemCollateralRatio }: { redeemCollatera
           if (e instanceof Error) console.log(e)
           else console.error(e)
         }
-      } else {
-        toast.error('Claim tokens in the given order.')
-        return
       }
     },
     [
@@ -197,7 +196,6 @@ export default function RedeemClaim({ redeemCollateralRatio }: { redeemCollatera
       collectCollateralCallbackError,
       collectDeusCallback,
       collectDeusCallbackError,
-      nextRedeemId,
     ]
   )
 
