@@ -142,9 +142,9 @@ export default function Stats() {
           <DeusTitle>DEUS Stats</DeusTitle>
           <Info>
             <StatsItem name="DEUS Price" value={formatDollarAmount(parseFloat(deusPrice), 2)} linkIcon={true} />
-            <StatsItem name="Total Supply" value="-" linkIcon={true} />
-            <StatsItem name="Market Cap" value="-" linkIcon={true} />
-            <StatsItem name="veDEUS Supply" value="-" linkIcon={true} />
+            <StatsItem name="Total Supply" value="N/A" linkIcon={true} />
+            <StatsItem name="Market Cap" value="N/A" linkIcon={true} />
+            <StatsItem name="veDEUS Supply" value="N/A" linkIcon={true} />
           </Info>
         </StatsWrapper>
       </AllStats>

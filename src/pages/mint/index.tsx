@@ -257,6 +257,8 @@ export default function Mint() {
       const txHash = await mintCallback()
       setAwaitingMintConfirmation(false)
       console.log({ txHash })
+      toggleReviewModal(false)
+      setAmountOut('')
     } catch (e) {
       setAwaitingMintConfirmation(false)
       if (e instanceof Error) {
@@ -322,7 +324,7 @@ export default function Mint() {
   ]
   const info = useMemo(
     () => [
-      { title: 'Txn Deadline', value: '20 min' },
+      // { title: 'Txn Deadline', value: '20 min' },
       // { title: 'Min Received', value: amountOut },
     ],
     []

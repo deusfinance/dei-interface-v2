@@ -14,6 +14,7 @@
   {
     "anonymous": false,
     "inputs": [
+      { "indexed": false, "internalType": "address", "name": "token", "type": "address" },
       { "indexed": false, "internalType": "address", "name": "sender", "type": "address" },
       { "indexed": false, "internalType": "address", "name": "to", "type": "address" },
       { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }
@@ -199,6 +200,7 @@
   },
   {
     "inputs": [
+      { "internalType": "address", "name": "token", "type": "address" },
       { "internalType": "address", "name": "to", "type": "address" },
       { "internalType": "uint256", "name": "amount", "type": "uint256" }
     ],
@@ -314,7 +316,7 @@
           { "internalType": "uint256", "name": "timestamp", "type": "uint256" }
         ],
         "internalType": "struct DEIPool.RedeemPosition[]",
-        "name": "positions",
+        "name": "positinos",
         "type": "tuple[]"
       }
     ],

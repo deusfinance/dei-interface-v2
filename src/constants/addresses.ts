@@ -21,7 +21,7 @@ export const USDC_ADDRESS = {
                 DEI ADDRESS
 ===================================== */
 export const DEI_ADDRESS: AddressMap = {
-  ...constructSameAddressMap('0x899f68B2F5203B52Ddd241276F03F65af189F26B', [
+  ...constructSameAddressMap('0x836dC7fFa231E1e2FC7b7A92658064FaBa51b4e2', [
     SupportedChainId.MAINNET,
     SupportedChainId.POLYGON,
     SupportedChainId.FANTOM,
@@ -152,7 +152,7 @@ export const MintProxy: AddressMap = {
 }
 
 export const CollateralPool: AddressMap = {
-  [SupportedChainId.FANTOM]: '0xee2CAF1611EC1eDcA2BdEd364Fa694E5727b5D18',
+  [SupportedChainId.FANTOM]: '0x3C541005a3A1AC12a5d01756102EE754Ceae729B',
 }
 
 export const Collateral: AddressMap = {

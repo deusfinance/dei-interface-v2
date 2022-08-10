@@ -139,6 +139,8 @@ export default function Redemption() {
       const txHash = await redeemCallback()
       setAwaitingRedeemConfirmation(false)
       console.log({ txHash })
+      toggleReviewModal(false)
+      setAmountIn('')
     } catch (e) {
       setAwaitingRedeemConfirmation(false)
       if (e instanceof Error) {
