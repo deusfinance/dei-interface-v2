@@ -239,7 +239,7 @@ export default function Table({
                   ) : isLoading ? (
                     <NoResults>Loading...</NoResults>
                   ) : (
-                    <NoResults>You have no lock!</NoResults>
+                    <NoResults>No lock found</NoResults>
                   )}
                 </td>
               </tr>

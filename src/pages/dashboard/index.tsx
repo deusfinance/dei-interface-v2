@@ -99,7 +99,7 @@ export default function Dashboard() {
           <Card
             href="/vest"
             title={'veDEUS'}
-            subTitle="Lock your deus and earn rewards"
+            subTitle="Lock your DEUS and earn rewards"
             MainIcon={VEDEUS_LOGO}
             HoverIcon={VEDEUS_HOVER_LOGO}
           />

@@ -111,7 +111,7 @@ export default function StatsHeader({
         </Item>
       ))}
       {hasBox && (
-        <ItemBox data-for="id" data-tip={'veDEUS rewards are fully accruing in the Background'}>
+        <ItemBox data-for="id" data-tip={'Rewards are accruing in the background'}>
           <CustomTooltip id="id" />
           <AprWrapper target={'target'} href={'https://lafayettetabor.medium.com/vedeus-dynamics-40a4a5489ae1'}>
             <TextContent>APR</TextContent> <InfoIcon size={20} />

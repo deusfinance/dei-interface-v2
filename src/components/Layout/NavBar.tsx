@@ -157,7 +157,7 @@ export default function NavBar() {
 
   const showBanner = localStorage.getItem('HideInfoBanner') === 'true' ? false : true
   const [showTopBanner, setShowTopBanner] = useState(showBanner)
-  const bannerText = 'DEI.finance is still an experimental software. Please use at your own risk.'
+  const bannerText = 'Users interacting with this software do so entirely at their own risk'
 
   function setShowBanner(inp: boolean) {
     if (!inp) {

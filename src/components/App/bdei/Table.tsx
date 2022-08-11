@@ -255,7 +255,7 @@ export default function Table({
                   ) : isLoading ? (
                     <NoResults>Loading...</NoResults>
                   ) : (
-                    <NoResults>You have no DEI Bond NFT!</NoResults>
+                    <NoResults>No DEI bond NFT found</NoResults>
                   )}
                 </td>
               </tr>

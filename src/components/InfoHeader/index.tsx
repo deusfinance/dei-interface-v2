@@ -31,6 +31,7 @@ const InfoIcon = styled(Info)`
   color: ${({ theme }) => theme.white};
   margin-top: 6px;
   margin-right: -15px;
+  cursor: default !important;
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
     margin-left: 6px;

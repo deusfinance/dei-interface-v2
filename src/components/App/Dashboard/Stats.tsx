@@ -132,8 +132,8 @@ export default function Stats() {
             <StatsItem name="Circulating Supply" value={formatDollarAmount(circulatingSupply, 2)} linkIcon={true} />
             <StatsItem name="Total Reserve Assets" value={formatDollarAmount(totalUSDCReserves, 2)} linkIcon={true} />
             <StatsItem
-              name="USDC Baking Per DEI"
-              value={formatAmount(usdcBackingPerDei, 1).toString() + '%'}
+              name="USDC Backing Per DEI"
+              value={formatAmount(usdcBackingPerDei, 1).toString() + ''}
               linkIcon={true}
             />
           </Info>
