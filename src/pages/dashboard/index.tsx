@@ -75,7 +75,7 @@ export default function Dashboard() {
   return (
     <Container>
       <Hero>
-        <Image src={DEI_LOGO} height={'120px'} width={'140px'} alt="DEI logo" />
+        <Image src={DEI_LOGO} height={'105px'} width={'120px'} alt="DEI logo" />
         <StatsHeader items={items} />
       </Hero>
       <Wrapper>

@@ -25,15 +25,7 @@ import { useDeusPrice, useUSDCPrice } from 'hooks/useCoingeckoPrice'
 import { DotFlashing } from 'components/Icons'
 import Hero from 'components/Hero'
 import StatsHeader from 'components/StatsHeader'
-import {
-  BottomWrapper,
-  Container,
-  InputWrapper,
-  Title,
-  Wrapper,
-  MainButton,
-  ConnectWallet,
-} from 'components/App/StableCoin'
+import { BottomWrapper, Container, InputWrapper, Wrapper, MainButton, ConnectWallet } from 'components/App/StableCoin'
 import InputBox from 'components/InputBox'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
@@ -229,7 +221,6 @@ export default function Redemption() {
       <Container>
         <Hero>
           <Image src={DEUS_LOGO} height={'90px'} alt="Logo" />
-          <Title>Redemption</Title>
           <StatsHeader items={items} />
         </Hero>
         <MainWrap>

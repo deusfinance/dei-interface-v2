@@ -12,7 +12,7 @@ const Wrapper = styled.div`
   overflow-x: auto;
   white-space: nowrap;
   -webkit-overflow-scrolling: touch;
-  margin: 17px 2px 0px 2px;
+  margin: 20px 2px 0px 2px;
   display: flex;
   justify-content: center;
 
