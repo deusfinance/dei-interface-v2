@@ -72,7 +72,6 @@ export const InfoSubHeader = styled.p`
 
 export const collateralRedemptionDelay = 30 + 5 // in seconds
 export const deusRedemptionDelay = 8 * 60 * 60 + 5 // in seconds
-// export const deusRedemptionDelay = 20 + 5 // for test only
 
 interface IPositions {
   usdAmount: string

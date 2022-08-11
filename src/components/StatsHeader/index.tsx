@@ -3,6 +3,9 @@ import styled from 'styled-components'
 
 import { ToolTip } from 'components/ToolTip'
 import { Info } from 'components/Icons'
+import { ChainInfo } from 'constants/chainInfo'
+import { SupportedChainId } from 'constants/chains'
+import { ExternalLink } from 'components/Link'
 
 const Wrapper = styled.div`
   width: 100%;
@@ -47,6 +50,15 @@ const Value = styled.div`
   margin-top: 10px;
 `
 
+const ValueLink = styled(Value)`
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+    color: ${({ theme }) => theme.darkPink};
+  }
+`
+
 const CustomTooltip = styled(ToolTip)`
   max-width: 380px !important;
 `
@@ -81,7 +93,7 @@ export default function StatsHeader({
   items,
   hasBox,
 }: {
-  items: { name: string; value: string | number }[]
+  items: { name: string; value: string | number; isLink?: boolean; link?: string }[]
   hasBox?: boolean
 }) {
   return (
@@ -89,7 +101,13 @@ export default function StatsHeader({
       {items.map((item, index) => (
         <Item key={index} rightBorder={index < items.length - 1 || hasBox}>
           <Name>{item.name}</Name>
-          <Value>{item.value}</Value>
+          {!item.isLink ? (
+            <Value>{item.value}</Value>
+          ) : (
+            <ExternalLink href={ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/address/' + item.link}>
+              <ValueLink>{item.value}</ValueLink>
+            </ExternalLink>
+          )}
         </Item>
       ))}
       {hasBox && (

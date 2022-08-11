@@ -208,7 +208,12 @@ export default function Redemption() {
     { name: 'DEI Price', value: '$1.00' },
     { name: 'USDC Price', value: formatDollarAmount(parseFloat(usdcPrice), 2) ?? '-' },
     { name: 'DEUS Price', value: formatDollarAmount(parseFloat(deusCoingeckoPrice), 2) ?? '-' },
-    { name: 'Pool(V3)', value: truncateAddress(CollateralPool[chainId ?? SupportedChainId.FANTOM]) ?? '-' },
+    {
+      name: 'Pool(V3)',
+      value: truncateAddress(CollateralPool[chainId ?? SupportedChainId.FANTOM]) ?? '-',
+      isLink: true,
+      link: CollateralPool[chainId ?? SupportedChainId.FANTOM],
+    },
   ]
 
   const info = useMemo(
