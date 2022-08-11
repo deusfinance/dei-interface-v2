@@ -29,15 +29,7 @@ import { DotFlashing } from 'components/Icons'
 import Hero from 'components/Hero'
 import InputBox from 'components/InputBox'
 import StatsHeader from 'components/StatsHeader'
-import {
-  BottomWrapper,
-  Container,
-  InputWrapper,
-  Title,
-  Wrapper,
-  MainButton,
-  ConnectWallet,
-} from 'components/App/StableCoin'
+import { BottomWrapper, Container, InputWrapper, Wrapper, MainButton, ConnectWallet } from 'components/App/StableCoin'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
 import TokensModal from 'components/App/StableCoin/TokensModal'
@@ -296,7 +288,6 @@ export default function Mint() {
       <Container>
         <Hero>
           <Image src={DEI_LOGO} height={'90px'} alt="Logo" />
-          <Title>Mint</Title>
           <StatsHeader items={items} />
         </Hero>
 
