@@ -12,6 +12,7 @@ import ImageWithFallback from 'components/ImageWithFallback'
 import { NumericalInput } from 'components/Input'
 import { Row, RowBetween, RowCenter, RowEnd } from 'components/Row'
 import { ChevronDown as ChevronDownIcon } from 'components/Icons'
+import { DeusTitle } from 'components/App/Dashboard/Stats'
 
 export const Wrapper = styled(Row)`
   background: ${({ theme }) => theme.bg2};
@@ -34,6 +35,30 @@ export const InputWrapper = styled.div`
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
     right: 0;
+  `}
+`
+
+const NumericalWrapper = styled.div`
+  width: 100%;
+  font-size: 24px;
+  position: relative;
+  color: ${({ theme }) => theme.text1};
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    right: 0;
+    font-size: 14px;
+  `}
+`
+
+const DeusText = styled(DeusTitle)<{ fromLeft?: string }>`
+  font-family: 'IBM Plex Mono';
+  font-weight: 500;
+  font-size: 12px;
+  margin-left: 0px;
+  position: absolute;
+  left: ${({ fromLeft }) => (fromLeft ? fromLeft : 0)};
+  top: 21px;
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    top: 14px;
   `}
 `
 
@@ -73,6 +98,12 @@ export const RowWrap = styled(RowEnd)`
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
     gap: 3px;
+  `}
+`
+
+const DollarSign = styled.span`
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+      margin-right: -4px;
   `}
 `
 
@@ -122,12 +153,14 @@ export default function InputBox({
   onChange,
   onTokenSelect,
   disabled,
+  inDollar,
 }: {
   currency: Currency
   value: string
   onChange(values: string): void
   onTokenSelect?: () => void
   disabled?: boolean
+  inDollar?: boolean
 }) {
   const { account } = useWeb3React()
   const logo = useCurrencyLogo((currency as Token)?.address)
@@ -143,6 +176,19 @@ export default function InputBox({
     if (!balanceExact || !onChange || disabled) return
     onChange(balanceExact)
   }, [balanceExact, disabled, onChange])
+
+  function getWidth(length: number): number {
+    if (isMobile) {
+      if (length <= 8) return length * 12
+      return 100
+    } else {
+      if (length <= 5) return length * 19
+      else if (length < 10) return length * 18
+      else if (length >= 10 && length < 14) return length * 17
+      else if (length >= 14 && length < 21) return length * 16
+      return 330
+    }
+  }
 
   return (
     <>
@@ -171,7 +217,8 @@ export default function InputBox({
               {!disabled && <span>MAX</span>}
             </Balance>
           </RowBetween>
-          <InputWrapper>
+          <NumericalWrapper>
+            {inDollar && <DollarSign>$</DollarSign>}
             <NumericalInput
               value={value || ''}
               onUserInput={onChange}
@@ -180,7 +227,8 @@ export default function InputBox({
               disabled={disabled}
               style={{ textAlign: 'left', fontSize: '24px', marginLeft: '5px' }}
             />
-          </InputWrapper>
+            {inDollar && value && <DeusText fromLeft={`${getWidth(value.length)}px`}>in DEUS</DeusText>}
+          </NumericalWrapper>
         </RightWrapper>
       </Wrapper>
     </>

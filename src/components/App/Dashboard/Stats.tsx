@@ -90,7 +90,7 @@ const Title = styled.span`
   `};
 `
 
-const DeusTitle = styled(Title)`
+export const DeusTitle = styled(Title)`
   background: ${({ theme }) => theme.deusColor};
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
