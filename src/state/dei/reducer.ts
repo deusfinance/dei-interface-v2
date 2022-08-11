@@ -4,7 +4,7 @@ import { SupportedChainId } from 'constants/chains'
 import { ORACLE_BASE_URL } from 'constants/muon'
 import { makeHttpRequest } from 'utils/http'
 
-export const DeiSupportedChains = [SupportedChainId.FANTOM, SupportedChainId.MAINNET, SupportedChainId.POLYGON]
+export const DeiSupportedChains = [SupportedChainId.FANTOM]
 
 export enum DeiStatus {
   OK = 'OK',
@@ -12,12 +12,6 @@ export enum DeiStatus {
   REFRESHING = 'REFRESHING',
   ERROR = 'ERROR',
 }
-
-//TODO: add this info to state
-//buyBackPaused
-//buyback_fee
-//recollateralizePaused
-//recollat_fee
 
 interface Scale {
   collateralRatio: number
@@ -52,8 +46,8 @@ export const Scales: { [chainId in SupportedChainId]?: Scale } = {
   [SupportedChainId.BSC]: {
     ...DEFAULT_SCALE,
     collateralRatio: 1e18,
-    poolCeiling: 1e12, // TODO CHECK IF THIS IS CORRECT
-    poolBalance: 1e18, // TODO CHECK IF THIS IS CORRECT
+    poolCeiling: 1e12,
+    poolBalance: 1e18,
   },
 }
 
@@ -66,11 +60,12 @@ export const NUMBER_OF_POOLS: { [chainId in SupportedChainId]?: number } = {
 const initialState = {
   status: DeiStatus.LOADING,
   prices: {
-    collateral: 0,
+    collateral: 1000000,
     dei: 0,
     deus: 0,
   },
-  collateralRatio: 0,
+  mintCollateralRatio: 0,
+  redeemCollateralRatio: 0,
   mintingFee: 0,
   redemptionFee: 0,
   poolBalance: 0,
@@ -102,8 +97,11 @@ const deiSlice = createSlice({
     updateStatus: (state, { payload }) => {
       state.status = payload
     },
-    updateCollateralRatio: (state, { payload }) => {
-      state.collateralRatio = payload
+    updateMintCollateralRatio: (state, { payload }) => {
+      state.mintCollateralRatio = payload
+    },
+    updateRedeemCollateralRatio: (state, { payload }) => {
+      state.redeemCollateralRatio = payload
     },
     updateCollateralCollectionDelay: (state, { payload }) => {
       state.collateralCollectionDelay = payload
@@ -153,7 +151,8 @@ const deiSlice = createSlice({
 const { actions, reducer } = deiSlice
 export const {
   updateStatus,
-  updateCollateralRatio,
+  updateMintCollateralRatio,
+  updateRedeemCollateralRatio,
   updateDeusCollectionDelay,
   updateCollateralCollectionDelay,
   updateCollectionPaused,
