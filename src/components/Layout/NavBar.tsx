@@ -4,14 +4,14 @@ import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { isMobileOnly as isMobile } from 'react-device-detect'
 
-import { Z_INDEX } from 'theme'
-import routes from 'constants/routes.json'
+import routes from './routes.json'
 
+import { Z_INDEX } from 'theme'
 import Web3Network from 'components/Web3Network'
 import Web3Status from 'components/Web3Status'
+import InfoHeader from 'components/InfoHeader'
 import Menu from './Menu'
 import NavLogo from './NavLogo'
-import InfoHeader from 'components/InfoHeader'
 
 const Wrapper = styled.div`
   padding: 0px 2rem;

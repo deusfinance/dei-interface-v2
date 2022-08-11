@@ -113,9 +113,9 @@ export default function Menu() {
               </IconWrapper>
             </Row>
           </Link>
-          <Link href="/bdei" passHref>
-            <Row active={router.route === '/bdei'}>
-              <div>DEI-Bonds</div>
+          <Link href="/bond" passHref>
+            <Row active={router.route === '/bond'}>
+              <div>Bond</div>
               <IconWrapper>
                 <DeiBondsIcon size={20} />
               </IconWrapper>

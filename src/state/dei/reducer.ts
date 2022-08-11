@@ -73,6 +73,7 @@ const initialState = {
   mintPaused: false,
   redeemPaused: false,
   collectionPaused: false,
+  expiredPrice: false,
   collateralCollectionDelay: 0,
   deusCollectionDelay: 0,
 }
@@ -124,6 +125,9 @@ const deiSlice = createSlice({
     updateRedeemPaused: (state, { payload }) => {
       state.redeemPaused = payload
     },
+    updateExpiredPrice: (state, { payload }) => {
+      state.expiredPrice = payload
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -160,5 +164,6 @@ export const {
   updateRedemptionFee,
   updateMintPaused,
   updateRedeemPaused,
+  updateExpiredPrice,
 } = actions
 export default reducer

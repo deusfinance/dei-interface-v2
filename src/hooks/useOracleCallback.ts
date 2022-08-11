@@ -1,42 +1,40 @@
 import { useCallback, useMemo } from 'react'
+import toast from 'react-hot-toast'
 import { TransactionResponse } from '@ethersproject/abstract-provider'
-import { CurrencyAmount, NativeCurrency, Token } from '@sushiswap/core-sdk'
 
 import useWeb3React from './useWeb3'
-import { useCollateralPoolContract } from './useContract'
+import { useOracleContract } from './useContract'
+import { useGetOracleAddress } from './useMintPage'
 
 import { useTransactionAdder } from 'state/transactions/hooks'
 import { DefaultHandlerError } from 'utils/parseError'
-import toast from 'react-hot-toast'
-import { toHex } from 'utils/hex'
 import { calculateGasMargin } from 'utils/web3'
 
-export enum MintCallbackState {
+export enum OracleCallbackState {
   INVALID = 'INVALID',
   PENDING = 'PENDING',
   VALID = 'VALID',
 }
 
-export default function useMintCallback(deiAmount: CurrencyAmount<NativeCurrency | Token> | null | undefined): {
-  state: MintCallbackState
+export default function useUpdateCallback(): {
+  state: OracleCallbackState
   callback: null | (() => Promise<string>)
   error: string | null
 } {
   const { account, chainId, library } = useWeb3React()
   const addTransaction = useTransactionAdder()
-  const collateralPoolContract = useCollateralPoolContract()
+  const address = useGetOracleAddress()
+  const oracleTwapContract = useOracleContract(address)
 
   const constructCall = useCallback(() => {
     try {
-      if (!account || !library || !collateralPoolContract || !deiAmount) {
+      if (!account || !library || !oracleTwapContract) {
         throw new Error('Missing dependencies.')
       }
 
-      const args = [toHex(deiAmount.quotient)]
-
       return {
-        address: collateralPoolContract.address,
-        calldata: collateralPoolContract.interface.encodeFunctionData('mint', args) ?? '',
+        address: oracleTwapContract.address,
+        calldata: oracleTwapContract.interface.encodeFunctionData('update', []) ?? '',
         value: 0,
       }
     } catch (error) {
@@ -44,29 +42,22 @@ export default function useMintCallback(deiAmount: CurrencyAmount<NativeCurrency
         error,
       }
     }
-  }, [account, library, collateralPoolContract, deiAmount])
+  }, [account, library, oracleTwapContract])
 
   return useMemo(() => {
-    if (!account || !chainId || !library || !collateralPoolContract) {
+    if (!account || !chainId || !library || !oracleTwapContract) {
       return {
-        state: MintCallbackState.INVALID,
+        state: OracleCallbackState.INVALID,
         callback: null,
         error: 'Missing dependencies',
       }
     }
-    if (!deiAmount) {
-      return {
-        state: MintCallbackState.INVALID,
-        callback: null,
-        error: 'No amount provided',
-      }
-    }
 
     return {
-      state: MintCallbackState.VALID,
+      state: OracleCallbackState.VALID,
       error: null,
       callback: async function onMint(): Promise<string> {
-        console.log('onMint callback')
+        console.log('onUpdate Oracle callback')
         const call = constructCall()
         const { address, calldata, value } = call
 
@@ -83,7 +74,7 @@ export default function useMintCallback(deiAmount: CurrencyAmount<NativeCurrency
           ? { from: account, to: address, data: calldata }
           : { from: account, to: address, data: calldata, value }
 
-        console.log('MINT TRANSACTION', { tx, value })
+        console.log('UPDATE TRANSACTION', { tx, value })
 
         const estimatedGas = await library.estimateGas(tx).catch((gasError) => {
           console.debug('Gas estimate failed, trying eth_call to extract error', call)
@@ -118,7 +109,7 @@ export default function useMintCallback(deiAmount: CurrencyAmount<NativeCurrency
           })
           .then((response: TransactionResponse) => {
             console.log(response)
-            const summary = `Mint ${deiAmount?.toSignificant()} DEI`
+            const summary = `Update TWAP oracle price`
             addTransaction(response, { summary })
 
             return response.hash
@@ -135,5 +126,5 @@ export default function useMintCallback(deiAmount: CurrencyAmount<NativeCurrency
           })
       },
     }
-  }, [account, chainId, library, collateralPoolContract, deiAmount, constructCall, addTransaction])
+  }, [account, chainId, library, oracleTwapContract, constructCall, addTransaction])
 }

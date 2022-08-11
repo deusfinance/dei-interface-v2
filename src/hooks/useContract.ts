@@ -19,6 +19,7 @@ import MasterChefV2_ABI from 'constants/abi/MasterChefV2_ABI.json'
 import VDEUS_STAKING_ABI from 'constants/abi/VDEUS_STAKING.json'
 import COLLATERAL_POOL_ABI from 'constants/abi/COLLATERAL_POOL_ABI.json'
 import PROXY_MINTER_ABI from 'constants/abi/PROXY_MINTER_ABI.json'
+import TWAP_ORACLE_ABI from 'constants/abi/TWAP_ORACLE.json'
 import ORACLE_ABI from 'constants/abi/ORACLE_ABI.json'
 import DEIStrategy from 'constants/abi/DEIStrategy.json'
 
@@ -36,6 +37,7 @@ import {
   vDeusMasterChefV2,
   CollateralPool,
   MintProxy,
+  TwapOracle,
 } from 'constants/addresses'
 
 export function useContract<T extends Contract = Contract>(
@@ -162,8 +164,8 @@ export function useProxyMinterContract() {
   return useContract(address, PROXY_MINTER_ABI)
 }
 
+// FIXME: add dei contract address
 export function useDeiContract() {
-  // FIXME: add dei contract address
   const { chainId } = useWeb3React()
   const address = useMemo(() => (chainId ? MintProxy[chainId] : undefined), [chainId])
   return useContract(address, PROXY_MINTER_ABI)
@@ -175,4 +177,10 @@ export function useOracleContract(address: string) {
 
 export function useStrategyContract(address: string) {
   return useContract(address, DEIStrategy)
+}
+
+export function useTwapOracleContract() {
+  const { chainId } = useWeb3React()
+  const address = useMemo(() => (chainId ? TwapOracle[chainId] : undefined), [chainId])
+  return useContract(address, TWAP_ORACLE_ABI)
 }

@@ -68,3 +68,8 @@ export const useDeusCollectionDelay = () => {
   const { deusCollectionDelay } = useDeiState()
   return useMemo(() => deusCollectionDelay, [deusCollectionDelay])
 }
+
+export const useExpiredPrice = () => {
+  const { expiredPrice } = useDeiState()
+  return useMemo(() => expiredPrice, [expiredPrice])
+}

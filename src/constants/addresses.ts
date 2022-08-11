@@ -162,3 +162,7 @@ export const Collateral: AddressMap = {
 export const DeiBondRedeemNFT: AddressMap = {
   [SupportedChainId.FANTOM]: '0x44656b5f0454b3ddbc03471dc391056331f19476',
 }
+
+export const TwapOracle: AddressMap = {
+  [SupportedChainId.FANTOM]: '0x733570cB9e76fD5293c028e124FC9F0a2234F07c',
+}

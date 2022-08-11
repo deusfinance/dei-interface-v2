@@ -4,9 +4,9 @@ import BN from 'bignumber.js'
 
 import { useSingleContractMultipleMethods } from 'state/multicall/hooks'
 import useWeb3React from 'hooks/useWeb3'
-import { useCollateralPoolContract } from 'hooks/useContract'
+import { useCollateralPoolContract, useTwapOracleContract } from 'hooks/useContract'
 
-import { DeiSupportedChains, Scales, updateMintPaused, updateRedeemPaused } from './reducer'
+import { DeiSupportedChains, Scales, updateExpiredPrice, updateMintPaused, updateRedeemPaused } from './reducer'
 import {
   updateCollectionPaused,
   updateCollateralCollectionDelay,
@@ -14,13 +14,14 @@ import {
   updateMintingFee,
   updateRedemptionFee,
 } from './reducer'
+import { useBlockTimestamp } from 'state/application/hooks'
 
 export default function Updater(): null {
   const { chainId } = useWeb3React()
   const dispatch = useAppDispatch()
   // const DeiContract = useDeiContract()
   const CollateralPoolContract = useCollateralPoolContract()
-
+  const TwapOracle = useTwapOracleContract()
   const isSupported: boolean = useMemo(() => {
     return chainId ? Object.values(DeiSupportedChains).includes(chainId) : false
   }, [chainId])
@@ -69,6 +70,16 @@ export default function Updater(): null {
           ],
     [isSupported]
   )
+  const twapCalls = useMemo(
+    () =>
+      !isSupported
+        ? []
+        : [
+            { methodName: 'blockTimestampLast', callInputs: [] },
+            { methodName: 'period', callInputs: [] },
+          ],
+    [isSupported]
+  )
 
   // const userCalls = useMemo(() => {
   //   if (!account) return []
@@ -84,6 +95,7 @@ export default function Updater(): null {
   // const infoResponse = useSingleContractMultipleMethods(DeiContract, infoCalls)
   // const userResponse = useSingleContractMultipleMethods(CollateralPoolContract, userCalls)
   const poolResponse = useSingleContractMultipleMethods(CollateralPoolContract, poolCalls)
+  const twapResponse = useSingleContractMultipleMethods(TwapOracle, twapCalls)
 
   useEffect(() => {
     if (!collateralRatioScale || !feeScale || !poolCeilingScale || !poolBalanceScale) return
@@ -128,11 +140,20 @@ export default function Updater(): null {
     }
   }, [dispatch, isSupported, collateralRatioScale, poolResponse, feeScale, poolCeilingScale, poolBalanceScale])
 
-  // useEffect(() => {
-  //   if (chainId && isSupported) {
-  //     return autoRefresh(() => thunkDispatch(fetchPrices({ chainId })), 45)
-  //   }
-  // }, [thunkDispatch, chainId, isSupported])
+  const blockTimestamp = useBlockTimestamp()
+
+  useEffect(() => {
+    console.log({ blockTimestamp })
+
+    const [blockTimestampLast, period] = twapResponse
+    if (blockTimestampLast?.result && period?.result && blockTimestamp) {
+      const blockTimestampLastValue = new BN(blockTimestampLast.result[0].toString()).toNumber()
+      const periodValue = new BN(period.result[0].toString()).toNumber()
+      const timeElapsed = blockTimestamp - blockTimestampLastValue
+      const result = periodValue < timeElapsed
+      dispatch(updateExpiredPrice(result))
+    }
+  }, [dispatch, twapResponse, blockTimestamp])
 
   return null
 }

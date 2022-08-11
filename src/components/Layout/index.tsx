@@ -17,7 +17,7 @@ const Wrapper = styled.div`
 const Content = styled.div`
   position: relative;
   /* height: calc(100vh - 55px - 70px); */
-  min-height: calc(970px - 55px - 70px);
+  min-height: calc(970px - 55px - 87px);
   overflow: scroll;
   padding-bottom: 20px;
 
@@ -26,7 +26,7 @@ const Content = styled.div`
     height:100%;
   `}
 
-  @media screen and (min-height: 1000px) {
+  @media screen and (min-height: 1040px) {
     height: calc(100vh - 55px - 60px);
   }
 `
