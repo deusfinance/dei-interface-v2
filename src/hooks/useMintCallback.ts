@@ -9,7 +9,6 @@ import useWeb3React from './useWeb3'
 import { useCollateralPoolContract } from './useContract'
 
 import { useTransactionAdder } from 'state/transactions/hooks'
-// import { useCollateralRatio } from 'state/dei/hooks'
 
 // import { Collateral } from 'constants/addresses'
 // import { MINT__PATHS } from 'constants/path'
@@ -62,7 +61,7 @@ export enum MintCallbackState {
 //   const ProxyMinterContract = useProxyMinterContract()
 //   const CollateralPoolContract = useCollateralPoolContract()
 //   const addTransaction = useTransactionAdder()
-//   const collateralRatio = useCollateralRatio()
+//   const collateralRatio = useMintCollateralRatio()
 //   const slippagePercentage = useUserSlippageToleranceWithDefault(0.5) // TODO upgrade to gas-dependent calculation
 //   const { proxyValues, isProxyMinter } = useMintState()
 

@@ -30,11 +30,13 @@ export const useDeusPrice = () => {
   return useMemo(() => deus, [deus])
 }
 
-export const useCollateralRatio = () => {
-  // FIXME: get from contract
-  // const { collateralRatio } = useDeiState()
-  const collateralRatio = 80
-  return useMemo(() => collateralRatio, [collateralRatio])
+export const useMintCollateralRatio = () => {
+  const { mintCollateralRatio } = useDeiState()
+  return useMemo(() => mintCollateralRatio, [mintCollateralRatio])
+}
+export const useRedeemCollateralRatio = () => {
+  const { redeemCollateralRatio } = useDeiState()
+  return useMemo(() => redeemCollateralRatio, [redeemCollateralRatio])
 }
 
 export const useMintingFee = () => {
@@ -55,4 +57,14 @@ export const useMintPaused = () => {
 export const useRedeemPaused = () => {
   const { redeemPaused } = useDeiState()
   return useMemo(() => redeemPaused, [redeemPaused])
+}
+
+export const useCollateralCollectionDelay = () => {
+  const { collateralRedemptionDelay } = useDeiState()
+  return useMemo(() => collateralRedemptionDelay, [collateralRedemptionDelay])
+}
+
+export const useDeusRedemptionDelay = () => {
+  const { deusRedemptionDelay } = useDeiState()
+  return useMemo(() => deusRedemptionDelay, [deusRedemptionDelay])
 }
