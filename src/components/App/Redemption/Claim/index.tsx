@@ -22,6 +22,7 @@ import { formatUnits } from '@ethersproject/units'
 import { toBN } from 'utils/numbers'
 import { useCollectCollateralCallback, useCollectDeusCallback } from 'hooks/useRedemptionCallback'
 import useWeb3React from 'hooks/useWeb3'
+import { useCollateralCollectionDelay, useDeusCollectionDelay } from 'state/dei/hooks'
 
 const ActionWrap = styled(Card)`
   background: transparent;
@@ -70,9 +71,6 @@ export const InfoSubHeader = styled.p`
   color: ${({ theme }) => theme.text3};
 `
 
-export const collateralRedemptionDelay = 30 + 5 // in seconds
-export const deusRedemptionDelay = 8 * 60 * 60 + 5 // in seconds
-
 interface IPositions {
   usdAmount: string
   timestamp: string
@@ -98,6 +96,9 @@ export default function RedeemClaim({ redeemCollateralRatio }: { redeemCollatera
     redeemCollateralBalances: any
     isLoading: boolean
   } = useGetPoolData()
+
+  const collateralRedemptionDelay = useCollateralCollectionDelay()
+  const deusRedemptionDelay = useDeusCollectionDelay()
 
   const onSwitchNetwork = useRpcChangerCallback()
   const { account } = useWeb3React()
@@ -130,7 +131,7 @@ export default function RedeemClaim({ redeemCollateralRatio }: { redeemCollatera
       })
       setUnClaimed((current) => [...current, ...deusTokens])
     }
-  }, [nextRedeemId, redeemCollateralBalances, redeemCollateralRatio, unRedeemedPositions])
+  }, [deusRedemptionDelay, nextRedeemId, redeemCollateralBalances, redeemCollateralRatio, unRedeemedPositions])
 
   const [unClaimedCollateral, setUnClaimedCollateral] = useState<IToken>()
   useEffect(() => {
@@ -145,7 +146,7 @@ export default function RedeemClaim({ redeemCollateralRatio }: { redeemCollatera
       }
       setUnClaimedCollateral(usdcToken)
     }
-  }, [allPositions, redeemCollateralBalances])
+  }, [allPositions, collateralRedemptionDelay, redeemCollateralBalances])
 
   const {
     state: CollectCollateralCallbackState,

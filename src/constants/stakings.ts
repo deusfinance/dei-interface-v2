@@ -23,13 +23,13 @@ export const StakingPools: StakingType[] = [
     name: 'bDEI',
     pid: 0,
     token: BDEI_TOKEN,
-    provideLink: '/deibonds',
+    provideLink: '/bdei',
   },
   {
     name: 'DEI-bDEI',
     pid: 1,
     token: DEI_BDEI_LP_TOKEN,
-    provideLink: '/deibonds',
+    provideLink: '/bdei',
   },
 ]
 

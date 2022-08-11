@@ -441,7 +441,7 @@ function TableRow({
 
         <Cell>
           <Name>Claimable DEI</Name>
-          <Value>{formatAmount(parseFloat(deiAmount ? deiAmount.toString() : ''), 6)} bDEI</Value>
+          <Value>{'N/A'} bDEI</Value>
         </Cell>
 
         <Cell style={{ padding: '5px 10px' }}>{getMaturityTimeCell()}</Cell>

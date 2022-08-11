@@ -8,7 +8,7 @@ import { SupportedChainId } from 'constants/chains'
 import { RowCenter } from 'components/Row'
 import { DotFlashing } from 'components/Icons'
 import { getRemainingTime } from 'utils/time'
-import { collateralRedemptionDelay, deusRedemptionDelay } from '.'
+import { useCollateralCollectionDelay, useDeusCollectionDelay } from 'state/dei/hooks'
 
 const RemainingWrap = styled(RowCenter)`
   position: relative;
@@ -68,6 +68,9 @@ export default function ClaimButton({
     if (onClaim) await onClaim()
     setAwaitingClaimConfirmation(false)
   }
+
+  const collateralRedemptionDelay = useCollateralCollectionDelay()
+  const deusRedemptionDelay = useDeusCollectionDelay()
 
   if (chainId && chainId !== SupportedChainId.FANTOM) {
     return <Button onClick={onSwitchNetwork}>Switch to FANTOM</Button>

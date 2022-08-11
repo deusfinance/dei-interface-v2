@@ -18,6 +18,7 @@ import {
 } from 'components/Icons'
 import { Card } from 'components/Card'
 import { ExternalLink } from 'components/Link'
+// import Image from 'next/image'
 
 const Container = styled.div`
   overflow: hidden;
@@ -77,6 +78,7 @@ export default function Menu() {
   return (
     <Container ref={ref}>
       <NavToggle onClick={() => toggle()} />
+      {/* <Image src={BURGER_ICON} alt="burger-icon" onClick={() => toggle()} /> */}
       <div>
         <InlineModal isOpen={isOpen}>
           <Link href="/dashboard" passHref>
@@ -111,8 +113,8 @@ export default function Menu() {
               </IconWrapper>
             </Row>
           </Link>
-          <Link href="/deibonds" passHref>
-            <Row active={router.route === '/deibonds'}>
+          <Link href="/bdei" passHref>
+            <Row active={router.route === '/bdei'}>
               <div>DEI-Bonds</div>
               <IconWrapper>
                 <DeiBondsIcon size={20} />
