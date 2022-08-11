@@ -3,13 +3,13 @@ import styled, { keyframes } from 'styled-components'
 
 const FlashingAnimation = keyframes`
   0% {
-    background: #000000;
+    background: #ffffff;
   }
   50% {
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(255, 255, 255, 0.5);
   }
   100% {
-    background: rgba(0, 0, 0, 0.25);
+    background: rgba(255, 255, 255, 0.25);
   }
 `
 

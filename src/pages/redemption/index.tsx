@@ -251,6 +251,7 @@ export default function Redemption() {
                 value={amountOut2}
                 onChange={(value: string) => console.log(value)}
                 disabled={true}
+                inDollar={true}
               />
               <div style={{ marginTop: '20px' }}></div>
               {getApproveButton()}
