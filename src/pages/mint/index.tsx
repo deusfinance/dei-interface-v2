@@ -3,40 +3,45 @@ import styled from 'styled-components'
 import { ArrowDown, Plus } from 'react-feather'
 import Image from 'next/image'
 
-import { useCurrencyBalance } from 'state/wallet/hooks'
-import { useWalletModalToggle } from 'state/application/hooks'
-import useWeb3React from 'hooks/useWeb3'
-// import useDebounce from 'hooks/useDebounce'
-import { useSupportedChainId } from 'hooks/useSupportedChainId'
-import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
-import { tryParseAmount } from 'utils/parse'
-import { CollateralPool } from 'constants/addresses'
 import MINT_IMG from '/public/static/images/pages/mint/TableauBackground.svg'
 import DEI_LOGO from '/public/static/images/pages/mint/DEI_Logo.svg'
 
-import { DotFlashing } from 'components/Icons'
-import Hero from 'components/Hero'
-import InputBox from 'components/InputBox'
-// import AdvancedOptions from 'components/App/Swap/AdvancedOptions'
-import StatsHeader from 'components/StatsHeader'
-import { BottomWrapper, Container, InputWrapper, Title, Wrapper, MainButton } from 'components/App/StableCoin'
-import InfoItem from 'components/App/StableCoin/InfoItem'
-import Tableau from 'components/App/StableCoin/Tableau'
-import TokensModal from 'components/App/StableCoin/TokensModal'
-import { MINT__INPUTS, MINT__OUTPUTS } from 'constants/inputs'
 import { SupportedChainId } from 'constants/chains'
-import useMintCallback from 'hooks/useMintCallback'
-import { useGetDeusPrice, useMintAmountOut } from 'hooks/useMintPage'
 import { DEUS_TOKEN } from 'constants/tokens'
-import DefaultReviewModal from 'components/ReviewModal/DefaultReviewModal'
+import { MINT__INPUTS, MINT__OUTPUTS } from 'constants/inputs'
+import { CollateralPool } from 'constants/addresses'
+
+import { tryParseAmount } from 'utils/parse'
 import { useDeusPrice, useUSDCPrice } from 'hooks/useCoingeckoPrice'
 import { formatDollarAmount } from 'utils/numbers'
 import { truncateAddress } from 'utils/address'
 import { useGetCollateralRatios } from 'hooks/useRedemptionPage'
 
-// const SlippageWrapper = styled(RowBetween)`
-//   margin-top: 10px;
-// `
+import { useCurrencyBalance } from 'state/wallet/hooks'
+import { useMintingFee, useMintPaused } from 'state/dei/hooks'
+import useWeb3React from 'hooks/useWeb3'
+import { useSupportedChainId } from 'hooks/useSupportedChainId'
+import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
+import { useGetDeusPrice, useMintAmountOut } from 'hooks/useMintPage'
+import useMintCallback from 'hooks/useMintCallback'
+
+import { DotFlashing } from 'components/Icons'
+import Hero from 'components/Hero'
+import InputBox from 'components/InputBox'
+import StatsHeader from 'components/StatsHeader'
+import {
+  BottomWrapper,
+  Container,
+  InputWrapper,
+  Title,
+  Wrapper,
+  MainButton,
+  ConnectWallet,
+} from 'components/App/StableCoin'
+import InfoItem from 'components/App/StableCoin/InfoItem'
+import Tableau from 'components/App/StableCoin/Tableau'
+import TokensModal from 'components/App/StableCoin/TokensModal'
+import DefaultReviewModal from 'components/ReviewModal/DefaultReviewModal'
 
 const PlusIcon = styled(Plus)`
   z-index: 1000;
@@ -77,8 +82,9 @@ const ComboInputBox = styled.div`
 
 export default function Mint() {
   const { chainId, account } = useWeb3React()
-  const toggleWalletModal = useWalletModalToggle()
   const isSupportedChainId = useSupportedChainId()
+  const mintingFee = useMintingFee()
+  const mintPaused = useMintPaused()
   const tokens = useMemo(() => MINT__INPUTS[chainId ?? SupportedChainId.FANTOM], [chainId])
 
   const [fullCollateralIndex, partialCollateralIndex] = useMemo(() => {
@@ -105,7 +111,6 @@ export default function Mint() {
   const [inputTokenIndex, setInputTokenIndex] = useState<number>(fullCollateralIndex)
   const [hasPair, setHasPair] = useState(!!inputTokenIndex)
   const [isOpenReviewModal, toggleReviewModal] = useState(false)
-  const [slippage, setSlippage] = useState(0.5)
   const [amountOut, setAmountOut] = useState('')
 
   // const deiPrice = useDeiPrice()
@@ -292,13 +297,15 @@ export default function Mint() {
   }
 
   function getActionButton(): JSX.Element | null {
-    if (!chainId || !account) return <MainButton onClick={toggleWalletModal}>Connect Wallet</MainButton>
+    if (!chainId || !account) return <ConnectWallet />
     else if (showApprove1 || showApprove2) return null
     else if (insufficientBalance1)
       return <MainButton disabled>Insufficient {token1Currency?.symbol} Balance</MainButton>
     else if (insufficientBalance2)
       return <MainButton disabled>Insufficient {token2Currency?.symbol} Balance</MainButton>
-    else if (awaitingMintConfirmation) {
+    else if (mintPaused) {
+      return <MainButton disabled={mintPaused}>Mint Paused</MainButton>
+    } else if (awaitingMintConfirmation) {
       return (
         <MainButton>
           Minting {outputTokenCurrency?.symbol} <DotFlashing style={{ marginLeft: '10px' }} />
@@ -403,11 +410,8 @@ export default function Mint() {
             {getActionButton()}
           </InputWrapper>
           <BottomWrapper>
-            {/* <SlippageWrapper>
-              <AdvancedOptions slippage={slippage} setSlippage={setSlippage} />
-            </SlippageWrapper> */}
             <InfoItem name={'Minter Contract'} value={'CollateralPool'} />
-            <InfoItem name={'Minting Fee'} value={slippage + '%'} />
+            <InfoItem name={'Minting Fee'} value={mintingFee + '%'} />
           </BottomWrapper>
         </Wrapper>
         <TokensModal

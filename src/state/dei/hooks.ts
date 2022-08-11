@@ -47,16 +47,6 @@ export const useRedemptionFee = () => {
   return useMemo(() => redemptionFee, [redemptionFee])
 }
 
-export const usePoolCeiling = () => {
-  const { poolCeiling } = useDeiState()
-  return useMemo(() => poolCeiling, [poolCeiling])
-}
-
-export const usePoolBalance = () => {
-  const { poolBalance } = useDeiState()
-  return useMemo(() => poolBalance, [poolBalance])
-}
-
 export const useMintPaused = () => {
   const { mintPaused } = useDeiState()
   return useMemo(() => mintPaused, [mintPaused])
