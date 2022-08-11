@@ -60,11 +60,11 @@ export const useRedeemPaused = () => {
 }
 
 export const useCollateralCollectionDelay = () => {
-  const { collateralRedemptionDelay } = useDeiState()
-  return useMemo(() => collateralRedemptionDelay, [collateralRedemptionDelay])
+  const { collateralCollectionDelay } = useDeiState()
+  return useMemo(() => collateralCollectionDelay, [collateralCollectionDelay])
 }
 
-export const useDeusRedemptionDelay = () => {
-  const { deusRedemptionDelay } = useDeiState()
-  return useMemo(() => deusRedemptionDelay, [deusRedemptionDelay])
+export const useDeusCollectionDelay = () => {
+  const { deusCollectionDelay } = useDeiState()
+  return useMemo(() => deusCollectionDelay, [deusCollectionDelay])
 }
