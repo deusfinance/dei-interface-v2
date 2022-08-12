@@ -143,8 +143,7 @@ export default function Updater(): null {
   const blockTimestamp = useBlockTimestamp()
 
   useEffect(() => {
-    console.log({ blockTimestamp })
-
+    // console.log({ blockTimestamp })
     const [blockTimestampLast, period] = twapResponse
     if (blockTimestampLast?.result && period?.result && blockTimestamp) {
       const blockTimestampLastValue = new BN(blockTimestampLast.result[0].toString()).toNumber()

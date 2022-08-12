@@ -3,16 +3,16 @@ import styled from 'styled-components'
 import Image from 'next/image'
 import { isMobile } from 'react-device-detect'
 
-import IC_CLAIM_EMPTY from '/public/static/images/pages/redemption/ic_claim_empty.svg'
+// import IC_CLAIM_EMPTY from '/public/static/images/pages/redemption/ic_claim_empty.svg'
 import IC_CLAIM_LOADING from '/public/static/images/pages/redemption/ic_claim_loading.svg'
 import IC_CLAIM_NOTCONNECTED from '/public/static/images/pages/redemption/ic_claim_notconnected.svg'
-
-import IC_CLAIM_EMPTY_MOBILE from '/public/static/images/pages/redemption/ic_claim_empty_mobile.svg'
+import CLAIM_LOGO from '/public/static/images/pages/redemption/claim.svg'
+// import IC_CLAIM_EMPTY_MOBILE from '/public/static/images/pages/redemption/ic_claim_empty_mobile.svg'
 import IC_CLAIM_LOADING_MOBILE from '/public/static/images/pages/redemption/ic_claim_loading_mobile.svg'
 import IC_CLAIM_NOTCONNECTED_MOBILE from '/public/static/images/pages/redemption/ic_claim_notconnected_mobile.svg'
 
 import { Card } from 'components/Card'
-import { Row } from 'components/Row'
+import { Row, RowBetween } from 'components/Row'
 import { TokenBox } from './TokenBox'
 import useRpcChangerCallback from 'hooks/useRpcChangerCallback'
 import { SupportedChainId } from 'constants/chains'
@@ -23,11 +23,12 @@ import { toBN } from 'utils/numbers'
 import { useCollectCollateralCallback, useCollectDeusCallback } from 'hooks/useRedemptionCallback'
 import useWeb3React from 'hooks/useWeb3'
 import { useCollateralCollectionDelay, useDeusCollectionDelay } from 'state/dei/hooks'
+import InfoItem from 'components/App/StableCoin/InfoItem'
 
 const ActionWrap = styled(Card)`
   background: transparent;
   border-radius: 12px;
-  margin-top: 28px;
+  margin-top: 25px;
   width: 320px;
   padding: 2px;
 
@@ -39,6 +40,8 @@ const ActionWrap = styled(Card)`
 `
 
 export const ClaimBox = styled.div`
+  background: ${({ theme }) => theme.bg0};
+  padding: 12px;
   display: flex;
   flex-flow: column nowrap;
   flex: 1;
@@ -47,10 +50,13 @@ export const ClaimBox = styled.div`
 const DeusBox = styled.div`
   background: ${({ theme }) => theme.bg2};
   border-radius: 12px;
+  border: 1px solid ${({ theme }) => theme.border3};
 `
 
 const UsdcBox = styled.div`
   margin-bottom: 12px;
+  border-radius: 12px;
+  border: 1px solid ${({ theme }) => theme.border3};
 `
 
 export const BottomRow = styled(Row)`
@@ -69,6 +75,51 @@ export const InfoHeader = styled.p`
 export const InfoSubHeader = styled.p`
   font-size: 10px;
   color: ${({ theme }) => theme.text3};
+`
+
+const InfoWrap = styled.div`
+  background: ${({ theme }) => theme.bg1};
+  padding: 0 15px 10px 15px;
+  border-bottom-right-radius: 12px;
+  border-bottom-left-radius: 12px;
+  width: 100%;
+`
+
+const TitleWrap = styled(RowBetween)`
+  background: ${({ theme }) => theme.bg2};
+  border-top-right-radius: 12px;
+  border-top-left-radius: 12px;
+  width: 100%;
+  height: 52px;
+`
+
+const Title = styled.div`
+  font-family: 'Inter';
+  font-weight: 400;
+  font-size: 16px;
+  color: ${({ theme }) => theme.text1};
+
+  margin-top: 12px;
+  margin-left: 16px;
+  margin-bottom: 12px;
+`
+
+const NoResultWrapper = styled.div`
+  font-size: 14px;
+  text-align: center;
+  padding: 10px 12px;
+`
+
+const EmptyToken = styled.p`
+  margin-top: 0.75rem;
+  font-size: 14px;
+  text-align: center;
+  color: ${({ theme }) => theme.text2};
+`
+
+const NoTokens = styled.div`
+  text-align: center;
+  padding: 25px 0;
 `
 
 interface IPositions {
@@ -148,6 +199,25 @@ export default function RedeemClaim({ redeemCollateralRatio }: { redeemCollatera
     }
   }, [allPositions, collateralRedemptionDelay, redeemCollateralBalances])
 
+  const [pendingTokens, setPendingTokens] = useState<IToken[]>([])
+  const [readyCount, setReadyCount] = useState(0)
+  const [pendingCount, setPendingCount] = useState(0)
+  useEffect(() => {
+    setPendingTokens(
+      unClaimed.filter((token) => {
+        return token.claimableBlock > currentBlock
+      })
+    )
+    let rc = unClaimed.length - pendingTokens.length
+    let pc = pendingTokens.length
+    if (unClaimedCollateral) {
+      if (unClaimedCollateral.claimableBlock > currentBlock) pc++
+      else rc++
+    }
+    setReadyCount(rc)
+    setPendingCount(pc)
+  }, [currentBlock, pendingTokens.length, unClaimed, unClaimedCollateral])
+
   const {
     state: CollectCollateralCallbackState,
     callback: collectCollateralCallback,
@@ -201,8 +271,11 @@ export default function RedeemClaim({ redeemCollateralRatio }: { redeemCollatera
 
   return (
     <ActionWrap>
+      <TitleWrap>
+        <Title>Claim your tokens</Title>
+      </TitleWrap>
       {!unClaimed || unClaimed.length == 0 ? (
-        <>
+        <ClaimBox>
           {!account ? (
             <Image src={!isMobile ? IC_CLAIM_NOTCONNECTED : IC_CLAIM_NOTCONNECTED_MOBILE} alt="claim-notconnected" />
           ) : (
@@ -210,11 +283,14 @@ export default function RedeemClaim({ redeemCollateralRatio }: { redeemCollatera
               {isLoading ? (
                 <Image src={!isMobile ? IC_CLAIM_LOADING : IC_CLAIM_LOADING_MOBILE} alt="claim-loading" />
               ) : (
-                <Image src={!isMobile ? IC_CLAIM_EMPTY : IC_CLAIM_EMPTY_MOBILE} alt="claim-empty" />
+                <NoTokens>
+                  <Image src={CLAIM_LOGO} alt="claim" />
+                  <EmptyToken> No token to claim </EmptyToken>
+                </NoTokens>
               )}
             </>
           )}
-        </>
+        </ClaimBox>
       ) : (
         <ClaimBox>
           {unClaimedCollateral && (
@@ -249,6 +325,18 @@ export default function RedeemClaim({ redeemCollateralRatio }: { redeemCollatera
           </DeusBox>
         </ClaimBox>
       )}
+      <InfoWrap>
+        {!unClaimed || unClaimed.length == 0 ? (
+          <>
+            <NoResultWrapper> You have no new redemption </NoResultWrapper>
+          </>
+        ) : (
+          <>
+            <InfoItem name={'Ready to Claim:'} value={readyCount.toString()} />
+            <InfoItem name={'Pending:'} value={pendingCount.toString()} />
+          </>
+        )}
+      </InfoWrap>
     </ActionWrap>
   )
 }
