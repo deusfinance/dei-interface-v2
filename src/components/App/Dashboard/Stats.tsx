@@ -27,8 +27,8 @@ const Wrapper = styled(RowBetween)`
 `
 
 const ChartWrapper = styled.div`
-  border: 1px solid ${({ theme }) => theme.border1};
-  background-color: ${({ theme }) => theme.bg0};
+  /* border: 1px solid ${({ theme }) => theme.border1}; */
+  /* background-color: ${({ theme }) => theme.bg0}; */
   border-radius: 12px;
   width: 100%;
   min-width: 200px;

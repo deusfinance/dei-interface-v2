@@ -104,10 +104,11 @@ const Title = styled.div`
   margin-bottom: 12px;
 `
 
-const NoResultWrapper = styled.div`
+const NoResultWrapper = styled.div<{ warning?: boolean }>`
   font-size: 14px;
   text-align: center;
   padding: 10px 12px;
+  color: ${({ theme, warning }) => (warning ? theme.warning : 'white')};
 `
 
 const EmptyToken = styled.p`
@@ -328,7 +329,17 @@ export default function RedeemClaim({ redeemCollateralRatio }: { redeemCollatera
       <InfoWrap>
         {!unClaimed || unClaimed.length == 0 ? (
           <>
-            <NoResultWrapper> You have no new redemption </NoResultWrapper>
+            {!account ? (
+              <NoResultWrapper warning> Wallet is not connected! </NoResultWrapper>
+            ) : (
+              <>
+                {isLoading ? (
+                  <NoResultWrapper> Loading Redemptions... </NoResultWrapper>
+                ) : (
+                  <NoResultWrapper> You have no new redemption </NoResultWrapper>
+                )}
+              </>
+            )}
           </>
         ) : (
           <>

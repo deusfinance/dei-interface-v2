@@ -242,8 +242,8 @@ export default function Redemption() {
   //TODO: after adding loading animation please read this data from contract in /src/state/dei
   const info = useMemo(
     () => [
-      { title: 'USDC claimable time', value: '30sec' },
-      { title: 'DEUS claimable time', value: '30min' },
+      { title: 'USDC claimable time', value: '30 sec' },
+      { title: 'DEUS claimable time', value: '30 min' },
     ],
     []
   )
