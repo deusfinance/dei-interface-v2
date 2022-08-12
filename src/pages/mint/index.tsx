@@ -10,12 +10,9 @@ import { SupportedChainId } from 'constants/chains'
 import { DEUS_TOKEN } from 'constants/tokens'
 import { MINT__INPUTS, MINT__OUTPUTS } from 'constants/inputs'
 import { CollateralPool } from 'constants/addresses'
-
 import { tryParseAmount } from 'utils/parse'
-import { useDeusPrice, useUSDCPrice } from 'hooks/useCoingeckoPrice'
 import { formatDollarAmount } from 'utils/numbers'
 import { truncateAddress } from 'utils/address'
-import { useGetCollateralRatios } from 'hooks/useRedemptionPage'
 
 import { useCurrencyBalance } from 'state/wallet/hooks'
 import { useExpiredPrice, useMintingFee, useMintPaused } from 'state/dei/hooks'
@@ -24,25 +21,19 @@ import { useSupportedChainId } from 'hooks/useSupportedChainId'
 import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
 import { useMintPage } from 'hooks/useMintPage'
 import useMintCallback from 'hooks/useMintCallback'
+import { useDeusPrice, useUSDCPrice } from 'hooks/useCoingeckoPrice'
+import useUpdateCallback from 'hooks/useOracleCallback'
+import { useGetCollateralRatios } from 'hooks/useRedemptionPage'
 
 import { DotFlashing } from 'components/Icons'
 import Hero from 'components/Hero'
 import InputBox from 'components/InputBox'
 import StatsHeader from 'components/StatsHeader'
-import {
-  BottomWrapper,
-  Container,
-  InputWrapper,
-  Wrapper,
-  MainButton,
-  ConnectWallet,
-  CriticalButton,
-} from 'components/App/StableCoin'
+import { BottomWrapper, Container, InputWrapper, Wrapper, MainButton, ConnectWallet } from 'components/App/StableCoin'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
 import TokensModal from 'components/App/StableCoin/TokensModal'
 import DefaultReviewModal from 'components/ReviewModal/DefaultReviewModal'
-import useUpdateCallback from 'hooks/useOracleCallback'
 
 const PlusIcon = styled(Plus)`
   z-index: 1000;
@@ -104,21 +95,14 @@ export default function Mint() {
     return [fullCollateralIndex, partialCollateralIndex]
   }, [tokens])
 
-  // const [amountIn1, setAmountIn1] = useState('')
-  // const [amountIn2, setAmountIn2] = useState('')
-  // const debouncedAmountIn1 = useDebounce(amountIn1, 500)
-  // const debouncedAmountIn2 = useDebounce(amountIn2, 500)
   const [isOpenTokensModal, toggleTokensModal] = useState(false)
   const [inputTokenIndex, setInputTokenIndex] = useState<number>(fullCollateralIndex)
   const [hasPair, setHasPair] = useState(!!inputTokenIndex)
   const [isOpenReviewModal, toggleReviewModal] = useState(false)
-  // const [amountOut, setAmountOut] = useState('')
 
-  // const deiPrice = useDeiPrice()
   const expiredPrice = useExpiredPrice()
   const usdcPrice = useUSDCPrice()
   const deusCoingeckoPrice = useDeusPrice()
-  // const deusPrice = useGetDeusPrice()
 
   const inputToken = tokens[inputTokenIndex]
   const token1Currency = inputToken[0]
@@ -148,12 +132,6 @@ export default function Mint() {
       setInputTokenIndex(partialCollateralIndex)
     }
   }, [fullCollateralIndex, mintCollateralRatio, partialCollateralIndex])
-
-  // const { collatAmount, deusAmount } = useMintAmountOut(amountOut, deusPrice)
-  // useEffect(() => {
-  //   setAmountIn1(collatAmount)
-  //   setAmountIn2(deusAmount)
-  // }, [collatAmount, deusAmount])
 
   const token1Amount = useMemo(() => {
     return tryParseAmount(amountIn1, token1Currency || undefined)
@@ -199,13 +177,6 @@ export default function Mint() {
     return [show, show && approvalState2 === ApprovalState.PENDING]
   }, [hasPair, token2Currency, approvalState2, amountIn2])
 
-  const handleApprove = async (focusType: string) => {
-    setAwaitingApproveConfirmation(true)
-    if (focusType === '2') await approveCallback2()
-    else await approveCallback1()
-    setAwaitingApproveConfirmation(false)
-  }
-
   const handleUpdatePrice = useCallback(async () => {
     if (!updateOracleCallback) return
     try {
@@ -221,7 +192,20 @@ export default function Mint() {
         console.error(e)
       }
     }
-  }, [])
+  }, [updateOracleCallback])
+
+  useEffect(() => {
+    if (expiredPrice) {
+      onUserInput1('')
+    }
+  }, [expiredPrice, onUserInput1])
+
+  const handleApprove = async (focusType: string) => {
+    setAwaitingApproveConfirmation(true)
+    if (focusType === '2') await approveCallback2()
+    else await approveCallback1()
+    setAwaitingApproveConfirmation(false)
+  }
 
   const handleMint = useCallback(async () => {
     console.log('called handleMint')
@@ -277,13 +261,13 @@ export default function Mint() {
       return <MainButton disabled={mintPaused}>Mint Paused</MainButton>
     } else if (awaitingUpdateConfirmation) {
       return (
-        <CriticalButton onClick={handleUpdatePrice}>
+        <MainButton onClick={handleUpdatePrice}>
           Updating Oracle
           <DotFlashing style={{ marginLeft: '10px' }} />
-        </CriticalButton>
+        </MainButton>
       )
     } else if (expiredPrice) {
-      return <CriticalButton onClick={handleUpdatePrice}>Update Oracle</CriticalButton>
+      return <MainButton onClick={handleUpdatePrice}>Update Oracle</MainButton>
     } else if (awaitingMintConfirmation) {
       return (
         <MainButton>

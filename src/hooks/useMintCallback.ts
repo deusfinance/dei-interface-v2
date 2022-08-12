@@ -6,7 +6,7 @@ import useWeb3React from './useWeb3'
 import { useCollateralPoolContract } from './useContract'
 
 import { useTransactionAdder } from 'state/transactions/hooks'
-import { DefaultHandlerError } from 'utils/parseError'
+import { CollateralPoolErrorToUserReadableMessage } from 'utils/parseError'
 import toast from 'react-hot-toast'
 import { toHex } from 'utils/hex'
 import { calculateGasMargin } from 'utils/web3'
@@ -98,7 +98,7 @@ export default function useMintCallback(deiAmount: CurrencyAmount<NativeCurrency
             })
             .catch((callError) => {
               console.debug('Call threw an error', call, callError)
-              toast.error(DefaultHandlerError(callError))
+              toast.error(CollateralPoolErrorToUserReadableMessage(callError))
               return {
                 error: new Error(callError.message), // TODO make this human readable
               }

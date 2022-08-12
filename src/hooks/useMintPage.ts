@@ -89,7 +89,7 @@ export function useMintPage(
 
   const debounceUserInput1 = useCallback(
     debounce(async (amount: string) => {
-      if (amount === '') {
+      if (amount === '' || collateralRatio.isNaN()) {
         setAmountIn2('')
         setAmountOut('')
         return
@@ -105,12 +105,12 @@ export function useMintPage(
       setAmountIn2(inputAmount2.toString())
       setAmountOut(outputAmount.toString())
     }, 500),
-    [isProxyMinter, TokenOut1, inputUnit1, inputUnit2, feeFactorBN]
+    [collateralRatio, isProxyMinter, TokenOut1, inputUnit1, inputUnit2, feeFactorBN]
   )
 
   const debounceUserInput2 = useCallback(
     debounce((amount: string) => {
-      if (amount === '') {
+      if (amount === '' || collateralRatio.isNaN()) {
         setAmountIn1('')
         setAmountOut('')
         return
@@ -132,7 +132,7 @@ export function useMintPage(
 
   const debounceUserOutput = useCallback(
     debounce((amount: string) => {
-      if (amount === '') {
+      if (amount === '' || collateralRatio.isNaN()) {
         setAmountIn1('')
         setAmountIn2('')
         return
@@ -147,6 +147,8 @@ export function useMintPage(
       const outputAmount = toBN(amount)
       const inputAmount1 = outputAmount.times(toBN(2).minus(feeFactorBN)).times(collateralRatio).div(inputUnit1)
       const inputAmount2 = outputAmount.div(feeFactorBN).times(BN_ONE.minus(collateralRatio)).div(inputUnit2)
+      console.log(feeFactorBN.toString(), collateralRatio.toString(), inputUnit1.toString())
+
       setAmountIn1(inputAmount1.toString())
       setAmountIn2(inputAmount2.toString())
     }, 500),

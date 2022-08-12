@@ -14,13 +14,14 @@ import { truncateAddress } from 'utils/address'
 import { formatDollarAmount } from 'utils/numbers'
 
 import { useCurrencyBalance } from 'state/wallet/hooks'
-import { useRedemptionFee, useRedeemPaused } from 'state/dei/hooks'
+import { useRedemptionFee, useRedeemPaused, useExpiredPrice } from 'state/dei/hooks'
 import useWeb3React from 'hooks/useWeb3'
 import { useSupportedChainId } from 'hooks/useSupportedChainId'
 import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
 import useRedemptionCallback from 'hooks/useRedemptionCallback'
 import { useGetCollateralRatios, useRedeemAmountOut } from 'hooks/useRedemptionPage'
 import { useDeusPrice, useUSDCPrice } from 'hooks/useCoingeckoPrice'
+import useUpdateCallback from 'hooks/useOracleCallback'
 
 import { DotFlashing } from 'components/Icons'
 import Hero from 'components/Hero'
@@ -85,6 +86,7 @@ export default function Redemption() {
   // const deiPrice = useDeiPrice()
   const usdcPrice = useUSDCPrice()
   const deusCoingeckoPrice = useDeusPrice()
+  const expiredPrice = useExpiredPrice()
 
   const { collateralAmount, deusValue } = useRedeemAmountOut(amountIn)
 
@@ -102,6 +104,8 @@ export default function Redemption() {
     return deiCurrencyBalance?.lessThan(deiAmount)
   }, [deiCurrencyBalance, deiAmount])
 
+  const { callback: updateOracleCallback } = useUpdateCallback()
+
   const {
     state: redeemCallbackState,
     callback: redeemCallback,
@@ -112,6 +116,7 @@ export default function Redemption() {
 
   const [awaitingApproveConfirmation, setAwaitingApproveConfirmation] = useState<boolean>(false)
   const [awaitingRedeemConfirmation, setAwaitingRedeemConfirmation] = useState<boolean>(false)
+  const [awaitingUpdateConfirmation, setAwaitingUpdateConfirmation] = useState<boolean>(false)
 
   const spender = useMemo(() => (chainId ? DynamicRedeemer[chainId] : undefined), [chainId])
   const [approvalState, approveCallback] = useApproveCallback(deiCurrency ?? undefined, spender)
@@ -119,6 +124,23 @@ export default function Redemption() {
     const show = deiCurrency && approvalState !== ApprovalState.APPROVED && !!amountIn
     return [show, show && approvalState === ApprovalState.PENDING]
   }, [deiCurrency, approvalState, amountIn])
+
+  const handleUpdatePrice = useCallback(async () => {
+    if (!updateOracleCallback) return
+    try {
+      setAwaitingUpdateConfirmation(true)
+      const txHash = await updateOracleCallback()
+      console.log({ txHash })
+      setAwaitingUpdateConfirmation(false)
+    } catch (e) {
+      setAwaitingUpdateConfirmation(false)
+      if (e instanceof Error) {
+        console.error(e)
+      } else {
+        console.error(e)
+      }
+    }
+  }, [updateOracleCallback])
 
   const handleApprove = async () => {
     setAwaitingApproveConfirmation(true)
@@ -175,6 +197,15 @@ export default function Redemption() {
       return null
     } else if (redeemPaused) {
       return <MainButton disabled>Redeem Paused</MainButton>
+    } else if (awaitingUpdateConfirmation) {
+      return (
+        <MainButton onClick={handleUpdatePrice}>
+          Updating Oracle
+          <DotFlashing style={{ marginLeft: '10px' }} />
+        </MainButton>
+      )
+    } else if (expiredPrice) {
+      return <MainButton onClick={handleUpdatePrice}>Update Oracle</MainButton>
     } else if (insufficientBalance) {
       return <MainButton disabled>Insufficient {deiCurrency?.symbol} Balance</MainButton>
     }
@@ -227,7 +258,12 @@ export default function Redemption() {
           <Wrapper>
             <Tableau title={'Redeem DEI'} imgSrc={REDEEM_IMG} />
             <RedemptionWrapper>
-              <InputBox currency={deiCurrency} value={amountIn} onChange={(value: string) => setAmountIn(value)} />
+              <InputBox
+                currency={deiCurrency}
+                value={amountIn}
+                onChange={(value: string) => setAmountIn(value)}
+                disabled={expiredPrice}
+              />
               <ArrowDown />
 
               <InputBox
