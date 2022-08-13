@@ -34,6 +34,7 @@ import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
 import TokensModal from 'components/App/StableCoin/TokensModal'
 import DefaultReviewModal from 'components/ReviewModal/DefaultReviewModal'
+import { sendEvent, sendGA4 } from 'components/analytics'
 
 const PlusIcon = styled(Plus)`
   z-index: 1000;
@@ -78,6 +79,11 @@ export default function Mint() {
   const mintingFee = useMintingFee()
   const mintPaused = useMintPaused()
   const tokens = useMemo(() => MINT__INPUTS[chainId ?? SupportedChainId.FANTOM], [chainId])
+
+  useEffect(() => {
+    sendEvent('mint_dei', { event_name: 'Hiii' })
+    sendGA4({ hitType: 'pageview', page: '/mint' })
+  }, [])
 
   const [fullCollateralIndex, partialCollateralIndex] = useMemo(() => {
     let fullCollateralIndex = tokens.indexOf(

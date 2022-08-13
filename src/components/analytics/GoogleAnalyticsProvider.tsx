@@ -26,6 +26,10 @@ export default class GoogleAnalyticsProvider {
     ReactGA.set(fieldsObject)
   }
 
+  public send(fieldsObject: any) {
+    ReactGA.send(fieldsObject)
+  }
+
   public outboundLink(
     {
       label,

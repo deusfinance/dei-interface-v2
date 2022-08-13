@@ -8,7 +8,7 @@ import { getCLS, getFCP, getFID, getLCP, Metric } from 'web-vitals'
 import GoogleAnalyticsProvider from './GoogleAnalyticsProvider'
 
 export const GOOGLE_ANALYTICS_CLIENT_ID_STORAGE_KEY = 'ga_client_id'
-const GOOGLE_ANALYTICS_ID: string | undefined = process.env.REACT_APP_GOOGLE_ANALYTICS_ID
+const GOOGLE_ANALYTICS_ID: string | undefined = process.env.REACT_APP_GOOGLE_ANALYTICS_ID || 'G-VKLYK01K1V'
 
 let storedClientId: string | null = null
 if (typeof window !== 'undefined') {
@@ -19,6 +19,10 @@ const googleAnalytics = new GoogleAnalyticsProvider()
 
 export function sendEvent(event: string | UaEventOptions, params?: any) {
   return googleAnalytics.sendEvent(event, params)
+}
+
+export function sendGA4(item: any) {
+  return googleAnalytics.send(item)
 }
 
 export function outboundLink(
