@@ -19,8 +19,9 @@ import { SupportedChainId } from 'constants/chains'
 import { useGetPoolData } from 'hooks/useRedemptionPage'
 import { DEUS_TOKEN } from 'constants/tokens'
 import { formatUnits } from '@ethersproject/units'
-import { toBN } from 'utils/numbers'
+import { BN_TEN, toBN } from 'utils/numbers'
 import { useCollectCollateralCallback, useCollectDeusCallback } from 'hooks/useRedemptionCallback'
+import { useGetDeusPrice } from 'hooks/useMintPage'
 import useWeb3React from 'hooks/useWeb3'
 import { useCollateralCollectionDelay, useDeusCollectionDelay } from 'state/dei/hooks'
 import InfoItem from 'components/App/StableCoin/InfoItem'
@@ -127,11 +128,12 @@ interface IPositions {
   usdAmount: string
   timestamp: string
 }
-interface IToken {
+export interface IToken {
   symbol: string
   index: number
   claimableBlock: number
   amount: number
+  usdAmount?: number
 }
 
 export default function RedeemClaim({ redeemCollateralRatio }: { redeemCollateralRatio: string }) {
@@ -163,27 +165,36 @@ export default function RedeemClaim({ redeemCollateralRatio }: { redeemCollatera
     return () => clearInterval(interval)
   }, [])
 
+  const deusPrice = useGetDeusPrice()
+
   const [unClaimed, setUnClaimed] = useState<IToken[]>([])
   useEffect(() => {
     setUnClaimed([])
     if (unRedeemedPositions?.length) {
       const deusTokens = unRedeemedPositions.map((position, index) => {
-        const usdAmount = position.usdAmount.toString()
+        const usdAmount = toBN(formatUnits(position.usdAmount.toString(), DEUS_TOKEN.decimals)).toFixed(6).toString()
+        const deusPriceBN = toBN(deusPrice).div(BN_TEN.pow(DEUS_TOKEN.decimals))
+        const deusAmount = toBN(usdAmount).div(deusPriceBN).toFixed(8).toString()
         const timestamp = position.timestamp.toString()
-        const deusAmount = toBN(formatUnits(usdAmount, DEUS_TOKEN.decimals))
-          .times(100 - Number(redeemCollateralRatio))
-          .toString()
         const claimableBlock = Number(timestamp) + deusRedemptionDelay
         return {
           symbol: 'DEUS',
           index,
           claimableBlock,
           amount: Number(deusAmount),
+          usdAmount: Number(usdAmount),
         }
       })
       setUnClaimed((current) => [...current, ...deusTokens])
     }
-  }, [deusRedemptionDelay, nextRedeemId, redeemCollateralBalances, redeemCollateralRatio, unRedeemedPositions])
+  }, [
+    deusPrice,
+    deusRedemptionDelay,
+    nextRedeemId,
+    redeemCollateralBalances,
+    redeemCollateralRatio,
+    unRedeemedPositions,
+  ])
 
   const [unClaimedCollateral, setUnClaimedCollateral] = useState<IToken>()
   useEffect(() => {
@@ -297,10 +308,8 @@ export default function RedeemClaim({ redeemCollateralRatio }: { redeemCollatera
           {unClaimedCollateral && (
             <UsdcBox>
               <TokenBox
-                symbol={unClaimedCollateral.symbol}
-                claimableBlock={unClaimedCollateral.claimableBlock}
+                token={unClaimedCollateral}
                 currentBlock={currentBlock}
-                amount={unClaimedCollateral.amount}
                 onSwitchNetwork={() => onSwitchNetwork(SupportedChainId.FANTOM)}
                 onClaim={() => handleClaim(unClaimedCollateral)}
               />
@@ -308,14 +317,11 @@ export default function RedeemClaim({ redeemCollateralRatio }: { redeemCollatera
           )}
           <DeusBox>
             {unClaimed.map((token: IToken, index: number) => {
-              const { symbol, amount, claimableBlock } = token
               return (
                 <TokenBox
                   key={index}
-                  symbol={symbol}
-                  claimableBlock={claimableBlock}
+                  token={token}
                   currentBlock={currentBlock}
-                  amount={amount}
                   onSwitchNetwork={() => onSwitchNetwork(SupportedChainId.FANTOM)}
                   onClaim={() => handleClaim(token)}
                   isFirst={index === 0}

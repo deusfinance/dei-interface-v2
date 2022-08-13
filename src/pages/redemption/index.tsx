@@ -286,6 +286,7 @@ export default function Redemption() {
             </RedemptionWrapper>
             <BottomWrapper>
               <InfoItem name={'Redemption Fee'} value={redemptionFee + '%'} />
+              <InfoItem name={'Collateral Ratio'} value={Number(redeemCollateralRatio).toString() + '%'} />
               <InfoItem name={'USDC Ratio'} value={(Number(redeemCollateralRatio) / 100).toString()} />
               <InfoItem name={'DEUS Ratio($)'} value={((100 - Number(redeemCollateralRatio)) / 100).toString()} />
             </BottomWrapper>
