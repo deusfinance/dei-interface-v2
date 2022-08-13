@@ -368,6 +368,7 @@ export default function Mint() {
 
           <BottomWrapper>
             <InfoItem name={'Minting Fee'} value={mintingFee == 0 ? 'Zero' : `${mintingFee}%`} />
+            <InfoItem name={'Collateral Ratio'} value={Number(mintCollateralRatio).toString() + '%'} />
           </BottomWrapper>
         </Wrapper>
         <TokensModal

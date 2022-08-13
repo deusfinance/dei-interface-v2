@@ -104,9 +104,10 @@ export default function Dashboard() {
             HoverIcon={VEDEUS_HOVER_LOGO}
           />
           <Card
-            href="/analytics"
+            href=""
             title={'Analytics'}
-            subTitle="DEI and DEUS Stats"
+            // subTitle="DEI and DEUS Stats"
+            subTitle="Coming Soon..."
             MainIcon={ANALYTICS_LOGO}
             HoverIcon={ANALYTICS_HOVER_LOGO}
           />

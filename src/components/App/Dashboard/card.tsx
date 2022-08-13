@@ -67,6 +67,17 @@ const LeftWrap = styled.div`
   `};
 `
 
+const SubText = styled.div<{ active: boolean }>`
+  ${({ active }) =>
+    active &&
+    `
+    background: -webkit-linear-gradient(1deg, #e29d52 -10.26%, #de4a7b 90%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 600;
+`};
+`
+
 export const getImageSize = () => {
   return isMobile ? 50 : 80
 }
@@ -92,7 +103,7 @@ export const Card = ({
         <a style={{ textDecoration: 'none' }}>
           <LeftWrap>
             <div>{title}</div>
-            <div>{subTitle}</div>
+            <SubText active={subTitle === 'Coming Soon...'}>{subTitle}</SubText>
           </LeftWrap>
           <Image
             src={hover || isMobile ? HoverIcon : MainIcon}

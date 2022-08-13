@@ -242,8 +242,8 @@ export default function Redemption() {
   //TODO: after adding loading animation please read this data from contract in /src/state/dei
   const info = useMemo(
     () => [
-      { title: 'USDC claimable time', value: '30sec' },
-      { title: 'DEUS claimable time', value: '30min' },
+      { title: 'USDC claimable time', value: '30 sec' },
+      { title: 'DEUS claimable time', value: '30 min' },
     ],
     []
   )
@@ -286,6 +286,7 @@ export default function Redemption() {
             </RedemptionWrapper>
             <BottomWrapper>
               <InfoItem name={'Redemption Fee'} value={redemptionFee + '%'} />
+              <InfoItem name={'Collateral Ratio'} value={Number(redeemCollateralRatio).toString() + '%'} />
               <InfoItem name={'USDC Ratio'} value={(Number(redeemCollateralRatio) / 100).toString()} />
               <InfoItem name={'DEUS Ratio($)'} value={((100 - Number(redeemCollateralRatio)) / 100).toString()} />
             </BottomWrapper>
