@@ -278,7 +278,7 @@ export default function Mint() {
     return (
       <MainButton
         onClick={() => {
-          if (amountOut !== '0') toggleReviewModal(true)
+          if (amountOut !== '0' && amountOut !== '') toggleReviewModal(true)
         }}
       >
         Mint {outputTokenCurrency?.symbol}
