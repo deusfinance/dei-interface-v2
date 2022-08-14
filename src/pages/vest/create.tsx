@@ -26,11 +26,11 @@ import { getMaximumDate, getMinimumDate } from 'utils/vest'
 
 import InputBox from 'components/InputBox'
 import { SelectDatePresets, UserLockInformation } from 'components/App/Vest'
-import Hero, { HeroSubtext } from 'components/Hero'
+import Hero from 'components/Hero'
 import { Card } from 'components/Card'
 import { ArrowBubble, DotFlashing } from 'components/Icons'
 import Image from 'next/image'
-import { BottomWrapper, MainButton } from 'components/App/StableCoin'
+import { BottomWrapper, MainButton, Title } from 'components/App/StableCoin'
 import StatsHeader from 'components/StatsHeader'
 import { formatAmount, formatDollarAmount } from 'utils/numbers'
 import { useVestedAPY } from 'hooks/useVested'
@@ -96,10 +96,6 @@ const CardWrapper = styled(Card)`
   ${({ theme }) => theme.mediaWidth.upToSmall`
     flex-flow: column nowrap;
   `}
-`
-
-const HeroText = styled(HeroSubtext)`
-  margin: 10px;
 `
 
 export default function Create() {
@@ -276,7 +272,8 @@ export default function Create() {
     <Container>
       <Hero>
         <Image src={veDEUS_LOGO} height={'90px'} alt="Logo" />
-        <HeroText>Vest your DEUS for a period of your liking.</HeroText>
+        <Title>veDEUS</Title>
+
         <StatsHeader items={items} hasBox />
       </Hero>
 
