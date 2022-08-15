@@ -13,7 +13,7 @@ import LockManager from 'components/App/Vest/LockManager'
 import APYManager from 'components/App/Vest/APYManager'
 import { RowFixed, RowBetween } from 'components/Row'
 import StatsHeader from 'components/StatsHeader'
-import { Container, Title } from 'components/App/StableCoin'
+import { Container } from 'components/App/StableCoin'
 
 import { useOwnerBondNFTs } from 'hooks/useOwnedNfts'
 import { useSupportedChainId } from 'hooks/useSupportedChainId'
@@ -192,7 +192,6 @@ export default function BDei() {
       )}
       <Hero>
         <Image src={DEI_LOGO} width={'76px'} height={'90px'} alt="Logo" />
-        <Title>DEI Bond</Title>
         <StatsHeader items={items} />
       </Hero>
       <Wrapper>

@@ -95,7 +95,7 @@ export default function DeiBondStats() {
       <DeiStats>
         <Title>Your DEI Bond stats</Title>
         <ClaimedDei>
-          Total Dei Claimed: <ClaimedValue>0</ClaimedValue>
+          Total DEI Claimed: <ClaimedValue>0</ClaimedValue>
         </ClaimedDei>
       </DeiStats>
       <DeiInfo>
