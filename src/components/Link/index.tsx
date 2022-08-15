@@ -1,7 +1,26 @@
 import React from 'react'
 import styled from 'styled-components'
 import { ExternalLink as LinkIconFeather } from 'react-feather'
+
 import { ExplorerDataType, getExplorerLink } from 'utils/explorers'
+import { outboundLink } from 'components/analytics'
+
+function handleClickExternalLink(event: React.MouseEvent<HTMLAnchorElement>) {
+  const { target, href } = event.currentTarget
+
+  // don't prevent default, don't redirect if it's a new tab
+  if (target === '_blank' || event.ctrlKey || event.metaKey) {
+    outboundLink({ label: href }, () => {
+      console.debug('Fired outbound link event', href)
+    })
+  } else {
+    event.preventDefault()
+    // send a ReactGA event and then trigger a location change
+    outboundLink({ label: href }, () => {
+      window.location.href = href
+    })
+  }
+}
 
 const StyledLink = styled.a`
   text-decoration: none;
@@ -79,7 +98,7 @@ export function ExternalLinkIcon({
   [x: string]: any
 }) {
   return (
-    <LinkIconWrapper target={target} rel={rel} href={href} {...rest}>
+    <LinkIconWrapper target={target} rel={rel} href={href} onClick={handleClickExternalLink} {...rest}>
       <LinkIcon />
     </LinkIconWrapper>
   )
@@ -99,7 +118,7 @@ export const ExplorerLink = ({
   [x: string]: any
 }) => {
   return (
-    <ExternalLink href={getExplorerLink(chainId, type, value)} {...rest}>
+    <ExternalLink href={getExplorerLink(chainId, type, value)} onClick={handleClickExternalLink} {...rest}>
       {children}
     </ExternalLink>
   )

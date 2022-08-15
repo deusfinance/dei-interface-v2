@@ -46,10 +46,10 @@ if (typeof GOOGLE_ANALYTICS_ID === 'string') {
       storage: 'none',
       storeGac: false,
       clientId: storedClientId ?? undefined,
+      debug_mode: true,
     },
   })
   googleAnalytics.set({
-    anonymizeIp: true,
     customBrowserType: !isMobile
       ? 'desktop'
       : 'web3' in window || 'ethereum' in window
@@ -65,6 +65,7 @@ let hit = false
 if (typeof window !== 'undefined') {
   installed = Boolean(window.navigator.serviceWorker?.controller)
   hit = Boolean((window as any).__isDocumentCached)
+  console.log({ hit, installed })
 }
 const action = installed ? (hit ? 'Cache hit' : 'Cache miss') : 'Not installed'
 sendEvent({ category: 'Service Worker', action, nonInteraction: true })
