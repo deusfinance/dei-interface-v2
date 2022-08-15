@@ -11,12 +11,12 @@ import ImageWithFallback from 'components/ImageWithFallback'
 import { RowCenter } from 'components/Row'
 import Column from 'components/Column'
 import { PrimaryButton } from 'components/Button'
-import BOND_NFT_LOGO from '/public/static/images/pages/bdei/BondNFT.svg'
+import BOND_NFT_LOGO from '/public/static/images/pages/bond/BondNFT.svg'
 
-import EMPTY_BOND from '/public/static/images/pages/bdei/emptyBond.svg'
-import EMPTY_BOND_MOBILE from '/public/static/images/pages/bdei/emptyBondMobile.svg'
-import LOADING_BOND from '/public/static/images/pages/bdei/loadingBond.svg'
-import LOADING_BOND_MOBILE from '/public/static/images/pages/bdei/loadingBondMobile.svg'
+import EMPTY_BOND from '/public/static/images/pages/bond/emptyBond.svg'
+import EMPTY_BOND_MOBILE from '/public/static/images/pages/bond/emptyBondMobile.svg'
+import LOADING_BOND from '/public/static/images/pages/bond/loadingBond.svg'
+import LOADING_BOND_MOBILE from '/public/static/images/pages/bond/loadingBondMobile.svg'
 
 import { formatAmount } from 'utils/numbers'
 import { ButtonText } from 'pages/vest'
@@ -154,10 +154,11 @@ const RedeemButton = styled(PrimaryButton)`
     `
       background: ${theme.border3};
       border: 1px solid ${theme.border1};
+      cursor:default;
 
       &:focus,
       &:hover {
-        background: inherit;
+        background: ${theme.border3};
       }
   `}
 `

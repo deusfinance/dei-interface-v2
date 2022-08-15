@@ -3,13 +3,13 @@ import styled from 'styled-components'
 import Image from 'next/image'
 import { isMobile } from 'react-device-detect'
 
-import DEI_LOGO from '/public/static/images/pages/bdei/DEI_logo.svg'
+import DEI_LOGO from '/public/static/images/pages/bond/DEI_logo.svg'
 
 import { useOwnerBondNFTs } from 'hooks/useOwnedNfts'
 import { BondNFT, useUserDeiBondInfo } from 'hooks/useBondsPage'
 
 import Hero from 'components/Hero'
-import { useSearch, SearchField, Table } from 'components/App/bdei'
+import { useSearch, SearchField, Table } from 'components/App/bond'
 import { RowBetween } from 'components/Row'
 import StatsHeader from 'components/StatsHeader'
 import { Container } from 'components/App/StableCoin'

@@ -2,7 +2,7 @@ import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import { isMobile } from 'react-device-detect'
 
-import BDEI_NFT from '/public/static/images/pages/bdei/BDEI_nft.svg'
+import BDEI_NFT from '/public/static/images/pages/bond/BDEI_nft.svg'
 import { BondNFT } from 'hooks/useBondsPage'
 
 import ImageWithFallback from 'components/ImageWithFallback'

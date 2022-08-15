@@ -114,7 +114,6 @@ const BackgroundImageWrapper = styled.div`
 export default function Stats() {
   const deusPrice = useDeusPrice()
   const { totalSupply, totalProtocolHoldings, usdcPoolReserves, circulatingSupply, totalUSDCReserves } = useDeiStats()
-  console.log({ usdcPoolReserves, totalSupply, circulatingSupply })
 
   const usdcBackingPerDei = useMemo(() => {
     return (usdcPoolReserves / circulatingSupply) * 100

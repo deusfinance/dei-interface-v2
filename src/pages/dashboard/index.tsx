@@ -16,7 +16,7 @@ import DEI_LOGO from '/public/static/images/pages/dashboard/DEI_Dashboard.png'
 
 import { useDeiStats } from 'hooks/useDeiStats'
 import useWeb3React from 'hooks/useWeb3'
-import { formatAmount, formatDollarAmount } from 'utils/numbers'
+import { formatAmount } from 'utils/numbers'
 
 import Hero from 'components/Hero'
 import StatsHeader from 'components/StatsHeader'
@@ -63,16 +63,20 @@ const CardWrapper = styled(RowBetween)`
 
 export default function Dashboard() {
   const { account } = useWeb3React()
-  const { totalSupply, totalUSDCReserves } = useDeiStats()
+  const { totalSupply, totalUSDCReserves, usdcPoolReserves, circulatingSupply } = useDeiStats()
+
+  const usdcBackingPerDei = useMemo(() => {
+    return (usdcPoolReserves / circulatingSupply) * 100
+  }, [usdcPoolReserves, circulatingSupply])
 
   const items = useMemo(
     () => [
       { name: 'DEI Price', value: '$1.00' },
-      { name: 'DEI Total Supply', value: formatDollarAmount(totalSupply, 2) ?? '-' },
-      { name: 'Collateral Ratio', value: '100%' },
+      { name: 'DEI Total Supply', value: formatAmount(totalSupply, 2) ?? '-' },
+      { name: 'Collateral Ratio', value: formatAmount(usdcBackingPerDei, 1) + '%' },
       { name: 'Total USDC Holdings', value: formatAmount(totalUSDCReserves, 2) },
     ],
-    [totalSupply, totalUSDCReserves]
+    [totalSupply, totalUSDCReserves, usdcBackingPerDei]
   )
 
   return (
