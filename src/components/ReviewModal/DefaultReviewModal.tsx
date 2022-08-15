@@ -131,6 +131,7 @@ export default function DefaultReviewModal({
                   value={amountsOut[index]}
                   onChange={() => console.log()}
                   disabled={true}
+                  inDollar={token.name === 'DEUS'}
                 />
               )
             )}

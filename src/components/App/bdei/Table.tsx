@@ -441,7 +441,7 @@ function TableRow({
 
         <Cell>
           <Name>Claimable DEI</Name>
-          <Value>{'N/A'} bDEI</Value>
+          <Value>{'N/A'}</Value>
         </Cell>
 
         <Cell style={{ padding: '5px 10px' }}>{getMaturityTimeCell()}</Cell>

@@ -219,7 +219,7 @@ export default function Redemption() {
     return (
       <MainButton
         onClick={() => {
-          if (amountIn && amountIn !== '0') toggleReviewModal(true)
+          if (amountIn && amountIn !== '0' && amountIn !== '' && amountIn !== '0.') toggleReviewModal(true)
         }}
       >
         Redeem DEI

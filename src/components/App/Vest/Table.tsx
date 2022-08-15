@@ -149,12 +149,12 @@ const MobileWrapper = styled.div`
 
 const TopBorderWrap = styled.div<{ active?: any }>`
   background: ${({ theme }) => theme.primary2};
-  padding: 1px;
+  padding: 2px;
   border-radius: 8px;
   margin-right: 4px;
   margin-left: 3px;
   border: 1px solid ${({ theme }) => theme.bg0};
-  /* flex: 1; */
+  flex: 1;
 
   &:hover {
     border: 1px solid ${({ theme, active }) => (active ? theme.bg0 : theme.warning)};
