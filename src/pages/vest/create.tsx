@@ -26,7 +26,7 @@ import { getMaximumDate, getMinimumDate } from 'utils/vest'
 
 import InputBox from 'components/InputBox'
 import { SelectDatePresets, UserLockInformation } from 'components/App/Vest'
-import Hero, { HeroSubtext } from 'components/Hero'
+import Hero from 'components/Hero'
 import { Card } from 'components/Card'
 import { ArrowBubble, DotFlashing } from 'components/Icons'
 import Image from 'next/image'
@@ -272,8 +272,8 @@ export default function Create() {
     <Container>
       <Hero>
         <Image src={veDEUS_LOGO} height={'90px'} alt="Logo" />
-        <Title>Create Lock</Title>
-        <HeroSubtext>Vest your DEUS for a period of your liking.</HeroSubtext>
+        <Title>veDEUS</Title>
+
         <StatsHeader items={items} hasBox />
       </Hero>
 

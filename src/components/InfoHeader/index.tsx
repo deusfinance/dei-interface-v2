@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { Info } from 'components/Icons'
+import { Close as CloseIcon } from 'components/Icons'
 
 const Wrapper = styled.div<{ bg?: string }>`
   width: 100%;
@@ -16,7 +17,7 @@ const Value = styled.div`
   margin: 8px 24px;
 `
 
-const CloseIcon = styled.button`
+const CloseIconWrapper = styled.button`
   position: absolute;
   padding: 5px;
   right: 25px;
@@ -53,7 +54,9 @@ export default function InfoHeader({
     <Wrapper bg={bg}>
       {hasInfoIcon && <InfoIcon size={20} />}
       <Value>{text}</Value>
-      <CloseIcon onClick={() => onClose(false)}>X</CloseIcon>
+      <CloseIconWrapper onClick={() => onClose(false)}>
+        <CloseIcon size={'1.4rem'} />
+      </CloseIconWrapper>
     </Wrapper>
   )
 }

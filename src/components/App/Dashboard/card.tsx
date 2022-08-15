@@ -6,7 +6,7 @@ import { isMobile } from 'react-device-detect'
 
 import { RowBetween } from 'components/Row'
 
-const Wrapper = styled(RowBetween)`
+const Wrapper = styled(RowBetween)<{ disabled?: boolean }>`
   color: ${({ theme }) => theme.text1};
   background: ${({ theme }) => theme.bg0};
   overflow: hidden;
@@ -24,8 +24,8 @@ const Wrapper = styled(RowBetween)`
     }
   }
   &:hover {
-    border-color: ${({ theme }) => theme.text3};
-    background: ${({ theme }) => theme.bg3};
+    border-color: ${({ theme, disabled }) => (disabled ? theme.border2 : theme.text3)};
+    background: ${({ theme, disabled }) => (disabled ? theme.bg0 : theme.bg3)};
   }
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
@@ -38,44 +38,67 @@ const Wrapper = styled(RowBetween)`
   }
   `};
 `
-//Todo
+
 const LeftWrap = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  & > * {
-    &:nth-child(1) {
-      font-size: 20px;
-      color: ${({ theme }) => theme.text1};
-    }
-    &:nth-child(2) {
-      font-size: 12px;
-      color: ${({ theme }) => theme.text2};
-    }
-  }
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
     width:130px;
-    & > * {
-    &:nth-child(1) {
-      font-size: 16px;
-    }
-    &:nth-child(2) {
-      font-size: 10px;
-    }
-  }
   `};
 `
 
-const SubText = styled.div<{ active: boolean }>`
-  ${({ active }) =>
-    active &&
+const TitleWrap = styled.div<{ DeiActive?: boolean; DeusActive?: boolean }>`
+  color: ${({ theme }) => theme.text1};
+  font-weight: 600;
+  font-size: 20px;
+
+  ${({ DeiActive }) =>
+    DeiActive &&
+    `
+    background: -webkit-linear-gradient(1deg, #e29d52, #de4a7b 55%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  `};
+  ${({ DeusActive }) =>
+    DeusActive &&
+    `
+    background: -webkit-linear-gradient(90deg, #0badf4 0%, #30efe4 93.4%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  `};
+
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    font-size: 16px;
+  `}
+`
+
+const SubText = styled.div<{ active: boolean; soon: boolean }>`
+  color: ${({ theme, active }) => (active ? theme.text4 : theme.text2)};
+  font-size: 12px;
+
+  ${({ soon }) =>
+    soon &&
     `
     background: -webkit-linear-gradient(1deg, #e29d52 -10.26%, #de4a7b 90%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     font-weight: 600;
-`};
+  `};
+
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    font-size: 10px;
+  `}
+`
+
+const AnchorTag = styled.a<{ disabled?: boolean }>`
+  text-decoration: none;
+  ${({ disabled }) =>
+    disabled &&
+    `
+    pointer-events: none;
+  `};
 `
 
 export const getImageSize = () => {
@@ -96,22 +119,27 @@ export const Card = ({
   HoverIcon: StaticImageData | string
 }): JSX.Element => {
   const [hover, setHover] = useState(false)
+  const disabled = href === ''
 
   return (
-    <Wrapper onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
+    <Wrapper disabled={disabled} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
       <Link href={href} passHref>
-        <a style={{ textDecoration: 'none' }}>
+        <AnchorTag disabled={disabled}>
           <LeftWrap>
-            <div>{title}</div>
-            <SubText active={subTitle === 'Coming Soon...'}>{subTitle}</SubText>
+            <TitleWrap DeusActive={hover && title === 'veDEUS' && !disabled} DeiActive={hover && !disabled}>
+              {title}
+            </TitleWrap>
+            <SubText soon={subTitle === 'Coming Soon...'} active={hover}>
+              {subTitle}
+            </SubText>
           </LeftWrap>
           <Image
-            src={hover || isMobile ? HoverIcon : MainIcon}
+            src={(hover || isMobile) && !disabled ? HoverIcon : MainIcon}
             height={getImageSize()}
             width={getImageSize()}
             alt={'icon'}
           />
-        </a>
+        </AnchorTag>
       </Link>
     </Wrapper>
   )
