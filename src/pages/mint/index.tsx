@@ -115,7 +115,7 @@ export default function Mint() {
   const token1CurrencyBalance = useCurrencyBalance(account ?? undefined, token1Currency)
   const token2CurrencyBalance = useCurrencyBalance(account ?? undefined, token2Currency)
 
-  const { mintCollateralRatio } = useGetCollateralRatios()
+  const { mintCollateralRatio, redeemCollateralRatio } = useGetCollateralRatios()
 
   const { amountIn1, amountIn2, amountOut, onUserInput1, onUserInput2, onUserOutput } = useMintPage(
     token1Currency,
@@ -286,24 +286,21 @@ export default function Mint() {
     )
   }
 
-  const items = [
-    { name: 'DEI Price', value: '$1.00' },
-    { name: 'USDC Price', value: formatDollarAmount(parseFloat(usdcPrice), 2) ?? '-' },
-    { name: 'DEUS Price', value: formatDollarAmount(parseFloat(deusCoingeckoPrice), 2) ?? '-' },
-    {
-      name: 'Pool(V3)',
-      value: truncateAddress(CollateralPool[chainId ?? SupportedChainId.FANTOM]) ?? '-',
-      isLink: true,
-      link: CollateralPool[chainId ?? SupportedChainId.FANTOM],
-    },
-  ]
-  const info = useMemo(
+  const items = useMemo(
     () => [
-      // { title: 'Txn Deadline', value: '20 min' },
-      // { title: 'Min Received', value: amountOut },
+      { name: 'DEI Price', value: '$1.00' },
+      { name: 'USDC Price', value: formatDollarAmount(parseFloat(usdcPrice), 2) ?? '-' },
+      { name: 'DEUS Price', value: formatDollarAmount(parseFloat(deusCoingeckoPrice), 2) ?? '-' },
+      {
+        name: 'Pool(V3)',
+        value: truncateAddress(CollateralPool[chainId ?? SupportedChainId.FANTOM]) ?? '-',
+        isLink: true,
+        link: CollateralPool[chainId ?? SupportedChainId.FANTOM],
+      },
     ],
-    []
+    [usdcPrice, deusCoingeckoPrice, chainId]
   )
+
   return (
     <>
       <Container>
@@ -368,7 +365,8 @@ export default function Mint() {
 
           <BottomWrapper>
             <InfoItem name={'Minting Fee'} value={mintingFee == 0 ? 'Zero' : `${mintingFee}%`} />
-            <InfoItem name={'Collateral Ratio'} value={Number(mintCollateralRatio).toString() + '%'} />
+            <InfoItem name={'Mint Ratio'} value={Number(mintCollateralRatio).toString() + '%'} />
+            <InfoItem name={'Redeem Ratio'} value={Number(redeemCollateralRatio).toString() + '%'} />
           </BottomWrapper>
         </Wrapper>
         <TokensModal
@@ -387,7 +385,7 @@ export default function Mint() {
         outputTokens={outputToken}
         amountsIn={[amountIn1, amountIn2]}
         amountsOut={[amountOut]}
-        info={info}
+        info={[]}
         data={''}
         buttonText={awaitingMintConfirmation ? 'Minting ' : 'Confirm Mint'}
         awaiting={awaitingMintConfirmation}

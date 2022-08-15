@@ -158,7 +158,6 @@ export function useUserDeiBondInfo(): { name: string; value: number | string }[]
             },
             { name: 'Next Maturity Amount', value: deiAmount ? `${formatBalance(deiAmount, 6)} bDEI` : 'N/A' },
             { name: 'Next Maturity Time', value: redeemTime ? `in ${redeemTime?.toFixed(0)} days` : 'N/A' },
-            { name: 'Your Claimable DEI', value: 'N/A' },
           ],
     [account, redeemTime, deiAmount, bDeiBalance]
   )

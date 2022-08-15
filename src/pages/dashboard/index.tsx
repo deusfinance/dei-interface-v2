@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import Image from 'next/image'
 
@@ -65,12 +65,15 @@ export default function Dashboard() {
   const { account } = useWeb3React()
   const { totalSupply, totalUSDCReserves } = useDeiStats()
 
-  const items = [
-    { name: 'DEI Price', value: '$1.00' },
-    { name: 'DEI Total Supply', value: formatDollarAmount(totalSupply, 2) ?? '-' },
-    { name: 'Collateral Ratio', value: '100%' },
-    { name: 'Total USDC Holdings', value: formatAmount(totalUSDCReserves, 2) },
-  ]
+  const items = useMemo(
+    () => [
+      { name: 'DEI Price', value: '$1.00' },
+      { name: 'DEI Total Supply', value: formatDollarAmount(totalSupply, 2) ?? '-' },
+      { name: 'Collateral Ratio', value: '100%' },
+      { name: 'Total USDC Holdings', value: formatAmount(totalUSDCReserves, 2) },
+    ],
+    [totalSupply, totalUSDCReserves]
+  )
 
   return (
     <Container>

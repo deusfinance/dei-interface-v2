@@ -6,7 +6,10 @@ import BG_DASHBOARD from '/public/static/images/pages/dashboard/bg.svg'
 
 import { useDeusPrice } from 'hooks/useCoingeckoPrice'
 import { useDeiStats } from 'hooks/useDeiStats'
+import { useVestedAPY } from 'hooks/useVested'
+
 import { formatAmount, formatDollarAmount } from 'utils/numbers'
+import { getMaximumDate } from 'utils/vest'
 
 import { RowBetween } from 'components/Row'
 import StatsItem from './StatsItem'
@@ -110,11 +113,14 @@ const BackgroundImageWrapper = styled.div`
 
 export default function Stats() {
   const deusPrice = useDeusPrice()
-  const { totalSupply, totalProtocolHoldings, circulatingSupply, totalUSDCReserves } = useDeiStats()
+  const { totalSupply, totalProtocolHoldings, usdcPoolReserves, circulatingSupply, totalUSDCReserves } = useDeiStats()
+  console.log({ usdcPoolReserves, totalSupply, circulatingSupply })
 
   const usdcBackingPerDei = useMemo(() => {
-    return (totalUSDCReserves / circulatingSupply) * 100
-  }, [totalUSDCReserves, circulatingSupply])
+    return (usdcPoolReserves / circulatingSupply) * 100
+  }, [usdcPoolReserves, circulatingSupply])
+
+  const { lockedVeDEUS } = useVestedAPY(undefined, getMaximumDate())
 
   return (
     <Wrapper>
@@ -123,17 +129,13 @@ export default function Stats() {
           <Title>DEI Stats</Title>
           <Info>
             <StatsItem name="DEI Price" value={'$1.00'} linkIcon={true} />
-            <StatsItem name="Total Supply" value={formatDollarAmount(totalSupply, 2)} linkIcon={true} />
-            <StatsItem
-              name="Total Protocol Holdings"
-              value={formatDollarAmount(totalProtocolHoldings, 2)}
-              linkIcon={true}
-            />
-            <StatsItem name="Circulating Supply" value={formatDollarAmount(circulatingSupply, 2)} linkIcon={true} />
+            <StatsItem name="Total Supply" value={formatAmount(totalSupply, 2)} linkIcon={true} />
+            <StatsItem name="Total Protocol Holdings" value={formatAmount(totalProtocolHoldings, 2)} linkIcon={true} />
+            <StatsItem name="Circulating Supply" value={formatAmount(circulatingSupply, 2)} linkIcon={true} />
             <StatsItem name="Total Reserve Assets" value={formatDollarAmount(totalUSDCReserves, 2)} linkIcon={true} />
             <StatsItem
               name="USDC Backing Per DEI"
-              value={formatAmount(usdcBackingPerDei, 1).toString() + ''}
+              value={formatAmount(usdcBackingPerDei, 1).toString() + '%'}
               linkIcon={true}
             />
           </Info>
@@ -144,7 +146,7 @@ export default function Stats() {
             <StatsItem name="DEUS Price" value={formatDollarAmount(parseFloat(deusPrice), 2)} linkIcon={true} />
             <StatsItem name="Total Supply" value="N/A" linkIcon={true} />
             <StatsItem name="Market Cap" value="N/A" linkIcon={true} />
-            <StatsItem name="veDEUS Supply" value="N/A" linkIcon={true} />
+            <StatsItem name="veDEUS Supply" value={formatAmount(parseFloat(lockedVeDEUS), 0)} linkIcon={true} />
           </Info>
         </StatsWrapper>
       </AllStats>

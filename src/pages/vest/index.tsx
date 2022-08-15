@@ -336,10 +336,14 @@ export default function Vest() {
     )
   }
 
-  const items = [
-    { name: 'DEUS Price', value: formatDollarAmount(parseFloat(deusPrice), 2) },
-    { name: 'Total veDEUS Locked', value: formatAmount(parseFloat(lockedVeDEUS), 0) },
-  ]
+  const items = useMemo(
+    () => [
+      { name: 'DEUS Price', value: formatDollarAmount(parseFloat(deusPrice), 2) },
+      { name: 'veDEUS Supply', value: formatAmount(parseFloat(lockedVeDEUS), 0) },
+    ],
+    [deusPrice, lockedVeDEUS]
+  )
+
   const hasClaimAll: boolean = useMemo(() => {
     return !!snapshotList.length && !!totalRewards
   }, [totalRewards, snapshotList.length])

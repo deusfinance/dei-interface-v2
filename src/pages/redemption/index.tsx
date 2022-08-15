@@ -112,7 +112,7 @@ export default function Redemption() {
     error: redeemCallbackError,
   } = useRedemptionCallback(deiAmount)
 
-  const { redeemCollateralRatio } = useGetCollateralRatios()
+  const { mintCollateralRatio, redeemCollateralRatio } = useGetCollateralRatios()
 
   const [awaitingApproveConfirmation, setAwaitingApproveConfirmation] = useState<boolean>(false)
   const [awaitingRedeemConfirmation, setAwaitingRedeemConfirmation] = useState<boolean>(false)
@@ -227,17 +227,20 @@ export default function Redemption() {
     )
   }
 
-  const items = [
-    { name: 'DEI Price', value: '$1.00' },
-    { name: 'USDC Price', value: formatDollarAmount(parseFloat(usdcPrice), 2) ?? '-' },
-    { name: 'DEUS Price', value: formatDollarAmount(parseFloat(deusCoingeckoPrice), 2) ?? '-' },
-    {
-      name: 'Pool(V3)',
-      value: truncateAddress(CollateralPool[chainId ?? SupportedChainId.FANTOM]) ?? '-',
-      isLink: true,
-      link: CollateralPool[chainId ?? SupportedChainId.FANTOM],
-    },
-  ]
+  const items = useMemo(
+    () => [
+      { name: 'DEI Price', value: '$1.00' },
+      { name: 'USDC Price', value: formatDollarAmount(parseFloat(usdcPrice), 2) ?? '-' },
+      { name: 'DEUS Price', value: formatDollarAmount(parseFloat(deusCoingeckoPrice), 2) ?? '-' },
+      {
+        name: 'Pool(V3)',
+        value: truncateAddress(CollateralPool[chainId ?? SupportedChainId.FANTOM]) ?? '-',
+        isLink: true,
+        link: CollateralPool[chainId ?? SupportedChainId.FANTOM],
+      },
+    ],
+    [usdcPrice, deusCoingeckoPrice, chainId]
+  )
 
   //TODO: after adding loading animation please read this data from contract in /src/state/dei
   const info = useMemo(
@@ -286,9 +289,10 @@ export default function Redemption() {
             </RedemptionWrapper>
             <BottomWrapper>
               <InfoItem name={'Redemption Fee'} value={redemptionFee + '%'} />
-              <InfoItem name={'Collateral Ratio'} value={Number(redeemCollateralRatio).toString() + '%'} />
-              <InfoItem name={'USDC Ratio'} value={(Number(redeemCollateralRatio) / 100).toString()} />
-              <InfoItem name={'DEUS Ratio($)'} value={((100 - Number(redeemCollateralRatio)) / 100).toString()} />
+              <InfoItem name={'Redeem Ratio'} value={Number(redeemCollateralRatio).toString() + '%'} />
+              <InfoItem name={'Mint Ratio'} value={Number(mintCollateralRatio).toString() + '%'} />
+              {/* <InfoItem name={'USDC Ratio'} value={(Number(redeemCollateralRatio) / 100).toString()} /> */}
+              {/* <InfoItem name={'DEUS Ratio($)'} value={((100 - Number(redeemCollateralRatio)) / 100).toString()} /> */}
             </BottomWrapper>
           </Wrapper>
           <Claim redeemCollateralRatio={redeemCollateralRatio} />

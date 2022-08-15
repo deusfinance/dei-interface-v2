@@ -76,6 +76,7 @@ const initialState = {
   expiredPrice: false,
   collateralCollectionDelay: 0,
   deusCollectionDelay: 0,
+  unclaimedCollateralAmount: 0,
 }
 
 export const fetchPrices = createAsyncThunk<Prices, { chainId: number }>('dei/fetchPrices', async ({ chainId }) => {
@@ -109,6 +110,9 @@ const deiSlice = createSlice({
     },
     updateDeusCollectionDelay: (state, { payload }) => {
       state.deusCollectionDelay = payload
+    },
+    updateUnclaimedCollateralAmount: (state, { payload }) => {
+      state.unclaimedCollateralAmount = payload
     },
     updateMintingFee: (state, { payload }) => {
       state.mintingFee = payload
@@ -159,6 +163,7 @@ export const {
   updateRedeemCollateralRatio,
   updateDeusCollectionDelay,
   updateCollateralCollectionDelay,
+  updateUnclaimedCollateralAmount,
   updateCollectionPaused,
   updateMintingFee,
   updateRedemptionFee,

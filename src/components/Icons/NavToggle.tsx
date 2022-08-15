@@ -1,8 +1,6 @@
 import React from 'react'
-import { useTheme } from 'styled-components'
 
 export default function NavToggle({ ...rest }: { [x: string]: any }) {
-  const theme = useTheme()
   return (
     <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" {...rest}>
       <g filter="url(#filter0_b_339_6816)">

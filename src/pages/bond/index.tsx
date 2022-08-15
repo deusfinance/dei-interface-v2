@@ -1,26 +1,18 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import Image from 'next/image'
 import { isMobile } from 'react-device-detect'
 
-import useWeb3React from 'hooks/useWeb3'
-
 import DEI_LOGO from '/public/static/images/pages/bdei/DEI_logo.svg'
+
+import { useOwnerBondNFTs } from 'hooks/useOwnedNfts'
+import { BondNFT, useUserDeiBondInfo } from 'hooks/useBondsPage'
 
 import Hero from 'components/Hero'
 import { useSearch, SearchField, Table } from 'components/App/bdei'
-import LockManager from 'components/App/Vest/LockManager'
-import APYManager from 'components/App/Vest/APYManager'
-import { RowFixed, RowBetween } from 'components/Row'
+import { RowBetween } from 'components/Row'
 import StatsHeader from 'components/StatsHeader'
 import { Container } from 'components/App/StableCoin'
-
-import { useOwnerBondNFTs } from 'hooks/useOwnedNfts'
-import { useSupportedChainId } from 'hooks/useSupportedChainId'
-
-import { useIsTransactionPending, useTransactionAdder } from 'state/transactions/hooks'
-import InfoHeader from 'components/InfoHeader'
-import { BondNFT, useUserDeiBondInfo } from 'hooks/useBondsPage'
 
 const Wrapper = styled(Container)`
   margin: 0 auto;
@@ -58,13 +50,6 @@ const UpperRow = styled(RowBetween)`
   }
 `
 
-const ButtonWrapper = styled(RowFixed)`
-  gap: 10px;
-  & > * {
-    height: 50px;
-  }
-`
-
 export const ButtonText = styled.span<{ disabled?: boolean }>`
   font-family: 'Inter';
   font-style: normal;
@@ -85,28 +70,6 @@ export const ButtonText = styled.span<{ disabled?: boolean }>`
   `}
 `
 
-const TopBorderWrap = styled.div<{ active?: any }>`
-  background: ${({ theme }) => theme.primary2};
-  padding: 1px;
-  border-radius: 8px;
-  margin-right: 4px;
-  margin-left: 3px;
-  border: 1px solid ${({ theme }) => theme.bg0};
-  flex: 1;
-
-  &:hover {
-    border: 1px solid ${({ theme, active }) => (active ? theme.bg0 : theme.warning)};
-  }
-`
-
-const TopBorder = styled.div`
-  background: ${({ theme }) => theme.bg0};
-  border-radius: 6px;
-  height: 100%;
-  width: 100%;
-  display: flex;
-`
-
 const FirstRowWrapper = styled.div`
   display: flex;
   flex-flow: row nowrap;
@@ -120,46 +83,14 @@ const UpperRowMobile = styled(UpperRow)<{ hasSecondRow?: boolean }>`
 `
 
 export default function BDei() {
-  const { chainId, account } = useWeb3React()
-  const [showLockManager, setShowLockManager] = useState(false)
-  const isSupportedChainId = useSupportedChainId()
-  const [showAPYManager, setShowAPYManager] = useState(false)
-  const [nftId, setNftId] = useState(0)
-  // const { lockedVeDEUS } = useVestedAPY(undefined, getMaximumDate())
-  const addTransaction = useTransactionAdder()
-  const [awaitingConfirmation, setAwaitingConfirmation] = useState(false)
-  const [pendingTxHash, setPendingTxHash] = useState('')
-  const showTransactionPending = useIsTransactionPending(pendingTxHash)
-
   const ownedNfts = useOwnerBondNFTs()
-  const nftIds = ownedNfts.results
-
-  const [showTopBanner, setShowTopBanner] = useState(false)
-
   const { snapshot, searchProps } = useSearch()
   const result = snapshot.options.map((nft) => nft)
   const snapshotList = useMemo(() => {
     return result.map((obj: any) => {
       return { tokenId: obj?.tokenId, redeemTime: obj?.redeemTime, deiAmount: obj?.deiAmount }
     })
-  }, [snapshot])
-
-  useEffect(() => {
-    setShowLockManager(false)
-    setShowAPYManager(false)
-  }, [chainId, account])
-
-  const toggleLockManager = (nftId: number) => {
-    setShowLockManager(true)
-    setShowAPYManager(false)
-    setNftId(nftId)
-  }
-
-  const toggleAPYManager = (nftId: number) => {
-    setShowLockManager(false)
-    setShowAPYManager(true)
-    setNftId(nftId)
-  }
+  }, [result])
 
   function getUpperRow() {
     return (
@@ -187,31 +118,14 @@ export default function BDei() {
 
   return (
     <Container>
-      {showTopBanner && (
-        <InfoHeader onClose={setShowTopBanner} text={'Some random text! some random text! some random text!'} />
-      )}
       <Hero>
         <Image src={DEI_LOGO} width={'76px'} height={'90px'} alt="Logo" />
         <StatsHeader items={items} />
       </Hero>
       <Wrapper>
         {isMobile ? getUpperRowMobile() : getUpperRow()}
-
-        <Table
-          nfts={snapshotList as BondNFT[]}
-          toggleLockManager={toggleLockManager}
-          toggleAPYManager={toggleAPYManager}
-          isMobile={isMobile}
-          isLoading={ownedNfts.isLoading}
-        />
+        <Table nfts={snapshotList as BondNFT[]} isMobile={isMobile} isLoading={ownedNfts.isLoading} />
       </Wrapper>
-      <LockManager isOpen={showLockManager} onDismiss={() => setShowLockManager(false)} nftId={nftId} />
-      <APYManager
-        isOpen={showAPYManager}
-        onDismiss={() => setShowAPYManager(false)}
-        nftId={nftId}
-        toggleLockManager={toggleLockManager}
-      />
     </Container>
   )
 }

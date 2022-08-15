@@ -1,4 +1,4 @@
-import { Link } from 'components/Icons'
+// import { Link } from 'components/Icons'
 import styled from 'styled-components'
 
 const Item = styled.div`
@@ -39,7 +39,8 @@ export default function StatsItem({ name, value, linkIcon }: { name: string; val
     <Item>
       <Name>{name}</Name>
       <Value>
-        {value} {linkIcon ? <Link /> : ''}
+        {value}
+        {/* {value} {linkIcon ? <Link /> : ''} */}
       </Value>
     </Item>
   )

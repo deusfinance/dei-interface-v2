@@ -37,7 +37,7 @@ const DeiInfo = styled(RowEnd)`
   & > * {
     width: unset;
     min-width: unset;
-    &:nth-child(4) {
+    &:nth-child(3) {
       border-right: none;
     }
   }

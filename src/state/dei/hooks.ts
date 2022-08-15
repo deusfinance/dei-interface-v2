@@ -69,6 +69,11 @@ export const useDeusCollectionDelay = () => {
   return useMemo(() => deusCollectionDelay, [deusCollectionDelay])
 }
 
+export const useUnclaimedCollateralAmount = () => {
+  const { unclaimedCollateralAmount } = useDeiState()
+  return useMemo(() => unclaimedCollateralAmount, [unclaimedCollateralAmount])
+}
+
 export const useExpiredPrice = () => {
   const { expiredPrice } = useDeiState()
   return useMemo(() => expiredPrice, [expiredPrice])

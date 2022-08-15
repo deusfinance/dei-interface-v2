@@ -5,11 +5,11 @@ import { Token } from '@sushiswap/core-sdk'
 import { ModalHeader, Modal } from 'components/Modal'
 import ArrowDownDark from 'components/Icons/ArrowDownDark'
 import Column from 'components/Column'
-import ModalInfo from './ModalInfo'
 import { RowCenter } from 'components/Row'
 import { PrimaryButton } from 'components/Button'
 import { DotFlashing } from 'components/Icons'
 import InputBox from 'components/InputBox'
+import ModalInfo from './ModalInfo'
 
 const MainModal = styled(Modal)`
   display: flex;
@@ -119,7 +119,7 @@ export default function DefaultReviewModal({
               )
             )}
 
-            <ArrowDownDark size={14} style={{ margin: '16px auto' }} />
+            <ArrowDownDark style={{ margin: '16px auto' }} />
 
             {outputTokens.map((token, index) =>
               amountsOut[index] === '0' ? (

@@ -14,7 +14,7 @@ import {
   Mint as MintIcon,
   Redeem as RedeemIcon,
   DeiBonds as DeiBondsIcon,
-  Analytics as AnalyticsIcon,
+  // Analytics as AnalyticsIcon,
 } from 'components/Icons'
 import { Card } from 'components/Card'
 import { ExternalLink } from 'components/Link'
@@ -121,14 +121,14 @@ export default function Menu() {
               </IconWrapper>
             </Row>
           </Link>
-          <Link href="/analytics" passHref>
+          {/* <Link href="/analytics" passHref>
             <Row active={router.route === '/analytics'}>
               <div>Analytics</div>
               <IconWrapper>
                 <AnalyticsIcon size={20} />
               </IconWrapper>
             </Row>
-          </Link>
+          </Link> */}
           <ExternalLink href="https://twitter.com/deusdao">
             <Row onClick={() => toggle()}>
               <div>Twitter</div>

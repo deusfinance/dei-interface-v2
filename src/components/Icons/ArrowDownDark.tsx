@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function ArrowDownDark({ size, ...rest }: { size: number; [x: string]: any }) {
+export default function ArrowDownDark({ ...rest }: { [x: string]: any }) {
   return (
     <svg width="16" height="15" viewBox="0 0 16 15" fill="none" xmlns="http://www.w3.org/2000/svg" {...rest}>
       <path

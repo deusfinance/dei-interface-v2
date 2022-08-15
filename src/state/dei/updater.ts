@@ -6,7 +6,14 @@ import { useSingleContractMultipleMethods } from 'state/multicall/hooks'
 import useWeb3React from 'hooks/useWeb3'
 import { useCollateralPoolContract, useTwapOracleContract } from 'hooks/useContract'
 
-import { DeiSupportedChains, Scales, updateExpiredPrice, updateMintPaused, updateRedeemPaused } from './reducer'
+import {
+  DeiSupportedChains,
+  Scales,
+  updateExpiredPrice,
+  updateMintPaused,
+  updateRedeemPaused,
+  updateUnclaimedCollateralAmount,
+} from './reducer'
 import {
   updateCollectionPaused,
   updateCollateralCollectionDelay,
@@ -65,6 +72,7 @@ export default function Updater(): null {
             { methodName: 'collectionPaused', callInputs: [] },
             { methodName: 'collateralCollectionDelay', callInputs: [] },
             { methodName: 'deusCollectionDelay', callInputs: [] },
+            { methodName: 'unclaimedCollateralAmount', callInputs: [] },
             { methodName: 'mintPaused', callInputs: [] },
             { methodName: 'redeemPaused', callInputs: [] },
           ],
@@ -105,6 +113,7 @@ export default function Updater(): null {
       collectionPaused,
       collateralCollectionDelay,
       deusCollectionDelay,
+      unclaimedCollateralAmount,
       mintPaused,
       redeemPaused,
     ] = poolResponse
@@ -138,12 +147,15 @@ export default function Updater(): null {
       const result = new BN(deusCollectionDelay.result[0].toString()).toNumber()
       dispatch(updateDeusCollectionDelay(result))
     }
+    if (unclaimedCollateralAmount?.result) {
+      const result = new BN(unclaimedCollateralAmount.result[0].toString()).div(1e6).toNumber()
+      dispatch(updateUnclaimedCollateralAmount(result))
+    }
   }, [dispatch, isSupported, collateralRatioScale, poolResponse, feeScale, poolCeilingScale, poolBalanceScale])
 
   const blockTimestamp = useBlockTimestamp()
 
   useEffect(() => {
-    // console.log({ blockTimestamp })
     const [blockTimestampLast, period] = twapResponse
     if (blockTimestampLast?.result && period?.result && blockTimestamp) {
       const blockTimestampLastValue = new BN(blockTimestampLast.result[0].toString()).toNumber()

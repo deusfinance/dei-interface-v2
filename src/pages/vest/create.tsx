@@ -263,10 +263,13 @@ export default function Create() {
     )
   }
 
-  const items = [
-    { name: 'DEUS Price', value: formatDollarAmount(parseFloat(deusPrice), 2) },
-    { name: 'Total veDEUS Locked', value: formatAmount(parseFloat(lockedVeDEUS), 0) },
-  ]
+  const items = useMemo(
+    () => [
+      { name: 'DEUS Price', value: formatDollarAmount(parseFloat(deusPrice), 2) },
+      { name: 'veDEUS Supply', value: formatAmount(parseFloat(lockedVeDEUS), 0) },
+    ],
+    [deusPrice, lockedVeDEUS]
+  )
 
   return (
     <Container>
