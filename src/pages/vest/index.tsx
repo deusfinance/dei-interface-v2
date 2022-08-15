@@ -20,7 +20,7 @@ import LockManager from 'components/App/Vest/LockManager'
 import APYManager from 'components/App/Vest/APYManager'
 import { RowFixed, RowBetween } from 'components/Row'
 import StatsHeader from 'components/StatsHeader'
-import { Container, Title } from 'components/App/StableCoin'
+import { Container } from 'components/App/StableCoin'
 
 import { useVeDistContract } from 'hooks/useContract'
 import useOwnedNfts from 'hooks/useOwnedNfts'
@@ -351,7 +351,6 @@ export default function Vest() {
       )} */}
       <Hero>
         <Image src={veDEUS_LOGO} height={'90px'} alt="Logo" />
-        <Title>veDEUS</Title>
         <StatsHeader items={items} hasBox />
       </Hero>
       <Wrapper>
