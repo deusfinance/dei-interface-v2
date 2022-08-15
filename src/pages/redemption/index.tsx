@@ -131,6 +131,7 @@ export default function Redemption() {
       setAwaitingUpdateConfirmation(true)
       const txHash = await updateOracleCallback()
       console.log({ txHash })
+      // toggleUpdateOracleModal(false)
       setAwaitingUpdateConfirmation(false)
     } catch (e) {
       setAwaitingUpdateConfirmation(false)
@@ -295,7 +296,7 @@ export default function Redemption() {
               {/* <InfoItem name={'DEUS Ratio($)'} value={((100 - Number(redeemCollateralRatio)) / 100).toString()} /> */}
             </BottomWrapper>
           </Wrapper>
-          <Claim redeemCollateralRatio={redeemCollateralRatio} />
+          <Claim redeemCollateralRatio={redeemCollateralRatio} handleUpdatePrice={handleUpdatePrice} />
         </MainWrap>
       </Container>
 
