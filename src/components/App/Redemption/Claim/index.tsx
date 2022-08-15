@@ -12,7 +12,7 @@ import IC_CLAIM_LOADING_MOBILE from '/public/static/images/pages/redemption/ic_c
 import IC_CLAIM_NOTCONNECTED_MOBILE from '/public/static/images/pages/redemption/ic_claim_notconnected_mobile.svg'
 
 import { Card } from 'components/Card'
-import { Row, RowBetween } from 'components/Row'
+import { Row, RowCenter } from 'components/Row'
 import { TokenBox } from './TokenBox'
 import useRpcChangerCallback from 'hooks/useRpcChangerCallback'
 import { SupportedChainId } from 'constants/chains'
@@ -20,10 +20,11 @@ import { useGetPoolData } from 'hooks/useRedemptionPage'
 import { DEUS_TOKEN } from 'constants/tokens'
 import { formatUnits } from '@ethersproject/units'
 import { BN_TEN, toBN } from 'utils/numbers'
+import UpdateModal from 'components/ReviewModal/UpdateModal'
 import { useCollectCollateralCallback, useCollectDeusCallback } from 'hooks/useRedemptionCallback'
 import { useGetDeusPrice } from 'hooks/useMintPage'
 import useWeb3React from 'hooks/useWeb3'
-import { useCollateralCollectionDelay, useDeusCollectionDelay } from 'state/dei/hooks'
+import { useCollateralCollectionDelay, useDeusCollectionDelay, useExpiredPrice } from 'state/dei/hooks'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 
 const ActionWrap = styled(Card)`
@@ -86,7 +87,7 @@ const InfoWrap = styled.div`
   width: 100%;
 `
 
-const TitleWrap = styled(RowBetween)`
+const TitleWrap = styled(RowCenter)`
   background: ${({ theme }) => theme.bg2};
   border-top-right-radius: 12px;
   border-top-left-radius: 12px;
@@ -95,7 +96,6 @@ const TitleWrap = styled(RowBetween)`
 `
 
 const Title = styled.div`
-  font-family: 'Inter';
   font-weight: 400;
   font-size: 16px;
   color: ${({ theme }) => theme.text1};
@@ -136,7 +136,13 @@ export interface IToken {
   usdAmount?: number
 }
 
-export default function RedeemClaim({ redeemCollateralRatio }: { redeemCollateralRatio: string }) {
+export default function RedeemClaim({
+  redeemCollateralRatio,
+  handleUpdatePrice,
+}: {
+  redeemCollateralRatio: string
+  handleUpdatePrice: () => void
+}) {
   const {
     allPositions,
     unRedeemedPositions,
@@ -150,6 +156,7 @@ export default function RedeemClaim({ redeemCollateralRatio }: { redeemCollatera
     redeemCollateralBalances: any
     isLoading: boolean
   } = useGetPoolData()
+  const [isOpenUpdateOracleModal, toggleUpdateOracleModal] = useState(false)
 
   const collateralRedemptionDelay = useCollateralCollectionDelay()
   const deusRedemptionDelay = useDeusCollectionDelay()
@@ -166,6 +173,7 @@ export default function RedeemClaim({ redeemCollateralRatio }: { redeemCollatera
   }, [])
 
   const deusPrice = useGetDeusPrice()
+  const expiredPrice = useExpiredPrice()
 
   const [unClaimed, setUnClaimed] = useState<IToken[]>([])
   useEffect(() => {
@@ -262,6 +270,7 @@ export default function RedeemClaim({ redeemCollateralRatio }: { redeemCollatera
         console.log('Claim DEUS')
         console.log(CollectDeusCallbackState, collectDeusCallbackError)
         if (!collectDeusCallback) return
+        if (expiredPrice) return toggleUpdateOracleModal(true)
         try {
           const txHash = await collectDeusCallback()
           console.log({ txHash })
@@ -278,82 +287,96 @@ export default function RedeemClaim({ redeemCollateralRatio }: { redeemCollatera
       collectCollateralCallbackError,
       collectDeusCallback,
       collectDeusCallbackError,
+      expiredPrice,
     ]
   )
 
   return (
-    <ActionWrap>
-      <TitleWrap>
-        <Title>Claim your tokens</Title>
-      </TitleWrap>
-      {!unClaimed || unClaimed.length == 0 ? (
-        <ClaimBox>
-          {!account ? (
-            <Image src={!isMobile ? IC_CLAIM_NOTCONNECTED : IC_CLAIM_NOTCONNECTED_MOBILE} alt="claim-notconnected" />
-          ) : (
-            <>
-              {isLoading ? (
-                <Image src={!isMobile ? IC_CLAIM_LOADING : IC_CLAIM_LOADING_MOBILE} alt="claim-loading" />
-              ) : (
-                <NoTokens>
-                  <Image src={CLAIM_LOGO} alt="claim" />
-                  <EmptyToken> No token to claim </EmptyToken>
-                </NoTokens>
-              )}
-            </>
-          )}
-        </ClaimBox>
-      ) : (
-        <ClaimBox>
-          {unClaimedCollateral && (
-            <UsdcBox>
-              <TokenBox
-                token={unClaimedCollateral}
-                currentBlock={currentBlock}
-                onSwitchNetwork={() => onSwitchNetwork(SupportedChainId.FANTOM)}
-                onClaim={() => handleClaim(unClaimedCollateral)}
-              />
-            </UsdcBox>
-          )}
-          <DeusBox>
-            {unClaimed.map((token: IToken, index: number) => {
-              return (
-                <TokenBox
-                  key={index}
-                  token={token}
-                  currentBlock={currentBlock}
-                  onSwitchNetwork={() => onSwitchNetwork(SupportedChainId.FANTOM)}
-                  onClaim={() => handleClaim(token)}
-                  isFirst={index === 0}
-                  isLast={index === unClaimed.length - 1}
-                />
-              )
-            })}
-          </DeusBox>
-        </ClaimBox>
-      )}
-      <InfoWrap>
+    <>
+      <ActionWrap>
+        <TitleWrap>
+          <Title>Claim your tokens</Title>
+        </TitleWrap>
         {!unClaimed || unClaimed.length == 0 ? (
-          <>
+          <ClaimBox>
             {!account ? (
-              <NoResultWrapper warning> Wallet is not connected! </NoResultWrapper>
+              <Image src={!isMobile ? IC_CLAIM_NOTCONNECTED : IC_CLAIM_NOTCONNECTED_MOBILE} alt="claim-notconnected" />
             ) : (
               <>
                 {isLoading ? (
-                  <NoResultWrapper> Loading Redemptions... </NoResultWrapper>
+                  <Image src={!isMobile ? IC_CLAIM_LOADING : IC_CLAIM_LOADING_MOBILE} alt="claim-loading" />
                 ) : (
-                  <NoResultWrapper> You have no new redemption </NoResultWrapper>
+                  <NoTokens>
+                    <Image src={CLAIM_LOGO} alt="claim" />
+                    <EmptyToken> No token to claim </EmptyToken>
+                  </NoTokens>
                 )}
               </>
             )}
-          </>
+          </ClaimBox>
         ) : (
-          <>
-            <InfoItem name={'Ready to Claim:'} value={readyCount.toString()} />
-            <InfoItem name={'Pending:'} value={pendingCount.toString()} />
-          </>
+          <ClaimBox>
+            {unClaimedCollateral && (
+              <UsdcBox>
+                <TokenBox
+                  token={unClaimedCollateral}
+                  currentBlock={currentBlock}
+                  onSwitchNetwork={() => onSwitchNetwork(SupportedChainId.FANTOM)}
+                  onClaim={() => handleClaim(unClaimedCollateral)}
+                />
+              </UsdcBox>
+            )}
+            <DeusBox>
+              {unClaimed.map((token: IToken, index: number) => {
+                return (
+                  <TokenBox
+                    key={index}
+                    token={token}
+                    currentBlock={currentBlock}
+                    onSwitchNetwork={() => onSwitchNetwork(SupportedChainId.FANTOM)}
+                    onClaim={() => handleClaim(token)}
+                    isFirst={index === 0}
+                    isLast={index === unClaimed.length - 1}
+                  />
+                )
+              })}
+            </DeusBox>
+          </ClaimBox>
         )}
-      </InfoWrap>
-    </ActionWrap>
+        <InfoWrap>
+          {!unClaimed || unClaimed.length == 0 ? (
+            <>
+              {!account ? (
+                <NoResultWrapper warning> Wallet is not connected! </NoResultWrapper>
+              ) : (
+                <>
+                  {isLoading ? (
+                    <NoResultWrapper> Loading Redemptions... </NoResultWrapper>
+                  ) : (
+                    <NoResultWrapper> You have no new redemption </NoResultWrapper>
+                  )}
+                </>
+              )}
+            </>
+          ) : (
+            <>
+              <InfoItem name={'Ready to Claim:'} value={readyCount.toString()} />
+              <InfoItem name={'Pending:'} value={pendingCount.toString()} />
+            </>
+          )}
+        </InfoWrap>
+      </ActionWrap>
+
+      <UpdateModal
+        title="Update Oracle"
+        isOpen={isOpenUpdateOracleModal}
+        buttonText={'Update Oracle'}
+        toggleModal={(action: boolean) => toggleUpdateOracleModal(action)}
+        handleClick={() => {
+          toggleUpdateOracleModal(false)
+          handleUpdatePrice()
+        }}
+      />
+    </>
   )
 }
