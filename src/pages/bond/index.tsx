@@ -9,10 +9,10 @@ import { useOwnerBondNFTs } from 'hooks/useOwnedNfts'
 import { BondNFT, useUserDeiBondInfo } from 'hooks/useBondsPage'
 
 import Hero from 'components/Hero'
-import { useSearch, SearchField, Table } from 'components/App/bond'
 import { RowBetween } from 'components/Row'
 import StatsHeader from 'components/StatsHeader'
 import { Container } from 'components/App/StableCoin'
+import { useSearch, SearchField, Table } from 'components/App/Bond'
 
 const Wrapper = styled(Container)`
   margin: 0 auto;

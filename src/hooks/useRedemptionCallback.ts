@@ -108,7 +108,7 @@ export default function useRedemptionCallback(deiAmount: CurrencyAmount<NativeCu
               console.debug('Call threw an error', call, callError)
               toast.error(CollateralPoolErrorToUserReadableMessage(callError))
               return {
-                error: new Error(callError.message), // TODO make this human readable
+                error: new Error(callError.message),
               }
             })
         })
@@ -220,7 +220,7 @@ export function useCollectCollateralCallback(): {
               console.debug('Call threw an error', call, callError)
               toast.error(CollateralPoolErrorToUserReadableMessage(callError))
               return {
-                error: new Error(callError.message), // TODO make this human readable
+                error: new Error(callError.message),
               }
             })
         })
@@ -331,7 +331,7 @@ export function useCollectDeusCallback(): {
               console.debug('Call threw an error', call, callError)
               toast.error(CollateralPoolErrorToUserReadableMessage(callError))
               return {
-                error: new Error(callError.message), // TODO make this human readable
+                error: new Error(callError.message),
               }
             })
         })

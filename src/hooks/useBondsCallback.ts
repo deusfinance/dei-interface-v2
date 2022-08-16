@@ -102,7 +102,7 @@ export default function useBondsCallback(
               console.debug('Call threw an error', call, callError)
               toast.error(DefaultHandlerError(callError))
               return {
-                error: new Error(callError.message), // TODO make this human readable
+                error: new Error(callError.message),
               }
             })
         })

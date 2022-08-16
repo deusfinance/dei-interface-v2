@@ -7,8 +7,8 @@ import { Modal, ModalHeader } from 'components/Modal'
 import Column from 'components/Column'
 import { RowBetween, RowCenter } from 'components/Row'
 import ImageWithFallback from 'components/ImageWithFallback'
-import { SearchField, useSearch } from 'components/App/bond/Search'
-import NFTBox from 'components/App/bond/NFTBox'
+import { SearchField, useSearch } from 'components/App/Bond/Search'
+import NFTBox from 'components/App/Bond/NFTBox'
 import { BondNFT } from 'hooks/useBondsPage'
 
 const Wrapper = styled.div`

@@ -57,7 +57,6 @@ export default function useRedeemCallback(
     [chainId]
   )
 
-  //TODO: [signature] or signature
   const getParamsRedeem = useCallback(async () => {
     try {
       if (collateralRatio == 1) {
@@ -142,7 +141,7 @@ export default function useRedeemCallback(
             .catch((callError) => {
               console.debug('Call threw an error', call, callError)
               return {
-                error: new Error(callError), // TODO make this human readable
+                error: new Error(callError),
               }
             })
         })
@@ -178,7 +177,7 @@ export default function useRedeemCallback(
               throw new Error('Transaction rejected.')
             } else {
               // otherwise, the error was unexpected and we need to convey that
-              throw new Error(`Redeem failed: ${error.message}`) // TODO make this human readable, see: https://github.com/sushiswap/sushiswap-interface/blob/2082b7ded0162324e83aeffad261cc511441f00e/src/hooks/useSwapCallback.ts#L470
+              throw new Error(`Redeem failed: ${error.message}`)
             }
           })
       },
@@ -265,7 +264,7 @@ export function useCollectRedemptionCallback(
             .catch((callError) => {
               console.debug('Call threw an error', call, callError)
               return {
-                error: new Error(callError), // TODO make this human readable
+                error: new Error(callError),
               }
             })
         })
@@ -304,7 +303,7 @@ export function useCollectRedemptionCallback(
               throw new Error('Transaction rejected.')
             } else {
               // otherwise, the error was unexpected and we need to convey that
-              throw new Error(`Redeem failed: ${error.message}`) // TODO make this human readable, see: https://github.com/sushiswap/sushiswap-interface/blob/2082b7ded0162324e83aeffad261cc511441f00e/src/hooks/useSwapCallback.ts#L470
+              throw new Error(`Redeem failed: ${error.message}`)
             }
           })
       },

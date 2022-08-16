@@ -2,30 +2,32 @@ import React, { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import Image from 'next/image'
 import { isMobile } from 'react-device-detect'
+import { formatUnits } from '@ethersproject/units'
 
 // import IC_CLAIM_EMPTY from '/public/static/images/pages/redemption/ic_claim_empty.svg'
-import IC_CLAIM_LOADING from '/public/static/images/pages/redemption/ic_claim_loading.svg'
-import IC_CLAIM_NOTCONNECTED from '/public/static/images/pages/redemption/ic_claim_notconnected.svg'
-import CLAIM_LOGO from '/public/static/images/pages/redemption/claim.svg'
 // import IC_CLAIM_EMPTY_MOBILE from '/public/static/images/pages/redemption/ic_claim_empty_mobile.svg'
+import IC_CLAIM_LOADING from '/public/static/images/pages/redemption/ic_claim_loading.svg'
+import IC_CLAIM_NOT_CONNECTED from '/public/static/images/pages/redemption/ic_claim_not_connected.svg'
+import CLAIM_LOGO from '/public/static/images/pages/redemption/claim.svg'
 import IC_CLAIM_LOADING_MOBILE from '/public/static/images/pages/redemption/ic_claim_loading_mobile.svg'
-import IC_CLAIM_NOTCONNECTED_MOBILE from '/public/static/images/pages/redemption/ic_claim_notconnected_mobile.svg'
+import IC_CLAIM_NOT_CONNECTED_MOBILE from '/public/static/images/pages/redemption/ic_claim_not_connected_mobile.svg'
+
+import { DEUS_TOKEN } from 'constants/tokens'
+import { SupportedChainId } from 'constants/chains'
+import { BN_TEN, toBN } from 'utils/numbers'
+
+import { useCollateralCollectionDelay, useDeusCollectionDelay, useExpiredPrice } from 'state/dei/hooks'
+import useWeb3React from 'hooks/useWeb3'
+import { useCollectCollateralCallback, useCollectDeusCallback } from 'hooks/useRedemptionCallback'
+import { useGetDeusPrice } from 'hooks/useMintPage'
+import useRpcChangerCallback from 'hooks/useRpcChangerCallback'
+import { useGetPoolData } from 'hooks/useRedemptionPage'
 
 import { Card } from 'components/Card'
 import { Row, RowCenter } from 'components/Row'
-import { TokenBox } from './TokenBox'
-import useRpcChangerCallback from 'hooks/useRpcChangerCallback'
-import { SupportedChainId } from 'constants/chains'
-import { useGetPoolData } from 'hooks/useRedemptionPage'
-import { DEUS_TOKEN } from 'constants/tokens'
-import { formatUnits } from '@ethersproject/units'
-import { BN_TEN, toBN } from 'utils/numbers'
 import UpdateModal from 'components/ReviewModal/UpdateModal'
-import { useCollectCollateralCallback, useCollectDeusCallback } from 'hooks/useRedemptionCallback'
-import { useGetDeusPrice } from 'hooks/useMintPage'
-import useWeb3React from 'hooks/useWeb3'
-import { useCollateralCollectionDelay, useDeusCollectionDelay, useExpiredPrice } from 'state/dei/hooks'
 import InfoItem from 'components/App/StableCoin/InfoItem'
+import { TokenBox } from './TokenBox'
 
 const ActionWrap = styled(Card)`
   background: transparent;
@@ -300,7 +302,10 @@ export default function RedeemClaim({
         {!unClaimed || unClaimed.length == 0 ? (
           <ClaimBox>
             {!account ? (
-              <Image src={!isMobile ? IC_CLAIM_NOTCONNECTED : IC_CLAIM_NOTCONNECTED_MOBILE} alt="claim-notconnected" />
+              <Image
+                src={!isMobile ? IC_CLAIM_NOT_CONNECTED : IC_CLAIM_NOT_CONNECTED_MOBILE}
+                alt="claim_not_connected"
+              />
             ) : (
               <>
                 {isLoading ? (
@@ -353,7 +358,7 @@ export default function RedeemClaim({
                   {isLoading ? (
                     <NoResultWrapper> Loading Redemptions... </NoResultWrapper>
                   ) : (
-                    <NoResultWrapper> You have no new redemption </NoResultWrapper>
+                    <NoResultWrapper> No tokens to claim </NoResultWrapper>
                   )}
                 </>
               )}

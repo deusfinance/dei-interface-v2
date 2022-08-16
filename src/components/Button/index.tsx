@@ -93,8 +93,8 @@ export const PrimaryButtonWide = styled(BaseButton)<{ isSmall?: boolean; width?:
   border-radius: 8px;
   height: 54%;
   width: ${({ width }) => (width ? width : 'auto')};
-
   color: ${({ theme }) => theme.text1};
+
   z-index: 0;
 
   &:focus {
