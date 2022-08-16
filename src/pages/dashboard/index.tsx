@@ -97,7 +97,7 @@ export default function Dashboard() {
             HoverIcon={REDEEM_HOVER_LOGO}
           />
           <Card
-            href="/bdei"
+            href="/bond"
             title={'DEI Bonds'}
             subTitle="Redeem your DEI Bonds"
             MainIcon={BOND_LOGO}
