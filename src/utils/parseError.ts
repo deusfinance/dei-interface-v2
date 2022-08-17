@@ -24,6 +24,12 @@ export function CollateralPoolErrorToUserReadableMessage(error: any): string {
   switch (reason) {
     case 'TwapUniOracle: NOT_UPDATED':
       return `please "Update Oracle".`
+
+    case 'DEIPool: COLLATERAL_COLLECTION_DELAY':
+      return `wait a few seconds and try again`
+
+    case 'DEIV2Pool: DEUS_COLLECTION_DELAY':
+      return `wait a few seconds and try again`
   }
 
   return `${reason ? `"${reason}"` : ''}.`

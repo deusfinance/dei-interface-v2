@@ -214,7 +214,7 @@ export default function RedeemClaim({
       const usdcToken: IToken = {
         symbol: 'USDC',
         index: 0,
-        claimableBlock: Number(lastRedeemTimestamp) + collateralRedemptionDelay,
+        claimableBlock: 5 + Number(lastRedeemTimestamp) + collateralRedemptionDelay,
         amount: redeemCollateralBalances,
       }
       setUnClaimedCollateral(usdcToken)
