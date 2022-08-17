@@ -242,7 +242,7 @@ export default function Vest() {
       <TopBorderWrap>
         <TopBorder>
           <Link href="/vest/create" passHref>
-            <PrimaryButtonWide transparentBG>
+            <PrimaryButtonWide transparentBG padding={'1rem'}>
               <ButtonText gradientText>Create Lock</ButtonText>
             </PrimaryButtonWide>
           </Link>

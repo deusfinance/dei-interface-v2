@@ -16,7 +16,7 @@ import Pagination from 'components/Pagination'
 import ImageWithFallback from 'components/ImageWithFallback'
 import { RowCenter } from 'components/Row'
 import Column from 'components/Column'
-import { PrimaryButtonWhite, PrimaryButtonWide } from 'components/Button'
+import { PrimaryButtonWide } from 'components/Button'
 import { DotFlashing } from 'components/Icons'
 
 import DEUS_LOGO from '/public/static/images/tokens/deus.svg'
@@ -380,9 +380,9 @@ function TableRow({
         <Cell style={{ padding: '5px 10px' }}>{getClaimWithdrawCell()}</Cell>
 
         <Cell style={{ padding: '5px 10px' }}>
-          <PrimaryButtonWhite onClick={() => toggleLockManager(nftId)}>
+          <PrimaryButtonWide whiteBorder onClick={() => toggleLockManager(nftId)}>
             <ButtonText>Update Lock</ButtonText>
-          </PrimaryButtonWhite>
+          </PrimaryButtonWide>
         </Cell>
       </>
     )
@@ -402,9 +402,9 @@ function TableRow({
           <RowCenter style={{ padding: '5px 2px' }}>{getClaimWithdrawCell()}</RowCenter>
 
           <RowCenter style={{ padding: '5px 2px' }}>
-            <PrimaryButtonWhite onClick={() => toggleLockManager(nftId)}>
+            <PrimaryButtonWide whiteBorder onClick={() => toggleLockManager(nftId)}>
               <ButtonText>Update Lock</ButtonText>
-            </PrimaryButtonWhite>
+            </PrimaryButtonWide>
           </RowCenter>
         </FirstRow>
 
