@@ -7,7 +7,7 @@ import { useSingleContractMultipleMethods } from 'state/multicall/hooks'
 import { useCurrencyBalance } from 'state/wallet/hooks'
 import useWeb3React from 'hooks/useWeb3'
 import { useDeiBonderContract } from 'hooks/useContract'
-import { useOwnerBondNFTs } from 'hooks/useOwnedNfts'
+import { useOwnerBondNFTs } from 'hooks/useOwnerNfts'
 
 import { toBN } from 'utils/numbers'
 import { getRemainingTime } from 'utils/time'

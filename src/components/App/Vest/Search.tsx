@@ -2,9 +2,10 @@ import React, { useMemo } from 'react'
 import Fuse from 'fuse.js'
 import { useSelect, SelectSearchOption } from 'react-select-search'
 
+import { useOwnerVeDeusNFTs } from 'hooks/useOwnerNfts'
+
 import { Search as SearchIcon } from 'components/Icons'
 import { InputWrapper, InputField } from 'components/Input'
-import useOwnedNfts from 'hooks/useOwnedNfts'
 
 function fuzzySearch(options: SelectSearchOption[]): any {
   const config = {
@@ -25,7 +26,7 @@ function fuzzySearch(options: SelectSearchOption[]): any {
 }
 
 export function useSearch() {
-  const nftIds = useOwnedNfts().results
+  const nftIds = useOwnerVeDeusNFTs().results
   const nftIdsList = useMemo(() => {
     return [
       ...nftIds.map((id) => {
