@@ -5,11 +5,12 @@ import Link from 'next/link'
 import { isMobileOnly as isMobile } from 'react-device-detect'
 
 import routes from './routes.json'
-
 import { Z_INDEX } from 'theme'
+
+import { sendEvent } from 'components/analytics'
 import Web3Network from 'components/Web3Network'
 import Web3Status from 'components/Web3Status'
-import InfoHeader from 'components/InfoHeader'
+import RiskNotification from 'components/InfoHeader'
 import Menu from './Menu'
 import NavLogo from './NavLogo'
 
@@ -155,14 +156,15 @@ const NavLink = styled.div<{
 export default function NavBar() {
   const router = useRouter()
 
-  const showBanner = localStorage.getItem('HideInfoBanner') === 'true' ? false : true
+  const showBanner = localStorage.getItem('risk_warning') === 'true' ? false : true
   const [showTopBanner, setShowTopBanner] = useState(showBanner)
   const bannerText = 'Users interacting with this software do so entirely at their own risk'
 
   function setShowBanner(inp: boolean) {
     if (!inp) {
-      localStorage.setItem('HideInfoBanner', 'true')
+      localStorage.setItem('risk_warning', 'true')
       setShowTopBanner(false)
+      sendEvent('click', { click_type: 'close_notification', click_action: 'risk_warning' })
     }
   }
 
@@ -175,7 +177,7 @@ export default function NavBar() {
           <Web3Status />
           <Menu />
         </MobileWrapper>
-        {showTopBanner && <InfoHeader onClose={setShowBanner} bg={'gray'} hasInfoIcon={true} text={bannerText} />}
+        {showTopBanner && <RiskNotification onClose={setShowBanner} bg={'gray'} hasInfoIcon={true} text={bannerText} />}
       </>
     )
   }
@@ -194,27 +196,6 @@ export default function NavBar() {
           <NavLogo />
           <Routes>
             {routes.map((item, i) => {
-              // return item.children ? (
-              //   <NavbarContentWrap key={i}>
-              //     <TitleSpan active={isSubItemChosen(item.children)}>
-              //       {item.text}
-              //       <ChevronDown
-              //         color={isSubItemChosen(item.children) ? '#B63562' : 'white'}
-              //         disabled={true}
-              //         style={{ position: 'absolute', marginTop: '-2px' }}
-              //       />
-              //     </TitleSpan>
-              //     <SubNavbarContentWrap>
-              //       {item.children.map((subItem, j) => (
-              //         <li key={`${i}-${j}`}>
-              //           <Link href={subItem.path} passHref>
-              //             <NavLink active={router.route === subItem.path}>{subItem.text}</NavLink>
-              //           </Link>
-              //         </li>
-              //       ))}
-              //     </SubNavbarContentWrap>
-              //   </NavbarContentWrap>
-              // ) : (
               return (
                 <SimpleLinkWrapper key={i}>
                   <Link href={item.path} passHref>
@@ -230,7 +211,7 @@ export default function NavBar() {
             <Menu />
           </Items>
         </DefaultWrapper>
-        {showTopBanner && <InfoHeader onClose={setShowBanner} bg={'gray'} hasInfoIcon={true} text={bannerText} />}
+        {showTopBanner && <RiskNotification onClose={setShowBanner} bg={'gray'} hasInfoIcon={true} text={bannerText} />}
       </>
     )
   }

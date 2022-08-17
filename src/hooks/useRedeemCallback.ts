@@ -1,5 +1,6 @@
 import { useMemo, useCallback } from 'react'
 import { TransactionResponse } from '@ethersproject/abstract-provider'
+import { Token } from '@sushiswap/core-sdk'
 
 import { ORACLE_BASE_URL } from 'constants/muon'
 import { makeHttpRequest } from 'utils/http'
@@ -10,7 +11,6 @@ import { useTransactionAdder } from 'state/transactions/hooks'
 
 import { calculateGasMargin, toWei } from 'utils/web3'
 import { dynamicPrecision } from 'utils/numbers'
-import { Token } from '@sushiswap/core-sdk'
 
 export enum RedeemCallbackState {
   INVALID = 'INVALID',

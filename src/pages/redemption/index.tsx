@@ -7,14 +7,11 @@ import REDEEM_IMG from '/public/static/images/pages/redemption/TableauBackground
 import DEUS_LOGO from '/public/static/images/pages/redemption/DEUS_logo.svg'
 
 import { DEI_TOKEN, DEUS_TOKEN, USDC_TOKEN } from 'constants/tokens'
-import { CollateralPool } from 'constants/addresses'
 import { tryParseAmount } from 'utils/parse'
 
 import { useCurrencyBalance } from 'state/wallet/hooks'
 import { useRedemptionFee, useRedeemPaused, useExpiredPrice } from 'state/dei/hooks'
 import useWeb3React from 'hooks/useWeb3'
-import { useSupportedChainId } from 'hooks/useSupportedChainId'
-import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
 import useRedemptionCallback from 'hooks/useRedemptionCallback'
 import { useGetCollateralRatios, useRedeemAmountOut } from 'hooks/useRedemptionPage'
 import useUpdateCallback from 'hooks/useOracleCallback'
@@ -67,7 +64,6 @@ const PlusIcon = styled(Plus)`
 
 export default function Redemption() {
   const { chainId, account } = useWeb3React()
-  const isSupportedChainId = useSupportedChainId()
   const [amountIn, setAmountIn] = useState('')
   const redemptionFee = useRedemptionFee()
   const redeemPaused = useRedeemPaused()
@@ -108,16 +104,8 @@ export default function Redemption() {
 
   const { mintCollateralRatio, redeemCollateralRatio } = useGetCollateralRatios()
 
-  const [awaitingApproveConfirmation, setAwaitingApproveConfirmation] = useState<boolean>(false)
   const [awaitingRedeemConfirmation, setAwaitingRedeemConfirmation] = useState<boolean>(false)
   const [awaitingUpdateConfirmation, setAwaitingUpdateConfirmation] = useState<boolean>(false)
-
-  const spender = useMemo(() => (chainId ? CollateralPool[chainId] : undefined), [chainId])
-  const [approvalState, approveCallback] = useApproveCallback(deiCurrency ?? undefined, spender)
-  const [showApprove, showApproveLoader] = useMemo(() => {
-    const show = deiCurrency && approvalState !== ApprovalState.APPROVED && !!amountIn
-    return [show, show && approvalState === ApprovalState.PENDING]
-  }, [deiCurrency, approvalState, amountIn])
 
   const handleUpdatePrice = useCallback(async () => {
     if (!updateOracleCallback) return
@@ -136,12 +124,6 @@ export default function Redemption() {
       }
     }
   }, [updateOracleCallback])
-
-  const handleApprove = async () => {
-    setAwaitingApproveConfirmation(true)
-    await approveCallback()
-    setAwaitingApproveConfirmation(false)
-  }
 
   const handleRedeem = useCallback(async () => {
     console.log('called handleRedeem')
@@ -164,32 +146,9 @@ export default function Redemption() {
     }
   }, [redeemCallbackState, redeemCallback, redeemCallbackError])
 
-  function getApproveButton(): JSX.Element | null {
-    if (!isSupportedChainId || !account) {
-      return null
-    } else if (awaitingApproveConfirmation) {
-      return (
-        <MainButton active>
-          Awaiting Confirmation <DotFlashing />
-        </MainButton>
-      )
-    } else if (showApproveLoader) {
-      return (
-        <MainButton active>
-          Approving <DotFlashing />
-        </MainButton>
-      )
-    } else if (showApprove) {
-      return <MainButton onClick={handleApprove}>Allow us to spend {deiCurrency?.symbol}</MainButton>
-    }
-    return null
-  }
-
   function getActionButton(): JSX.Element | null {
     if (!chainId || !account) {
       return <ConnectWallet />
-    } else if (showApprove) {
-      return null
     } else if (redeemPaused) {
       return <MainButton disabled>Redeem Paused</MainButton>
     } else if (awaitingUpdateConfirmation) {
@@ -265,7 +224,6 @@ export default function Redemption() {
                 inDollar={true}
               />
               <div style={{ marginTop: '20px' }}></div>
-              {getApproveButton()}
               {getActionButton()}
             </RedemptionWrapper>
             <BottomWrapper>
