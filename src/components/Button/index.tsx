@@ -88,7 +88,11 @@ export const PrimaryButton = styled(BaseButton)`
   `}
 `
 
-export const PrimaryButtonWide = styled(PrimaryButton)<{ padding?: string; transparentBG?: boolean }>`
+export const PrimaryButtonWide = styled(PrimaryButton)<{
+  padding?: string
+  transparentBG?: boolean
+  whiteBorder?: boolean
+}>`
   white-space: nowrap;
   border-radius: 8px;
   padding: ${({ padding }) => (padding ? padding : '0.75rem')};
@@ -104,21 +108,23 @@ export const PrimaryButtonWide = styled(PrimaryButton)<{ padding?: string; trans
       }
   `}
 
+  ${({ theme, whiteBorder }) =>
+    whiteBorder &&
+    `
+      background: ${theme.bg2};
+      border: 1.5px solid ${theme.text1};
+
+      &:focus, &:hover {
+        background: ${theme.bg0};
+        border: 2px solid ${theme.text1};
+      }
+  `}
+
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     & > * {
       margin: -4px;
     }
   `}
-`
-
-export const PrimaryButtonWhite = styled(PrimaryButtonWide)`
-  background: ${({ theme }) => theme.bg2};
-  border: 1.3px solid ${({ theme }) => theme.text1};
-
-  &:hover {
-    background: ${({ theme }) => theme.bg0};
-    border: 2px solid ${({ theme }) => theme.text1};
-  }
 `
 
 export const OptionButton = styled(BaseButton)<{ active?: boolean }>`
