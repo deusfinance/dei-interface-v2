@@ -172,14 +172,14 @@ export default function Create() {
     if (awaitingApproveConfirmation) {
       return (
         <MainButton>
-          Awaiting Confirmation <DotFlashing style={{ marginLeft: '10px' }} />
+          Awaiting Confirmation <DotFlashing />
         </MainButton>
       )
     }
     if (showApproveLoader) {
       return (
         <MainButton>
-          Approving <DotFlashing style={{ marginLeft: '10px' }} />
+          Approving <DotFlashing />
         </MainButton>
       )
     }
@@ -192,15 +192,15 @@ export default function Create() {
     }
     if (awaitingConfirmation) {
       return (
-        <MainButton active>
-          Awaiting Confirmation <DotFlashing style={{ marginLeft: '10px' }} />
+        <MainButton>
+          Awaiting Confirmation <DotFlashing />
         </MainButton>
       )
     }
     if (showTransactionPending) {
       return (
         <MainButton>
-          Locking <DotFlashing style={{ marginLeft: '10px' }} />
+          Locking <DotFlashing />
         </MainButton>
       )
     }

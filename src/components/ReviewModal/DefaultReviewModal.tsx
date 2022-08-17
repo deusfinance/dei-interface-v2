@@ -147,7 +147,7 @@ export default function DefaultReviewModal({
         )}
 
         <ConfirmButton onClick={() => handleClick()}>
-          {buttonText} {awaiting ? <DotFlashing style={{ marginLeft: '10px' }} /> : <></>}
+          {buttonText} {awaiting ? <DotFlashing /> : <></>}
         </ConfirmButton>
       </MainModal>
     </>

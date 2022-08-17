@@ -229,13 +229,13 @@ export default function Mint() {
     else if (awaitingApproveConfirmation) {
       return (
         <MainButton active>
-          Awaiting Confirmation <DotFlashing style={{ marginLeft: '10px' }} />
+          Awaiting Confirmation <DotFlashing />
         </MainButton>
       )
     } else if (showApproveLoader1 || showApproveLoader2) {
       return (
         <MainButton active>
-          Approving <DotFlashing style={{ marginLeft: '10px' }} />
+          Approving <DotFlashing />
         </MainButton>
       )
     } else if (showApprove1)
@@ -259,7 +259,7 @@ export default function Mint() {
       return (
         <MainButton onClick={handleUpdatePrice}>
           Updating Oracle
-          <DotFlashing style={{ marginLeft: '10px' }} />
+          <DotFlashing />
         </MainButton>
       )
     } else if (expiredPrice) {
@@ -267,7 +267,7 @@ export default function Mint() {
     } else if (awaitingMintConfirmation) {
       return (
         <MainButton>
-          Minting {outputTokenCurrency?.symbol} <DotFlashing style={{ marginLeft: '10px' }} />
+          Minting {outputTokenCurrency?.symbol} <DotFlashing />
         </MainButton>
       )
     }

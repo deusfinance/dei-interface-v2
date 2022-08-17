@@ -103,14 +103,7 @@ export default function Menu() {
               </IconWrapper>
             </Row>
           </Link>
-          <Link href="/vest" passHref>
-            <Row active={router.route === '/vest'}>
-              <div>veDEUS</div>
-              <IconWrapper>
-                <VeDeusIcon size={20} />
-              </IconWrapper>
-            </Row>
-          </Link>
+
           <Link href="/mint" passHref>
             <Row active={router.route === '/mint'}>
               <div>Mint DEI</div>
@@ -119,6 +112,7 @@ export default function Menu() {
               </IconWrapper>
             </Row>
           </Link>
+
           <Link href="/redemption" passHref>
             <Row active={router.route === '/redemption'}>
               <div>Redemption</div>
@@ -127,6 +121,7 @@ export default function Menu() {
               </IconWrapper>
             </Row>
           </Link>
+
           <Link href="/bond" passHref>
             <Row active={router.route === '/bond'}>
               <div>Bond</div>
@@ -135,30 +130,29 @@ export default function Menu() {
               </IconWrapper>
             </Row>
           </Link>
-          {/* <Link href="/analytics" passHref>
-            <Row active={router.route === '/analytics'}>
-              <div>Analytics</div>
+
+          <Link href="/vest" passHref>
+            <Row active={router.route.includes('/vest')}>
+              <div>veDEUS</div>
               <IconWrapper>
-                <AnalyticsIcon size={20} />
+                <VeDeusIcon size={20} />
               </IconWrapper>
             </Row>
-          </Link> */}
+          </Link>
+
           <ExternalLink href="https://twitter.com/deusdao">
             <Row onClick={() => toggle()}>
               <div>Twitter</div>
             </Row>
           </ExternalLink>
-          {/* <ExternalLink href="https://t.me/deusfinance">
-            <Row onClick={() => toggle()}>
-              <div>Community</div>
-            </Row>
-          </ExternalLink> */}
+
           <ExternalLink href="https://github.com/deusfinance">
             <Row onClick={() => toggle()}>
               <div>Github</div>
             </Row>
           </ExternalLink>
           <Separator />
+
           <ExternalLink href="https://legacy.dei.finance/">
             <Row onClick={() => toggle()}>
               <LegacyWrapper>

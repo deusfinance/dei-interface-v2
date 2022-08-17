@@ -170,13 +170,13 @@ export default function Redemption() {
     } else if (awaitingApproveConfirmation) {
       return (
         <MainButton active>
-          Awaiting Confirmation <DotFlashing style={{ marginLeft: '10px' }} />
+          Awaiting Confirmation <DotFlashing />
         </MainButton>
       )
     } else if (showApproveLoader) {
       return (
         <MainButton active>
-          Approving <DotFlashing style={{ marginLeft: '10px' }} />
+          Approving <DotFlashing />
         </MainButton>
       )
     } else if (showApprove) {
@@ -196,7 +196,7 @@ export default function Redemption() {
       return (
         <MainButton onClick={handleUpdatePrice}>
           Updating Oracle
-          <DotFlashing style={{ marginLeft: '10px' }} />
+          <DotFlashing />
         </MainButton>
       )
     } else if (expiredPrice) {
@@ -207,7 +207,7 @@ export default function Redemption() {
     // if (awaitingRedeemConfirmation) {
     //   return (
     //     <MainButton>
-    //       Redeeming DEI <DotFlashing style={{ marginLeft: '10px' }} />
+    //       Redeeming DEI <DotFlashing/>
     //     </MainButton>
     //   )
     // }

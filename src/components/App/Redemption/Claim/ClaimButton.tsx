@@ -77,7 +77,7 @@ export default function ClaimButton({
   } else if (awaitingClaimConfirmation) {
     return (
       <Button active>
-        Awaiting Confirmation <DotFlashing style={{ marginLeft: '10px' }} />
+        Awaiting Confirmation <DotFlashing />
       </Button>
     )
   } else if (!claimableBlock || !currentBlock) {

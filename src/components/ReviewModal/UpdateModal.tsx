@@ -83,7 +83,7 @@ export default function UpdateModal({
           <Data>Update oracle to continue...</Data>
         </Wrapper>
         <ConfirmButton onClick={() => handleClick()}>
-          {buttonText} {awaiting ? <DotFlashing style={{ marginLeft: '10px' }} /> : <></>}
+          {buttonText} {awaiting ? <DotFlashing /> : <></>}
         </ConfirmButton>
       </MainModal>
     </>

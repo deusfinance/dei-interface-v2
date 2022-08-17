@@ -96,10 +96,6 @@ export const MainButton = styled(PrimaryButton)`
   `}
 `
 
-export const CriticalButton = styled(MainButton)`
-  /* background: ${({ theme }) => theme.red1}; */
-`
-
 const ConnectButtonWrap = styled(PrimaryButton)`
   background: ${({ theme }) => theme.specialBG1};
   border-radius: 12px;
