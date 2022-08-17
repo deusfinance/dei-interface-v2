@@ -5,7 +5,7 @@ import { isMobile } from 'react-device-detect'
 
 import DEI_LOGO from '/public/static/images/pages/bond/DEI_logo.svg'
 
-import { useOwnerBondNFTs } from 'hooks/useOwnedNfts'
+import { useOwnerBondNFTs } from 'hooks/useOwnerNfts'
 import { BondNFT, useUserDeiBondInfo } from 'hooks/useBondsPage'
 
 import Hero from 'components/Hero'

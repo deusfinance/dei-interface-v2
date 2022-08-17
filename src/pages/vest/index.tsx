@@ -17,7 +17,7 @@ import { useDeusPrice } from 'hooks/useCoingeckoPrice'
 import useWeb3React from 'hooks/useWeb3'
 import { useVestedAPY } from 'hooks/useVested'
 import { useVeDistContract } from 'hooks/useContract'
-import useOwnedNfts from 'hooks/useOwnedNfts'
+import { useOwnerVeDeusNFTs } from 'hooks/useOwnerNfts'
 import { useSupportedChainId } from 'hooks/useSupportedChainId'
 import useDistRewards from 'hooks/useDistRewards'
 
@@ -142,7 +142,7 @@ export default function Vest() {
   const showTransactionPending = useIsTransactionPending(pendingTxHash)
   const isSupportedChainId = useSupportedChainId()
   const veDistContract = useVeDistContract()
-  const ownedNfts = useOwnedNfts()
+  const ownedNfts = useOwnerVeDeusNFTs()
   const nftIds = ownedNfts.results
   const rewards = useDistRewards()
   const toggleWalletModal = useWalletModalToggle()
