@@ -90,6 +90,10 @@ const ClaimedValue = styled.span`
 export default function DeiBondStats() {
   const userStats = useUserDeiBondInfo()
 
+  if (!userStats.length || !(userStats[0].value !== 'N/A' || userStats[1].value !== 'N/A')) {
+    return <></>
+  }
+
   return (
     <Wrapper>
       <DeiStats>

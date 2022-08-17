@@ -93,7 +93,7 @@ export default function StatsHeader({
   items,
   hasBox,
 }: {
-  items: { name: string; value: string | number; isLink?: boolean; link?: string }[]
+  items: { name: string; value: string | number; link?: string }[]
   hasBox?: boolean
 }) {
   return (
@@ -101,7 +101,7 @@ export default function StatsHeader({
       {items.map((item, index) => (
         <Item key={index} rightBorder={index < items.length - 1 || hasBox}>
           <Name>{item.name}</Name>
-          {!item.isLink ? (
+          {!item.link ? (
             <Value>{item.value}</Value>
           ) : (
             <ExternalLink href={ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/address/' + item.link}>

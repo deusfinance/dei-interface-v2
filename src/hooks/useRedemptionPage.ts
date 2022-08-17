@@ -1,56 +1,14 @@
 import { useEffect, useMemo } from 'react'
-import { Token } from '@sushiswap/core-sdk'
 import { formatUnits } from '@ethersproject/units'
 import { useAppDispatch } from 'state'
 
 import { useSingleContractMultipleMethods } from 'state/multicall/hooks'
 import { updateMintCollateralRatio, updateRedeemCollateralRatio } from 'state/dei/reducer'
-import { useCollateralPoolContract, useDynamicRedeemerContract, useStrategyContract } from 'hooks/useContract'
+import { useCollateralPoolContract, useStrategyContract } from 'hooks/useContract'
 import { DEI_TOKEN, DEUS_TOKEN, USDC_TOKEN } from 'constants/tokens'
 import { BN_TEN, toBN } from 'utils/numbers'
 import useWeb3React from './useWeb3'
 import useDebounce from './useDebounce'
-
-export function useRedeemAmountsOut(
-  amountIn: string,
-  tokenIn: Token
-): {
-  amountOut1: string
-  amountOut2: string
-} {
-  const amountInBN = amountIn ? toBN(amountIn).times(BN_TEN.pow(tokenIn.decimals)).toFixed(0) : ''
-  const contract = useDynamicRedeemerContract()
-
-  const amountOutCall = useMemo(
-    () =>
-      !amountInBN || amountInBN == '' || amountInBN == '0'
-        ? []
-        : [
-            {
-              methodName: 'usdRedeemValue',
-              callInputs: [amountInBN],
-            },
-            {
-              methodName: 'deusRedeemValue',
-              callInputs: [amountInBN],
-            },
-          ],
-    [amountInBN]
-  )
-
-  const [usdRedeem, deusRedeem] = useSingleContractMultipleMethods(contract, amountOutCall)
-
-  const amountOut1 =
-    !usdRedeem || !usdRedeem.result ? '' : toBN(formatUnits(usdRedeem.result[0].toString(), 6)).toString()
-
-  const amountOut2 =
-    !deusRedeem || !deusRedeem.result ? '' : toBN(formatUnits(deusRedeem.result[0].toString(), 6)).toString()
-
-  return {
-    amountOut1,
-    amountOut2,
-  }
-}
 
 export function useRedeemAmountOut(amountIn: string): {
   collateralAmount: string

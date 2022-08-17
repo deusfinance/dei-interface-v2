@@ -21,6 +21,7 @@ export function useDeiStats(): {
   usdcReserves1: number
   usdcReserves2: number
   totalUSDCReserves: number
+  collateralRatio: number
 } {
   const deiContract = useERC20Contract(DEI_TOKEN.address)
   const usdcContract = useERC20Contract(USDC_TOKEN.address)
@@ -83,8 +84,6 @@ export function useDeiStats(): {
       ]
 
   const [usdcPoolBalance, usdcBalance1, usdcBalance2] = useSingleContractMultipleMethods(usdcContract, reservesCalls)
-  console.log({ unclaimedCollateralAmount })
-
   const { totalUSDCReserves, usdcPoolReserves, usdcReserves1, usdcReserves2 } = useMemo(() => {
     return {
       totalUSDCReserves:
@@ -99,6 +98,10 @@ export function useDeiStats(): {
     }
   }, [unclaimedCollateralAmount, usdcPoolBalance, usdcBalance1, usdcBalance2])
 
+  const collateralRatio = useMemo(() => {
+    return (usdcPoolReserves / circulatingSupply) * 100
+  }, [usdcPoolReserves, circulatingSupply])
+
   return {
     totalSupply: totalSupplyDEIValue,
     deiProtocolHoldings1,
@@ -109,5 +112,6 @@ export function useDeiStats(): {
     usdcReserves1,
     usdcReserves2,
     totalUSDCReserves,
+    collateralRatio,
   }
 }

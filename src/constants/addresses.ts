@@ -115,36 +115,12 @@ export const Reimburse: AddressMap = {
   [SupportedChainId.FANTOM]: '0x85B6996ab768600C14dA1464205bd6b3a864417D',
 }
 
-export const DynamicRedeemer: AddressMap = {
-  [SupportedChainId.FANTOM]: '0xFD74E924dc96c72Ba52439e28CE780908A630D13',
-}
-
 export const veDist: AddressMap = {
   [SupportedChainId.FANTOM]: '0x09cE8C8E2704E84750E9c1a4F54A30eF60aF0073',
 }
 
 export const DeiBonder: AddressMap = {
   [SupportedChainId.FANTOM]: '0x958C24d5cDF94fAF47cF4d66400Af598Dedc6e62',
-}
-
-export const SwapFlashLoan: AddressMap = {
-  [SupportedChainId.FANTOM]: '0x9caC3CE5D8327aa5AF54b1b4e99785F991885Bf3',
-}
-
-export const MasterChefV2: AddressMap = {
-  [SupportedChainId.FANTOM]: '0x67932809213AFd6bac5ECD2e4e214Fe18209c419',
-}
-
-export const vDeusMasterChefV2: AddressMap = {
-  [SupportedChainId.FANTOM]: '0x120FF9821817eA2bbB700e1131e5c856ccC20d1b',
-}
-
-export const vDeusStaking: AddressMap = {
-  [SupportedChainId.FANTOM]: '0x978b5d59DeE843C99B205A81ca82F66F35B1Ba35',
-}
-
-export const bDeiRedeemer: AddressMap = {
-  [SupportedChainId.FANTOM]: '0x978b5d59DeE843C99B205A81ca82F66F35B1Ba35',
 }
 
 export const MintProxy: AddressMap = {

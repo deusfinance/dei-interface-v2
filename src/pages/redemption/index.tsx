@@ -7,11 +7,8 @@ import REDEEM_IMG from '/public/static/images/pages/redemption/TableauBackground
 import DEUS_LOGO from '/public/static/images/pages/redemption/DEUS_logo.svg'
 
 import { DEI_TOKEN, DEUS_TOKEN, USDC_TOKEN } from 'constants/tokens'
-import { CollateralPool, DynamicRedeemer } from 'constants/addresses'
-import { SupportedChainId } from 'constants/chains'
+import { CollateralPool } from 'constants/addresses'
 import { tryParseAmount } from 'utils/parse'
-import { truncateAddress } from 'utils/address'
-import { formatDollarAmount } from 'utils/numbers'
 
 import { useCurrencyBalance } from 'state/wallet/hooks'
 import { useRedemptionFee, useRedeemPaused, useExpiredPrice } from 'state/dei/hooks'
@@ -20,7 +17,6 @@ import { useSupportedChainId } from 'hooks/useSupportedChainId'
 import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
 import useRedemptionCallback from 'hooks/useRedemptionCallback'
 import { useGetCollateralRatios, useRedeemAmountOut } from 'hooks/useRedemptionPage'
-import { useDeusPrice, useUSDCPrice } from 'hooks/useCoingeckoPrice'
 import useUpdateCallback from 'hooks/useOracleCallback'
 
 import { DotFlashing } from 'components/Icons'
@@ -32,6 +28,7 @@ import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
 import DefaultReviewModal from 'components/ReviewModal/DefaultReviewModal'
 import Claim from 'components/App/Redemption/Claim'
+import usePoolStats from 'components/App/StableCoin/PoolStats'
 
 const MainWrap = styled.div`
   display: flex;
@@ -83,9 +80,6 @@ export default function Redemption() {
   const [amountOut1, setAmountOut1] = useState('')
   const [amountOut2, setAmountOut2] = useState('')
 
-  // const deiPrice = useDeiPrice()
-  const usdcPrice = useUSDCPrice()
-  const deusCoingeckoPrice = useDeusPrice()
   const expiredPrice = useExpiredPrice()
 
   const { collateralAmount, deusValue } = useRedeemAmountOut(amountIn)
@@ -118,7 +112,7 @@ export default function Redemption() {
   const [awaitingRedeemConfirmation, setAwaitingRedeemConfirmation] = useState<boolean>(false)
   const [awaitingUpdateConfirmation, setAwaitingUpdateConfirmation] = useState<boolean>(false)
 
-  const spender = useMemo(() => (chainId ? DynamicRedeemer[chainId] : undefined), [chainId])
+  const spender = useMemo(() => (chainId ? CollateralPool[chainId] : undefined), [chainId])
   const [approvalState, approveCallback] = useApproveCallback(deiCurrency ?? undefined, spender)
   const [showApprove, showApproveLoader] = useMemo(() => {
     const show = deiCurrency && approvalState !== ApprovalState.APPROVED && !!amountIn
@@ -227,21 +221,7 @@ export default function Redemption() {
       </MainButton>
     )
   }
-
-  const items = useMemo(
-    () => [
-      { name: 'DEI Price', value: '$1.00' },
-      { name: 'USDC Price', value: formatDollarAmount(parseFloat(usdcPrice), 2) ?? '-' },
-      { name: 'DEUS Price', value: formatDollarAmount(parseFloat(deusCoingeckoPrice), 2) ?? '-' },
-      {
-        name: 'Pool(V3)',
-        value: truncateAddress(CollateralPool[chainId ?? SupportedChainId.FANTOM]) ?? '-',
-        isLink: true,
-        link: CollateralPool[chainId ?? SupportedChainId.FANTOM],
-      },
-    ],
-    [usdcPrice, deusCoingeckoPrice, chainId]
-  )
+  const items = usePoolStats()
 
   //TODO: after adding loading animation please read this data from contract in /src/state/dei
   const info = useMemo(

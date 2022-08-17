@@ -67,9 +67,10 @@ const LegacyWrapper = styled.div`
 `
 
 const NavToggle = styled(NavToggleIcon)`
-  &:hover {
+  &:hover,
+  &:focus {
+    filter: brightness(1.5);
     cursor: pointer;
-    opacity: 0.6;
   }
 `
 

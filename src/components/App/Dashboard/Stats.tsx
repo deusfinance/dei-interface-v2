@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import Image from 'next/image'
 
@@ -113,11 +113,7 @@ const BackgroundImageWrapper = styled.div`
 
 export default function Stats() {
   const deusPrice = useDeusPrice()
-  const { totalSupply, totalProtocolHoldings, usdcPoolReserves, circulatingSupply, totalUSDCReserves } = useDeiStats()
-
-  const usdcBackingPerDei = useMemo(() => {
-    return (usdcPoolReserves / circulatingSupply) * 100
-  }, [usdcPoolReserves, circulatingSupply])
+  const { totalSupply, totalProtocolHoldings, collateralRatio, circulatingSupply, totalUSDCReserves } = useDeiStats()
 
   const { lockedVeDEUS } = useVestedAPY(undefined, getMaximumDate())
 
@@ -134,7 +130,7 @@ export default function Stats() {
             <StatsItem name="Total Reserve Assets" value={formatDollarAmount(totalUSDCReserves, 2)} linkIcon={true} />
             <StatsItem
               name="USDC Backing Per DEI"
-              value={formatAmount(usdcBackingPerDei, 1).toString() + '%'}
+              value={formatAmount(collateralRatio, 1).toString() + '%'}
               linkIcon={true}
             />
           </Info>

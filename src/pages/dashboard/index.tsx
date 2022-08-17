@@ -63,20 +63,16 @@ const CardWrapper = styled(RowBetween)`
 
 export default function Dashboard() {
   const { account } = useWeb3React()
-  const { totalSupply, totalUSDCReserves, usdcPoolReserves, circulatingSupply } = useDeiStats()
-
-  const usdcBackingPerDei = useMemo(() => {
-    return (usdcPoolReserves / circulatingSupply) * 100
-  }, [usdcPoolReserves, circulatingSupply])
+  const { totalSupply, totalUSDCReserves, collateralRatio } = useDeiStats()
 
   const items = useMemo(
     () => [
       { name: 'DEI Price', value: '$1.00' },
       { name: 'DEI Total Supply', value: formatAmount(totalSupply, 2) ?? '-' },
-      { name: 'Collateral Ratio', value: formatAmount(usdcBackingPerDei, 1) + '%' },
+      { name: 'Collateral Ratio', value: formatAmount(collateralRatio, 1) + '%' },
       { name: 'Total USDC Holdings', value: formatAmount(totalUSDCReserves, 2) },
     ],
-    [totalSupply, totalUSDCReserves, usdcBackingPerDei]
+    [totalSupply, totalUSDCReserves, collateralRatio]
   )
 
   return (

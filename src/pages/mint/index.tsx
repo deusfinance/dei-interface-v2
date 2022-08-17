@@ -11,8 +11,6 @@ import { DEUS_TOKEN } from 'constants/tokens'
 import { MINT__INPUTS, MINT__OUTPUTS } from 'constants/inputs'
 import { CollateralPool } from 'constants/addresses'
 import { tryParseAmount } from 'utils/parse'
-import { formatDollarAmount } from 'utils/numbers'
-import { truncateAddress } from 'utils/address'
 
 import { useCurrencyBalance } from 'state/wallet/hooks'
 import { useExpiredPrice, useMintingFee, useMintPaused } from 'state/dei/hooks'
@@ -21,7 +19,6 @@ import { useSupportedChainId } from 'hooks/useSupportedChainId'
 import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
 import { useMintPage } from 'hooks/useMintPage'
 import useMintCallback from 'hooks/useMintCallback'
-import { useDeusPrice, useUSDCPrice } from 'hooks/useCoingeckoPrice'
 import useUpdateCallback from 'hooks/useOracleCallback'
 import { useGetCollateralRatios } from 'hooks/useRedemptionPage'
 
@@ -34,6 +31,7 @@ import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
 import TokensModal from 'components/App/StableCoin/TokensModal'
 import DefaultReviewModal from 'components/ReviewModal/DefaultReviewModal'
+import usePoolStats from 'components/App/StableCoin/PoolStats'
 
 const PlusIcon = styled(Plus)`
   z-index: 1000;
@@ -101,8 +99,6 @@ export default function Mint() {
   const [isOpenReviewModal, toggleReviewModal] = useState(false)
 
   const expiredPrice = useExpiredPrice()
-  const usdcPrice = useUSDCPrice()
-  const deusCoingeckoPrice = useDeusPrice()
 
   const inputToken = tokens[inputTokenIndex]
   const token1Currency = inputToken[0]
@@ -286,20 +282,7 @@ export default function Mint() {
     )
   }
 
-  const items = useMemo(
-    () => [
-      { name: 'DEI Price', value: '$1.00' },
-      { name: 'USDC Price', value: formatDollarAmount(parseFloat(usdcPrice), 2) ?? '-' },
-      { name: 'DEUS Price', value: formatDollarAmount(parseFloat(deusCoingeckoPrice), 2) ?? '-' },
-      {
-        name: 'Pool(V3)',
-        value: truncateAddress(CollateralPool[chainId ?? SupportedChainId.FANTOM]) ?? '-',
-        isLink: true,
-        link: CollateralPool[chainId ?? SupportedChainId.FANTOM],
-      },
-    ],
-    [usdcPrice, deusCoingeckoPrice, chainId]
-  )
+  const items = usePoolStats()
 
   return (
     <>
