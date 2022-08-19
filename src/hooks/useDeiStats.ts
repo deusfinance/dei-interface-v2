@@ -84,11 +84,8 @@ export function useDeiStats(): {
       ]
 
   const [usdcPoolBalance, usdcBalance1, usdcBalance2] = useSingleContractMultipleMethods(usdcContract, reservesCalls)
-  const { totalUSDCReserves, usdcPoolReserves, usdcReserves1, usdcReserves2 } = useMemo(() => {
+  const { usdcPoolReserves, usdcReserves1, usdcReserves2 } = useMemo(() => {
     return {
-      totalUSDCReserves:
-        (usdcBalance1?.result ? toBN(formatUnits(usdcBalance1.result[0], 6)).toNumber() : 0) +
-        (usdcBalance2?.result ? toBN(formatUnits(usdcBalance2.result[0], 6)).toNumber() : 0),
       usdcPoolReserves: usdcPoolBalance?.result
         ? toBN(formatUnits(usdcPoolBalance.result[0], 6)).minus(unclaimedCollateralAmount).toNumber()
         : 0,
@@ -96,6 +93,11 @@ export function useDeiStats(): {
       usdcReserves2: usdcBalance2?.result ? toBN(formatUnits(usdcBalance2.result[0], 6)).toNumber() : 0,
     }
   }, [unclaimedCollateralAmount, usdcPoolBalance, usdcBalance1, usdcBalance2])
+
+  const totalUSDCReserves = useMemo(
+    () => usdcReserves1 + usdcReserves2 + usdcPoolReserves,
+    [usdcReserves1, usdcReserves2, usdcPoolReserves]
+  )
 
   const collateralRatio = useMemo(() => {
     return (usdcPoolReserves / circulatingSupply) * 100
