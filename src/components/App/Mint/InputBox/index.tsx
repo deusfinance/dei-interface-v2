@@ -174,7 +174,6 @@ export default function InputBox({
               placeholder="0.0"
               autoFocus
               disabled={disabled}
-              style={{ textAlign: 'left', fontSize: '24px', marginLeft: '5px' }}
             />
           </InputWrapper>
         </RightWrapper>

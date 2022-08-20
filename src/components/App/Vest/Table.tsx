@@ -237,7 +237,6 @@ export default function Table({
 function TableRow({
   nftId,
   toggleLockManager,
-  toggleAPYManager,
   index,
   isMobile,
   reward,

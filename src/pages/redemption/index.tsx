@@ -21,6 +21,7 @@ import Hero from 'components/Hero'
 import StatsHeader from 'components/StatsHeader'
 import { BottomWrapper, Container, InputWrapper, Wrapper, MainButton, ConnectWallet } from 'components/App/StableCoin'
 import InputBox from 'components/InputBox'
+import InputBoxInDollar from 'components/App/Redemption/InputBoxInDollar'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
 import DefaultReviewModal from 'components/ReviewModal/DefaultReviewModal'
@@ -216,13 +217,7 @@ export default function Redemption() {
                 disabled={true}
               />
               <PlusIcon size={'24px'} />
-              <InputBox
-                currency={deusCurrency}
-                value={amountOut2}
-                onChange={(value: string) => console.log(value)}
-                disabled={true}
-                inDollar={true}
-              />
+              <InputBoxInDollar currency={deusCurrency} value={amountOut2} />
               <div style={{ marginTop: '20px' }}></div>
               {getActionButton()}
             </RedemptionWrapper>

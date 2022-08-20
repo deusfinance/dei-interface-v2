@@ -18,13 +18,17 @@ export const InputField = styled.input<{
   font-size: 1.1rem;
   font-family: 'IBM Plex Mono';
   color: ${({ theme }) => theme.text1};
+  text-align: left;
+  font-size: 24px;
+  margin-left: 5px;
+
   &:focus,
   &:hover {
     outline: none;
   }
   ${({ theme }) => theme.mediaWidth.upToSmall`
     font-size: 16px !important;
-    width: 85px;
+    width: 120px;
     height: 40px;
   `}
 `
@@ -37,12 +41,12 @@ const inputRegex = RegExp(`^\\d*(?:\\\\[.])?\\d*$`) // match escaped "." charact
 export const NumericalInput = ({
   value,
   onUserInput,
-  placeholder,
+  placeholder = '0.0',
   ...rest
 }: {
   value: string | number
   onUserInput: (input: string) => void
-  placeholder: string
+  placeholder?: string
 } & Omit<React.HTMLProps<HTMLInputElement>, 'ref' | 'onChange' | 'as'>) => {
   const enforcer = (nextUserInput: string) => {
     if (nextUserInput === '' || inputRegex.test(escapeRegExp(nextUserInput))) {
