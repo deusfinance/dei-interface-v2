@@ -349,7 +349,7 @@ export function useCollectDeusCallback(): {
           })
           .then((response: TransactionResponse) => {
             console.log(response)
-            const summary = `Collect first redeemable deus amount`
+            const summary = `Collect DEUS amount` //TODO: put deus value
             addTransaction(response, { summary })
             return response.hash
           })

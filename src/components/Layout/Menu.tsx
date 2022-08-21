@@ -106,7 +106,7 @@ export default function Menu() {
 
           <Link href="/mint" passHref>
             <Row active={router.route === '/mint'}>
-              <div>Mint DEI</div>
+              <div>Mint</div>
               <IconWrapper>
                 <MintIcon size={20} />
               </IconWrapper>
@@ -115,7 +115,7 @@ export default function Menu() {
 
           <Link href="/redemption" passHref>
             <Row active={router.route === '/redemption'}>
-              <div>Redemption</div>
+              <div>Redeem</div>
               <IconWrapper>
                 <RedeemIcon size={20} />
               </IconWrapper>
