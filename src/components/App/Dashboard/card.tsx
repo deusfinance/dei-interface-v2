@@ -126,7 +126,7 @@ export const Card = ({
       <Link href={href} passHref>
         <AnchorTag disabled={disabled}>
           <LeftWrap>
-            <TitleWrap DeusActive={hover && title === 'veDEUS' && !disabled} DeiActive={hover && !disabled}>
+            <TitleWrap DeusActive={hover && title?.includes('DEUS') && !disabled} DeiActive={hover && !disabled}>
               {title}
             </TitleWrap>
             <SubText soon={subTitle === 'Coming Soon...'} active={hover}>

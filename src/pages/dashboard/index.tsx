@@ -12,6 +12,8 @@ import ANALYTICS_LOGO from '/public/static/images/pages/dashboard/ic_analytics_g
 import ANALYTICS_HOVER_LOGO from '/public/static/images/pages/dashboard/ic_analytics_hover.svg'
 import VEDEUS_LOGO from '/public/static/images/pages/dashboard/ic_vedeus_gray.svg'
 import VEDEUS_HOVER_LOGO from '/public/static/images/pages/dashboard/ic_vedeus_hover.svg'
+// import VDEUS_LOGO from '/public/static/images/pages/dashboard/ic_vdeus_gray.svg'
+// import VDEUS_HOVER_LOGO from '/public/static/images/pages/dashboard/ic_vdeus_hover.svg'
 import DEI_LOGO from '/public/static/images/pages/dashboard/DEI_Dashboard.png'
 
 import { useDeiStats } from 'hooks/useDeiStats'
@@ -109,11 +111,17 @@ export default function Dashboard() {
           <Card
             href=""
             title={'Analytics'}
-            // subTitle="DEI and DEUS Stats"
-            subTitle="Coming Soon..."
+            subTitle="Coming Soon..." // DEI and DEUS Stats
             MainIcon={ANALYTICS_LOGO}
             HoverIcon={ANALYTICS_HOVER_LOGO}
           />
+          {/* <Card
+            href="https://legacy.dei.finance/"
+            title={'vDEUS'}
+            subTitle="Migrate to vDEUS ERC20"
+            MainIcon={VDEUS_LOGO}
+            HoverIcon={VDEUS_HOVER_LOGO}
+          /> */}
           <SocialCard />
         </CardWrapper>
         <Stats />
