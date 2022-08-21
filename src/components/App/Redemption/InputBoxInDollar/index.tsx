@@ -1,17 +1,15 @@
-import React, { useCallback, useMemo } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import { Currency, Token } from '@sushiswap/core-sdk'
 import { isMobile } from 'react-device-detect'
 
-import { useCurrencyBalance } from 'state/wallet/hooks'
 import useCurrencyLogo from 'hooks/useCurrencyLogo'
-import useWeb3React from 'hooks/useWeb3'
-import { maxAmountSpend } from 'utils/currency'
 
 import ImageWithFallback from 'components/ImageWithFallback'
 import { NumericalInput } from 'components/Input'
 import { Row, RowBetween, RowCenter, RowEnd } from 'components/Row'
 import { ChevronDown as ChevronDownIcon } from 'components/Icons'
+import { DeusTitle } from 'components/App/Dashboard/Stats'
 
 export const Wrapper = styled(Row)`
   background: ${({ theme }) => theme.bg2};
@@ -49,6 +47,19 @@ const NumericalWrapper = styled.div`
   `}
 `
 
+const DeusText = styled(DeusTitle)<{ fromLeft?: string }>`
+  position: absolute;
+  top: 21px;
+  left: ${({ fromLeft }) => (fromLeft ? fromLeft : 0)};
+  font-weight: 500;
+  font-size: 12px;
+  margin-left: 20px;
+
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    top: 14px;
+  `}
+`
+
 export const CurrencySymbol = styled.div<{ active?: any }>`
   font-weight: 600;
   font-size: 16px;
@@ -74,7 +85,6 @@ export const RightWrapper = styled.div`
 
 export const LogoWrapper = styled(RowCenter)<{ active?: any }>`
   height: 100%;
-  /* padding-left: 10px; */
   width: 80px;
   cursor: ${({ active }) => active && 'pointer'};
 `
@@ -88,6 +98,12 @@ export const RowWrap = styled(RowEnd)`
   `}
 `
 
+const DollarSign = styled.span`
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+      margin-right: -4px;
+  `}
+`
+
 export const ChevronDown = styled(ChevronDownIcon)`
   margin-left: 7px;
   width: 16px;
@@ -98,65 +114,21 @@ export const ChevronDown = styled(ChevronDownIcon)`
   `}
 `
 
-const Balance = styled(RowWrap)<{ disabled?: boolean }>`
-  font-weight: 500;
-  font-size: 10px;
-  margin-left: 4px;
-  gap: 5px;
-  color: ${({ theme }) => theme.text2};
-  width: 20px;
-
-  & > span {
-    background: ${({ theme }) => theme.bg2};
-    border-radius: 6px;
-    padding: 2px 4px;
-    font-size: 0.5rem;
-    color: ${({ theme }) => theme.text1};
-
-    &:hover {
-      background: ${({ theme }) => theme.primary1};
-      cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
-    }
-  }
-
-  &:hover {
-    cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
-  }
-`
-
 export const getImageSize = () => {
   return isMobile ? 35 : 38
 }
 
-export default function InputBox({
-  currency,
-  value,
-  onChange,
-  onTokenSelect,
-  disabled,
-}: {
-  currency: Currency
-  value: string
-  onChange(values: string): void
-  onTokenSelect?: () => void
-  disabled?: boolean
-}) {
-  const { account } = useWeb3React()
+function getWidth(length: number): number {
+  if (isMobile) return length <= 12 ? length * 9 : 115
+  return length <= 20 ? length * 15 : 305
+}
+
+export default function InputBoxInDollar({ currency, value }: { currency: Currency; value: string }) {
   const logo = useCurrencyLogo((currency as Token)?.address)
-  const currencyBalance = useCurrencyBalance(account ?? undefined, currency ?? undefined)
-
-  const [balanceExact, balanceDisplay] = useMemo(() => {
-    return [maxAmountSpend(currencyBalance)?.toExact(), currencyBalance?.toSignificant(6)]
-  }, [currencyBalance])
-
-  const handleClick = useCallback(() => {
-    if (!balanceExact || !onChange || disabled) return
-    onChange(balanceExact)
-  }, [balanceExact, disabled, onChange])
 
   return (
     <Wrapper>
-      <LogoWrapper onClick={onTokenSelect ? () => onTokenSelect() : undefined} active={onTokenSelect ? true : false}>
+      <LogoWrapper>
         <ImageWithFallback
           src={logo}
           width={getImageSize()}
@@ -164,30 +136,16 @@ export default function InputBox({
           alt={`${currency?.symbol} Logo`}
           round
         />
-        {onTokenSelect ? <ChevronDown /> : null}
       </LogoWrapper>
 
       <RightWrapper>
         <RowBetween>
-          <CurrencySymbol
-            onClick={onTokenSelect ? () => onTokenSelect() : undefined}
-            active={onTokenSelect ? true : false}
-          >
-            {currency?.symbol}
-          </CurrencySymbol>
-          <Balance disabled={disabled} onClick={handleClick}>
-            balance: {balanceDisplay ? balanceDisplay : '0.00'}
-            {!disabled && <span>MAX</span>}
-          </Balance>
+          <CurrencySymbol>{currency?.symbol}</CurrencySymbol>
         </RowBetween>
         <NumericalWrapper>
-          <NumericalInput
-            value={value || ''}
-            onUserInput={onChange}
-            placeholder={disabled ? '0.0' : 'Enter an amount'}
-            autoFocus
-            disabled={disabled}
-          />
+          <DollarSign>$</DollarSign>
+          <NumericalInput value={value || ''} onUserInput={() => console.log()} />
+          {value && <DeusText fromLeft={`${getWidth(value.length)}px`}>in DEUS</DeusText>}
         </NumericalWrapper>
       </RightWrapper>
     </Wrapper>
