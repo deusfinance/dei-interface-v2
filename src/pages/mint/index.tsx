@@ -75,15 +75,18 @@ export default function Mint() {
   const isSupportedChainId = useSupportedChainId()
   const mintingFee = useMintingFee()
   const mintPaused = useMintPaused()
-  const tokens = useMemo(() => MINT__INPUTS[chainId ?? SupportedChainId.FANTOM], [chainId])
+  const tokens = useMemo(
+    () => MINT__INPUTS[isSupportedChainId && chainId ? chainId : SupportedChainId.FANTOM],
+    [chainId, isSupportedChainId]
+  )
 
   const [fullCollateralIndex, partialCollateralIndex] = useMemo(() => {
-    let fullCollateralIndex = tokens.indexOf(
+    let fullCollateralIndex = tokens?.indexOf(
       tokens.filter((item) => {
         return item.length === 1 && item[0]?.symbol === 'USDC'
       })[0]
     )
-    let partialCollateralIndex = tokens.indexOf(
+    let partialCollateralIndex = tokens?.indexOf(
       tokens.filter((item) => {
         return item.length > 1 && item[0]?.symbol === 'USDC' && item[1]?.symbol === 'DEUS'
       })[0]
@@ -104,7 +107,10 @@ export default function Mint() {
   const token1Currency = inputToken[0]
   const token2Currency = hasPair ? inputToken[1] : DEUS_TOKEN
 
-  const tokensOut = useMemo(() => MINT__OUTPUTS[chainId ?? SupportedChainId.FANTOM], [chainId])
+  const tokensOut = useMemo(
+    () => MINT__OUTPUTS[isSupportedChainId && chainId ? chainId : SupportedChainId.FANTOM],
+    [chainId, isSupportedChainId]
+  )
   const outputToken = tokensOut[0]
   const outputTokenCurrency = outputToken[0]
 

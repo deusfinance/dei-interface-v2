@@ -8,9 +8,16 @@ import DEUS_LOGO from '/public/static/images/pages/redemption/DEUS_logo.svg'
 
 import { DEI_TOKEN, DEUS_TOKEN, USDC_TOKEN } from 'constants/tokens'
 import { tryParseAmount } from 'utils/parse'
+import { getTimeLength } from 'utils/time'
 
 import { useCurrencyBalance } from 'state/wallet/hooks'
-import { useRedemptionFee, useRedeemPaused, useExpiredPrice } from 'state/dei/hooks'
+import {
+  useRedemptionFee,
+  useRedeemPaused,
+  useExpiredPrice,
+  useCollateralCollectionDelay,
+  useDeusCollectionDelay,
+} from 'state/dei/hooks'
 import useWeb3React from 'hooks/useWeb3'
 import useRedemptionCallback from 'hooks/useRedemptionCallback'
 import { useGetCollateralRatios, useRedeemAmountOut } from 'hooks/useRedemptionPage'
@@ -164,13 +171,6 @@ export default function Redemption() {
     } else if (insufficientBalance) {
       return <MainButton disabled>Insufficient {deiCurrency?.symbol} Balance</MainButton>
     }
-    // if (awaitingRedeemConfirmation) {
-    //   return (
-    //     <MainButton>
-    //       Redeeming DEI <DotFlashing/>
-    //     </MainButton>
-    //   )
-    // }
     return (
       <MainButton
         onClick={() => {
@@ -183,14 +183,19 @@ export default function Redemption() {
   }
   const items = usePoolStats()
 
-  //TODO: after adding loading animation please read this data from contract in /src/state/dei
-  const info = useMemo(
-    () => [
-      { title: 'USDC claimable time', value: '30 sec' },
-      { title: 'DEUS claimable time', value: '30 min' },
-    ],
-    []
-  )
+  const collateralCollectionDelay = useCollateralCollectionDelay()
+  const deusCollectionDelay = useDeusCollectionDelay()
+
+  const info = useMemo(() => {
+    return [
+      {
+        title: 'USDC claimable time',
+        value: getTimeLength(collateralCollectionDelay * 1000).fullLength ?? '30 sec',
+      },
+      { title: 'DEUS claimable time', value: getTimeLength(deusCollectionDelay * 1000).fullLength ?? '30 min' },
+    ]
+  }, [collateralCollectionDelay, deusCollectionDelay])
+
   return (
     <>
       <Container>
@@ -225,8 +230,6 @@ export default function Redemption() {
               <InfoItem name={'Redemption Fee'} value={redemptionFee + '%'} />
               <InfoItem name={'Redeem Ratio'} value={Number(redeemCollateralRatio).toString() + '%'} />
               <InfoItem name={'Mint Ratio'} value={Number(mintCollateralRatio).toString() + '%'} />
-              {/* <InfoItem name={'USDC Ratio'} value={(Number(redeemCollateralRatio) / 100).toString()} /> */}
-              {/* <InfoItem name={'DEUS Ratio($)'} value={((100 - Number(redeemCollateralRatio)) / 100).toString()} /> */}
             </BottomWrapper>
           </Wrapper>
           <Claim redeemCollateralRatio={redeemCollateralRatio} handleUpdatePrice={handleUpdatePrice} />

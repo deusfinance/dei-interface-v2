@@ -8,6 +8,7 @@ import Column from 'components/Column'
 import { Plus } from 'react-feather'
 import { MINT__INPUTS } from 'constants/inputs'
 import { SupportedChainId } from 'constants/chains'
+import { useSupportedChainId } from 'hooks/useSupportedChainId'
 
 const Wrapper = styled.div`
   display: flex;
@@ -78,9 +79,13 @@ export default function TokensModal({
   selectedTokenIndex: number
   setToken: (index: number) => void
 }) {
+  const isSupportedChainId = useSupportedChainId()
   const { chainId } = useWeb3React()
 
-  const tokens = useMemo(() => MINT__INPUTS[chainId ?? SupportedChainId.FANTOM], [chainId])
+  const tokens = useMemo(
+    () => MINT__INPUTS[isSupportedChainId && chainId ? chainId : SupportedChainId.FANTOM],
+    [chainId, isSupportedChainId]
+  )
 
   return (
     <Modal isOpen={isOpen} onBackgroundClick={() => toggleModal(false)} onEscapeKeydown={() => toggleModal(false)}>
