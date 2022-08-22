@@ -32,6 +32,7 @@ import Tableau from 'components/App/StableCoin/Tableau'
 import TokensModal from 'components/App/StableCoin/TokensModal'
 import DefaultReviewModal from 'components/ReviewModal/DefaultReviewModal'
 import usePoolStats from 'components/App/StableCoin/PoolStats'
+import { GradientButton } from 'components/App/StableCoin/gradientButton'
 
 const PlusIcon = styled(Plus)`
   z-index: 1000;
@@ -260,16 +261,11 @@ export default function Mint() {
     else if (insufficientBalance2)
       return <MainButton disabled>Insufficient {token2Currency?.symbol} Balance</MainButton>
     else if (mintPaused) {
-      return <MainButton disabled={mintPaused}>Mint Paused</MainButton>
+      return <MainButton disabled>Mint Paused</MainButton>
     } else if (awaitingUpdateConfirmation) {
-      return (
-        <MainButton onClick={handleUpdatePrice}>
-          Updating Oracle
-          <DotFlashing />
-        </MainButton>
-      )
+      return <GradientButton title={'Updating Oracle'} awaiting />
     } else if (expiredPrice) {
-      return <MainButton onClick={handleUpdatePrice}>Update Oracle</MainButton>
+      return <GradientButton onClick={handleUpdatePrice} title={'Update Oracle'} />
     } else if (awaitingMintConfirmation) {
       return (
         <MainButton>

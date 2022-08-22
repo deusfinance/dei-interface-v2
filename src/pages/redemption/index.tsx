@@ -23,7 +23,6 @@ import useRedemptionCallback from 'hooks/useRedemptionCallback'
 import { useGetCollateralRatios, useRedeemAmountOut } from 'hooks/useRedemptionPage'
 import useUpdateCallback from 'hooks/useOracleCallback'
 
-import { DotFlashing } from 'components/Icons'
 import Hero from 'components/Hero'
 import StatsHeader from 'components/StatsHeader'
 import { BottomWrapper, Container, InputWrapper, Wrapper, MainButton, ConnectWallet } from 'components/App/StableCoin'
@@ -34,6 +33,7 @@ import Tableau from 'components/App/StableCoin/Tableau'
 import DefaultReviewModal from 'components/ReviewModal/DefaultReviewModal'
 import Claim from 'components/App/Redemption/Claim'
 import usePoolStats from 'components/App/StableCoin/PoolStats'
+import { GradientButton } from 'components/App/StableCoin/gradientButton'
 
 const MainWrap = styled.div`
   display: flex;
@@ -160,14 +160,9 @@ export default function Redemption() {
     } else if (redeemPaused) {
       return <MainButton disabled>Redeem Paused</MainButton>
     } else if (awaitingUpdateConfirmation) {
-      return (
-        <MainButton onClick={handleUpdatePrice}>
-          Updating Oracle
-          <DotFlashing />
-        </MainButton>
-      )
+      return <GradientButton title={'Updating Oracle'} awaiting />
     } else if (expiredPrice) {
-      return <MainButton onClick={handleUpdatePrice}>Update Oracle</MainButton>
+      return <GradientButton onClick={handleUpdatePrice} title={'Update Oracle'} />
     } else if (insufficientBalance) {
       return <MainButton disabled>Insufficient {deiCurrency?.symbol} Balance</MainButton>
     }

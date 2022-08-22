@@ -67,7 +67,7 @@ export function SearchField({ searchProps, modalSearch }: { searchProps: any; mo
         placeholder="Search Lock"
         spellCheck="false"
         onBlur={() => null}
-        style={{ marginLeft: '15px', fontSize: '17px' }}
+        style={{ marginLeft: '15px', fontSize: '16px' }}
       />
     </InputWrapper>
   )
