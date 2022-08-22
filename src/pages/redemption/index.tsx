@@ -243,8 +243,9 @@ export default function Redemption() {
         amountsOut={[amountOut1, amountOut2]}
         info={info}
         data={''}
-        buttonText={awaitingRedeemConfirmation ? 'Redeeming ' : 'Confirm Redeem'}
+        buttonText={'Confirm Redeem'}
         awaiting={awaitingRedeemConfirmation}
+        summary={`Redeeming ${amountIn} DEI to ${amountOut1} USDC and ${amountOut2} DEUS`}
         handleClick={handleRedeem}
       />
     </>

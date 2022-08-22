@@ -370,8 +370,9 @@ export default function Mint() {
         amountsOut={[amountOut]}
         info={[]}
         data={''}
-        buttonText={awaitingMintConfirmation ? 'Minting ' : 'Confirm Mint'}
+        buttonText={'Confirm Mint'}
         awaiting={awaitingMintConfirmation}
+        summary={`Minting ${amountOut} DEI by ${amountIn1} USDC`}
         handleClick={handleMint}
       />
     </>
