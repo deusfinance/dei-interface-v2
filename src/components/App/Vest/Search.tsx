@@ -58,16 +58,17 @@ export function useSearch() {
 export function SearchField({ searchProps, modalSearch }: { searchProps: any; modalSearch?: boolean }) {
   return (
     <InputWrapper ModalSearch={modalSearch}>
+      <SearchIcon size={22} />
       <InputField
         {...searchProps}
         title="Search"
         autoFocus
         type="text"
-        placeholder="Search"
+        placeholder="Search Lock"
         spellCheck="false"
         onBlur={() => null}
+        style={{ marginLeft: '15px', fontSize: '17px' }}
       />
-      <SearchIcon />
     </InputWrapper>
   )
 }
