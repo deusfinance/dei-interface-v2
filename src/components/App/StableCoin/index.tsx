@@ -1,8 +1,9 @@
 import styled from 'styled-components'
 
-import { PrimaryButton } from 'components/Button'
-import { Row, RowBetween, RowEnd, RowCenter } from 'components/Row'
 import { useWalletModalToggle } from 'state/application/hooks'
+import { DotFlashing } from 'components/Icons'
+import { PrimaryButton } from 'components/Button'
+import { Row, RowCenter, RowBetween, RowEnd } from 'components/Row'
 
 export const Container = styled(Row)`
   flex-flow: column nowrap;
@@ -96,7 +97,7 @@ export const MainButton = styled(PrimaryButton)`
   `}
 `
 
-const ConnectButtonWrap = styled(PrimaryButton)`
+const GradientButtonWrap = styled(PrimaryButton)`
   background: ${({ theme }) => theme.specialBG1};
   border-radius: 12px;
   padding: 2px;
@@ -105,7 +106,7 @@ const ConnectButtonWrap = styled(PrimaryButton)`
   cursor: pointer;
 `
 
-export const ConnectButton = styled(RowCenter)`
+export const GradientButtonRow = styled(RowCenter)`
   background: ${({ theme }) => theme.bg2};
   border-radius: 8px;
   height: 100%;
@@ -113,7 +114,8 @@ export const ConnectButton = styled(RowCenter)`
   white-space: nowrap;
 `
 
-export const ConnectButtonText = styled.span`
+export const GradientButtonText = styled.span`
+  display: flex;
   font-family: 'Inter';
   font-style: normal;
   font-weight: 600;
@@ -124,13 +126,27 @@ export const ConnectButtonText = styled.span`
   -webkit-text-fill-color: transparent;
 `
 
+export function GradientButton({
+  title,
+  awaiting,
+  onClick,
+}: {
+  title: string
+  awaiting?: boolean
+  onClick?: () => void
+}) {
+  return (
+    <GradientButtonWrap onClick={onClick}>
+      <GradientButtonRow>
+        <GradientButtonText>
+          {title} {awaiting && <DotFlashing />}
+        </GradientButtonText>
+      </GradientButtonRow>
+    </GradientButtonWrap>
+  )
+}
+
 export function ConnectWallet() {
   const toggleWalletModal = useWalletModalToggle()
-  return (
-    <ConnectButtonWrap onClick={toggleWalletModal}>
-      <ConnectButton>
-        <ConnectButtonText>Connect Wallet</ConnectButtonText>
-      </ConnectButton>
-    </ConnectButtonWrap>
-  )
+  return <GradientButton title="Connect Wallet" onClick={toggleWalletModal} />
 }

@@ -26,13 +26,20 @@ import { DotFlashing } from 'components/Icons'
 import Hero from 'components/Hero'
 import InputBox from 'components/InputBox'
 import StatsHeader from 'components/StatsHeader'
-import { BottomWrapper, Container, InputWrapper, Wrapper, MainButton, ConnectWallet } from 'components/App/StableCoin'
+import DefaultReviewModal from 'components/ReviewModal/DefaultReviewModal'
+import {
+  BottomWrapper,
+  Container,
+  InputWrapper,
+  Wrapper,
+  MainButton,
+  ConnectWallet,
+  GradientButton,
+} from 'components/App/StableCoin'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
 import TokensModal from 'components/App/StableCoin/TokensModal'
-import DefaultReviewModal from 'components/ReviewModal/DefaultReviewModal'
 import usePoolStats from 'components/App/StableCoin/PoolStats'
-import { GradientButton } from 'components/App/StableCoin/gradientButton'
 
 const PlusIcon = styled(Plus)`
   z-index: 1000;

@@ -25,15 +25,22 @@ import useUpdateCallback from 'hooks/useOracleCallback'
 
 import Hero from 'components/Hero'
 import StatsHeader from 'components/StatsHeader'
-import { BottomWrapper, Container, InputWrapper, Wrapper, MainButton, ConnectWallet } from 'components/App/StableCoin'
 import InputBox from 'components/InputBox'
+import DefaultReviewModal from 'components/ReviewModal/DefaultReviewModal'
+import {
+  BottomWrapper,
+  Container,
+  InputWrapper,
+  Wrapper,
+  MainButton,
+  ConnectWallet,
+  GradientButton,
+} from 'components/App/StableCoin'
 import InputBoxInDollar from 'components/App/Redemption/InputBoxInDollar'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
-import DefaultReviewModal from 'components/ReviewModal/DefaultReviewModal'
 import Claim from 'components/App/Redemption/Claim'
 import usePoolStats from 'components/App/StableCoin/PoolStats'
-import { GradientButton } from 'components/App/StableCoin/gradientButton'
 
 const MainWrap = styled.div`
   display: flex;
