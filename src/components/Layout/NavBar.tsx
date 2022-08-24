@@ -204,6 +204,13 @@ export default function NavBar() {
                 </SimpleLinkWrapper>
               )
             })}
+            <SimpleLinkWrapper>
+              <Link href={'https://docs.deus.finance/contracts/disclaimer'} passHref>
+                <a style={{ textDecoration: 'none' }} rel="noreferrer" target="_blank">
+                  <NavLink active={false}>Terms</NavLink>
+                </a>
+              </Link>
+            </SimpleLinkWrapper>
           </Routes>
           <Items>
             <Web3Network />
