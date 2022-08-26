@@ -41,6 +41,7 @@ import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
 import Claim from 'components/App/Redemption/Claim'
 import usePoolStats from 'components/App/StableCoin/PoolStats'
+import WarningModal from 'components/ReviewModal/Warning'
 
 const MainWrap = styled.div`
   display: flex;
@@ -88,6 +89,7 @@ export default function Redemption() {
   const deusCurrency = DEUS_TOKEN
   const deiCurrencyBalance = useCurrencyBalance(account ?? undefined, deiCurrency)
   const [isOpenReviewModal, toggleReviewModal] = useState(false)
+  const [isOpenWarningModal, toggleWarningModal] = useState(false)
   const [amountOut1, setAmountOut1] = useState('')
   const [amountOut2, setAmountOut2] = useState('')
 
@@ -153,6 +155,8 @@ export default function Redemption() {
       setAmountIn('')
     } catch (e) {
       setAwaitingRedeemConfirmation(false)
+      toggleWarningModal(true)
+      toggleReviewModal(false)
       if (e instanceof Error) {
         console.error(e)
       } else {
@@ -237,6 +241,12 @@ export default function Redemption() {
           <Claim redeemCollateralRatio={redeemCollateralRatio} handleUpdatePrice={handleUpdatePrice} />
         </MainWrap>
       </Container>
+
+      <WarningModal
+        isOpen={isOpenWarningModal}
+        toggleModal={(action: boolean) => toggleWarningModal(action)}
+        summary={['Transaction rejected', `Redeeming ${amountIn} DEI to ${amountOut1} USDC and ${amountOut2} DEUS`]}
+      />
 
       <DefaultReviewModal
         title="Review Redeem Transaction"
