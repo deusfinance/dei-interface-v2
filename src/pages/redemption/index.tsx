@@ -24,6 +24,7 @@ import { useGetCollateralRatios, useRedeemAmountOut } from 'hooks/useRedemptionP
 import useUpdateCallback from 'hooks/useOracleCallback'
 
 import Hero from 'components/Hero'
+import { RowCenter } from 'components/Row'
 import StatsHeader from 'components/StatsHeader'
 import InputBox from 'components/InputBox'
 import DefaultReviewModal from 'components/ReviewModal/DefaultReviewModal'
@@ -42,14 +43,15 @@ import Tableau from 'components/App/StableCoin/Tableau'
 import Claim from 'components/App/Redemption/Claim'
 import usePoolStats from 'components/App/StableCoin/PoolStats'
 
-const MainWrap = styled.div`
-  display: flex;
+const MainWrap = styled(RowCenter)`
   align-items: flex-start;
-  gap: -10px;
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
     display: flex;
     flex-direction: column-reverse;
+    & > * {
+      margin: 10px auto;
+    }
   `}
 `
 
