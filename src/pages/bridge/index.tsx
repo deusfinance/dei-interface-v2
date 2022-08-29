@@ -26,24 +26,16 @@ import { useGetCollateralRatios, useRedeemAmountOut } from 'hooks/useRedemptionP
 import useUpdateCallback from 'hooks/useOracleCallback'
 
 import Hero from 'components/Hero'
-import { RowCenter } from 'components/Row'
+import { Row, RowCenter } from 'components/Row'
 import InputBox from 'components/InputBox'
 import DefaultReviewModal from 'components/ReviewModal/DefaultReviewModal'
-import {
-  BottomWrapper,
-  Container,
-  InputWrapper,
-  Wrapper,
-  MainButton,
-  ConnectWallet,
-  GradientButton,
-} from 'components/App/StableCoin'
-import InfoItem from 'components/App/StableCoin/InfoItem'
+import { Container, InputWrapper, Wrapper, MainButton, ConnectWallet, GradientButton } from 'components/App/StableCoin'
 import Tableau from 'components/App/StableCoin/Tableau'
-import Claim from 'components/App/Redemption/Claim'
+import Claim from 'components/App/Bridge/Claim'
 import usePoolStats from 'components/App/StableCoin/PoolStats'
 import TokensBox from 'components/App/Bridge/TokensBox'
 import { Token } from '@sushiswap/core-sdk'
+import { Info } from 'components/Icons'
 
 const MainWrap = styled(RowCenter)`
   align-items: flex-start;
@@ -66,6 +58,20 @@ const BridgeWrapper = styled(InputWrapper)`
       margin: 15px auto;
     }
   }
+`
+
+const BottomWrap = styled(Row)`
+  width: 100%;
+  font-size: 12px;
+  align-items: center;
+  padding-left: 12px;
+  margin-bottom: 15px;
+  color: ${({ theme }) => theme.text2};
+`
+
+const BridgeInfo = styled.div`
+  margin-left: 6px;
+  margin-bottom: 1px;
 `
 
 const MuonWrap = styled(RowCenter)`
@@ -224,7 +230,7 @@ export default function Bridge() {
         </Hero>
         <MainWrap>
           <Wrapper>
-            <Tableau title={'Bridge'} imgSrc={false ? DEI_BACKGROUND : DEUS_BACKGROUND} />
+            <Tableau title={'Bridge'} imgSrc={selectedToken.name === 'DEI' ? DEI_BACKGROUND : DEUS_BACKGROUND} />
 
             <BridgeWrapper>
               <TokensBox
@@ -252,11 +258,10 @@ export default function Bridge() {
               <div style={{ marginTop: '20px' }}></div>
               {getActionButton()}
             </BridgeWrapper>
-            <BottomWrapper>
-              <InfoItem name={'Redemption Fee'} value={redemptionFee + '%'} />
-              <InfoItem name={'Redeem Ratio'} value={Number(redeemCollateralRatio).toString() + '%'} />
-              <InfoItem name={'Mint Ratio'} value={Number(mintCollateralRatio).toString() + '%'} />
-            </BottomWrapper>
+            <BottomWrap>
+              <Info size={16} />
+              <BridgeInfo>{'Approve > Deposit to bridge > Switch network > Claim Token'}</BridgeInfo>
+            </BottomWrap>
           </Wrapper>
           <Claim redeemCollateralRatio={redeemCollateralRatio} handleUpdatePrice={handleUpdatePrice} />
         </MainWrap>

@@ -6,11 +6,11 @@ import { formatUnits } from '@ethersproject/units'
 
 // import IC_CLAIM_EMPTY from '/public/static/images/pages/redemption/ic_claim_empty.svg'
 // import IC_CLAIM_EMPTY_MOBILE from '/public/static/images/pages/redemption/ic_claim_empty_mobile.svg'
-import IC_CLAIM_LOADING from '/public/static/images/pages/redemption/ic_claim_loading.svg'
-import IC_CLAIM_NOT_CONNECTED from '/public/static/images/pages/redemption/ic_claim_not_connected.svg'
-import CLAIM_LOGO from '/public/static/images/pages/redemption/claim.svg'
-import IC_CLAIM_LOADING_MOBILE from '/public/static/images/pages/redemption/ic_claim_loading_mobile.svg'
-import IC_CLAIM_NOT_CONNECTED_MOBILE from '/public/static/images/pages/redemption/ic_claim_not_connected_mobile.svg'
+import IC_CLAIM_LOADING from '/public/static/images/pages/bridge/ic_claim_loading.svg'
+import IC_CLAIM_NOT_CONNECTED from '/public/static/images/pages/bridge/ic_claim_not_connected.svg'
+import CLAIM_LOGO from '/public/static/images/pages/bridge/claim.svg'
+import IC_CLAIM_LOADING_MOBILE from '/public/static/images/pages/bridge/ic_claim_loading_mobile.svg'
+import IC_CLAIM_NOT_CONNECTED_MOBILE from '/public/static/images/pages/bridge/ic_claim_not_connected_mobile.svg'
 
 import { DEUS_TOKEN } from 'constants/tokens'
 import { SupportedChainId } from 'constants/chains'
@@ -298,7 +298,7 @@ export default function RedeemClaim({
     <>
       <ActionWrap>
         <TitleWrap>
-          <Title>Claim your tokens</Title>
+          <Title>Claim Bridged Tokens</Title>
         </TitleWrap>
         {!unClaimed || unClaimed.length == 0 ? (
           <ClaimBox>
@@ -357,9 +357,9 @@ export default function RedeemClaim({
               ) : (
                 <>
                   {isLoading ? (
-                    <NoResultWrapper> Loading Redemptions... </NoResultWrapper>
+                    <NoResultWrapper> Loading bridged tokens... </NoResultWrapper>
                   ) : (
-                    <NoResultWrapper> No tokens to claim </NoResultWrapper>
+                    <NoResultWrapper> There is no bridged token </NoResultWrapper>
                   )}
                 </>
               )}
