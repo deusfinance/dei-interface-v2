@@ -4,11 +4,14 @@ import { isMobile } from 'react-device-detect'
 
 import { PrimaryButton } from 'components/Button'
 import useWeb3React from 'hooks/useWeb3'
-import { SupportedChainId } from 'constants/chains'
+// import { SupportedChainId } from 'constants/chains'
 import { RowCenter } from 'components/Row'
 import { DotFlashing } from 'components/Icons'
 import { getRemainingTime } from 'utils/time'
-import { useCollateralCollectionDelay, useDeusCollectionDelay } from 'state/dei/hooks'
+import { useDeusCollectionDelay } from 'state/dei/hooks'
+import { IToken } from '.'
+import { ChainInfo } from 'constants/chainInfo'
+import { GradientButtonRow, GradientButtonText } from 'components/App/StableCoin'
 
 const RemainingWrap = styled(RowCenter)`
   position: relative;
@@ -47,18 +50,27 @@ const Button = styled(PrimaryButton)`
   border-radius: 8px;
 `
 
+const GradientButtonWrap = styled(PrimaryButton)`
+  background: ${({ theme }) => theme.specialBG1};
+  border-radius: 12px;
+  padding: 2px;
+  width: 100%;
+  height: 45px;
+  cursor: pointer;
+`
+
 export default function ClaimButton({
+  token,
   claimableBlock,
   currentBlock,
   onClaim,
   onSwitchNetwork,
-  isUSDC,
 }: {
+  token: IToken
   claimableBlock?: number
   currentBlock?: number
   onClaim?: () => void
   onSwitchNetwork?: () => void
-  isUSDC?: boolean
 }): JSX.Element {
   const { chainId } = useWeb3React()
   const [awaitingClaimConfirmation, setAwaitingClaimConfirmation] = useState<boolean>(false)
@@ -69,11 +81,18 @@ export default function ClaimButton({
     setAwaitingClaimConfirmation(false)
   }
 
-  const collateralRedemptionDelay = useCollateralCollectionDelay()
   const deusRedemptionDelay = useDeusCollectionDelay()
 
-  if (chainId && chainId !== SupportedChainId.FANTOM) {
-    return <Button onClick={onSwitchNetwork}>Switch to FANTOM</Button>
+  if (chainId && chainId !== token.chainId) {
+    return (
+      <GradientButtonWrap onClick={onSwitchNetwork}>
+        <GradientButtonRow>
+          <GradientButtonText style={{ fontSize: '16px' }}>
+            Switch to {ChainInfo[token.chainId]?.label}
+          </GradientButtonText>
+        </GradientButtonRow>
+      </GradientButtonWrap>
+    )
   } else if (awaitingClaimConfirmation) {
     return (
       <Button active>
@@ -87,9 +106,7 @@ export default function ClaimButton({
   const diff = claimableBlock - currentBlock
   if (diff > 0) {
     const { hours, minutes, seconds } = getRemainingTime(claimableBlock * 1000)
-    const elapsed = isUSDC
-      ? ((collateralRedemptionDelay - diff) / collateralRedemptionDelay) * 100
-      : ((deusRedemptionDelay - diff) / deusRedemptionDelay) * 100
+    const elapsed = ((deusRedemptionDelay - diff) / deusRedemptionDelay) * 100
 
     return (
       <RemainingWrap>

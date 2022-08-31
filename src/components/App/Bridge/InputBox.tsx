@@ -125,7 +125,7 @@ const Balance = styled(RowWrap)<{ disabled?: boolean }>`
   }
 `
 
-const NetworkText = styled.div<{ network?: boolean }>`
+export const NetworkText = styled.div<{ network?: boolean }>`
   font-weight: 400;
   font-size: 10px;
 
