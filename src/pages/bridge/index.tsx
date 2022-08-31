@@ -27,7 +27,7 @@ import useUpdateCallback from 'hooks/useOracleCallback'
 
 import Hero from 'components/Hero'
 import { Row, RowCenter } from 'components/Row'
-import InputBox from 'components/InputBox'
+import InputBox from 'components/App/Bridge/InputBox'
 import DefaultReviewModal from 'components/ReviewModal/DefaultReviewModal'
 import { Container, InputWrapper, Wrapper, MainButton, ConnectWallet, GradientButton } from 'components/App/StableCoin'
 import Tableau from 'components/App/StableCoin/Tableau'
@@ -36,6 +36,7 @@ import usePoolStats from 'components/App/StableCoin/PoolStats'
 import TokensBox from 'components/App/Bridge/TokensBox'
 import { Token } from '@sushiswap/core-sdk'
 import { Info } from 'components/Icons'
+import { BRIDGE__TOKENS } from 'constants/inputs'
 
 const MainWrap = styled(RowCenter)`
   align-items: flex-start;
@@ -108,16 +109,34 @@ export default function Bridge() {
   const deiCurrencyBalance = useCurrencyBalance(account ?? undefined, deiCurrency)
   const [isOpenReviewModal, toggleReviewModal] = useState(false)
   const [amountOut1, setAmountOut1] = useState('')
-  const [amountOut2, setAmountOut2] = useState('')
-  const [selectedToken, setSelectedToken] = useState<Token>(DEUS_TOKEN)
+
+  const [tokenIn, setTokenIn] = useState<Token>(DEUS_TOKEN)
+  const [tokenOut, setTokenOut] = useState<Token>(DEUS_TOKEN)
 
   const expiredPrice = useExpiredPrice()
 
   const { collateralAmount, deusValue } = useRedeemAmountOut(amountIn)
 
+  // Define dropdown options
+  const [inputTokenOption, inputChainOptions, outputChainOptions] = useMemo(() => {
+    // const DEFAULT_OPTIONS = [[], [], []]
+    const tokens = Object.keys(BRIDGE__TOKENS).map((symbol) => {
+      const token = BRIDGE__TOKENS[symbol]
+      return {
+        symbol,
+        // logo: Tokens[symbol][token.sourceChains[0]].logo,
+      }
+    })
+
+    const inputChains = BRIDGE__TOKENS[tokens[0].symbol].sourceChains
+    const outputChains = BRIDGE__TOKENS[tokens[0].symbol].destinationChains
+    return [tokens, inputChains, outputChains]
+  }, [])
+
+  console.log({ inputTokenOption, inputChainOptions, outputChainOptions })
+
   useEffect(() => {
     setAmountOut1(collateralAmount)
-    setAmountOut2(deusValue)
   }, [collateralAmount, deusValue])
 
   const deiAmount = useMemo(() => {
@@ -230,18 +249,21 @@ export default function Bridge() {
         </Hero>
         <MainWrap>
           <Wrapper>
-            <Tableau title={'Bridge'} imgSrc={selectedToken.name === 'DEI' ? DEI_BACKGROUND : DEUS_BACKGROUND} />
+            <Tableau title={'Bridge'} imgSrc={tokenIn.name === 'DEI' ? DEI_BACKGROUND : DEUS_BACKGROUND} />
 
             <BridgeWrapper>
               <TokensBox
                 title={'Select token to bridge'}
                 tokens={[DEUS_TOKEN, DEI_TOKEN]}
-                selectedToken={selectedToken}
-                onTokenSelect={setSelectedToken}
+                selectedToken={tokenIn}
+                onTokenSelect={(token: Token) => {
+                  setTokenIn(token)
+                  setTokenOut(token)
+                }}
               />
               <Separator />
               <InputBox
-                currency={deiCurrency}
+                currency={tokenIn}
                 value={amountIn}
                 onChange={(value: string) => setAmountIn(value)}
                 disabled={expiredPrice}
@@ -250,10 +272,11 @@ export default function Bridge() {
               <ArrowDown />
 
               <InputBox
-                currency={usdcCurrency}
+                currency={tokenOut}
                 value={amountOut1}
                 onChange={(value: string) => console.log(value)}
                 disabled={true}
+                onTokenSelect={() => console.log('on token select')}
               />
               <div style={{ marginTop: '20px' }}></div>
               {getActionButton()}
@@ -274,12 +297,12 @@ export default function Bridge() {
         inputTokens={[DEI_TOKEN]}
         outputTokens={[USDC_TOKEN, DEUS_TOKEN]}
         amountsIn={[amountIn]}
-        amountsOut={[amountOut1, amountOut2]}
+        amountsOut={[amountOut1]}
         info={info}
         data={''}
         buttonText={'Confirm Redeem'}
         awaiting={awaitingRedeemConfirmation}
-        summary={`Redeeming ${amountIn} DEI to ${amountOut1} USDC and ${amountOut2} DEUS`}
+        summary={`Redeeming ${amountIn} DEI to ${amountOut1} USDC and DEUS`}
         handleClick={handleRedeem}
       />
     </>
