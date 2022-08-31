@@ -8,7 +8,7 @@ import { Row, RowCenter, RowBetween, RowEnd } from 'components/Row'
 export const Container = styled(Row)`
   flex-flow: column nowrap;
   overflow: visible;
-  margin: 0 auto;
+  /* margin: 0 auto; */
 `
 
 export const Wrapper = styled(Container)`

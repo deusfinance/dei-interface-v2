@@ -54,7 +54,7 @@ const TitleWrap = styled.div<{ DeiActive?: boolean; DeusActive?: boolean }>`
   font-weight: 600;
   font-size: 20px;
 
-  ${({ DeiActive }) =>
+  /* ${({ DeiActive }) =>
     DeiActive &&
     `
     background: -webkit-linear-gradient(1deg, #e29d52, #de4a7b 55%);
@@ -67,7 +67,7 @@ const TitleWrap = styled.div<{ DeiActive?: boolean; DeusActive?: boolean }>`
     background: -webkit-linear-gradient(90deg, #0badf4 0%, #30efe4 93.4%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-  `};
+  `}; */
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
     font-size: 16px;

@@ -6,12 +6,12 @@ interface TokenMap {
   [chainId: number]: Array<Token[]>
 }
 
-// export interface IBridgeToken {
-//   symbol: string
-//   tokenId: number
-//   sourceChains: SupportedChainId[]
-//   destinationChains: SupportedChainId[]
-// }
+export interface IBridgeToken {
+  symbol: string
+  tokenId: number
+  sourceChains: SupportedChainId[]
+  destinationChains: SupportedChainId[]
+}
 
 /* =====================================
                   MINT
@@ -61,22 +61,22 @@ export const REDEEM__OUTPUTS: TokenMap = {
 /* =====================================
                   BRIDGE
 ===================================== */
-// export const TokenID: { [id: string]: string } = {
-//   '0': 'DEI',
-//   '1': 'DEUS',
-// }
+export const TokenID: { [id: string]: string } = {
+  '0': 'DEI',
+  '1': 'DEUS',
+}
 
-// export const BRIDGE__TOKENS: { [symbol: string]: IBridgeToken } = {
-//   [Tokens.DEI[SupportedChainId.MAINNET].symbol]: {
-//     symbol: Tokens.DEI[SupportedChainId.MAINNET].symbol,
-//     tokenId: 0,
-//     sourceChains: [SupportedChainId.POLYGON, SupportedChainId.FANTOM, SupportedChainId.MAINNET],
-//     destinationChains: [SupportedChainId.POLYGON, SupportedChainId.FANTOM, SupportedChainId.MAINNET],
-//   },
-//   [Tokens.DEUS[SupportedChainId.MAINNET].symbol]: {
-//     symbol: Tokens.DEUS[SupportedChainId.MAINNET].symbol,
-//     tokenId: 1,
-//     sourceChains: [SupportedChainId.POLYGON, SupportedChainId.FANTOM, SupportedChainId.MAINNET],
-//     destinationChains: [SupportedChainId.POLYGON, SupportedChainId.FANTOM, SupportedChainId.MAINNET],
-//   },
-// }
+export const BRIDGE__TOKENS: { [symbol: string]: IBridgeToken } = {
+  [Tokens.DEI[SupportedChainId.MAINNET].symbol]: {
+    symbol: Tokens.DEI[SupportedChainId.MAINNET].symbol,
+    tokenId: 0,
+    sourceChains: [SupportedChainId.POLYGON, SupportedChainId.FANTOM, SupportedChainId.MAINNET],
+    destinationChains: [SupportedChainId.POLYGON, SupportedChainId.FANTOM, SupportedChainId.MAINNET],
+  },
+  [Tokens.DEUS[SupportedChainId.MAINNET].symbol]: {
+    symbol: Tokens.DEUS[SupportedChainId.MAINNET].symbol,
+    tokenId: 1,
+    sourceChains: [SupportedChainId.POLYGON, SupportedChainId.FANTOM, SupportedChainId.MAINNET],
+    destinationChains: [SupportedChainId.POLYGON, SupportedChainId.FANTOM, SupportedChainId.MAINNET],
+  },
+}
