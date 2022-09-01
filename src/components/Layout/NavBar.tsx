@@ -125,9 +125,7 @@ const Items = styled.div`
   `};
 `
 
-const NavLink = styled.div<{
-  active: boolean
-}>`
+const NavLink = styled.div<{ active: boolean }>`
   font-size: 1rem;
   padding: 0.25rem 1rem;
   text-align: center;
@@ -140,7 +138,7 @@ const NavLink = styled.div<{
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     font-weight: 600;
-`};
+  `};
 
   &:hover {
     cursor: default;

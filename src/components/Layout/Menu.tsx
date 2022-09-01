@@ -1,13 +1,17 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useCallback } from 'react'
 import { useRouter } from 'next/router'
 import styled from 'styled-components'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Z_INDEX } from 'theme'
 
+import { sendEvent } from 'components/analytics'
 import LEGACY_DEI_LOGO from '/public/static/images/LegacyDeiLogo.svg'
 import { Link as LinkIcon } from 'components/Icons'
 import useOnOutsideClick from 'hooks/useOnOutsideClick'
+
+// import MENU_NEW from '/public/static/images/ic_menu_new.svg'
+import DOT_NEW from '/public/static/images/ic_dot_new.svg'
 
 import {
   NavToggle as NavToggleIcon,
@@ -21,6 +25,7 @@ import {
 } from 'components/Icons'
 import { Card } from 'components/Card'
 import { ExternalLink } from 'components/Link'
+import useDebounce from 'hooks/useDebounce'
 
 const Container = styled.div`
   overflow: hidden;
@@ -29,9 +34,7 @@ const Container = styled.div`
   align-items: flex-end;
 `
 
-const InlineModal = styled(Card)<{
-  isOpen: boolean
-}>`
+const InlineModal = styled(Card)<{ isOpen: boolean }>`
   display: ${(props) => (props.isOpen ? 'flex' : 'none')};
   position: absolute;
   width: 220px;
@@ -43,9 +46,7 @@ const InlineModal = styled(Card)<{
   border-radius: 10px;
 `
 
-const Row = styled.div<{
-  active?: boolean
-}>`
+const Row = styled.div<{ active?: boolean }>`
   display: flex;
   flex-flow: row nowrap;
   justify-content: space-between;
@@ -55,10 +56,14 @@ const Row = styled.div<{
     color: ${({ theme }) => theme.text1};
   }
 
-  ${({ active, theme }) =>
+  ${({ active }) =>
     active &&
-    ` color: ${theme.darkPink};
-      pointer-events: none;
+    ` 
+    background: -webkit-linear-gradient(1deg, #e29d52, #de4a7b 30%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 600;
+    pointer-events: none;
   `};
 `
 
@@ -86,7 +91,16 @@ export default function Menu() {
   const [isOpen, setIsOpen] = useState(false)
   const router = useRouter()
 
-  const toggle = () => setIsOpen((prev) => !prev)
+  const [showNewDot, setShowNewDot] = useState(localStorage.getItem('Redeem_is_new') === 'seen' ? false : true)
+  const [clicked, setClicked] = useState(false)
+  const debouncedClicked = useDebounce(clicked, 5000)
+
+  const toggle = useCallback(() => {
+    setIsOpen((prev) => !prev)
+    localStorage.setItem('Redeem_is_new', 'seen')
+    setClicked(true)
+    sendEvent('click', { click_type: 'close_notification', click_action: 'Redeem_is_new' })
+  }, [])
   useOnOutsideClick(ref, () => setIsOpen(false))
 
   return (
@@ -115,7 +129,7 @@ export default function Menu() {
 
           <Link href="/redemption" passHref>
             <Row active={router.route === '/redemption'}>
-              <div>Redeem</div>
+              <div>Redeem {showNewDot && !debouncedClicked && <Image src={DOT_NEW} alt="dot-icon" />}</div>
               <IconWrapper>
                 <RedeemIcon size={20} />
               </IconWrapper>
