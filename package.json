@@ -1,6 +1,6 @@
 {
   "name": "dei-interface-v2",
-  "description": "DEI Money Markets",
+  "description": "DEI stablecoin",
   "version": "1.0.0",
   "license": "GPL-3.0-or-later",
   "dependencies": {
