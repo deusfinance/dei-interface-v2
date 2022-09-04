@@ -84,7 +84,7 @@ function colors(themeName: SupportedThemes): Colors {
       border3: 'rgba(99, 126, 161, 0.2)',
 
       //specialty colors
-      specialBG1: 'linear-gradient(90deg, #ffb56c 0%, #ff538f 100%)',
+      specialBG1: 'linear-gradient(90deg, #E0974C 0%, #C93F6F 100%)',
       specialBG2:
         'linear-gradient(90deg, rgba(81, 171, 255, 0.1) 0%, rgba(22, 72, 250, 0.1) 100%), linear-gradient(0deg, #FFFFFF, #FFFFFF)',
 
@@ -95,7 +95,7 @@ function colors(themeName: SupportedThemes): Colors {
       primary4: 'linear-gradient(92.33deg, #DE4A7B -10.26%, #E29D52 80%)',
       primary5: 'linear-gradient(92.33deg, #8f3e5c -10.26%, #a97d4d 80%)',
       primary6: 'linear-gradient(-90deg, #B63562 10%, #CF8D49 90%)',
-      primary7: 'linear-gradient(90deg, #B63562 10%, #CF8D49 90%)',
+      primary7: 'linear-gradient(90deg, #C93F6F 10%, #E0974C 100%)',
 
       // color text
       primaryText1: '#FFB463',
@@ -124,6 +124,7 @@ function colors(themeName: SupportedThemes): Colors {
       deiColor: 'linear-gradient(90deg, #E0974C 0%, #C93F6F 100%);',
       fantomColor: '#13B5EC',
       polygonColor: '#A676F6',
+      ethereumColor: '#E8B8FF',
     },
     [SupportedThemes.DARK]: {
       themeName: SupportedThemes.DARK,
@@ -162,7 +163,7 @@ function colors(themeName: SupportedThemes): Colors {
       primary4: 'linear-gradient(92.33deg, #DE4A7B -10.26%, #E29D52 80%)',
       primary5: 'linear-gradient(-92.33deg, #421D2D -10.26%, #493625 80%)',
       primary6: 'linear-gradient(-90deg, #B63562 10%, #CF8D49 90%)',
-      primary7: 'linear-gradient(90deg, #ff538f 10%, #ffb56c 90%)',
+      primary7: 'linear-gradient(90deg, #C93F6F 10%, #E0974C 100%)',
       // color text
       primaryText1: '#1749FA',
 
@@ -191,6 +192,7 @@ function colors(themeName: SupportedThemes): Colors {
       deiColor: 'linear-gradient(90deg, #E0974C 0%, #C93F6F 100%);',
       fantomColor: '#13B5EC',
       polygonColor: '#A676F6',
+      ethereumColor: '#E8B8FF',
     },
   }
   // default the theme to light mode

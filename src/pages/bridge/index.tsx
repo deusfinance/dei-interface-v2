@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react'
 import styled from 'styled-components'
-import { ArrowDown } from 'react-feather'
+import { ArrowDown as ArrowDownIcon } from 'react-feather'
 import Image from 'next/image'
 
 import BRIDGE_LOGO from '/public/static/images/pages/bridge/ic_bridge.svg'
@@ -8,18 +8,13 @@ import MUON_LOGO from '/public/static/images/pages/bridge/muon_logo.svg'
 import DEI_BACKGROUND from '/public/static/images/pages/bridge/ic_bridge_dei.svg'
 import DEUS_BACKGROUND from '/public/static/images/pages/bridge/ic_bridge_deus.svg'
 
-import { DEI_TOKEN, DEUS_TOKEN, USDC_TOKEN } from 'constants/tokens'
+import { DEI_TOKEN, DEUS_TOKEN, Tokens, USDC_TOKEN } from 'constants/tokens'
+import { SupportedChainId } from 'constants/chains'
 import { tryParseAmount } from 'utils/parse'
 import { getTimeLength } from 'utils/time'
 
 import { useCurrencyBalance } from 'state/wallet/hooks'
-import {
-  useRedemptionFee,
-  useRedeemPaused,
-  useExpiredPrice,
-  useCollateralCollectionDelay,
-  useDeusCollectionDelay,
-} from 'state/dei/hooks'
+import { useRedeemPaused, useExpiredPrice, useCollateralCollectionDelay, useDeusCollectionDelay } from 'state/dei/hooks'
 import useWeb3React from 'hooks/useWeb3'
 import useRedemptionCallback from 'hooks/useRedemptionCallback'
 import { useGetCollateralRatios, useRedeemAmountOut } from 'hooks/useRedemptionPage'
@@ -37,6 +32,7 @@ import TokensBox from 'components/App/Bridge/TokensBox'
 import { Token } from '@sushiswap/core-sdk'
 import { Info } from 'components/Icons'
 import { BRIDGE__TOKENS } from 'constants/inputs'
+import ChainsModal from 'components/App/Bridge/ChainsModal'
 
 const MainWrap = styled(RowCenter)`
   align-items: flex-start;
@@ -97,19 +93,32 @@ const Separator = styled.div`
   background: ${({ theme }) => theme.bg4};
 `
 
+const ArrowDown = styled(ArrowDownIcon)`
+  cursor: pointer;
+  border-radius: 30px;
+  &:hover {
+    background: ${({ theme }) => theme.bg3};
+    transform: rotate(180deg);
+  }
+`
+
 export default function Bridge() {
   const { chainId, account } = useWeb3React()
   const [amountIn, setAmountIn] = useState('')
-  const redemptionFee = useRedemptionFee()
   const redeemPaused = useRedeemPaused()
+
+  const [sourceChainId, setSourceChainId] = useState<SupportedChainId | null | undefined>(chainId)
+  const [destinationChainId, setDestinationChainId] = useState<SupportedChainId | null>(null)
+  const [selectedChain, setSelectedChain] = useState<SupportedChainId | null>(null)
   // const debouncedAmountIn = useDebounce(amountIn, 500)
   const deiCurrency = DEI_TOKEN
-  const usdcCurrency = USDC_TOKEN
-  const deusCurrency = DEUS_TOKEN
   const deiCurrencyBalance = useCurrencyBalance(account ?? undefined, deiCurrency)
   const [isOpenReviewModal, toggleReviewModal] = useState(false)
+  const [isOpenChainsModal, toggleChainsModal] = useState(false)
+  const [selectedTokenInputBox, setSelectedTokenInputBox] = useState<string | null>(null)
   const [amountOut1, setAmountOut1] = useState('')
 
+  const [tokenSymbol, setTokenSymbol] = useState<string>('DEI')
   const [tokenIn, setTokenIn] = useState<Token>(DEUS_TOKEN)
   const [tokenOut, setTokenOut] = useState<Token>(DEUS_TOKEN)
 
@@ -128,12 +137,28 @@ export default function Bridge() {
       }
     })
 
-    const inputChains = BRIDGE__TOKENS[tokens[0].symbol].sourceChains
-    const outputChains = BRIDGE__TOKENS[tokens[0].symbol].destinationChains
+    const inputChains = BRIDGE__TOKENS[tokens[0].symbol].sourceChains.sort()
+    const outputChains = BRIDGE__TOKENS[tokens[0].symbol].destinationChains.sort()
     return [tokens, inputChains, outputChains]
   }, [])
 
-  console.log({ inputTokenOption, inputChainOptions, outputChainOptions })
+  useEffect(() => {
+    if (tokenSymbol != '' && chainId && sourceChainId) {
+      const pickSourceChainId = inputChainOptions.includes(sourceChainId) ? sourceChainId : inputChainOptions[0]
+      const filterDestinationOptions = outputChainOptions.filter((chainId) => chainId != pickSourceChainId)
+      const pickDestinationChainId = destinationChainId
+        ? filterDestinationOptions.includes(destinationChainId)
+          ? destinationChainId
+          : filterDestinationOptions[0]
+        : filterDestinationOptions[0]
+
+      setSourceChainId(pickSourceChainId)
+      setDestinationChainId(pickDestinationChainId)
+
+      setTokenIn(Tokens[tokenSymbol ?? 'DEI'][pickSourceChainId])
+      setTokenOut(Tokens[tokenSymbol ?? 'DEI'][destinationChainId ?? pickDestinationChainId])
+    }
+  }, [tokenSymbol, inputChainOptions, outputChainOptions, sourceChainId, destinationChainId, chainId])
 
   useEffect(() => {
     setAmountOut1(collateralAmount)
@@ -158,8 +183,12 @@ export default function Bridge() {
 
   const { mintCollateralRatio, redeemCollateralRatio } = useGetCollateralRatios()
 
-  const [awaitingRedeemConfirmation, setAwaitingRedeemConfirmation] = useState<boolean>(false)
-  const [awaitingUpdateConfirmation, setAwaitingUpdateConfirmation] = useState<boolean>(false)
+  const [awaitingRedeemConfirmation, setAwaitingRedeemConfirmation] = useState(false)
+  const [awaitingUpdateConfirmation, setAwaitingUpdateConfirmation] = useState(false)
+
+  useEffect(() => {
+    if (!isOpenChainsModal) setSelectedTokenInputBox(null)
+  }, [isOpenChainsModal])
 
   const handleUpdatePrice = useCallback(async () => {
     if (!updateOracleCallback) return
@@ -237,6 +266,22 @@ export default function Bridge() {
     ]
   }, [collateralCollectionDelay, deusCollectionDelay])
 
+  function onTokenSelect(source: string) {
+    if (source === 'tokenIn') setSelectedChain(tokenIn.chainId)
+    else if (source === 'tokenOut') setSelectedChain(tokenOut.chainId)
+    toggleChainsModal(true)
+    setSelectedTokenInputBox(source)
+  }
+
+  function chainModalHandleClick(chainId: SupportedChainId) {
+    if (selectedTokenInputBox === 'tokenIn') setSourceChainId(chainId)
+    else if (selectedTokenInputBox === 'tokenOut') setDestinationChainId(chainId)
+
+    setSelectedTokenInputBox(null)
+    setSelectedChain(null)
+    toggleChainsModal(false)
+  }
+
   return (
     <>
       <Container>
@@ -257,8 +302,7 @@ export default function Bridge() {
                 tokens={[DEUS_TOKEN, DEI_TOKEN]}
                 selectedToken={tokenIn}
                 onTokenSelect={(token: Token) => {
-                  setTokenIn(token)
-                  setTokenOut(token)
+                  setTokenSymbol(token.name ?? 'DEI')
                 }}
               />
               <Separator />
@@ -267,16 +311,25 @@ export default function Bridge() {
                 value={amountIn}
                 onChange={(value: string) => setAmountIn(value)}
                 disabled={expiredPrice}
-                onTokenSelect={() => console.log('on token select')}
+                onTokenSelect={() => onTokenSelect('tokenIn')}
               />
-              <ArrowDown />
+              <ArrowDown
+                onClick={() => {
+                  const token = tokenIn
+                  const tokenInChainId = sourceChainId
+                  setTokenIn(tokenOut)
+                  setSourceChainId(destinationChainId)
+                  setTokenOut(token)
+                  setDestinationChainId(tokenInChainId ?? null)
+                }}
+              />
 
               <InputBox
                 currency={tokenOut}
                 value={amountOut1}
                 onChange={(value: string) => console.log(value)}
                 disabled={true}
-                onTokenSelect={() => console.log('on token select')}
+                onTokenSelect={() => onTokenSelect('tokenOut')}
               />
               <div style={{ marginTop: '20px' }}></div>
               {getActionButton()}
@@ -290,8 +343,18 @@ export default function Bridge() {
         </MainWrap>
       </Container>
 
+      <ChainsModal
+        title="Select Chain"
+        chains={inputChainOptions}
+        isOpen={isOpenChainsModal}
+        selectedChain={selectedChain}
+        toggleModal={(action: boolean) => toggleChainsModal(action)}
+        awaiting={awaitingRedeemConfirmation}
+        handleClick={chainModalHandleClick}
+      />
+
       <DefaultReviewModal
-        title="Review Redeem Transaction"
+        title="Review Bridge Transaction"
         isOpen={isOpenReviewModal}
         toggleModal={(action: boolean) => toggleReviewModal(action)}
         inputTokens={[DEI_TOKEN]}
@@ -300,9 +363,9 @@ export default function Bridge() {
         amountsOut={[amountOut1]}
         info={info}
         data={''}
-        buttonText={'Confirm Redeem'}
+        buttonText={'Confirm Bridge'}
         awaiting={awaitingRedeemConfirmation}
-        summary={`Redeeming ${amountIn} DEI to ${amountOut1} USDC and DEUS`}
+        summary={`Bridging ${amountIn} DEI to ${amountOut1} USDC and DEUS`}
         handleClick={handleRedeem}
       />
     </>

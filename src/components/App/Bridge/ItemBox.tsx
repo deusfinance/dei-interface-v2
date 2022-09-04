@@ -6,9 +6,11 @@ import useCurrencyLogo from 'hooks/useCurrencyLogo'
 import ImageWithFallback from 'components/ImageWithFallback'
 import { RowCenter } from 'components/Row'
 
-const Wrapper = styled(RowCenter)<{ DeusActive?: boolean }>`
+const Wrapper = styled(RowCenter)<{ DeusActive?: boolean; DeiActive?: boolean; disabled?: boolean }>`
   width: 100%;
-  background: ${({ theme, DeusActive }) => (DeusActive ? theme.deusColor : theme.deiColor)};
+  background: ${({ theme, DeusActive }) => DeusActive && theme.deusColor};
+  background: ${({ theme, DeiActive }) => DeiActive && theme.deiColor};
+  background: ${({ theme, disabled }) => !disabled && theme.bg2};
   padding: 1px;
   height: 100%;
 `
@@ -42,7 +44,12 @@ export default function ItemBox({
   }
 
   return (
-    <Wrapper DeusActive={token.name?.includes('DEUS')} onClick={() => onTokenSelect(token)}>
+    <Wrapper
+      DeusActive={token.name?.includes('DEUS')}
+      DeiActive={token.name?.includes('DEI')}
+      disabled={active}
+      onClick={() => onTokenSelect(token)}
+    >
       <ItemWrap active={active}>
         <ImageWithFallback
           src={logo}
