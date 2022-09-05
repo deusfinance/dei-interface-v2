@@ -8,8 +8,9 @@ import { AppState, useAppSelector } from 'state'
 import { BorrowPool, BorrowState } from './reducer'
 import { useCurrency } from 'hooks/useCurrency'
 import { constructPercentage } from 'utils/prices'
-import { DEI_TOKEN } from 'constants/borrow'
+// import { DEI_TOKEN } from 'constants/borrow'
 import { LenderVersion } from 'state/bridge/reducer'
+import { DEI_TOKEN } from 'constants/tokens'
 
 export function useBorrowState(): BorrowState {
   return useAppSelector((state: AppState) => state.borrow)

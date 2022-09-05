@@ -1,161 +1,98 @@
-import { useEffect, useMemo } from 'react'
-import { formatUnits } from '@ethersproject/units'
-import { useAppDispatch } from 'state'
+// import useWeb3React from './useWeb3'
+// import { BRIDGE_ADDRESS } from 'constants/addresses'
 
-import { useSingleContractMultipleMethods } from 'state/multicall/hooks'
-import { updateMintCollateralRatio, updateRedeemCollateralRatio } from 'state/dei/reducer'
-import { useCollateralPoolContract, useStrategyContract } from 'hooks/useContract'
-import { DEI_TOKEN, DEUS_TOKEN, USDC_TOKEN } from 'constants/tokens'
-import { BN_TEN, toBN } from 'utils/numbers'
-import useWeb3React from './useWeb3'
-import useDebounce from './useDebounce'
+interface IClaim {
+  amount: string
+  fromChain: string
+  toChain: string
+  tokenId: string
+  txId: string
+  user: string
+}
 
-export function useRedeemAmountOut(amountIn: string): {
-  collateralAmount: string
-  deusValue: string
-} {
-  const amountInBN = amountIn ? toBN(amountIn).times(BN_TEN.pow(DEI_TOKEN.decimals)).toFixed(0) : ''
-  const contract = useCollateralPoolContract()
-
-  const amountOutCall = useMemo(
-    () =>
-      !amountInBN || amountInBN == '' || amountInBN == '0'
-        ? []
-        : [
-            {
-              methodName: 'collateralAndDeusValueForRedeeming',
-              callInputs: [amountInBN],
-            },
-          ],
-    [amountInBN]
-  )
-
-  const [mintAmountOuts] = useSingleContractMultipleMethods(contract, amountOutCall)
-
-  const collateralAmount =
-    !mintAmountOuts || !mintAmountOuts.result
-      ? ''
-      : toBN(formatUnits(mintAmountOuts.result[0].toString(), USDC_TOKEN.decimals)).toString()
-  const deusValue =
-    !mintAmountOuts || !mintAmountOuts.result
-      ? ''
-      : toBN(formatUnits(mintAmountOuts.result[1].toString(), DEUS_TOKEN.decimals)).toString()
-
-  return {
-    collateralAmount,
-    deusValue,
+export function getClaimTokens(): IClaim[] {
+  // const { chainId, account } = useWeb3React()
+  const claim: IClaim = {
+    amount: '1000',
+    fromChain: '1',
+    toChain: '2',
+    tokenId: '0',
+    txId: '0',
+    user: '1',
   }
-}
-
-export function useGetPoolData() {
-  const contract = useCollateralPoolContract()
-  const { account } = useWeb3React()
-
-  const call = useMemo(
-    () =>
-      !account
-        ? []
-        : [
-            {
-              methodName: 'getAllPositions',
-              callInputs: [account],
-            },
-            {
-              methodName: 'getUnRedeemedPositions',
-              callInputs: [account],
-            },
-            {
-              methodName: 'nextRedeemId',
-              callInputs: [account],
-            },
-            {
-              methodName: 'redeemCollateralBalances',
-              callInputs: [account],
-            },
-          ],
-    [account]
-  )
-
-  const [allPositions, unRedeemedPositions, nextRedeemId, redeemCollateralBalances] = useSingleContractMultipleMethods(
-    contract,
-    call
-  )
-  const isLoading = useDebounce(
-    allPositions?.loading || nextRedeemId?.loading || redeemCollateralBalances?.loading || unRedeemedPositions?.loading,
-    500
-  )
-
-  const allPositionsRes = !allPositions || !allPositions.result ? '' : allPositions.result[0]
-
-  const unRedeemedPositionsRes =
-    !unRedeemedPositions || !unRedeemedPositions.result ? '' : unRedeemedPositions.result[0]
-
-  const nextRedeemIdRes = !nextRedeemId || !nextRedeemId.result ? '' : nextRedeemId.result[0].toString()
-
-  const redeemCollateralBalancesRes =
-    !redeemCollateralBalances || !redeemCollateralBalances.result
-      ? ''
-      : toBN(formatUnits(redeemCollateralBalances?.result[0].toString(), USDC_TOKEN.decimals)).toString()
-
-  return {
-    allPositions: allPositionsRes,
-    unRedeemedPositions: unRedeemedPositionsRes,
-    nextRedeemId: nextRedeemIdRes,
-    redeemCollateralBalances: redeemCollateralBalancesRes,
-    isLoading,
-  }
-}
-
-export function useGetStrategyAddress(): string {
-  const contract = useCollateralPoolContract()
-
-  const call = useMemo(
-    () => [
-      {
-        methodName: 'strategy',
-        callInputs: [],
-      },
-    ],
-    []
-  )
-
-  const [strategyAddressRes] = useSingleContractMultipleMethods(contract, call)
-
-  return !strategyAddressRes || !strategyAddressRes.result ? '' : strategyAddressRes.result[0].toString()
-}
-
-export function useGetCollateralRatios() {
-  const address = useGetStrategyAddress()
-  const contract = useStrategyContract(address)
-  const dispatch = useAppDispatch()
-
-  const call = useMemo(
-    () => [
-      {
-        methodName: 'mintCollateralRatio',
-        callInputs: [],
-      },
-      {
-        methodName: 'redeemCollateralRatio',
-        callInputs: [],
-      },
-    ],
-    []
-  )
-  const [mintCollateralRatio, redeemCollateralRatio] = useSingleContractMultipleMethods(contract, call)
-
-  const mintCollateralRatioRes =
-    !mintCollateralRatio || !mintCollateralRatio.result ? '' : formatUnits(mintCollateralRatio.result[0]?.toString(), 4)
-  const redeemCollateralRatioRes =
-    !redeemCollateralRatio || !redeemCollateralRatio.result
-      ? ''
-      : formatUnits(redeemCollateralRatio.result[0]?.toString(), 4)
-
-  //TODO: move it to redux later
-  useEffect(() => {
-    dispatch(updateMintCollateralRatio(mintCollateralRatioRes))
-    dispatch(updateRedeemCollateralRatio(redeemCollateralRatioRes))
-  }, [dispatch, mintCollateralRatioRes, redeemCollateralRatioRes])
-
-  return { mintCollateralRatio: mintCollateralRatioRes, redeemCollateralRatio: redeemCollateralRatioRes }
+  const claims = [claim]
+  //   const networks = []
+  //   for (let index = 0; index < networks.length; index++) {
+  //     const chainId = networks[index]
+  //     const dest = networks.filter((network) => network !== chainId)
+  //     const userTxs = []
+  //     const userTxsResponse = []
+  //     const pendingClaimTxs = []
+  //     let currentBlockNo = 0
+  //     try {
+  //       currentBlockNo = await web3s[chainId].eth.getBlockNumber()
+  //     } catch (error) {
+  //       console.log('getBlockNumber error', error)
+  //     }
+  //     for (let i = 0; i < dest.length; i++) {
+  //       const destChainId = dest[i]
+  //       const userTx = {
+  //         address: BRIDGE_ADDRESS[chainId],
+  //         name: 'getUserTxs',
+  //         params: [account, destChainId],
+  //       }
+  //       userTxs.push(userTx)
+  //     }
+  //     try {
+  //       const mul = await multicall(web3s[chainId], BridgeABI, userTxs, chainId)
+  //       userTxsResponse = mul
+  //       // console.log("userTxsResponse", userTxsResponse);
+  //     } catch (error) {
+  //       console.log('getUserTxs failed with chainId', chainId, error)
+  //     }
+  //     for (let i = 0; i < dest.length; i++) {
+  //       const destChainId = dest[i]
+  //       try {
+  //         const pendingTx = await getBridgeContract(web3s[destChainId], destChainId)
+  //           .methods.pendingTxs(
+  //             chainId,
+  //             userTxsResponse[i][0].map((resp) => resp.toString())
+  //           )
+  //           .call()
+  //         const pendingTxs = pendingTx.reduce(
+  //           (out, bool, index) => (bool ? out : out.concat(userTxsResponse[i][0][index])),
+  //           []
+  //         )
+  //         pendingClaimTxs = [...pendingClaimTxs, ...pendingTxs]
+  //       } catch (error) {
+  //         console.log('pendingTxs failed with chainId', destChainId, error)
+  //       }
+  //     }
+  //     const Txs = []
+  //     for (let k = 0; k < pendingClaimTxs.length; k++) {
+  //       const tx = {
+  //         address: BRIDGE_ADDRESS[chainId],
+  //         name: 'getTransaction',
+  //         params: [pendingClaimTxs[k]],
+  //       }
+  //       Txs.push(tx)
+  //     }
+  //     try {
+  //       const mul = await multicall(web3s[chainId], BridgeABI, Txs, chainId)
+  //       let mulWithClaimBlock = []
+  //       forEach(mul, (res, index) => {
+  //         mulWithClaimBlock.push({
+  //           ...res,
+  //           remainingBlock: Number(res.txBlockNo) + blockTimes[chainId] - Number(currentBlockNo),
+  //         })
+  //         // console.log(res.txBlockNo.toString(), currentBlockNo, blockTimes[chainId]);
+  //         // console.log(Number(res.txBlockNo) + blockTimes[chainId] - Number(currentBlockNo));
+  //       })
+  //       // console.log("Txs = ", mul);
+  //       claims = [...claims, ...mulWithClaimBlock]
+  //     } catch (error) {
+  //       console.log('Txs failed chainId ', chainId, error)
+  //     }
+  //   }
+  return claims
 }

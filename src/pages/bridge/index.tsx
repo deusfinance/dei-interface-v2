@@ -16,7 +16,7 @@ import { useCurrencyBalance } from 'state/wallet/hooks'
 import { useRedeemPaused, useExpiredPrice, useCollateralCollectionDelay, useDeusCollectionDelay } from 'state/dei/hooks'
 import useWeb3React from 'hooks/useWeb3'
 import useBridgeCallback from 'hooks/useBridgeCallback'
-import { useGetCollateralRatios, useRedeemAmountOut } from 'hooks/useBridgePage'
+import { useGetCollateralRatios, useRedeemAmountOut } from 'hooks/useRedemptionPage'
 import useUpdateCallback from 'hooks/useOracleCallback'
 
 import Hero from 'components/Hero'
@@ -32,8 +32,8 @@ import { Token } from '@sushiswap/core-sdk'
 import { Info } from 'components/Icons'
 import { BRIDGE__TOKENS } from 'constants/inputs'
 import ChainsModal from 'components/App/Bridge/ChainsModal'
-import { BridgeClient } from 'lib/muon'
-import { BRIDGE_ADDRESS } from 'constants/addresses'
+// import { BridgeClient } from 'lib/muon'
+// import { BRIDGE_ADDRESS } from 'constants/addresses'
 
 const MainWrap = styled(RowCenter)`
   align-items: flex-start;
