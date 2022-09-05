@@ -21,8 +21,8 @@ import {
   useDeusCollectionDelay,
 } from 'state/dei/hooks'
 import useWeb3React from 'hooks/useWeb3'
-import useRedemptionCallback from 'hooks/useRedemptionCallback'
-import { useGetCollateralRatios, useRedeemAmountOut } from 'hooks/useRedemptionPage'
+import useBridgeCallback from 'hooks/useBridgeCallback'
+import { useGetCollateralRatios, useRedeemAmountOut } from 'hooks/useBridgePage'
 import useUpdateCallback from 'hooks/useOracleCallback'
 
 import Hero from 'components/Hero'
@@ -37,6 +37,8 @@ import TokensBox from 'components/App/Bridge/TokensBox'
 import { Token } from '@sushiswap/core-sdk'
 import { Info } from 'components/Icons'
 import { BRIDGE__TOKENS } from 'constants/inputs'
+import { BridgeClient } from 'lib/muon'
+import { BRIDGE_ADDRESS } from 'constants/addresses'
 
 const MainWrap = styled(RowCenter)`
   align-items: flex-start;
@@ -154,12 +156,19 @@ export default function Bridge() {
     state: redeemCallbackState,
     callback: redeemCallback,
     error: redeemCallbackError,
-  } = useRedemptionCallback(deiAmount)
+  } = useBridgeCallback(deiAmount)
 
   const { mintCollateralRatio, redeemCollateralRatio } = useGetCollateralRatios()
 
-  const [awaitingRedeemConfirmation, setAwaitingRedeemConfirmation] = useState<boolean>(false)
-  const [awaitingUpdateConfirmation, setAwaitingUpdateConfirmation] = useState<boolean>(false)
+  // const claim = {
+  //   depositAddress: BRIDGE_ADDRESS[250],
+  //   depositTxId: '2',
+  //   depositNetwork: 250,
+  // }
+  // console.log(BridgeClient.getClaimData(claim))
+
+  const [awaitingRedeemConfirmation, setAwaitingRedeemConfirmation] = useState(false)
+  const [awaitingUpdateConfirmation, setAwaitingUpdateConfirmation] = useState(false)
 
   const handleUpdatePrice = useCallback(async () => {
     if (!updateOracleCallback) return

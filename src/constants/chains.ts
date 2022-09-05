@@ -18,6 +18,8 @@ export enum SupportedChainId {
   OKEX_TESTNET = 65,
   OKEX = 66,
 
+  METIS = 1088,
+
   HECO = 128,
   HECO_TESTNET = 256,
 
