@@ -25,7 +25,6 @@ import { useGetPoolData } from 'hooks/useRedemptionPage'
 
 import { Card } from 'components/Card'
 import { Row, RowCenter } from 'components/Row'
-import UpdateModal from 'components/ReviewModal/UpdateModal'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import { TokenBox } from './TokenBox'
 
@@ -138,13 +137,7 @@ export interface IToken {
   chainId: number
 }
 
-export default function RedeemClaim({
-  redeemCollateralRatio,
-  handleUpdatePrice,
-}: {
-  redeemCollateralRatio: string
-  handleUpdatePrice: () => void
-}) {
+export default function RedeemClaim() {
   const {
     allPositions,
     unRedeemedPositions,
@@ -197,14 +190,7 @@ export default function RedeemClaim({
       })
       setUnClaimed((current) => [...current, ...deusTokens])
     }
-  }, [
-    deusPrice,
-    deusRedemptionDelay,
-    nextRedeemId,
-    redeemCollateralBalances,
-    redeemCollateralRatio,
-    unRedeemedPositions,
-  ])
+  }, [deusPrice, deusRedemptionDelay, nextRedeemId, redeemCollateralBalances, unRedeemedPositions])
 
   // const [unClaimedCollateral, setUnClaimedCollateral] = useState<IToken>()
   // useEffect(() => {
@@ -355,17 +341,6 @@ export default function RedeemClaim({
           )}
         </InfoWrap>
       </ActionWrap>
-
-      <UpdateModal
-        title="Update Oracle"
-        isOpen={isOpenUpdateOracleModal}
-        buttonText={'Update Oracle'}
-        toggleModal={(action: boolean) => toggleUpdateOracleModal(action)}
-        handleClick={() => {
-          toggleUpdateOracleModal(false)
-          handleUpdatePrice()
-        }}
-      />
     </>
   )
 }

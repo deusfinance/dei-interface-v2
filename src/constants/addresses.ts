@@ -143,7 +143,7 @@ export const TwapOracle: AddressMap = {
   [SupportedChainId.FANTOM]: '0x733570cB9e76fD5293c028e124FC9F0a2234F07c',
 }
 
-export const BRIDGE_ADDRESS = {
+export const BRIDGE_ADDRESS: AddressMap = {
   [SupportedChainId.MAINNET]: '0x7aB4C5738e39E613186AFFD4c50DbfDFF6c22065',
   [SupportedChainId.FANTOM]: '0x7aB4C5738e39E613186AFFD4c50DbfDFF6c22065',
   [SupportedChainId.BSC]: '0x70A4c35eABFa973B27Cb3d489e154DB6d9A24ebD',

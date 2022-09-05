@@ -81,7 +81,7 @@ export const LogoWrapper = styled(RowCenter)<{ active?: any }>`
   width: 80px;
   border-radius: 12px 0px 0px 12px;
   &:hover {
-    background: ${({ theme }) => theme.text3};
+    background: ${({ theme }) => theme.bg4};
   }
 
   cursor: ${({ active }) => active && 'pointer'};
@@ -190,7 +190,7 @@ export default function InputBox({
           alt={`${currency?.symbol} Logo`}
           round
         />
-        {onTokenSelect ? <ChevronDown /> : null}
+        {onTokenSelect ? <ChevronDown disabled /> : null}
       </LogoWrapper>
 
       <RightWrapper>

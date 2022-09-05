@@ -13,20 +13,19 @@ import { SupportedChainId } from 'constants/chains'
 import { tryParseAmount } from 'utils/parse'
 
 import { useCurrencyBalance } from 'state/wallet/hooks'
-import { useRedeemPaused, useExpiredPrice, useCollateralCollectionDelay, useDeusCollectionDelay } from 'state/dei/hooks'
 import useWeb3React from 'hooks/useWeb3'
-import useBridgeCallback from 'hooks/useBridgeCallback'
-import { useGetCollateralRatios, useRedeemAmountOut } from 'hooks/useRedemptionPage'
-import useUpdateCallback from 'hooks/useOracleCallback'
+import useDepositCallback from 'hooks/useBridgeCallback'
+// import { useRedeemAmountOut } from 'hooks/useRedemptionPage'
+import { ChainInfo } from 'constants/chainInfo'
 
 import Hero from 'components/Hero'
 import { Row, RowCenter } from 'components/Row'
 import InputBox from 'components/App/Bridge/InputBox'
 import DefaultReviewModal from 'components/App/Bridge/TransactionReviewModal'
-import { Container, InputWrapper, Wrapper, MainButton, ConnectWallet, GradientButton } from 'components/App/StableCoin'
+import { Container, InputWrapper, Wrapper, MainButton, ConnectWallet } from 'components/App/StableCoin'
 import Tableau from 'components/App/StableCoin/Tableau'
 import Claim from 'components/App/Bridge/Claim'
-import usePoolStats from 'components/App/StableCoin/PoolStats'
+// import usePoolStats from 'components/App/StableCoin/PoolStats'
 import TokensBox from 'components/App/Bridge/TokensBox'
 import { Token } from '@sushiswap/core-sdk'
 import { Info } from 'components/Icons'
@@ -107,32 +106,28 @@ const ArrowDown = styled(ArrowDownIcon)`
 export default function Bridge() {
   const { chainId, account } = useWeb3React()
   const [amountIn, setAmountIn] = useState('')
-  const redeemPaused = useRedeemPaused()
+  const bridgePaused = false // useRedeemPaused()
 
   const [sourceChainId, setSourceChainId] = useState<SupportedChainId | null | undefined>(chainId)
   const [destinationChainId, setDestinationChainId] = useState<SupportedChainId | null>(null)
   const [selectedChain, setSelectedChain] = useState<SupportedChainId | null>(null)
   // const debouncedAmountIn = useDebounce(amountIn, 500)
-  const deiCurrency = DEI_TOKEN
-  const deiCurrencyBalance = useCurrencyBalance(account ?? undefined, deiCurrency)
   const [isOpenReviewModal, toggleReviewModal] = useState(false)
   const [isOpenChainsModal, toggleChainsModal] = useState(false)
   const [selectedTokenInputBox, setSelectedTokenInputBox] = useState<string | null>(null)
-  const [amountOut, setAmountOut] = useState('')
+  // const [amountOut, setAmountOut] = useState('')
 
   const [tokenSymbol, setTokenSymbol] = useState<string>('DEI')
   const [tokenIn, setTokenIn] = useState<Token>(DEUS_TOKEN)
   const [tokenOut, setTokenOut] = useState<Token>(DEUS_TOKEN)
 
-  const expiredPrice = useExpiredPrice()
-
-  const { collateralAmount, deusValue } = useRedeemAmountOut(amountIn)
+  const inputCurrencyBalance = useCurrencyBalance(account ?? undefined, tokenIn)
 
   // Define dropdown options
   const [inputTokenOption, inputChainOptions, outputChainOptions] = useMemo(() => {
     // const DEFAULT_OPTIONS = [[], [], []]
     const tokens = Object.keys(BRIDGE__TOKENS).map((symbol) => {
-      const token = BRIDGE__TOKENS[symbol]
+      // const token = BRIDGE__TOKENS[symbol]
       return {
         symbol,
         // logo: Tokens[symbol][token.sourceChains[0]].logo,
@@ -162,31 +157,22 @@ export default function Bridge() {
     }
   }, [tokenSymbol, inputChainOptions, outputChainOptions, sourceChainId, destinationChainId, chainId])
 
-  useEffect(() => {
-    setAmountOut(collateralAmount)
-  }, [collateralAmount, deusValue])
-
-  const deiAmount = useMemo(() => {
-    return tryParseAmount(amountIn, deiCurrency || undefined)
-  }, [amountIn, deiCurrency])
+  const inputAmount = useMemo(() => {
+    return tryParseAmount(amountIn, tokenIn || undefined)
+  }, [amountIn, tokenIn])
 
   const insufficientBalance = useMemo(() => {
-    if (!deiAmount) return false
-    return deiCurrencyBalance?.lessThan(deiAmount)
-  }, [deiCurrencyBalance, deiAmount])
-
-  const { callback: updateOracleCallback } = useUpdateCallback()
+    if (!inputAmount) return false
+    return inputCurrencyBalance?.lessThan(inputAmount)
+  }, [inputCurrencyBalance, inputAmount])
 
   const {
-    state: redeemCallbackState,
-    callback: redeemCallback,
-    error: redeemCallbackError,
-  } = useBridgeCallback(deiAmount)
+    state: depositCallbackState,
+    callback: depositCallback,
+    error: depositCallbackError,
+  } = useDepositCallback(inputAmount, tokenOut)
 
-  const { mintCollateralRatio, redeemCollateralRatio } = useGetCollateralRatios()
-
-  const [awaitingRedeemConfirmation, setAwaitingRedeemConfirmation] = useState(false)
-  const [awaitingUpdateConfirmation, setAwaitingUpdateConfirmation] = useState(false)
+  const [awaitingDepositConfirmation, setAwaitingBridgeConfirmation] = useState(false)
 
   useEffect(() => {
     if (!isOpenChainsModal) setSelectedTokenInputBox(null)
@@ -199,56 +185,36 @@ export default function Bridge() {
   // }
   // console.log(BridgeClient.getClaimData(claim))
 
-  const handleUpdatePrice = useCallback(async () => {
-    if (!updateOracleCallback) return
+  const handleDeposit = useCallback(async () => {
+    console.log('called handleDeposit')
+    console.log(depositCallbackState, depositCallbackError)
+    if (!depositCallback) return
     try {
-      setAwaitingUpdateConfirmation(true)
-      const txHash = await updateOracleCallback()
-      console.log({ txHash })
-      // toggleUpdateOracleModal(false)
-      setAwaitingUpdateConfirmation(false)
-    } catch (e) {
-      setAwaitingUpdateConfirmation(false)
-      if (e instanceof Error) {
-        console.error(e)
-      } else {
-        console.error(e)
-      }
-    }
-  }, [updateOracleCallback])
-
-  const handleRedeem = useCallback(async () => {
-    console.log('called handleRedeem')
-    console.log(redeemCallbackState, redeemCallbackError)
-    if (!redeemCallback) return
-    try {
-      setAwaitingRedeemConfirmation(true)
-      const txHash = await redeemCallback()
-      setAwaitingRedeemConfirmation(false)
+      setAwaitingBridgeConfirmation(true)
+      const txHash = await depositCallback()
+      setAwaitingBridgeConfirmation(false)
       console.log({ txHash })
       toggleReviewModal(false)
       setAmountIn('')
     } catch (e) {
-      setAwaitingRedeemConfirmation(false)
+      setAwaitingBridgeConfirmation(false)
       if (e instanceof Error) {
         console.error(e)
       } else {
         console.error(e)
       }
     }
-  }, [redeemCallbackState, redeemCallback, redeemCallbackError])
+  }, [depositCallbackState, depositCallback, depositCallbackError])
 
   function getActionButton(): JSX.Element | null {
     if (!chainId || !account) {
       return <ConnectWallet />
-    } else if (redeemPaused) {
-      return <MainButton disabled>Redeem Paused</MainButton>
-    } else if (awaitingUpdateConfirmation) {
-      return <GradientButton title={'Updating Oracle'} awaiting />
-    } else if (expiredPrice) {
-      return <GradientButton onClick={handleUpdatePrice} title={'Update Oracle'} />
-    } else if (insufficientBalance) {
-      return <MainButton disabled>Insufficient {deiCurrency?.symbol} Balance</MainButton>
+    }
+    if (bridgePaused) {
+      return <MainButton disabled>Bridge Paused</MainButton>
+    }
+    if (insufficientBalance) {
+      return <MainButton disabled>Insufficient {tokenIn?.symbol} Balance</MainButton>
     }
     return (
       <MainButton
@@ -256,25 +222,19 @@ export default function Bridge() {
           if (amountIn && amountIn !== '0' && amountIn !== '' && amountIn !== '0.') toggleReviewModal(true)
         }}
       >
-        Redeem DEI
+        Bridge DEI
       </MainButton>
     )
   }
-  const items = usePoolStats()
-
-  const collateralCollectionDelay = useCollateralCollectionDelay()
-  const deusCollectionDelay = useDeusCollectionDelay()
+  // const items = usePoolStats()
 
   const info = useMemo(() => {
     return [
-      {
-        title: 'Max Slippage',
-        value: '0.1%',
-      },
-      { title: 'Txn Deadline', value: '20 min' },
-      { title: 'Network Fee', value: '0.001 FTM' },
+      // { title: 'Max Slippage', value: '0.1%' },
+      // { title: 'Txn Deadline', value: '20 min' },
+      // { title: 'Network Fee', value: '0.001 FTM' },
     ]
-  }, [collateralCollectionDelay, deusCollectionDelay])
+  }, [])
 
   function onTokenSelect(source: string) {
     if (source === 'tokenIn') setSelectedChain(tokenIn.chainId)
@@ -320,7 +280,6 @@ export default function Bridge() {
                 currency={tokenIn}
                 value={amountIn}
                 onChange={(value: string) => setAmountIn(value)}
-                disabled={expiredPrice}
                 onTokenSelect={() => onTokenSelect('tokenIn')}
               />
               <ArrowDown
@@ -336,9 +295,9 @@ export default function Bridge() {
 
               <InputBox
                 currency={tokenOut}
-                value={amountOut}
+                value={amountIn} // TODO: No fee?
                 onChange={(value: string) => console.log(value)}
-                disabled={true}
+                disabled
                 onTokenSelect={() => onTokenSelect('tokenOut')}
               />
               <div style={{ marginTop: '20px' }}></div>
@@ -349,7 +308,7 @@ export default function Bridge() {
               <BridgeInfo>{'Approve > Deposit > Switch Network > Claim Token'}</BridgeInfo>
             </BottomWrap>
           </Wrapper>
-          <Claim redeemCollateralRatio={redeemCollateralRatio} handleUpdatePrice={handleUpdatePrice} />
+          <Claim />
         </MainWrap>
       </Container>
 
@@ -369,13 +328,15 @@ export default function Bridge() {
         inputTokens={[tokenIn]}
         outputTokens={[tokenOut]}
         amountsIn={[amountIn]}
-        amountsOut={[amountOut]}
+        amountsOut={[amountIn]}
         info={info}
         data={''}
         buttonText={'Confirm Bridge'}
-        awaiting={awaitingRedeemConfirmation}
-        summary={`Bridging ${amountIn} DEI to ${amountOut} USDC and DEUS`}
-        handleClick={handleRedeem}
+        awaiting={awaitingDepositConfirmation}
+        summary={`Bridging ${amountIn} ${tokenIn?.symbol} from ${ChainInfo[tokenIn?.chainId].label} to ${
+          ChainInfo[tokenOut?.chainId].label
+        }`}
+        handleClick={handleDeposit}
       />
     </>
   )

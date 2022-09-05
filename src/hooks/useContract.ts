@@ -17,6 +17,7 @@ import PROXY_MINTER_ABI from 'constants/abi/PROXY_MINTER_ABI.json'
 import TWAP_ORACLE_ABI from 'constants/abi/TWAP_ORACLE.json'
 import ORACLE_ABI from 'constants/abi/ORACLE_ABI.json'
 import DEIStrategy from 'constants/abi/DEIStrategy.json'
+import BRIDGE_ABI from 'constants/abi/BRIDGE_ABI.json'
 
 import { Providers } from 'constants/providers'
 import {
@@ -28,6 +29,7 @@ import {
   CollateralPool,
   MintProxy,
   TwapOracle,
+  BRIDGE_ADDRESS,
 } from 'constants/addresses'
 
 export function useContract<T extends Contract = Contract>(
@@ -144,4 +146,10 @@ export function useTwapOracleContract() {
   const { chainId } = useWeb3React()
   const address = useMemo(() => (chainId ? TwapOracle[chainId] : undefined), [chainId])
   return useContract(address, TWAP_ORACLE_ABI)
+}
+
+export function useBridgeContract() {
+  const { chainId } = useWeb3React()
+  const address = useMemo(() => (chainId ? BRIDGE_ADDRESS[chainId] : undefined), [chainId])
+  return useContract(address, BRIDGE_ABI)
 }
