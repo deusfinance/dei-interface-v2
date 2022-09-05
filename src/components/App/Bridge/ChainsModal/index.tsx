@@ -5,7 +5,6 @@ import ChainBox from './ChainBox'
 import { ModalHeader, Modal } from 'components/Modal'
 import Column from 'components/Column'
 import { RowBetween, RowCenter } from 'components/Row'
-import LottieDei from 'components/Icons/LottieDei'
 import { SupportedChainId } from 'constants/chains'
 
 const MainModal = styled(Modal)`
@@ -31,31 +30,6 @@ const Wrapper = styled.div`
   padding: 1.5rem 0;
   overflow-y: scroll;
   height: auto;
-`
-
-const AwaitingWrapper = styled.div`
-  display: flex;
-  flex-flow: column nowrap;
-  justify-content: center;
-  padding: 1.5rem 0;
-`
-
-const LottieWrap = styled.div`
-  margin-bottom: 30px;
-`
-
-const SummaryWrap = styled.div`
-  font-size: 13px;
-  color: ${({ theme }) => theme.text2};
-  margin: 20px auto;
-  max-width: 350px;
-  text-align: center;
-`
-
-const ConfirmWrap = styled(SummaryWrap)`
-  font-size: 14px;
-  margin: 0;
-  margin-top: 20px;
 `
 
 const TokenResultWrapper = styled(Column)`
@@ -85,12 +59,6 @@ const NotActiveWrapper = styled(RowBetween).attrs({
   `}
 `
 
-const SeparatorLight = styled.div`
-  height: 2px;
-  background: ${({ theme }) => theme.bg2};
-  margin-top: 30px;
-`
-
 export default function ChainsModal({
   title,
   chains,
@@ -98,7 +66,6 @@ export default function ChainsModal({
   selectedChain,
   toggleModal,
   handleClick,
-  awaiting,
 }: {
   title: string
   chains: SupportedChainId[]
@@ -106,45 +73,30 @@ export default function ChainsModal({
   selectedChain: SupportedChainId | null
   toggleModal: (action: boolean) => void
   handleClick: (chainId: SupportedChainId) => void
-  awaiting: boolean
 }) {
   return (
     <MainModal isOpen={isOpen} onBackgroundClick={() => toggleModal(false)} onEscapeKeydown={() => toggleModal(false)}>
-      <ModalHeader onClose={() => toggleModal(false)} title={awaiting ? 'Confirmation' : title} border={false} />
-      {awaiting ? (
-        <AwaitingWrapper>
-          <LottieWrap>
-            <LottieDei />
-          </LottieWrap>
-
-          <SeparatorLight />
-
-          <RowCenter>
-            <ConfirmWrap>Confirm this transaction in your wallet</ConfirmWrap>
-          </RowCenter>
-        </AwaitingWrapper>
-      ) : (
-        <Wrapper>
-          <TokenResultWrapper>
-            {chains.length ? (
-              chains.map((chain, index) => {
-                return (
-                  <ChainBox
-                    key={index}
-                    chainId={chain}
-                    handleClick={handleClick}
-                    disabled={selectedChain ? chain === selectedChain : undefined}
-                  />
-                )
-              })
-            ) : (
-              <NotActiveWrapper>
-                <Text>No Active Chain</Text>
-              </NotActiveWrapper>
-            )}
-          </TokenResultWrapper>
-        </Wrapper>
-      )}
+      <ModalHeader onClose={() => toggleModal(false)} title={title} border={true} />
+      <Wrapper>
+        <TokenResultWrapper>
+          {chains.length ? (
+            chains.map((chain, index) => {
+              return (
+                <ChainBox
+                  key={index}
+                  chainId={chain}
+                  handleClick={handleClick}
+                  disabled={selectedChain ? chain === selectedChain : undefined}
+                />
+              )
+            })
+          ) : (
+            <NotActiveWrapper>
+              <Text>No Active Chain</Text>
+            </NotActiveWrapper>
+          )}
+        </TokenResultWrapper>
+      </Wrapper>
     </MainModal>
   )
 }

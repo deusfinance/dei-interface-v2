@@ -10,7 +10,7 @@ const Wrapper = styled(RowCenter)<{ DeusActive?: boolean; DeiActive?: boolean; d
   width: 100%;
   background: ${({ theme, DeusActive }) => DeusActive && theme.deusColor};
   background: ${({ theme, DeiActive }) => DeiActive && theme.deiColor};
-  background: ${({ theme, disabled }) => !disabled && theme.bg2};
+  background: ${({ theme, disabled }) => !disabled && theme.bg3};
   padding: 1px;
   height: 100%;
 `

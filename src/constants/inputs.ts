@@ -7,7 +7,6 @@ interface TokenMap {
 }
 
 export interface IBridgeToken {
-  symbol: string
   tokenId: number
   sourceChains: SupportedChainId[]
   destinationChains: SupportedChainId[]
@@ -65,16 +64,18 @@ export const TokenID: { [id: string]: string } = {
   '0': 'DEI',
   '1': 'DEUS',
 }
+// export enum TokenID {
+//   DEI = 0,
+//   DEUS = 1,
+// }
 
 export const BRIDGE__TOKENS: { [symbol: string]: IBridgeToken } = {
-  [Tokens.DEI[SupportedChainId.MAINNET].symbol]: {
-    symbol: Tokens.DEI[SupportedChainId.MAINNET].symbol,
+  ['DEI']: {
     tokenId: 0,
     sourceChains: [SupportedChainId.POLYGON, SupportedChainId.FANTOM, SupportedChainId.MAINNET],
     destinationChains: [SupportedChainId.POLYGON, SupportedChainId.FANTOM, SupportedChainId.MAINNET],
   },
-  [Tokens.DEUS[SupportedChainId.MAINNET].symbol]: {
-    symbol: Tokens.DEUS[SupportedChainId.MAINNET].symbol,
+  ['DEUS']: {
     tokenId: 1,
     sourceChains: [SupportedChainId.POLYGON, SupportedChainId.FANTOM, SupportedChainId.MAINNET],
     destinationChains: [SupportedChainId.POLYGON, SupportedChainId.FANTOM, SupportedChainId.MAINNET],

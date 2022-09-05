@@ -9,7 +9,6 @@ import MAINNET_LOGO from '/public/static/images/networks/mainnet.svg'
 import ImageWithFallback from 'components/ImageWithFallback'
 import { Row, RowCenter } from 'components/Row'
 import { SupportedChainId } from 'constants/chains'
-import { lighten } from 'polished'
 
 const Wrapper = styled(Row)<{ disabled?: boolean }>`
   background: ${({ theme }) => theme.bg2};

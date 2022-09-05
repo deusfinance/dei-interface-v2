@@ -8,10 +8,9 @@ import MUON_LOGO from '/public/static/images/pages/bridge/muon_logo.svg'
 import DEI_BACKGROUND from '/public/static/images/pages/bridge/ic_bridge_dei.svg'
 import DEUS_BACKGROUND from '/public/static/images/pages/bridge/ic_bridge_deus.svg'
 
-import { DEI_TOKEN, DEUS_TOKEN, Tokens, USDC_TOKEN } from 'constants/tokens'
+import { DEI_TOKEN, DEUS_TOKEN, Tokens } from 'constants/tokens'
 import { SupportedChainId } from 'constants/chains'
 import { tryParseAmount } from 'utils/parse'
-import { getTimeLength } from 'utils/time'
 
 import { useCurrencyBalance } from 'state/wallet/hooks'
 import { useRedeemPaused, useExpiredPrice, useCollateralCollectionDelay, useDeusCollectionDelay } from 'state/dei/hooks'
@@ -23,7 +22,7 @@ import useUpdateCallback from 'hooks/useOracleCallback'
 import Hero from 'components/Hero'
 import { Row, RowCenter } from 'components/Row'
 import InputBox from 'components/App/Bridge/InputBox'
-import DefaultReviewModal from 'components/ReviewModal/DefaultReviewModal'
+import DefaultReviewModal from 'components/App/Bridge/TransactionReviewModal'
 import { Container, InputWrapper, Wrapper, MainButton, ConnectWallet, GradientButton } from 'components/App/StableCoin'
 import Tableau from 'components/App/StableCoin/Tableau'
 import Claim from 'components/App/Bridge/Claim'
@@ -59,11 +58,12 @@ const BridgeWrapper = styled(InputWrapper)`
 
 const BottomWrap = styled(Row)`
   width: 100%;
+  height: 48px;
   font-size: 12px;
   align-items: center;
-  padding-left: 12px;
-  margin-bottom: 15px;
+  padding: 0px 20px;
   color: ${({ theme }) => theme.text2};
+  background: ${({ theme }) => theme.bg1};
 `
 
 const BridgeInfo = styled.div`
@@ -116,7 +116,7 @@ export default function Bridge() {
   const [isOpenReviewModal, toggleReviewModal] = useState(false)
   const [isOpenChainsModal, toggleChainsModal] = useState(false)
   const [selectedTokenInputBox, setSelectedTokenInputBox] = useState<string | null>(null)
-  const [amountOut1, setAmountOut1] = useState('')
+  const [amountOut, setAmountOut] = useState('')
 
   const [tokenSymbol, setTokenSymbol] = useState<string>('DEI')
   const [tokenIn, setTokenIn] = useState<Token>(DEUS_TOKEN)
@@ -161,7 +161,7 @@ export default function Bridge() {
   }, [tokenSymbol, inputChainOptions, outputChainOptions, sourceChainId, destinationChainId, chainId])
 
   useEffect(() => {
-    setAmountOut1(collateralAmount)
+    setAmountOut(collateralAmount)
   }, [collateralAmount, deusValue])
 
   const deiAmount = useMemo(() => {
@@ -259,10 +259,11 @@ export default function Bridge() {
   const info = useMemo(() => {
     return [
       {
-        title: 'USDC claimable time',
-        value: getTimeLength(collateralCollectionDelay * 1000).fullLength ?? '30 sec',
+        title: 'Max Slippage',
+        value: '0.1%',
       },
-      { title: 'DEUS claimable time', value: getTimeLength(deusCollectionDelay * 1000).fullLength ?? '30 min' },
+      { title: 'Txn Deadline', value: '20 min' },
+      { title: 'Network Fee', value: '0.001 FTM' },
     ]
   }, [collateralCollectionDelay, deusCollectionDelay])
 
@@ -326,7 +327,7 @@ export default function Bridge() {
 
               <InputBox
                 currency={tokenOut}
-                value={amountOut1}
+                value={amountOut}
                 onChange={(value: string) => console.log(value)}
                 disabled={true}
                 onTokenSelect={() => onTokenSelect('tokenOut')}
@@ -336,7 +337,7 @@ export default function Bridge() {
             </BridgeWrapper>
             <BottomWrap>
               <Info size={16} />
-              <BridgeInfo>{'Approve > Deposit to bridge > Switch network > Claim Token'}</BridgeInfo>
+              <BridgeInfo>{'Approve > Deposit > Switch Network > Claim Token'}</BridgeInfo>
             </BottomWrap>
           </Wrapper>
           <Claim redeemCollateralRatio={redeemCollateralRatio} handleUpdatePrice={handleUpdatePrice} />
@@ -349,7 +350,6 @@ export default function Bridge() {
         isOpen={isOpenChainsModal}
         selectedChain={selectedChain}
         toggleModal={(action: boolean) => toggleChainsModal(action)}
-        awaiting={awaitingRedeemConfirmation}
         handleClick={chainModalHandleClick}
       />
 
@@ -357,15 +357,15 @@ export default function Bridge() {
         title="Review Bridge Transaction"
         isOpen={isOpenReviewModal}
         toggleModal={(action: boolean) => toggleReviewModal(action)}
-        inputTokens={[DEI_TOKEN]}
-        outputTokens={[USDC_TOKEN, DEUS_TOKEN]}
+        inputTokens={[tokenIn]}
+        outputTokens={[tokenOut]}
         amountsIn={[amountIn]}
-        amountsOut={[amountOut1]}
+        amountsOut={[amountOut]}
         info={info}
         data={''}
         buttonText={'Confirm Bridge'}
         awaiting={awaitingRedeemConfirmation}
-        summary={`Bridging ${amountIn} DEI to ${amountOut1} USDC and DEUS`}
+        summary={`Bridging ${amountIn} DEI to ${amountOut} USDC and DEUS`}
         handleClick={handleRedeem}
       />
     </>
