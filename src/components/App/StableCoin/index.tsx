@@ -8,14 +8,13 @@ import { Row, RowCenter, RowBetween, RowEnd } from 'components/Row'
 export const Container = styled(Row)`
   flex-flow: column nowrap;
   overflow: visible;
-  /* margin: 0 auto; */
 `
 
 export const Wrapper = styled(Container)`
   margin-top: 28px;
   width: clamp(250px, 90%, 500px);
   background: ${({ theme }) => theme.bg0};
-  /* border: 1px solid ${({ theme }) => theme.bg0}; */
+
   border-radius: 15px;
   overflow: hidden;
 `

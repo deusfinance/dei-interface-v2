@@ -107,9 +107,7 @@ export const TokenBox = ({
               <TokenName type={symbol ?? 'DEUS'}>{symbol}</TokenName>
             </AutoRow>
             <SubAmount>
-              <NetworkText network={token.chainId === SupportedChainId.FANTOM}>
-                {SupportedChainId[token.chainId]}
-              </NetworkText>
+              <NetworkText chainId={token.chainId}>{SupportedChainId[token.chainId]}</NetworkText>
             </SubAmount>
           </Column>
         </RowStart>
