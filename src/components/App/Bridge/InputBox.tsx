@@ -1,10 +1,13 @@
 import React, { useCallback, useMemo } from 'react'
 import styled from 'styled-components'
-import { Currency, Token } from '@sushiswap/core-sdk'
+import { Currency } from '@sushiswap/core-sdk'
 import { isMobile } from 'react-device-detect'
 
+import FTM_LOGO from '/public/static/images/tokens/ftm.svg'
+import POLYGON_LOGO from '/public/static/images/tokens/polygon.svg'
+import MAINNET_LOGO from '/public/static/images/networks/mainnet.svg'
+
 import { useCurrencyBalance } from 'state/wallet/hooks'
-import useCurrencyLogo from 'hooks/useCurrencyLogo'
 import useWeb3React from 'hooks/useWeb3'
 import { maxAmountSpend } from 'utils/currency'
 
@@ -75,8 +78,12 @@ export const RightWrapper = styled.div`
 
 export const LogoWrapper = styled(RowCenter)<{ active?: any }>`
   height: 100%;
-  /* padding-left: 10px; */
   width: 80px;
+  border-radius: 12px 0px 0px 12px;
+  &:hover {
+    background: ${({ theme }) => theme.text3};
+  }
+
   cursor: ${({ active }) => active && 'pointer'};
 `
 
@@ -125,13 +132,12 @@ const Balance = styled(RowWrap)<{ disabled?: boolean }>`
   }
 `
 
-export const NetworkText = styled.div<{ network?: boolean }>`
+export const NetworkText = styled.div<{ chainId: number }>`
   font-weight: 400;
   font-size: 10px;
-
   margin-left: 5px;
   margin-top: 2px;
-  color: ${({ theme, network }) => (network ? theme.fantomColor : theme.polygonColor)};
+  color: ${({ theme, chainId }) => chainId && theme.ChainId[chainId]};
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
     font-size: 8px;
@@ -140,7 +146,7 @@ export const NetworkText = styled.div<{ network?: boolean }>`
 `
 
 export const getImageSize = () => {
-  return isMobile ? 35 : 38
+  return isMobile ? 28 : 32
 }
 
 export default function InputBox({
@@ -157,10 +163,13 @@ export default function InputBox({
   disabled?: boolean
 }) {
   const { account } = useWeb3React()
-
-  // TODO: change token logo to network logo
-  const logo = useCurrencyLogo((currency as Token)?.address)
   const currencyBalance = useCurrencyBalance(account ?? undefined, currency ?? undefined)
+
+  const chainsLogo: { [chainId: number]: any } = {
+    [SupportedChainId.FANTOM]: FTM_LOGO,
+    [SupportedChainId.POLYGON]: POLYGON_LOGO,
+    [SupportedChainId.MAINNET]: MAINNET_LOGO,
+  }
 
   const [balanceExact, balanceDisplay] = useMemo(() => {
     return [maxAmountSpend(currencyBalance)?.toExact(), currencyBalance?.toSignificant(6)]
@@ -175,7 +184,7 @@ export default function InputBox({
     <Wrapper>
       <LogoWrapper onClick={onTokenSelect ? () => onTokenSelect() : undefined} active={onTokenSelect ? true : false}>
         <ImageWithFallback
-          src={logo}
+          src={chainsLogo[currency.chainId]}
           width={getImageSize()}
           height={getImageSize()}
           alt={`${currency?.symbol} Logo`}
@@ -191,9 +200,7 @@ export default function InputBox({
             active={onTokenSelect ? true : false}
           >
             {currency?.symbol}
-            <NetworkText network={currency.chainId === SupportedChainId.FANTOM}>
-              ({SupportedChainId[currency.chainId]})
-            </NetworkText>
+            <NetworkText chainId={currency.chainId}>({SupportedChainId[currency.chainId]})</NetworkText>
           </CurrencySymbol>
           <Balance disabled={disabled} onClick={handleClick}>
             balance: {balanceDisplay ? balanceDisplay : '0.00'}
