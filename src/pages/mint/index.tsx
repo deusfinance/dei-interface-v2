@@ -40,6 +40,7 @@ import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
 import TokensModal from 'components/App/StableCoin/TokensModal'
 import usePoolStats from 'components/App/StableCoin/PoolStats'
+import WarningModal from 'components/ReviewModal/Warning'
 
 const PlusIcon = styled(Plus)`
   z-index: 1000;
@@ -108,6 +109,7 @@ export default function Mint() {
   const [inputTokenIndex, setInputTokenIndex] = useState<number>(fullCollateralIndex)
   const [hasPair, setHasPair] = useState(!!inputTokenIndex)
   const [isOpenReviewModal, toggleReviewModal] = useState(false)
+  const [isOpenWarningModal, toggleWarningModal] = useState(false)
 
   const expiredPrice = useExpiredPrice()
 
@@ -230,6 +232,8 @@ export default function Mint() {
       onUserInput1('')
     } catch (e) {
       setAwaitingMintConfirmation(false)
+      toggleWarningModal(true)
+      toggleReviewModal(false)
       if (e instanceof Error) {
         console.error(e)
       } else {
@@ -368,6 +372,12 @@ export default function Mint() {
           setToken={setInputTokenIndex}
         />
       </Container>
+
+      <WarningModal
+        isOpen={isOpenWarningModal}
+        toggleModal={(action: boolean) => toggleWarningModal(action)}
+        summary={['Transaction rejected', `Minting ${amountOut} DEI by ${amountIn1} USDC`]}
+      />
 
       <DefaultReviewModal
         title="Review Mint Transaction"

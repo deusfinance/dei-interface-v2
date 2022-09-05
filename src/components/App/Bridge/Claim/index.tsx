@@ -13,7 +13,7 @@ import IC_CLAIM_LOADING_MOBILE from '/public/static/images/pages/bridge/ic_claim
 import IC_CLAIM_NOT_CONNECTED_MOBILE from '/public/static/images/pages/bridge/ic_claim_not_connected_mobile.svg'
 
 import { DEUS_TOKEN } from 'constants/tokens'
-import { SupportedChainId } from 'constants/chains'
+// import { SupportedChainId } from 'constants/chains'
 import { BN_TEN, toBN } from 'utils/numbers'
 
 import { useCollateralCollectionDelay, useDeusCollectionDelay, useExpiredPrice } from 'state/dei/hooks'
@@ -50,18 +50,14 @@ export const ClaimBox = styled.div`
   display: flex;
   flex-flow: column nowrap;
   flex: 1;
+  max-height: 380px;
+  overflow: scroll;
 `
 
 const DeusBox = styled.div`
-  background: ${({ theme }) => theme.bg2};
-  border-radius: 12px;
-  border: 1px solid ${({ theme }) => theme.border3};
-`
-
-const UsdcBox = styled.div`
-  margin-bottom: 12px;
-  border-radius: 12px;
-  border: 1px solid ${({ theme }) => theme.border3};
+  /* background: ${({ theme }) => theme.bg2}; */
+  /* border-radius: 12px; */
+  /* border: 1px solid ${({ theme }) => theme.border3}; */
 `
 
 export const BottomRow = styled(Row)`
@@ -88,6 +84,7 @@ const InfoWrap = styled.div`
   border-bottom-right-radius: 12px;
   border-bottom-left-radius: 12px;
   width: 100%;
+  z-index: 1;
 `
 
 const TitleWrap = styled(RowCenter)`
@@ -127,6 +124,8 @@ const NoTokens = styled.div`
   padding: 25px 0;
 `
 
+const BottomInfo = styled.div``
+
 interface IPositions {
   usdAmount: string
   timestamp: string
@@ -136,7 +135,7 @@ export interface IToken {
   index: number
   claimableBlock: number
   amount: number
-  usdAmount?: number
+  chainId: number
 }
 
 export default function RedeemClaim({
@@ -193,7 +192,7 @@ export default function RedeemClaim({
           index,
           claimableBlock,
           amount: Number(deusAmount),
-          usdAmount: Number(usdAmount),
+          chainId: index % 2 === 0 ? 250 : 137,
         }
       })
       setUnClaimed((current) => [...current, ...deusTokens])
@@ -207,20 +206,20 @@ export default function RedeemClaim({
     unRedeemedPositions,
   ])
 
-  const [unClaimedCollateral, setUnClaimedCollateral] = useState<IToken>()
-  useEffect(() => {
-    setUnClaimedCollateral(undefined)
-    if (redeemCollateralBalances && redeemCollateralBalances !== '0') {
-      const lastRedeemTimestamp = allPositions[allPositions.length - 1].timestamp
-      const usdcToken: IToken = {
-        symbol: 'USDC',
-        index: 0,
-        claimableBlock: 5 + Number(lastRedeemTimestamp) + collateralRedemptionDelay,
-        amount: redeemCollateralBalances,
-      }
-      setUnClaimedCollateral(usdcToken)
-    }
-  }, [allPositions, collateralRedemptionDelay, redeemCollateralBalances])
+  // const [unClaimedCollateral, setUnClaimedCollateral] = useState<IToken>()
+  // useEffect(() => {
+  //   setUnClaimedCollateral(undefined)
+  //   if (redeemCollateralBalances && redeemCollateralBalances !== '0') {
+  //     const lastRedeemTimestamp = allPositions[allPositions.length - 1].timestamp
+  //     const usdcToken: IToken = {
+  //       symbol: 'USDC',
+  //       index: 0,
+  //       claimableBlock: 5 + Number(lastRedeemTimestamp) + collateralRedemptionDelay,
+  //       amount: redeemCollateralBalances,
+  //     }
+  //     setUnClaimedCollateral(usdcToken)
+  //   }
+  // }, [allPositions, collateralRedemptionDelay, redeemCollateralBalances])
 
   const [pendingTokens, setPendingTokens] = useState<IToken[]>([])
   const [readyCount, setReadyCount] = useState(0)
@@ -231,15 +230,11 @@ export default function RedeemClaim({
         return token.claimableBlock > currentBlock
       })
     )
-    let rc = unClaimed.length - pendingTokens.length
-    let pc = pendingTokens.length
-    if (unClaimedCollateral) {
-      if (unClaimedCollateral.claimableBlock > currentBlock) pc++
-      else rc++
-    }
+    const rc = unClaimed.length - pendingTokens.length
+    const pc = pendingTokens.length
     setReadyCount(rc)
     setPendingCount(pc)
-  }, [currentBlock, pendingTokens.length, unClaimed, unClaimedCollateral])
+  }, [currentBlock, pendingTokens.length, unClaimed])
 
   const {
     state: CollectCollateralCallbackState,
@@ -322,16 +317,6 @@ export default function RedeemClaim({
           </ClaimBox>
         ) : (
           <ClaimBox>
-            {unClaimedCollateral && (
-              <UsdcBox>
-                <TokenBox
-                  token={unClaimedCollateral}
-                  currentBlock={currentBlock}
-                  onSwitchNetwork={() => onSwitchNetwork(SupportedChainId.FANTOM)}
-                  onClaim={() => handleClaim(unClaimedCollateral)}
-                />
-              </UsdcBox>
-            )}
             <DeusBox>
               {unClaimed.map((token: IToken, index: number) => {
                 return (
@@ -339,10 +324,8 @@ export default function RedeemClaim({
                     key={index}
                     token={token}
                     currentBlock={currentBlock}
-                    onSwitchNetwork={() => onSwitchNetwork(SupportedChainId.FANTOM)}
+                    onSwitchNetwork={() => onSwitchNetwork(token.chainId)}
                     onClaim={() => handleClaim(token)}
-                    isFirst={index === 0}
-                    isLast={index === unClaimed.length - 1}
                   />
                 )
               })}
@@ -365,10 +348,10 @@ export default function RedeemClaim({
               )}
             </>
           ) : (
-            <>
+            <BottomInfo>
               <InfoItem name={'Ready to Claim:'} value={readyCount.toString()} />
               <InfoItem name={'Pending:'} value={pendingCount.toString()} />
-            </>
+            </BottomInfo>
           )}
         </InfoWrap>
       </ActionWrap>

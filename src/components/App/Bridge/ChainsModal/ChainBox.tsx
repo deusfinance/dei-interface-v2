@@ -9,6 +9,7 @@ import MAINNET_LOGO from '/public/static/images/networks/mainnet.svg'
 import ImageWithFallback from 'components/ImageWithFallback'
 import { Row, RowCenter } from 'components/Row'
 import { SupportedChainId } from 'constants/chains'
+import { NetworkText } from 'components/App/Bridge/InputBox'
 
 const Wrapper = styled(Row)<{ disabled?: boolean }>`
   background: ${({ theme }) => theme.bg2};
@@ -30,16 +31,13 @@ const Wrapper = styled(Row)<{ disabled?: boolean }>`
   `}
 `
 
-const RightWrapper = styled(Row)<{ FantomActive?: boolean; PolygonActive?: boolean; EthereumActive?: boolean }>`
+const RightWrapper = styled(NetworkText)`
   width: 100%;
   height: 100%;
-  border-left: 1px solid ${({ theme }) => theme.border1};
   padding: 18px;
-  font-weight: 400;
   font-size: 16px;
-  color: ${({ theme, FantomActive }) => FantomActive && theme.fantomColor};
-  color: ${({ theme, PolygonActive }) => PolygonActive && theme.polygonColor};
-  color: ${({ theme, EthereumActive }) => EthereumActive && theme.ethereumColor};
+  border-left: 1px solid ${({ theme }) => theme.border1};
+  margin: 0px;
 `
 
 const LogoWrapper = styled(RowCenter)`
@@ -78,11 +76,7 @@ export default function ChainBox({
         />
       </LogoWrapper>
 
-      <RightWrapper
-        FantomActive={chainId === SupportedChainId.FANTOM}
-        PolygonActive={chainId === SupportedChainId.POLYGON}
-        EthereumActive={chainId === SupportedChainId.MAINNET}
-      >{`${SupportedChainId[chainId]}`}</RightWrapper>
+      <RightWrapper chainId={chainId}>{`${SupportedChainId[chainId]}`}</RightWrapper>
     </Wrapper>
   )
 }

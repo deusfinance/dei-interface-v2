@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import Image from 'next/image'
 
-import { AutoRow, Row, RowBetween, RowStart } from 'components/Row'
+import { AutoRow, RowBetween, RowStart } from 'components/Row'
 
 import ClaimButton from './ClaimButton'
 import { formatBalance } from 'utils/numbers'
@@ -9,13 +9,16 @@ import useCurrencyLogo from 'hooks/useCurrencyLogo'
 import { getRemainingTime } from 'utils/time'
 import { IToken } from '.'
 import Column from 'components/Column'
+import { NetworkText } from '../InputBox'
+import { SupportedChainId } from 'constants/chains'
 
-const TokenInfo = styled.div<{ isFirst?: boolean; isLast?: boolean }>`
+const TokenInfo = styled.div`
   color: ${({ theme }) => theme.bg0};
   padding: 15px 15px;
-  border-bottom: 2px solid ${({ theme, isLast }) => (isLast ? 'transparent' : theme.border3)};
-  background: ${({ theme, isFirst }) => (isFirst ? theme.bg1 : theme.bg2)};
+  border: 1px solid ${({ theme }) => theme.border3};
+  background: ${({ theme }) => theme.bg1};
   border-radius: 12px;
+  margin-bottom: 10px;
 
   &:hover {
     color: ${({ theme }) => theme.bg1};
@@ -58,7 +61,7 @@ const Amount = styled.div`
 
 const SubAmount = styled.div`
   font-size: 13px;
-  margin-left: 10px;
+  margin-left: 6px;
   color: ${({ theme }) => theme.text2};
 `
 
@@ -81,15 +84,11 @@ export const TokenBox = ({
   currentBlock,
   onSwitchNetwork,
   onClaim,
-  isFirst = true,
-  isLast = true,
 }: {
   token: IToken
   currentBlock: number
   onSwitchNetwork?: () => void
   onClaim?: () => void
-  isFirst?: boolean
-  isLast?: boolean
 }): JSX.Element => {
   const { symbol, claimableBlock, amount } = token
   const logo = useCurrencyLogo(symbol ?? 'usdc')
@@ -98,51 +97,31 @@ export const TokenBox = ({
   const { hours, minutes, seconds } = getRemainingTime(claimableBlock * 1000)
 
   return (
-    <TokenInfo isFirst={isFirst} isLast={isLast}>
+    <TokenInfo>
       <TokenRow isWaiting={isWaiting}>
         <RowStart alignItems="center">
           <Image width="26px" height="25px" src={logo} alt={'DEUS'} />
-          {symbol === 'DEUS' ? (
-            <>
-              {isFirst ? (
-                <Column>
-                  <AutoRow>
-                    <Amount>{amount ? formatBalance(amount) : ''}</Amount>
-                    <TokenName type={symbol ?? 'DEUS'}>{symbol}</TokenName>
-                  </AutoRow>
-                  <SubAmount> = ${token.usdAmount ? formatBalance(token.usdAmount) : ''}</SubAmount>
-                </Column>
-              ) : (
-                <Row>
-                  <Amount>${token.usdAmount ? formatBalance(token.usdAmount) : ''}</Amount>
-                  <TokenName type={symbol ?? 'DEUS'}>in {symbol}</TokenName>
-                </Row>
-              )}
-            </>
-          ) : (
-            <Row>
-              <Amount>{amount ? formatBalance(amount) : ''}</Amount>
-              <TokenName type={symbol ?? 'USDC'}>{symbol}</TokenName>
-            </Row>
-          )}
-        </RowStart>
-        {!isFirst && (
           <Column>
-            {isWaiting ? <TimeSpan>in {`${hours}:${minutes}:${seconds}`}</TimeSpan> : <TimeSpan>ready</TimeSpan>}
+            <AutoRow>
+              <Amount>{amount ? formatBalance(amount) : ''}</Amount>
+              <TokenName type={symbol ?? 'DEUS'}>{symbol}</TokenName>
+            </AutoRow>
+            <SubAmount>
+              <NetworkText chainId={token.chainId}>{SupportedChainId[token.chainId]}</NetworkText>
+            </SubAmount>
           </Column>
-        )}
+        </RowStart>
       </TokenRow>
-      {isFirst && (
-        <TokenRowRight>
-          <ClaimButton
-            claimableBlock={claimableBlock}
-            currentBlock={currentBlock}
-            onClaim={onClaim}
-            onSwitchNetwork={onSwitchNetwork}
-            isUSDC={symbol === 'USDC'}
-          />
-        </TokenRowRight>
-      )}
+
+      <TokenRowRight>
+        <ClaimButton
+          token={token}
+          claimableBlock={claimableBlock}
+          currentBlock={currentBlock}
+          onClaim={onClaim}
+          onSwitchNetwork={onSwitchNetwork}
+        />
+      </TokenRowRight>
     </TokenInfo>
   )
 }

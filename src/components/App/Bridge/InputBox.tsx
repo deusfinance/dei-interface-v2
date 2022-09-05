@@ -132,15 +132,12 @@ const Balance = styled(RowWrap)<{ disabled?: boolean }>`
   }
 `
 
-const NetworkText = styled.div<{ FantomActive?: boolean; PolygonActive?: boolean; EthereumActive?: boolean }>`
+export const NetworkText = styled.div<{ chainId: number }>`
   font-weight: 400;
   font-size: 10px;
-
   margin-left: 5px;
   margin-top: 2px;
-  color: ${({ theme, FantomActive }) => FantomActive && theme.fantomColor};
-  color: ${({ theme, PolygonActive }) => PolygonActive && theme.polygonColor};
-  color: ${({ theme, EthereumActive }) => EthereumActive && theme.ethereumColor};
+  color: ${({ theme, chainId }) => chainId && theme.ChainId[chainId]};
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
     font-size: 8px;
@@ -203,13 +200,7 @@ export default function InputBox({
             active={onTokenSelect ? true : false}
           >
             {currency?.symbol}
-            <NetworkText
-              FantomActive={currency.chainId === SupportedChainId.FANTOM}
-              PolygonActive={currency.chainId === SupportedChainId.POLYGON}
-              EthereumActive={currency.chainId === SupportedChainId.MAINNET}
-            >
-              ({SupportedChainId[currency.chainId]})
-            </NetworkText>
+            <NetworkText chainId={currency.chainId}>({SupportedChainId[currency.chainId]})</NetworkText>
           </CurrencySymbol>
           <Balance disabled={disabled} onClick={handleClick}>
             balance: {balanceDisplay ? balanceDisplay : '0.00'}
