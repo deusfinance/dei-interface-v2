@@ -8,7 +8,7 @@ import useWeb3React from 'hooks/useWeb3'
 import { useContract } from 'hooks/useContract'
 import { toBN } from 'utils/numbers'
 import { calculateGasMargin } from 'utils/web3'
-import VDEUS_ABI from 'constants/abi/VDEUS.json'
+import ERC721_ABI from 'constants/abi/ERC721.json'
 import { ZERO_ADDRESS } from 'constants/addresses'
 
 export enum ApprovalState {
@@ -24,7 +24,7 @@ export function useERC721ApproveForAll(
 ): boolean {
   const { account } = useWeb3React()
   const [cachedResult, setCachedResult] = useState(false)
-  const ERC721Contract = useContract(tokenAddress, VDEUS_ABI)
+  const ERC721Contract = useContract(tokenAddress, ERC721_ABI)
   const inputs = useMemo(() => [account ?? undefined, spender ?? undefined], [account, spender])
   const approvedAll = useSingleCallResult(ERC721Contract, 'isApprovedForAll', inputs)
 
@@ -40,7 +40,7 @@ export function useERC721ApproveForAll(
 
 export function useERC721GetApprove(tokenAddress: string | null | undefined, tokenId: BigNumber.Value): string {
   const [cachedResult, setCachedResult] = useState(ZERO_ADDRESS)
-  const ERC721Contract = useContract(tokenAddress, VDEUS_ABI)
+  const ERC721Contract = useContract(tokenAddress, ERC721_ABI)
   const inputs = useMemo(() => [toBN(tokenId).toString() ?? undefined], [tokenId])
   const getApproved = useSingleCallResult(ERC721Contract, 'getApproved', inputs)
 
@@ -63,7 +63,7 @@ export default function useApproveNftCallback(
   const addTransaction = useTransactionAdder()
   const [approvalState, setApprovalState] = useState<ApprovalState>(ApprovalState.UNKNOWN)
   const pendingApproval = useHasPendingApproval(tokenAddress, spender)
-  const ERC721Contract = useContract(tokenAddress, VDEUS_ABI)
+  const ERC721Contract = useContract(tokenAddress, ERC721_ABI)
   const approvedAll = useERC721ApproveForAll(tokenAddress, spender)
   const approvedAddress = useERC721GetApprove(tokenAddress, tokenId)
 
@@ -134,7 +134,7 @@ export function useERC721ApproveAllCallback(
   const { chainId, account } = useWeb3React()
   const addTransaction = useTransactionAdder()
   const [approvalState, setApprovalState] = useState<ApprovalState>(ApprovalState.UNKNOWN)
-  const ERC721Contract = useContract(tokenAddress, VDEUS_ABI)
+  const ERC721Contract = useContract(tokenAddress, ERC721_ABI)
   const approvedAll = useERC721ApproveForAll(tokenAddress, spender)
 
   useEffect(() => {

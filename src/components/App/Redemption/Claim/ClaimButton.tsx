@@ -8,6 +8,7 @@ import { SupportedChainId } from 'constants/chains'
 import { RowCenter } from 'components/Row'
 import { DotFlashing } from 'components/Icons'
 import { getRemainingTime } from 'utils/time'
+import { collateralRedemptionDelay, deusRedemptionDelay } from '.'
 
 const RemainingWrap = styled(RowCenter)`
   position: relative;
@@ -40,9 +41,9 @@ const RemainingBlock = styled.div<{ width?: string }>`
 const Button = styled(PrimaryButton)`
   font-family: 'Inter';
   font-weight: 700;
-  height: 40px;
+  height: 45px;
   padding: 0;
-  font-size: 12px;
+  font-size: 14px;
   border-radius: 8px;
 `
 
@@ -51,11 +52,13 @@ export default function ClaimButton({
   currentBlock,
   onClaim,
   onSwitchNetwork,
+  isUSDC,
 }: {
   claimableBlock?: number
   currentBlock?: number
   onClaim?: () => void
   onSwitchNetwork?: () => void
+  isUSDC?: boolean
 }): JSX.Element {
   const { chainId } = useWeb3React()
   const [awaitingClaimConfirmation, setAwaitingClaimConfirmation] = useState<boolean>(false)
@@ -68,25 +71,23 @@ export default function ClaimButton({
 
   if (chainId && chainId !== SupportedChainId.FANTOM) {
     return <Button onClick={onSwitchNetwork}>Switch to FANTOM</Button>
-  }
-
-  if (awaitingClaimConfirmation) {
+  } else if (awaitingClaimConfirmation) {
     return (
       <Button active>
         Awaiting Confirmation <DotFlashing style={{ marginLeft: '10px' }} />
       </Button>
     )
-  }
-
-  if (!claimableBlock || !currentBlock) {
+  } else if (!claimableBlock || !currentBlock) {
     return <Button disabled>Claim</Button>
   }
 
   const diff = claimableBlock - currentBlock
-  const { hours, minutes, seconds } = getRemainingTime(diff)
   if (diff > 0) {
-    const Eight_hours = 8 * 60 * 60
-    const elapsed = (diff / Eight_hours) * 100
+    const { hours, minutes, seconds } = getRemainingTime(claimableBlock * 1000)
+    const elapsed = isUSDC
+      ? ((collateralRedemptionDelay - diff) / collateralRedemptionDelay) * 100
+      : ((deusRedemptionDelay - diff) / deusRedemptionDelay) * 100
+
     return (
       <RemainingWrap>
         {isMobile ? <p>{`${hours}:${minutes}:${seconds}`}</p> : <p>{`${hours}:${minutes}:${seconds} Remaining`}</p>}

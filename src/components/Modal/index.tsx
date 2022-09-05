@@ -41,8 +41,8 @@ export const ModalBackground = styled.div`
   width: 100vw;
   height: 100vh;
   z-index: ${Z_INDEX.modalBackdrop};
-  background-color: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(1px);
+  background-color: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(3px);
   justify-content: center;
 `
 

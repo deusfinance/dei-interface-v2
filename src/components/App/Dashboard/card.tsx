@@ -94,7 +94,12 @@ export const Card = ({
             <div>{title}</div>
             <div>{subTitle}</div>
           </LeftWrap>
-          <Image src={hover ? HoverIcon : MainIcon} height={getImageSize()} width={getImageSize()} alt={'icon'} />
+          <Image
+            src={hover || isMobile ? HoverIcon : MainIcon}
+            height={getImageSize()}
+            width={getImageSize()}
+            alt={'icon'}
+          />
         </a>
       </Link>
     </Wrapper>

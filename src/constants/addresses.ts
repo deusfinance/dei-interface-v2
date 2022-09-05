@@ -21,7 +21,7 @@ export const USDC_ADDRESS = {
                 DEI ADDRESS
 ===================================== */
 export const DEI_ADDRESS: AddressMap = {
-  ...constructSameAddressMap('0xDE12c7959E1a72bbe8a5f7A1dc8f8EeF9Ab011B3', [
+  ...constructSameAddressMap('0x836dC7fFa231E1e2FC7b7A92658064FaBa51b4e2', [
     SupportedChainId.MAINNET,
     SupportedChainId.POLYGON,
     SupportedChainId.FANTOM,
@@ -51,13 +51,6 @@ export const BDEI_ADDRESS: AddressMap = {
 ===================================== */
 export const veDEUS: AddressMap = {
   [SupportedChainId.FANTOM]: '0x8b42c6cb07c8dd5fe5db3ac03693867afd11353d',
-}
-
-/* =====================================
-                vDEUS ADDRESS (ERC721)
-===================================== */
-export const vDeus: AddressMap = {
-  [SupportedChainId.FANTOM]: '0x980c39133a1a4e83e41d652619adf8aa18b95c8b',
 }
 
 /* =====================================
@@ -159,9 +152,13 @@ export const MintProxy: AddressMap = {
 }
 
 export const CollateralPool: AddressMap = {
-  [SupportedChainId.FANTOM]: '0x4e73cD4799A69c851397d87153FE2756Cc4294Fc',
+  [SupportedChainId.FANTOM]: '0x3C541005a3A1AC12a5d01756102EE754Ceae729B',
 }
 
 export const Collateral: AddressMap = {
   [SupportedChainId.FANTOM]: '0x04068DA6C83AFCFA0e13ba15A6696662335D5B75',
+}
+
+export const DeiBondRedeemNFT: AddressMap = {
+  [SupportedChainId.FANTOM]: '0x44656b5f0454b3ddbc03471dc391056331f19476',
 }

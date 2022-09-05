@@ -10,7 +10,6 @@ import ERC20_ABI from 'constants/abi/ERC20.json'
 import ERC20_BYTES32_ABI from 'constants/abi/ERC20'
 import MULTICALL2_ABI from 'constants/abi/MULTICALL2.json'
 import VEDEUS_ABI from 'constants/abi/VEDEUS.json'
-import VDEUS_ABI from 'constants/abi/VDEUS.json'
 import VE_DIST_ABI from 'constants/abi/VE_DIST.json'
 import DYNAMIC_REDEEMER_ABI from 'constants/abi/DYNAMIC_REDEEMER.json'
 import DEI_BONDER_ABI from 'constants/abi/DEI_Bonder.json'
@@ -21,6 +20,7 @@ import VDEUS_STAKING_ABI from 'constants/abi/VDEUS_STAKING.json'
 import COLLATERAL_POOL_ABI from 'constants/abi/COLLATERAL_POOL_ABI.json'
 import PROXY_MINTER_ABI from 'constants/abi/PROXY_MINTER_ABI.json'
 import ORACLE_ABI from 'constants/abi/ORACLE_ABI.json'
+import DEIStrategy from 'constants/abi/DEIStrategy.json'
 
 import { Providers } from 'constants/providers'
 import {
@@ -32,7 +32,6 @@ import {
   veDist,
   SwapFlashLoan,
   MasterChefV2,
-  vDeus,
   vDeusStaking,
   vDeusMasterChefV2,
   CollateralPool,
@@ -104,12 +103,6 @@ export function useVeDeusContract() {
   return useContract(address, VEDEUS_ABI)
 }
 
-export function useVDeusContract() {
-  const { chainId } = useWeb3React()
-  const address = useMemo(() => (chainId ? vDeus[chainId] : undefined), [chainId])
-  return useContract(address, VDEUS_ABI)
-}
-
 export function useVeDistContract() {
   const { chainId } = useWeb3React()
   const address = useMemo(() => (chainId ? veDist[chainId] : undefined), [chainId])
@@ -178,4 +171,8 @@ export function useDeiContract() {
 
 export function useOracleContract(address: string) {
   return useContract(address, ORACLE_ABI)
+}
+
+export function useStrategyContract(address: string) {
+  return useContract(address, DEIStrategy)
 }

@@ -8,7 +8,7 @@ import { AddressZero } from '@ethersproject/constants/src.ts/addresses'
 import { calculateGasMargin } from 'utils/web3'
 import { TransactionResponse } from '@ethersproject/providers'
 import { useContract } from './useContract'
-import VDEUS_ABI from 'constants/abi/VDEUS.json'
+import ERC721_ABI from 'constants/abi/ERC721.json'
 
 export enum ApprovalState {
   UNKNOWN = 'UNKNOWN',
@@ -28,7 +28,7 @@ export default function useApproveNftCallback(
   const [approvedAll, setApprovedAll] = useState(false)
 
   const pendingApproval = useHasPendingApproval(tokenAddress, spender)
-  const ERC721Contract = useContract(tokenAddress, VDEUS_ABI)
+  const ERC721Contract = useContract(tokenAddress, ERC721_ABI)
 
   useEffect(() => {
     const fn = async () => {

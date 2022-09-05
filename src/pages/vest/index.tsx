@@ -30,7 +30,8 @@ import useDistRewards from 'hooks/useDistRewards'
 import { DefaultHandlerError } from 'utils/parseError'
 import { useIsTransactionPending, useTransactionAdder } from 'state/transactions/hooks'
 import { DotFlashing } from 'components/Icons'
-import InfoHeader from 'components/InfoHeader'
+import { useWalletModalToggle } from 'state/application/hooks'
+// import InfoHeader from 'components/InfoHeader'
 
 const Wrapper = styled(Container)`
   margin: 0 auto;
@@ -81,6 +82,7 @@ export const ButtonText = styled.span<{ disabled?: boolean }>`
   font-weight: 600;
   font-size: 15px;
   line-height: 17px;
+  color: ${({ theme }) => theme.text1};
 
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     font-size: 14px;
@@ -142,8 +144,12 @@ export default function Vest() {
   const showTransactionPending = useIsTransactionPending(pendingTxHash)
   const isSupportedChainId = useSupportedChainId()
   const veDistContract = useVeDistContract()
-  const nftIds = useOwnedNfts()
+  const ownedNfts = useOwnedNfts()
+  const nftIds = ownedNfts.results
   const rewards = useDistRewards()
+  const toggleWalletModal = useWalletModalToggle()
+
+  // const [showTopBanner, setShowTopBanner] = useState(false)
 
   const { snapshot, searchProps } = useSearch()
   const snapshotList = useMemo(() => {
@@ -169,7 +175,6 @@ export default function Vest() {
     setNftId(nftId)
   }
 
-  //pass just unclaimed tokenIds to claimAll method
   const [unClaimedIds, totalRewards] = useMemo(() => {
     if (!nftIds.length || !rewards.length) return [[], 0]
     let total = 0
@@ -263,7 +268,15 @@ export default function Vest() {
 
         <ButtonWrapper>
           {hasClaimAll && getClaimAllButton()}
-          {!!snapshotList.length ? (
+          {!account ? (
+            <TopBorderWrap>
+              <TopBorder>
+                <PrimaryButtonWide onClick={toggleWalletModal} disabled>
+                  <ButtonText disabled>Connect Wallet</ButtonText>
+                </PrimaryButtonWide>
+              </TopBorder>
+            </TopBorderWrap>
+          ) : !!snapshotList.length ? (
             <TopBorderWrap>
               <TopBorder>
                 <Link href="/vest/create" passHref>
@@ -291,7 +304,15 @@ export default function Vest() {
         <FirstRowWrapper>
           <SearchField searchProps={searchProps} />
 
-          {!!snapshotList.length ? (
+          {!account ? (
+            <TopBorderWrap>
+              <TopBorder>
+                <PrimaryButtonWide onClick={toggleWalletModal} disabled>
+                  <ButtonText disabled>Connect Wallet</ButtonText>
+                </PrimaryButtonWide>
+              </TopBorder>
+            </TopBorderWrap>
+          ) : !!snapshotList.length ? (
             <TopBorderWrap>
               <TopBorder>
                 <Link href="/vest/create" passHref>
@@ -323,13 +344,11 @@ export default function Vest() {
     return !!snapshotList.length && !!totalRewards
   }, [totalRewards, snapshotList.length])
 
-  const [showTopBanner, setShowTopBanner] = useState(false)
-
   return (
     <Container>
-      {showTopBanner && (
+      {/* {showTopBanner && (
         <InfoHeader onClose={setShowTopBanner} text={'Some random text! some random text! some random text!'} />
-      )}
+      )} */}
       <Hero>
         <Image src={veDEUS_LOGO} height={'90px'} alt="Logo" />
         <Title>veDEUS</Title>
@@ -344,6 +363,7 @@ export default function Vest() {
           toggleAPYManager={toggleAPYManager}
           isMobile={isMobile}
           rewards={rewards}
+          isLoading={ownedNfts.isLoading}
         />
       </Wrapper>
       <LockManager isOpen={showLockManager} onDismiss={() => setShowLockManager(false)} nftId={nftId} />

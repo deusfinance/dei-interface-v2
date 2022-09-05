@@ -22,9 +22,13 @@ import { DotFlashing } from 'components/Icons'
 import DEUS_LOGO from '/public/static/images/tokens/deus.svg'
 import EMPTY_LOCK from '/public/static/images/pages/veDEUS/emptyLock.svg'
 import EMPTY_LOCK_MOBILE from '/public/static/images/pages/veDEUS/emptyLockMobile.svg'
+import LOADING_LOCK from '/public/static/images/pages/veDEUS/loadingLock.svg'
+import LOADING_LOCK_MOBILE from '/public/static/images/pages/veDEUS/loadingLockMobile.svg'
+
 import { formatAmount } from 'utils/numbers'
 import { DefaultHandlerError } from 'utils/parseError'
 import { ButtonText } from 'pages/vest'
+import useWeb3React from 'hooks/useWeb3'
 
 dayjs.extend(utc)
 dayjs.extend(relativeTime)
@@ -68,9 +72,10 @@ const Cell = styled.td<{
   height: 90px;
 `
 
-const NoResults = styled.div`
+const NoResults = styled.div<{ warning?: boolean }>`
   text-align: center;
   padding: 20px;
+  color: ${({ theme, warning }) => (warning ? theme.warning : 'white')};
 `
 
 const NFTWrap = styled(Column)`
@@ -96,11 +101,6 @@ const CellAmount = styled.div`
     font-size: 0.95rem;
   `};
 `
-
-// const CellDescription = styled.div`
-//   font-size: 0.6rem;
-//   color: ${({ theme }) => theme.text2};
-// `
 
 const Name = styled.div`
   font-size: 12px;
@@ -177,14 +177,17 @@ export default function Table({
   toggleAPYManager,
   isMobile,
   rewards,
+  isLoading,
 }: {
   nftIds: number[]
   toggleLockManager: (nftId: number) => void
   toggleAPYManager: (nftId: number) => void
   isMobile?: boolean
   rewards: number[]
+  isLoading: boolean
 }) {
   const [offset, setOffset] = useState(0)
+  const { account } = useWeb3React()
 
   const paginatedItems = useMemo(() => {
     return nftIds.slice(offset, offset + itemsPerPage)
@@ -217,16 +220,30 @@ export default function Table({
               ))}
           </tbody>
           {paginatedItems.length === 0 && (
-            <>
-              <div style={{ margin: '0 auto' }}>
-                {isMobile ? (
-                  <Image src={EMPTY_LOCK_MOBILE} alt="empty-lock-mobile" />
-                ) : (
-                  <Image src={EMPTY_LOCK} alt="empty-lock" />
-                )}
-              </div>
-              <NoResults>You have no lock!</NoResults>
-            </>
+            <tbody>
+              <tr>
+                <td>
+                  <div style={{ margin: '0 auto' }}>
+                    {isLoading ? (
+                      <Image src={isMobile ? LOADING_LOCK_MOBILE : LOADING_LOCK} alt="loading-lock" />
+                    ) : (
+                      <Image src={isMobile ? EMPTY_LOCK_MOBILE : EMPTY_LOCK} alt="empty-lock" />
+                    )}
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  {!account ? (
+                    <NoResults warning>Wallet is not connected!</NoResults>
+                  ) : isLoading ? (
+                    <NoResults>Loading...</NoResults>
+                  ) : (
+                    <NoResults>You have no lock!</NoResults>
+                  )}
+                </td>
+              </tr>
+            </tbody>
           )}
         </TableWrapper>
         <PaginationWrapper>

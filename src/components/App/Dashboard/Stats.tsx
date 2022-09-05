@@ -1,12 +1,16 @@
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
+import Image from 'next/image'
 
+import BG_DASHBOARD from '/public/static/images/pages/dashboard/bg.svg'
+
+import { useDeusPrice } from 'hooks/useCoingeckoPrice'
+import { useDeiStats } from 'hooks/useDeiStats'
+import { formatAmount, formatDollarAmount } from 'utils/numbers'
+
+import { RowBetween } from 'components/Row'
 import StatsItem from './StatsItem'
 import Chart from './Chart'
-import { RowBetween } from 'components/Row'
-import { useDeiPrice, useDeusPrice } from 'hooks/useCoingeckoPrice'
-import { formatAmount, formatDollarAmount } from 'utils/numbers'
-import { useDeiStats } from 'hooks/useDeiStats'
 
 const Wrapper = styled(RowBetween)`
   background: ${({ theme }) => theme.bg0};
@@ -14,6 +18,8 @@ const Wrapper = styled(RowBetween)`
   border-radius: 12px;
   padding: 38px 36px;
   padding-left: 14px;
+  margin-bottom: 80px;
+  position: relative;
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
     flex-direction: column;
@@ -22,11 +28,13 @@ const Wrapper = styled(RowBetween)`
 
 const ChartWrapper = styled.div`
   border: 1px solid ${({ theme }) => theme.border1};
+  background-color: ${({ theme }) => theme.bg0};
   border-radius: 12px;
   width: 100%;
   min-width: 200px;
   min-height: 200px;
   margin-left: 15px;
+  z-index: 1;
 `
 
 const AllStats = styled.div`
@@ -47,7 +55,6 @@ const StatsWrapper = styled.div`
 
 const Info = styled(RowBetween)`
   width: 100%;
-  /* margin: 20px -24px; */
 
   gap: 16px 0;
   flex-wrap: wrap;
@@ -73,6 +80,7 @@ const Info = styled(RowBetween)`
 const Title = styled.span`
   font-family: 'Inter';
   font-size: 20px;
+  margin-left: 22px;
   background: ${({ theme }) => theme.specialBG1};
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -88,18 +96,21 @@ const DeusTitle = styled(Title)`
   -webkit-text-fill-color: transparent;
 `
 
+const BackgroundImageWrapper = styled.div`
+  position: absolute;
+  bottom: 0;
+  width: 50%;
+  height: 100%;
+  right: 10px;
+
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    display:none;
+  `};
+`
+
 export default function Stats() {
-  const deiPrice = useDeiPrice()
   const deusPrice = useDeusPrice()
-  const {
-    totalSupply,
-    totalProtocolHoldings,
-    circulatingSupply,
-    totalUSDCReserves,
-    sPoolDEILiquidity,
-    sPoolbDEILiquidity,
-    sPoolLiquidity,
-  } = useDeiStats()
+  const { totalSupply, totalProtocolHoldings, circulatingSupply, totalUSDCReserves } = useDeiStats()
 
   const usdcBackingPerDei = useMemo(() => {
     return (totalUSDCReserves / circulatingSupply) * 100
@@ -111,7 +122,7 @@ export default function Stats() {
         <StatsWrapper>
           <Title>DEI Stats</Title>
           <Info>
-            <StatsItem name="DEI Price" value={formatDollarAmount(parseFloat(deiPrice), 2)} linkIcon={true} />
+            <StatsItem name="DEI Price" value={'$1.00'} linkIcon={true} />
             <StatsItem name="Total Supply" value={formatDollarAmount(totalSupply, 2)} linkIcon={true} />
             <StatsItem
               name="Total Protocol Holdings"
@@ -131,15 +142,18 @@ export default function Stats() {
           <DeusTitle>DEUS Stats</DeusTitle>
           <Info>
             <StatsItem name="DEUS Price" value={formatDollarAmount(parseFloat(deusPrice), 2)} linkIcon={true} />
-            <StatsItem name="Total Supply" value="-" linkIcon={true} />
-            <StatsItem name="Market Cap" value="-" linkIcon={true} />
-            <StatsItem name="veDEUS Supply" value="-" linkIcon={true} />
+            <StatsItem name="Total Supply" value="N/A" linkIcon={true} />
+            <StatsItem name="Market Cap" value="N/A" linkIcon={true} />
+            <StatsItem name="veDEUS Supply" value="N/A" linkIcon={true} />
           </Info>
         </StatsWrapper>
       </AllStats>
       <ChartWrapper>
         <Chart />
       </ChartWrapper>
+      <BackgroundImageWrapper>
+        <Image src={BG_DASHBOARD} alt="swap bg" layout="fill" objectFit="cover" />
+      </BackgroundImageWrapper>
     </Wrapper>
   )
 }

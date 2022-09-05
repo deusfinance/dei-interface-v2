@@ -83,7 +83,7 @@ export const SocialCard = (): JSX.Element => {
           <Image
             height={getImageSize()}
             width={getImageSize()}
-            src={hover1 ? DISCORD_HOVER_LOGO : DISCORD_LOGO}
+            src={hover1 || isMobile ? DISCORD_HOVER_LOGO : DISCORD_LOGO}
             alt={'icon'}
           />
           <Title>Discord</Title>
@@ -94,7 +94,7 @@ export const SocialCard = (): JSX.Element => {
           <Image
             height={getImageSize()}
             width={getImageSize()}
-            src={hover2 ? TELEGRAM_HOVER_LOGO : TELEGRAM_LOGO}
+            src={hover2 || isMobile ? TELEGRAM_HOVER_LOGO : TELEGRAM_LOGO}
             alt={'icon'}
           />
           <Title>Telegram</Title>

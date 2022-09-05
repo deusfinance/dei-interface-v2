@@ -93,9 +93,10 @@ export default function TransactionPopup({
   const getHeader = () => {
     return (
       <SuccessBox>
-        <Header>{summary}</Header>
         <ExplorerLink chainId={chainId ?? FALLBACK_CHAIN_ID} type={ExplorerDataType.TRANSACTION} value={hash}>
-          <Link />
+          <Header>
+            {summary} <Link style={{ marginLeft: '10px' }} />
+          </Header>
         </ExplorerLink>
 
         {success ? (

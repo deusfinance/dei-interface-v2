@@ -3,7 +3,6 @@ import MulticallUpdater from './multicall/updater'
 import TransactionUpdater from './transactions/updater'
 import UserUpdater from './user/updater'
 import DashboardUpdater from './dashboard/updater'
-import RedeemUpdater from './redeem/updater'
 
 export default function Updaters() {
   return (
@@ -13,7 +12,6 @@ export default function Updaters() {
       <TransactionUpdater />
       <UserUpdater />
       <DashboardUpdater />
-      <RedeemUpdater />
     </>
   )
 }

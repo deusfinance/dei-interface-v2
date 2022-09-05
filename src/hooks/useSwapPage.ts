@@ -22,7 +22,7 @@ export function useSwapAmountsOut(
         : [
             {
               methodName: 'calculateSwap',
-              callInputs: [1, 0, amountInBN], // TODO: what is the first and second inputs?
+              callInputs: [1, 0, amountInBN],
             },
           ],
     [amountInBN]

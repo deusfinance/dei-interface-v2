@@ -14,11 +14,10 @@ import { getRemainingTime } from 'utils/time'
 import { useCurrencyBalance } from 'state/wallet/hooks'
 import { useWalletModalToggle } from 'state/application/hooks'
 import useWeb3React from 'hooks/useWeb3'
-// import useDebounce from 'hooks/useDebounce'
 import { useSupportedChainId } from 'hooks/useSupportedChainId'
 import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
 import useRedemptionCallback from 'hooks/useRedemptionCallback'
-import { useRedeemAmountOut, useRedeemData } from 'hooks/useRedemptionPage'
+import { useGetCollateralRatios, useRedeemAmountOut, useRedeemData } from 'hooks/useRedemptionPage'
 
 import { DotFlashing } from 'components/Icons'
 import Hero from 'components/Hero'
@@ -27,11 +26,9 @@ import { BottomWrapper, Container, InputWrapper, Title, Wrapper, MainButton } fr
 import InputBox from 'components/InputBox'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
-// import { toBN } from 'utils/numbers'
-// import { useCollateralRatio } from 'state/dei/hooks'
 import DefaultReviewModal from 'components/ReviewModal/DefaultReviewModal'
 import Claim from 'components/App/Redemption/Claim'
-import { useDeiPrice, useDeusPrice, useUSDCPrice } from 'hooks/useCoingeckoPrice'
+import { useDeusPrice, useUSDCPrice } from 'hooks/useCoingeckoPrice'
 import { formatDollarAmount } from 'utils/numbers'
 import { SupportedChainId } from 'constants/chains'
 import { truncateAddress } from 'utils/address'
@@ -60,13 +57,6 @@ const RedemptionWrapper = styled(InputWrapper)`
   }
 `
 
-// const Description = styled.div`
-//   font-size: 0.85rem;
-//   line-height: 1.25rem;
-//   margin-left: 10px;
-//   color: ${({ theme }) => darken(0.4, theme.text1)};
-// `
-
 const PlusIcon = styled(Plus)`
   margin: -12.5px auto;
   margin-left: 57px;
@@ -92,13 +82,9 @@ export default function Redemption() {
   const [amountOut1, setAmountOut1] = useState('')
   const [amountOut2, setAmountOut2] = useState('')
 
-  const deiPrice = useDeiPrice()
+  // const deiPrice = useDeiPrice()
   const usdcPrice = useUSDCPrice()
   const deusCoingeckoPrice = useDeusPrice()
-
-  // const collatRatio = useCollateralRatio()
-  // const collatRatioBN = toBN(collatRatio)
-  // const oneHundred = toBN(100)
 
   const { collateralAmount, deusValue } = useRedeemAmountOut(amountIn)
 
@@ -107,20 +93,8 @@ export default function Redemption() {
     setAmountOut2(deusValue)
   }, [collateralAmount, deusValue])
 
-  // const amountOut1 = useMemo(() => {
-  //   if (!collatRatioBN || !amountIn) return '0'
-  //   return toBN(amountIn).times(collatRatioBN).div(oneHundred).toString()
-  // }, [amountIn, collatRatioBN, oneHundred])
-
-  // const amountOut2 = useMemo(() => {
-  //   if (!collatRatioBN || !amountIn) return '0'
-  //   return toBN(amountIn).times(oneHundred.minus(collatRatioBN)).div(oneHundred).toString()
-  // }, [amountIn, oneHundred, collatRatioBN])
-
   const { redeemPaused, redeemTranche } = useRedeemData()
-  // console.log({ redeemPaused, rest })
 
-  // Amount typed in either fields
   const deiAmount = useMemo(() => {
     return tryParseAmount(amountIn, deiCurrency || undefined)
   }, [amountIn, deiCurrency])
@@ -130,18 +104,17 @@ export default function Redemption() {
     return deiCurrencyBalance?.lessThan(deiAmount)
   }, [deiCurrencyBalance, deiAmount])
 
-  // const usdcAmount = useMemo(() => {
-  //   return tryParseAmount(amountOut1, usdcCurrency || undefined)
-  // }, [amountOut1, usdcCurrency])
-
   const {
     state: redeemCallbackState,
     callback: redeemCallback,
     error: redeemCallbackError,
   } = useRedemptionCallback(deiAmount)
 
+  const { redeemCollateralRatio } = useGetCollateralRatios()
+
   const [awaitingApproveConfirmation, setAwaitingApproveConfirmation] = useState<boolean>(false)
   const [awaitingRedeemConfirmation, setAwaitingRedeemConfirmation] = useState<boolean>(false)
+
   const spender = useMemo(() => (chainId ? DynamicRedeemer[chainId] : undefined), [chainId])
   const [approvalState, approveCallback] = useApproveCallback(deiCurrency ?? undefined, spender)
   const [showApprove, showApproveLoader] = useMemo(() => {
@@ -159,10 +132,8 @@ export default function Redemption() {
 
   const handleRedeem = useCallback(async () => {
     console.log('called handleRedeem')
-    console.log(redeemCallbackState, redeemCallback, redeemCallbackError)
+    console.log(redeemCallbackState, redeemCallbackError)
     if (!redeemCallback) return
-
-    // let error = ''
     try {
       setAwaitingRedeemConfirmation(true)
       const txHash = await redeemCallback()
@@ -171,10 +142,9 @@ export default function Redemption() {
     } catch (e) {
       setAwaitingRedeemConfirmation(false)
       if (e instanceof Error) {
-        // error = e.message
+        console.error(e)
       } else {
         console.error(e)
-        // error = 'An unknown error occurred.'
       }
     }
   }, [redeemCallbackState, redeemCallback, redeemCallbackError])
@@ -182,22 +152,19 @@ export default function Redemption() {
   function getApproveButton(): JSX.Element | null {
     if (!isSupportedChainId || !account) {
       return null
-    }
-    if (awaitingApproveConfirmation) {
+    } else if (awaitingApproveConfirmation) {
       return (
         <MainButton active>
           Awaiting Confirmation <DotFlashing style={{ marginLeft: '10px' }} />
         </MainButton>
       )
-    }
-    if (showApproveLoader) {
+    } else if (showApproveLoader) {
       return (
         <MainButton active>
           Approving <DotFlashing style={{ marginLeft: '10px' }} />
         </MainButton>
       )
-    }
-    if (showApprove) {
+    } else if (showApprove) {
       return <MainButton onClick={handleApprove}>Allow us to spend {deiCurrency?.symbol}</MainButton>
     }
     return null
@@ -206,23 +173,15 @@ export default function Redemption() {
   function getActionButton(): JSX.Element | null {
     if (!chainId || !account) {
       return <MainButton onClick={toggleWalletModal}>Connect Wallet</MainButton>
-    }
-    if (showApprove) {
+    } else if (showApprove) {
       return null
-    }
-    if (redeemPaused) {
+    } else if (redeemPaused) {
       return <MainButton disabled>Redeem Paused</MainButton>
-    }
-
-    if (diff < 0 && redeemTranche.trancheId != null) {
+    } else if (diff < 0 && redeemTranche.trancheId != null) {
       return <MainButton disabled>Tranche Ended</MainButton>
-    }
-
-    if (Number(amountOut1) > redeemTranche.amountRemaining) {
+    } else if (Number(amountOut1) > redeemTranche.amountRemaining) {
       return <MainButton disabled>Exceeds Available Amount</MainButton>
-    }
-
-    if (insufficientBalance) {
+    } else if (insufficientBalance) {
       return <MainButton disabled>Insufficient {deiCurrency?.symbol} Balance</MainButton>
     }
     // if (awaitingRedeemConfirmation) {
@@ -232,7 +191,6 @@ export default function Redemption() {
     //     </MainButton>
     //   )
     // }
-
     return (
       <MainButton
         onClick={() => {
@@ -245,7 +203,7 @@ export default function Redemption() {
   }
 
   const items = [
-    { name: 'DEI Price', value: formatDollarAmount(parseFloat(deiPrice), 2) ?? '-' },
+    { name: 'DEI Price', value: '$1.00' },
     { name: 'USDC Price', value: formatDollarAmount(parseFloat(usdcPrice), 2) ?? '-' },
     { name: 'DEUS Price', value: formatDollarAmount(parseFloat(deusCoingeckoPrice), 2) ?? '-' },
     { name: 'Pool(V3)', value: truncateAddress(CollateralPool[chainId ?? SupportedChainId.FANTOM]) ?? '-' },
@@ -255,7 +213,6 @@ export default function Redemption() {
     () => [
       { title: 'USDC claimable time', value: '30s' },
       { title: 'DEUS claimable time', value: '8h' },
-      // { title: 'Network Fee', value: 'N/A' },
       // { title: 'Min Received', value: amountOut1 + ' USDC + ' + amountOut2 + ' DEUS' },
     ],
     []
@@ -291,21 +248,13 @@ export default function Redemption() {
               <div style={{ marginTop: '20px' }}></div>
               {getApproveButton()}
               {getActionButton()}
-              {/* <div style={{ marginTop: '20px' }}></div>
-
-              {
-                <Row mt={'8px'}>
-                  <Info data-for="id" data-tip={'Tool tip for hint client'} size={15} />
-                  <Description>you will get an NFT {`"DEUS voucher"`} that will let you claim DEUS later .</Description>
-                </Row>
-              } */}
             </RedemptionWrapper>
             <BottomWrapper>
-              <InfoItem name={'USDC Ratio'} value={'0.1???'} />
-              <InfoItem name={'DEUS Ratio'} value={'0.9???'} />
+              <InfoItem name={'USDC Ratio'} value={(Number(redeemCollateralRatio) / 100).toString()} />
+              <InfoItem name={'DEUS Ratio'} value={((100 - Number(redeemCollateralRatio)) / 100).toString()} />
             </BottomWrapper>
           </Wrapper>
-          <Claim />
+          <Claim redeemCollateralRatio={redeemCollateralRatio} />
         </MainWrap>
       </Container>
 

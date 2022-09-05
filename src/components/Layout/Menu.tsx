@@ -66,7 +66,6 @@ const NavToggle = styled(NavToggleIcon)`
   }
 `
 
-// TODO ADD PROPER ICONS
 export default function Menu() {
   const ref = useRef(null)
   const [isOpen, setIsOpen] = useState(false)
@@ -133,11 +132,11 @@ export default function Menu() {
               <div>Twitter</div>
             </Row>
           </ExternalLink>
-          <ExternalLink href="https://t.me/deusfinance">
+          {/* <ExternalLink href="https://t.me/deusfinance">
             <Row onClick={() => toggle()}>
               <div>Community</div>
             </Row>
-          </ExternalLink>
+          </ExternalLink> */}
           <ExternalLink href="https://github.com/deusfinance">
             <Row onClick={() => toggle()}>
               <div>Github</div>
