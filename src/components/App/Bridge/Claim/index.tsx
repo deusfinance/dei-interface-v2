@@ -138,7 +138,10 @@ export interface IToken {
   chainId: number
 }
 
-export default function RedeemClaim() {
+export default function BridgeClaim() {
+  const { account } = useWeb3React()
+  const onSwitchNetwork = useRpcChangerCallback()
+
   const {
     allPositions,
     unRedeemedPositions,
@@ -152,13 +155,11 @@ export default function RedeemClaim() {
     redeemCollateralBalances: any
     isLoading: boolean
   } = useGetPoolData()
-  const [awaitingClaimConfirmation, setAwaitingClaimConfirmation] = useState(false)
+
+  // const [awaitingClaimConfirmation, setAwaitingClaimConfirmation] = useState(false)
 
   // const collateralRedemptionDelay = useCollateralCollectionDelay()
   const deusRedemptionDelay = useDeusCollectionDelay()
-
-  const onSwitchNetwork = useRpcChangerCallback()
-  const { account } = useWeb3React()
 
   const [currentBlock, setCurrentBlock] = useState(Math.floor(Date.now() / 1000))
   useEffect(() => {
@@ -193,21 +194,6 @@ export default function RedeemClaim() {
     }
   }, [deusPrice, deusRedemptionDelay, nextRedeemId, redeemCollateralBalances, unRedeemedPositions])
 
-  // const [unClaimedCollateral, setUnClaimedCollateral] = useState<IToken>()
-  // useEffect(() => {
-  //   setUnClaimedCollateral(undefined)
-  //   if (redeemCollateralBalances && redeemCollateralBalances !== '0') {
-  //     const lastRedeemTimestamp = allPositions[allPositions.length - 1].timestamp
-  //     const usdcToken: IToken = {
-  //       symbol: 'USDC',
-  //       index: 0,
-  //       claimableBlock: 5 + Number(lastRedeemTimestamp) + collateralRedemptionDelay,
-  //       amount: redeemCollateralBalances,
-  //     }
-  //     setUnClaimedCollateral(usdcToken)
-  //   }
-  // }, [allPositions, collateralRedemptionDelay, redeemCollateralBalances])
-
   const [pendingTokens, setPendingTokens] = useState<IToken[]>([])
   const [readyCount, setReadyCount] = useState(0)
   const [pendingCount, setPendingCount] = useState(0)
@@ -232,12 +218,12 @@ export default function RedeemClaim() {
 
       // let error = ''
       try {
-        setAwaitingClaimConfirmation(true)
+        // setAwaitingClaimConfirmation(true)
         const txHash = await handleClaim(claim)
-        setAwaitingClaimConfirmation(false)
+        // setAwaitingClaimConfirmation(false)
         console.log({ txHash })
       } catch (e) {
-        setAwaitingClaimConfirmation(false)
+        // setAwaitingClaimConfirmation(false)
         if (e instanceof Error) {
           // error = e.message
         } else {

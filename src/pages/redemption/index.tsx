@@ -171,7 +171,7 @@ export default function Redemption() {
     if (!chainId || !account) {
       return <ConnectWallet />
     } else if (redeemPaused) {
-      return <MainButton disabled>Redeem Paused</MainButton>
+      return <MainButton disabled>Redeem is Paused</MainButton>
     } else if (awaitingUpdateConfirmation) {
       return <GradientButton title={'Updating Oracle'} awaiting />
     } else if (expiredPrice) {

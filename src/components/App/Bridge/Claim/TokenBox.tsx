@@ -6,7 +6,7 @@ import { AutoRow, RowBetween, RowStart } from 'components/Row'
 import ClaimButton from './ClaimButton'
 import { formatBalance } from 'utils/numbers'
 import useCurrencyLogo from 'hooks/useCurrencyLogo'
-import { getRemainingTime } from 'utils/time'
+// import { getRemainingTime } from 'utils/time'
 import { IToken } from '.'
 import Column from 'components/Column'
 import { NetworkText } from '../InputBox'
@@ -94,7 +94,7 @@ export const TokenBox = ({
   const logo = useCurrencyLogo(symbol ?? 'usdc')
 
   const isWaiting = claimableBlock - currentBlock > 0
-  const { hours, minutes, seconds } = getRemainingTime(claimableBlock * 1000)
+  // const { hours, minutes, seconds } = getRemainingTime(claimableBlock * 1000)
 
   return (
     <TokenInfo>

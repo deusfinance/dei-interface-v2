@@ -15,7 +15,6 @@ import { tryParseAmount } from 'utils/parse'
 import { useCurrencyBalance } from 'state/wallet/hooks'
 import useWeb3React from 'hooks/useWeb3'
 import useDepositCallback from 'hooks/useBridgeCallback'
-// import { useRedeemAmountOut } from 'hooks/useRedemptionPage'
 import { ChainInfo } from 'constants/chainInfo'
 
 import Hero from 'components/Hero'
@@ -25,7 +24,6 @@ import DefaultReviewModal from 'components/App/Bridge/TransactionReviewModal'
 import { Container, InputWrapper, Wrapper, MainButton, ConnectWallet } from 'components/App/StableCoin'
 import Tableau from 'components/App/StableCoin/Tableau'
 import Claim from 'components/App/Bridge/Claim'
-// import usePoolStats from 'components/App/StableCoin/PoolStats'
 import TokensBox from 'components/App/Bridge/TokensBox'
 import { Token } from '@sushiswap/core-sdk'
 import { DotFlashing, Info } from 'components/Icons'
@@ -34,8 +32,7 @@ import ChainsModal from 'components/App/Bridge/ChainsModal'
 import { useSupportedChainId } from 'hooks/useSupportedChainId'
 import { BRIDGE_ADDRESS } from 'constants/addresses'
 import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
-// import { BridgeClient } from 'lib/muon'
-// import { BRIDGE_ADDRESS } from 'constants/addresses'
+import { useBridgeData } from 'hooks/useBridgePage'
 
 const MainWrap = styled(RowCenter)`
   align-items: flex-start;
@@ -92,7 +89,6 @@ const MuonText = styled.div`
 
 const Separator = styled.div`
   width: 510px;
-  /* margin-left: -13px; */
   height: 1px;
   background: ${({ theme }) => theme.bg4};
 `
@@ -109,7 +105,7 @@ const ArrowDown = styled(ArrowDownIcon)`
 export default function Bridge() {
   const { chainId, account } = useWeb3React()
   const [amountIn, setAmountIn] = useState('')
-  const bridgePaused = false // useRedeemPaused()
+  const { bridgePaused } = useBridgeData()
   const isSupportedChainId = useSupportedChainId()
 
   const [sourceChainId, setSourceChainId] = useState<SupportedChainId | null | undefined>(chainId)
@@ -182,7 +178,7 @@ export default function Bridge() {
     error: depositCallbackError,
   } = useDepositCallback(inputAmount, tokenOut)
 
-  const [awaitingDepositConfirmation, setAwaitingBridgeConfirmation] = useState(false)
+  const [awaitingDepositConfirmation, setAwaitingDepositConfirmation] = useState(false)
 
   useEffect(() => {
     if (!isOpenChainsModal) setSelectedTokenInputBox(null)
@@ -193,14 +189,14 @@ export default function Bridge() {
     console.log(depositCallbackState, depositCallbackError)
     if (!depositCallback) return
     try {
-      setAwaitingBridgeConfirmation(true)
+      setAwaitingDepositConfirmation(true)
       const txHash = await depositCallback()
-      setAwaitingBridgeConfirmation(false)
+      setAwaitingDepositConfirmation(false)
       console.log({ txHash })
       toggleReviewModal(false)
       setAmountIn('')
     } catch (e) {
-      setAwaitingBridgeConfirmation(false)
+      setAwaitingDepositConfirmation(false)
       if (e instanceof Error) {
         console.error(e)
       } else {
@@ -241,7 +237,7 @@ export default function Bridge() {
       return null
     }
     if (bridgePaused) {
-      return <MainButton disabled>Bridge Paused</MainButton>
+      return <MainButton disabled>Bridge is Paused</MainButton>
     }
     if (insufficientBalance) {
       return <MainButton disabled>Insufficient {tokenIn?.symbol} Balance</MainButton>
@@ -256,7 +252,6 @@ export default function Bridge() {
       </MainButton>
     )
   }
-  // const items = usePoolStats()
 
   const info = useMemo(() => {
     return [
@@ -286,10 +281,10 @@ export default function Bridge() {
     <>
       <Container>
         <Hero>
-          <Image src={BRIDGE_LOGO} height={'90px'} alt="Logo" />
+          <Image src={BRIDGE_LOGO} height={'90px'} alt="Bridge-Logo" />
           <MuonWrap>
             <MuonText>Secured by Muon</MuonText>
-            <Image src={MUON_LOGO} height={'90px'} alt="Logo" />
+            <Image src={MUON_LOGO} height={'90px'} alt="Muon-Logo" />
           </MuonWrap>
         </Hero>
         <MainWrap>
@@ -364,9 +359,7 @@ export default function Bridge() {
         data={''}
         buttonText={'Confirm Bridge'}
         awaiting={awaitingDepositConfirmation}
-        summary={`Bridging ${amountIn} ${tokenIn?.symbol} from ${ChainInfo[tokenIn?.chainId].label} to ${
-          ChainInfo[tokenOut?.chainId].label
-        }`}
+        summary={`Bridging ${amountIn} ${tokenIn?.symbol} to ${ChainInfo[tokenOut?.chainId].label}`}
         handleClick={handleDeposit}
       />
     </>

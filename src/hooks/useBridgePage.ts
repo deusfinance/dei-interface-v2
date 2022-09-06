@@ -1,6 +1,10 @@
 // import useWeb3React from './useWeb3'
 // import { BRIDGE_ADDRESS } from 'constants/addresses'
 
+import { useMemo } from 'react'
+import { useSingleContractMultipleMethods } from 'state/multicall/hooks'
+import { useBridgeContract } from './useContract'
+
 export interface IClaim {
   amount: string
   fromChain: string
@@ -95,4 +99,24 @@ export function getClaimTokens(): IClaim[] {
   //     }
   //   }
   return claims
+}
+
+export function useBridgeData(): {
+  bridgePaused: boolean
+} {
+  const bridgeContract = useBridgeContract()
+
+  const calls = [
+    {
+      methodName: 'paused',
+      callInputs: [],
+    },
+  ]
+  const [paused] = useSingleContractMultipleMethods(bridgeContract, calls)
+
+  const bridgePausedValue = useMemo(() => (paused?.result ? paused?.result[0] : false), [paused])
+
+  return {
+    bridgePaused: bridgePausedValue,
+  }
 }

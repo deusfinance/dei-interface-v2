@@ -272,7 +272,7 @@ export default function Mint() {
     else if (insufficientBalance2)
       return <MainButton disabled>Insufficient {token2Currency?.symbol} Balance</MainButton>
     else if (mintPaused) {
-      return <MainButton disabled>Mint Paused</MainButton>
+      return <MainButton disabled>Mint is Paused</MainButton>
     } else if (awaitingUpdateConfirmation) {
       return <GradientButton title={'Updating Oracle'} awaiting />
     } else if (expiredPrice) {
