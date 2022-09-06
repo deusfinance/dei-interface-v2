@@ -9,15 +9,10 @@ import { useGetOracleAddress } from './useMintPage'
 import { useTransactionAdder } from 'state/transactions/hooks'
 import { DefaultHandlerError } from 'utils/parseError'
 import { calculateGasMargin } from 'utils/web3'
-
-export enum OracleCallbackState {
-  INVALID = 'INVALID',
-  PENDING = 'PENDING',
-  VALID = 'VALID',
-}
+import { TransactionCallbackState } from './useBridgeCallback'
 
 export default function useUpdateCallback(): {
-  state: OracleCallbackState
+  state: TransactionCallbackState
   callback: null | (() => Promise<string>)
   error: string | null
 } {
@@ -47,14 +42,14 @@ export default function useUpdateCallback(): {
   return useMemo(() => {
     if (!account || !chainId || !library || !oracleTwapContract) {
       return {
-        state: OracleCallbackState.INVALID,
+        state: TransactionCallbackState.INVALID,
         callback: null,
         error: 'Missing dependencies',
       }
     }
 
     return {
-      state: OracleCallbackState.VALID,
+      state: TransactionCallbackState.VALID,
       error: null,
       callback: async function onMint(): Promise<string> {
         console.log('onUpdate Oracle callback')

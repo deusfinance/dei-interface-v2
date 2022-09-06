@@ -10,13 +10,7 @@ import { toBN } from 'utils/numbers'
 import { calculateGasMargin } from 'utils/web3'
 import ERC721_ABI from 'constants/abi/ERC721.json'
 import { ZERO_ADDRESS } from 'constants/addresses'
-
-export enum ApprovalState {
-  UNKNOWN = 'UNKNOWN',
-  NOT_APPROVED = 'NOT_APPROVED',
-  PENDING = 'PENDING',
-  APPROVED = 'APPROVED',
-}
+import { ApprovalState } from './useApproveCallback'
 
 export function useERC721ApproveForAll(
   tokenAddress: string | null | undefined,

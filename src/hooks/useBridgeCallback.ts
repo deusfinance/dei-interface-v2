@@ -18,6 +18,7 @@ import { ChainInfo } from 'constants/chainInfo'
 
 export enum TransactionCallbackState {
   INVALID = 'INVALID',
+  PENDING = 'PENDING',
   VALID = 'VALID',
 }
 

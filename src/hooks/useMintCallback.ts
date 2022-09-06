@@ -10,15 +10,10 @@ import { CollateralPoolErrorToUserReadableMessage } from 'utils/parseError'
 import toast from 'react-hot-toast'
 import { toHex } from 'utils/hex'
 import { calculateGasMargin } from 'utils/web3'
-
-export enum MintCallbackState {
-  INVALID = 'INVALID',
-  PENDING = 'PENDING',
-  VALID = 'VALID',
-}
+import { TransactionCallbackState } from './useBridgeCallback'
 
 export default function useMintCallback(deiAmount: CurrencyAmount<NativeCurrency | Token> | null | undefined): {
-  state: MintCallbackState
+  state: TransactionCallbackState
   callback: null | (() => Promise<string>)
   error: string | null
 } {
@@ -49,21 +44,21 @@ export default function useMintCallback(deiAmount: CurrencyAmount<NativeCurrency
   return useMemo(() => {
     if (!account || !chainId || !library || !collateralPoolContract) {
       return {
-        state: MintCallbackState.INVALID,
+        state: TransactionCallbackState.INVALID,
         callback: null,
         error: 'Missing dependencies',
       }
     }
     if (!deiAmount) {
       return {
-        state: MintCallbackState.INVALID,
+        state: TransactionCallbackState.INVALID,
         callback: null,
         error: 'No amount provided',
       }
     }
 
     return {
-      state: MintCallbackState.VALID,
+      state: TransactionCallbackState.VALID,
       error: null,
       callback: async function onMint(): Promise<string> {
         console.log('onMint callback')

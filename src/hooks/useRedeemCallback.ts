@@ -11,12 +11,7 @@ import { useTransactionAdder } from 'state/transactions/hooks'
 
 import { calculateGasMargin, toWei } from 'utils/web3'
 import { dynamicPrecision } from 'utils/numbers'
-
-export enum RedeemCallbackState {
-  INVALID = 'INVALID',
-  PENDING = 'PENDING',
-  VALID = 'VALID',
-}
+import { TransactionCallbackState } from './useBridgeCallback'
 
 interface OracleResponse {
   collateral_price: number
@@ -31,7 +26,7 @@ export default function useRedeemCallback(
   TokenOut2: Token | null,
   amountIn: string
 ): {
-  state: RedeemCallbackState
+  state: TransactionCallbackState
   callback: null | (() => Promise<string>)
   error: string | null
 } {
@@ -103,7 +98,7 @@ export default function useRedeemCallback(
   return useMemo(() => {
     if (!account || !chainId || !library || !CollateralPoolContract || !TokenIn || !TokenOut1 || !TokenOut2) {
       return {
-        state: RedeemCallbackState.INVALID,
+        state: TransactionCallbackState.INVALID,
         callback: null,
         error: 'Missing dependencies',
       }
@@ -111,13 +106,13 @@ export default function useRedeemCallback(
 
     if (!amountIn || amountIn == '' || amountIn == '0') {
       return {
-        state: RedeemCallbackState.INVALID,
+        state: TransactionCallbackState.INVALID,
         callback: null,
         error: 'No amount provided',
       }
     }
     return {
-      state: RedeemCallbackState.VALID,
+      state: TransactionCallbackState.VALID,
       error: null,
       callback: async function onRedeem(): Promise<string> {
         console.log('onRedeem callback')
@@ -202,7 +197,7 @@ export function useCollectRedemptionCallback(
   amount1: number,
   amount2: number
 ): {
-  state: RedeemCallbackState
+  state: TransactionCallbackState
   callback: null | (() => Promise<string>)
   error: string | null
 } {
@@ -233,14 +228,14 @@ export function useCollectRedemptionCallback(
   return useMemo(() => {
     if (!account || !chainId || !library || !CollateralPoolContract || !Token1 || !Token2) {
       return {
-        state: RedeemCallbackState.INVALID,
+        state: TransactionCallbackState.INVALID,
         callback: null,
         error: 'Missing dependencies',
       }
     }
 
     return {
-      state: RedeemCallbackState.VALID,
+      state: TransactionCallbackState.VALID,
       error: null,
       callback: async function collectRedemption(): Promise<string> {
         console.log('collectRedemption callback')

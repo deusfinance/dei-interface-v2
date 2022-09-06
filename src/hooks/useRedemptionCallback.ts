@@ -9,24 +9,10 @@ import { useCollateralPoolContract } from 'hooks/useContract'
 import { calculateGasMargin } from 'utils/web3'
 import { toHex } from 'utils/hex'
 import { CollateralPoolErrorToUserReadableMessage } from 'utils/parseError'
-
-export enum RedeemCallbackState {
-  INVALID = 'INVALID',
-  VALID = 'VALID',
-}
-
-export enum CollectCollateralCallbackState {
-  INVALID = 'INVALID',
-  VALID = 'VALID',
-}
-
-export enum CollectDeusCallbackState {
-  INVALID = 'INVALID',
-  VALID = 'VALID',
-}
+import { TransactionCallbackState } from './useBridgeCallback'
 
 export default function useRedemptionCallback(deiAmount: CurrencyAmount<NativeCurrency | Token> | null | undefined): {
-  state: RedeemCallbackState
+  state: TransactionCallbackState
   callback: null | (() => Promise<string>)
   error: string | null
 } {
@@ -57,21 +43,21 @@ export default function useRedemptionCallback(deiAmount: CurrencyAmount<NativeCu
   return useMemo(() => {
     if (!account || !chainId || !library || !collateralPoolContract) {
       return {
-        state: RedeemCallbackState.INVALID,
+        state: TransactionCallbackState.INVALID,
         callback: null,
         error: 'Missing dependencies',
       }
     }
     if (!deiAmount) {
       return {
-        state: RedeemCallbackState.INVALID,
+        state: TransactionCallbackState.INVALID,
         callback: null,
         error: 'No amount provided',
       }
     }
 
     return {
-      state: RedeemCallbackState.VALID,
+      state: TransactionCallbackState.VALID,
       error: null,
       callback: async function onRedeem(): Promise<string> {
         console.log('onRedeem callback')
@@ -147,7 +133,7 @@ export default function useRedemptionCallback(deiAmount: CurrencyAmount<NativeCu
 }
 
 export function useCollectCollateralCallback(): {
-  state: CollectCollateralCallbackState
+  state: TransactionCallbackState
   callback: null | (() => Promise<string>)
   error: string | null
 } {
@@ -176,14 +162,14 @@ export function useCollectCollateralCallback(): {
   return useMemo(() => {
     if (!account || !chainId || !library || !collateralPoolContract) {
       return {
-        state: CollectCollateralCallbackState.INVALID,
+        state: TransactionCallbackState.INVALID,
         callback: null,
         error: 'Missing dependencies',
       }
     }
 
     return {
-      state: CollectCollateralCallbackState.VALID,
+      state: TransactionCallbackState.VALID,
       error: null,
       callback: async function onCollectCollateral(): Promise<string> {
         console.log('onCollectCollateral callback')
@@ -258,7 +244,7 @@ export function useCollectCollateralCallback(): {
 }
 
 export function useCollectDeusCallback(): {
-  state: CollectDeusCallbackState
+  state: TransactionCallbackState
   callback: null | (() => Promise<string>)
   error: string | null
 } {
@@ -287,14 +273,14 @@ export function useCollectDeusCallback(): {
   return useMemo(() => {
     if (!account || !chainId || !library || !collateralPoolContract) {
       return {
-        state: CollectDeusCallbackState.INVALID,
+        state: TransactionCallbackState.INVALID,
         callback: null,
         error: 'Missing dependencies',
       }
     }
 
     return {
-      state: CollectDeusCallbackState.VALID,
+      state: TransactionCallbackState.VALID,
       error: null,
       callback: async function onCollectDeus(): Promise<string> {
         console.log('onCollectDeus callback')
