@@ -28,9 +28,12 @@ import Claim from 'components/App/Bridge/Claim'
 // import usePoolStats from 'components/App/StableCoin/PoolStats'
 import TokensBox from 'components/App/Bridge/TokensBox'
 import { Token } from '@sushiswap/core-sdk'
-import { Info } from 'components/Icons'
+import { DotFlashing, Info } from 'components/Icons'
 import { BRIDGE__TOKENS } from 'constants/inputs'
 import ChainsModal from 'components/App/Bridge/ChainsModal'
+import { useSupportedChainId } from 'hooks/useSupportedChainId'
+import { BRIDGE_ADDRESS } from 'constants/addresses'
+import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
 // import { BridgeClient } from 'lib/muon'
 // import { BRIDGE_ADDRESS } from 'constants/addresses'
 
@@ -107,6 +110,7 @@ export default function Bridge() {
   const { chainId, account } = useWeb3React()
   const [amountIn, setAmountIn] = useState('')
   const bridgePaused = false // useRedeemPaused()
+  const isSupportedChainId = useSupportedChainId()
 
   const [sourceChainId, setSourceChainId] = useState<SupportedChainId | null | undefined>(chainId)
   const [destinationChainId, setDestinationChainId] = useState<SupportedChainId | null>(null)
@@ -121,23 +125,29 @@ export default function Bridge() {
   const [tokenIn, setTokenIn] = useState<Token>(DEUS_TOKEN)
   const [tokenOut, setTokenOut] = useState<Token>(DEUS_TOKEN)
 
+  const [awaitingApproveConfirmation, setAwaitingApproveConfirmation] = useState(false)
+
   const inputCurrencyBalance = useCurrencyBalance(account ?? undefined, tokenIn)
 
-  // Define dropdown options
-  const [inputTokenOption, inputChainOptions, outputChainOptions] = useMemo(() => {
-    // const DEFAULT_OPTIONS = [[], [], []]
-    const tokens = Object.keys(BRIDGE__TOKENS).map((symbol) => {
-      // const token = BRIDGE__TOKENS[symbol]
-      return {
-        symbol,
-        // logo: Tokens[symbol][token.sourceChains[0]].logo,
-      }
-    })
+  const spender = useMemo(() => (chainId ? BRIDGE_ADDRESS[chainId] : undefined), [chainId])
+  const [approvalState, approveCallback] = useApproveCallback(tokenIn ?? undefined, spender)
+  const [showApprove, showApproveLoader] = useMemo(() => {
+    const show = tokenIn && approvalState !== ApprovalState.APPROVED && !!amountIn
+    return [show, show && approvalState === ApprovalState.PENDING]
+  }, [tokenIn, approvalState, amountIn])
 
-    const inputChains = BRIDGE__TOKENS[tokens[0].symbol].sourceChains.sort()
-    const outputChains = BRIDGE__TOKENS[tokens[0].symbol].destinationChains.sort()
-    return [tokens, inputChains, outputChains]
-  }, [])
+  const handleApprove = async () => {
+    setAwaitingApproveConfirmation(true)
+    await approveCallback()
+    setAwaitingApproveConfirmation(false)
+  }
+
+  // Define dropdown options
+  const [inputChainOptions, outputChainOptions] = useMemo(() => {
+    const inputChains = BRIDGE__TOKENS[tokenSymbol].sourceChains.sort()
+    const outputChains = BRIDGE__TOKENS[tokenSymbol].destinationChains.sort()
+    return [inputChains, outputChains]
+  }, [tokenSymbol])
 
   useEffect(() => {
     if (tokenSymbol != '' && chainId && sourceChainId) {
@@ -206,9 +216,36 @@ export default function Bridge() {
     }
   }, [depositCallbackState, depositCallback, depositCallbackError])
 
+  function getApproveButton(): JSX.Element | null {
+    if (!isSupportedChainId || !account) {
+      return null
+    }
+    if (awaitingApproveConfirmation) {
+      return (
+        <MainButton active>
+          Awaiting Confirmation <DotFlashing />
+        </MainButton>
+      )
+    }
+    if (showApproveLoader) {
+      return (
+        <MainButton active>
+          Approving <DotFlashing />
+        </MainButton>
+      )
+    }
+    if (showApprove) {
+      return <MainButton onClick={handleApprove}>Allow us to spend {tokenIn?.symbol}</MainButton>
+    }
+    return null
+  }
+
   function getActionButton(): JSX.Element | null {
     if (!chainId || !account) {
       return <ConnectWallet />
+    }
+    if (showApprove) {
+      return null
     }
     if (bridgePaused) {
       return <MainButton disabled>Bridge Paused</MainButton>
@@ -222,7 +259,7 @@ export default function Bridge() {
           if (amountIn && amountIn !== '0' && amountIn !== '' && amountIn !== '0.') toggleReviewModal(true)
         }}
       >
-        Bridge DEI
+        Bridge {tokenIn?.symbol}
       </MainButton>
     )
   }
@@ -301,6 +338,7 @@ export default function Bridge() {
                 onTokenSelect={() => onTokenSelect('tokenOut')}
               />
               <div style={{ marginTop: '20px' }}></div>
+              {getApproveButton()}
               {getActionButton()}
             </BridgeWrapper>
             <BottomWrap>

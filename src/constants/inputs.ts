@@ -77,7 +77,7 @@ export const BRIDGE__TOKENS: { [symbol: string]: IBridgeToken } = {
   },
   ['DEUS']: {
     tokenId: 1,
-    sourceChains: [SupportedChainId.POLYGON, SupportedChainId.FANTOM], // FIXME: do not update?
-    destinationChains: [SupportedChainId.POLYGON, SupportedChainId.FANTOM],
+    sourceChains: [SupportedChainId.POLYGON, SupportedChainId.FANTOM, SupportedChainId.MAINNET],
+    destinationChains: [SupportedChainId.POLYGON, SupportedChainId.FANTOM, SupportedChainId.MAINNET],
   },
 }
