@@ -1,7 +1,7 @@
 // import useWeb3React from './useWeb3'
 // import { BRIDGE_ADDRESS } from 'constants/addresses'
 
-interface IClaim {
+export interface IClaim {
   amount: string
   fromChain: string
   toChain: string
@@ -15,10 +15,10 @@ export function getClaimTokens(): IClaim[] {
   const claim: IClaim = {
     amount: '1000',
     fromChain: '1',
-    toChain: '2',
+    toChain: '250',
     tokenId: '0',
-    txId: '0',
-    user: '1',
+    txId: '2',
+    user: '0x',
   }
   const claims = [claim]
   //   const networks = []

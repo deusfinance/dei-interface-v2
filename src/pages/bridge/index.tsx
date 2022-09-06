@@ -188,13 +188,6 @@ export default function Bridge() {
     if (!isOpenChainsModal) setSelectedTokenInputBox(null)
   }, [isOpenChainsModal])
 
-  // const claim = {
-  //   depositAddress: BRIDGE_ADDRESS[250],
-  //   depositTxId: '2',
-  //   depositNetwork: 250,
-  // }
-  // console.log(BridgeClient.getClaimData(claim))
-
   const handleDeposit = useCallback(async () => {
     console.log('called handleDeposit')
     console.log(depositCallbackState, depositCallbackError)

@@ -16,9 +16,8 @@ import { DEUS_TOKEN } from 'constants/tokens'
 // import { SupportedChainId } from 'constants/chains'
 import { BN_TEN, toBN } from 'utils/numbers'
 
-import { useCollateralCollectionDelay, useDeusCollectionDelay, useExpiredPrice } from 'state/dei/hooks'
+import { useDeusCollectionDelay } from 'state/dei/hooks'
 import useWeb3React from 'hooks/useWeb3'
-import { useCollectCollateralCallback, useCollectDeusCallback } from 'hooks/useRedemptionCallback'
 import { useGetDeusPrice } from 'hooks/useMintPage'
 import useRpcChangerCallback from 'hooks/useRpcChangerCallback'
 import { useGetPoolData } from 'hooks/useRedemptionPage'
@@ -27,6 +26,8 @@ import { Card } from 'components/Card'
 import { Row, RowCenter } from 'components/Row'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import { TokenBox } from './TokenBox'
+import { useClaimCallback } from 'hooks/useBridgeCallback'
+import { getClaimTokens } from 'hooks/useBridgePage'
 
 const ActionWrap = styled(Card)`
   background: transparent;
@@ -151,9 +152,9 @@ export default function RedeemClaim() {
     redeemCollateralBalances: any
     isLoading: boolean
   } = useGetPoolData()
-  const [isOpenUpdateOracleModal, toggleUpdateOracleModal] = useState(false)
+  const [awaitingClaimConfirmation, setAwaitingClaimConfirmation] = useState(false)
 
-  const collateralRedemptionDelay = useCollateralCollectionDelay()
+  // const collateralRedemptionDelay = useCollateralCollectionDelay()
   const deusRedemptionDelay = useDeusCollectionDelay()
 
   const onSwitchNetwork = useRpcChangerCallback()
@@ -168,7 +169,7 @@ export default function RedeemClaim() {
   }, [])
 
   const deusPrice = useGetDeusPrice()
-  const expiredPrice = useExpiredPrice()
+  // const expiredPrice = useExpiredPrice()
 
   const [unClaimed, setUnClaimed] = useState<IToken[]>([])
   useEffect(() => {
@@ -216,63 +217,36 @@ export default function RedeemClaim() {
         return token.claimableBlock > currentBlock
       })
     )
-    const rc = unClaimed.length - pendingTokens.length
-    const pc = pendingTokens.length
-    setReadyCount(rc)
-    setPendingCount(pc)
+    setReadyCount(unClaimed.length - pendingTokens.length)
+    setPendingCount(pendingTokens.length)
   }, [currentBlock, pendingTokens.length, unClaimed])
 
-  const {
-    state: CollectCollateralCallbackState,
-    callback: collectCollateralCallback,
-    error: collectCollateralCallbackError,
-  } = useCollectCollateralCallback()
-
-  const {
-    state: CollectDeusCallbackState,
-    callback: collectDeusCallback,
-    error: collectDeusCallbackError,
-  } = useCollectDeusCallback()
+  const claims = getClaimTokens()
+  const { state: claimCallbackState, callback: claimCallback, error: claimCallbackError } = useClaimCallback(claims[0])
 
   const handleClaim = useCallback(
-    async (token) => {
+    async (claim) => {
       console.log('called handleClaim')
-      if (token.symbol === 'USDC') {
-        console.log('Claim USDC')
-        console.log(CollectCollateralCallbackState, collectCollateralCallbackError)
-        if (!collectCollateralCallback) return
-        try {
-          const txHash = await collectCollateralCallback()
-          console.log({ txHash })
-        } catch (e) {
-          if (e instanceof Error) {
-          } else {
-            console.error(e)
-          }
-        }
-      } else if (token.symbol === 'DEUS') {
-        console.log('Claim DEUS')
-        console.log(CollectDeusCallbackState, collectDeusCallbackError)
-        if (!collectDeusCallback) return
-        if (expiredPrice) return toggleUpdateOracleModal(true)
-        try {
-          const txHash = await collectDeusCallback()
-          console.log({ txHash })
-        } catch (e) {
-          if (e instanceof Error) console.log(e)
-          else console.error(e)
+      console.log(claimCallbackState, claimCallback, claimCallbackError)
+      if (!claimCallback) return
+
+      // let error = ''
+      try {
+        setAwaitingClaimConfirmation(true)
+        const txHash = await handleClaim(claim)
+        setAwaitingClaimConfirmation(false)
+        console.log({ txHash })
+      } catch (e) {
+        setAwaitingClaimConfirmation(false)
+        if (e instanceof Error) {
+          // error = e.message
+        } else {
+          console.error(e)
+          // error = 'An unknown error occurred.'
         }
       }
     },
-    [
-      CollectCollateralCallbackState,
-      CollectDeusCallbackState,
-      collectCollateralCallback,
-      collectCollateralCallbackError,
-      collectDeusCallback,
-      collectDeusCallbackError,
-      expiredPrice,
-    ]
+    [claimCallbackState, claimCallback, claimCallbackError]
   )
 
   return (

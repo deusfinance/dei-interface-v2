@@ -3,7 +3,7 @@ import { Type, isError, getErrorMessage } from '../error'
 import { MuonClient } from './base'
 import { MUON_BASE_URL } from '../config'
 
-interface RequestParams {
+export interface RequestParams {
   depositAddress: string
   depositTxId: string
   depositNetwork: number
