@@ -46,28 +46,28 @@ export default function DeiStats() {
           label={'Price'}
           primaryColor={theme.deiPrimaryColor}
           secondaryColor={theme.deiSecondaryColor}
-          uniqueID="DEI"
+          uniqueID="DEIPrice"
         />
         <MultipleChart
           primaryLabel="Market Cap"
           secondaryLabel="Supply"
           primaryColor={theme.deiPrimaryColor}
           secondaryColor={theme.deiSecondaryColor}
-          uniqueID="DEI"
+          uniqueID="DEIMarketCap"
         />
         <MultipleChart
           primaryLabel="Minting Ratio"
           secondaryLabel="Redemption Ratio"
           primaryColor={theme.deiPrimaryColor}
           secondaryColor={theme.deiSecondaryColor}
-          uniqueID="DEI"
+          uniqueID="DEIMintingRatio"
         />
         <MultipleChart
           primaryLabel="Collaterization Ratio"
           secondaryLabel="Total Value(USD)"
           primaryColor={theme.deiPrimaryColor}
           secondaryColor={theme.deiSecondaryColor}
-          uniqueID="DEI"
+          uniqueID="DEICollaterizationRatio"
         />
       </ChartWrapper>
     </div>

@@ -43,14 +43,14 @@ export default function DeusStats() {
           label={'Price'}
           primaryColor={theme.deusPrimaryColor}
           secondaryColor={theme.deusSecondaryColor}
-          uniqueID="DEUS"
+          uniqueID="DEUSPrice"
         />
         <MultipleChart
           primaryLabel="Market Cap"
           secondaryLabel="Supply"
           primaryColor={theme.deusPrimaryColor}
           secondaryColor={theme.deusSecondaryColor}
-          uniqueID="DEUS"
+          uniqueID="DEUSMarketCap"
         />
       </ChartWrapper>
     </div>

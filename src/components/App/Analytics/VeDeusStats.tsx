@@ -44,13 +44,13 @@ export default function VeDeusStats() {
           label={'Supply'}
           primaryColor={theme.deusPrimaryColor}
           secondaryColor={theme.deusSecondaryColor}
-          uniqueID="veDEUS"
+          uniqueID="veDEUSSupply"
         />
         <SingleChart
           label={'Total Locked'}
           primaryColor={theme.deusPrimaryColor}
           secondaryColor={theme.deusSecondaryColor}
-          uniqueID="veDEUS"
+          uniqueID="veDEUSTotalLocaked"
         />
       </ChartWrapper>
     </div>

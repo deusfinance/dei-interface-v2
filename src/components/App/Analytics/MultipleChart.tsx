@@ -1,4 +1,6 @@
+import Dropdown from 'components/DropDown'
 import { useState } from 'react'
+import { isMobile } from 'react-device-detect'
 import { ResponsiveContainer, YAxis, AreaChart, Area, CartesianGrid } from 'recharts'
 import styled, { useTheme } from 'styled-components'
 
@@ -83,7 +85,7 @@ const PrimaryLabel = styled.div<{
   active?: boolean
 }>`
   display: flex;
-  padding: 8px 16px;
+  padding: 12px 16px;
   min-width: 60px;
   border-radius: 8px 0px 0px 8px;
   border: 1px solid ${({ theme }) => theme.border1};
@@ -107,7 +109,7 @@ const SecondaryLabel = styled.div<{
   active?: boolean
 }>`
   display: flex;
-  padding: 8px 16px;
+  padding: 12px 16px;
   min-width: 60px;
   border-radius: 0px 8px 8px 0px;
   border-left: 1px solid transparent;
@@ -145,7 +147,18 @@ export default function MultipleChart({
   const loading = false
   const [currentTab, setCurrentTab] = useState(primaryLabel)
 
-  const timeFrames = ['15m', '1H', '8H', '1D', '1W', '1M', '3M', '6M', '1Y', 'ALL']
+  const timeFramesOptions = [
+    { value: '15m', label: '15 mins' },
+    { value: '1H', label: '1 hour' },
+    { value: '8H', label: '8 hours' },
+    { value: '1D', label: '1 day' },
+    { value: '1W', label: '1 week' },
+    { value: '1M', label: '1 month' },
+    { value: '3M', label: '3 months' },
+    { value: '6M', label: '6 months' },
+    { value: '1Y', label: '1 year' },
+    { value: 'ALL', label: 'All time' },
+  ]
   const [currentTimeFrame, setCurrentTimeFrame] = useState('3M')
 
   // TODO :  Use subgraph data
@@ -218,13 +231,27 @@ export default function MultipleChart({
             {secondaryLabel}
           </SecondaryLabel>
         </LabelWrapper>
-        <TimeframeWrapper>
-          {timeFrames.map((timeframe, index) => (
-            <Item key={index} active={currentTimeFrame == timeframe} onClick={() => setCurrentTimeFrame(timeframe)}>
-              {timeframe}
-            </Item>
-          ))}
-        </TimeframeWrapper>
+        {isMobile ? (
+          <Dropdown
+            options={timeFramesOptions}
+            placeholder={'Select a timeframe'}
+            defaultValue={timeFramesOptions[6].value}
+            onSelect={setCurrentTimeFrame}
+            width={'120px'}
+          />
+        ) : (
+          <TimeframeWrapper>
+            {timeFramesOptions.map((timeframe, index) => (
+              <Item
+                key={index}
+                active={currentTimeFrame == timeframe.value}
+                onClick={() => setCurrentTimeFrame(timeframe.value)}
+              >
+                {timeframe.value}
+              </Item>
+            ))}
+          </TimeframeWrapper>
+        )}
       </TitleWrapper>
       <Container
         loading={loading}
