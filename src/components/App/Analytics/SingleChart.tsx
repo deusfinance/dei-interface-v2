@@ -1,4 +1,6 @@
+import Dropdown from 'components/DropDown'
 import { useState } from 'react'
+import { isMobile } from 'react-device-detect'
 import { ResponsiveContainer, YAxis, AreaChart, Area, CartesianGrid } from 'recharts'
 import styled, { useTheme } from 'styled-components'
 
@@ -90,7 +92,18 @@ export default function SingleChart({
   const loading = false
   const theme = useTheme()
 
-  const timeFrames = ['15m', '1H', '8H', '1D', '1W', '1M', '3M', '6M', '1Y', 'ALL']
+  const timeFramesOptions = [
+    { value: '15m', label: '15 mins' },
+    { value: '1H', label: '1 hour' },
+    { value: '8H', label: '8 hours' },
+    { value: '1D', label: '1 day' },
+    { value: '1W', label: '1 week' },
+    { value: '1M', label: '1 month' },
+    { value: '3M', label: '3 months' },
+    { value: '6M', label: '6 months' },
+    { value: '1Y', label: '1 year' },
+    { value: 'ALL', label: 'All time' },
+  ]
   const [currentTimeFrame, setCurrentTimeFrame] = useState('3M')
 
   // TODO : Using subgraph data
@@ -121,13 +134,27 @@ export default function SingleChart({
     <Wrapper>
       <TitleWrapper>
         <Title>{label}</Title>
-        <TimeframeWrapper>
-          {timeFrames.map((timeframe, index) => (
-            <Item key={index} active={currentTimeFrame == timeframe} onClick={() => setCurrentTimeFrame(timeframe)}>
-              {timeframe}
-            </Item>
-          ))}
-        </TimeframeWrapper>
+        {isMobile ? (
+          <Dropdown
+            options={timeFramesOptions}
+            placeholder={'Select a timeframe'}
+            defaultValue={timeFramesOptions[6].value}
+            onSelect={setCurrentTimeFrame}
+            width={'120px'}
+          />
+        ) : (
+          <TimeframeWrapper>
+            {timeFramesOptions.map((timeframe, index) => (
+              <Item
+                key={index}
+                active={currentTimeFrame == timeframe.value}
+                onClick={() => setCurrentTimeFrame(timeframe.value)}
+              >
+                {timeframe.value}
+              </Item>
+            ))}
+          </TimeframeWrapper>
+        )}
       </TitleWrapper>
       <Container
         loading={loading}
