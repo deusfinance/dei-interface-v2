@@ -25,8 +25,8 @@
     "exact": true
   },
   {
-    "text": "Analytics",
-    "path": "/analytics",
+    "text": "Metrics",
+    "path": "/metrics",
     "exact": true
   }
 ]

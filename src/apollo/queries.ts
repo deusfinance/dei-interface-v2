@@ -28,6 +28,11 @@ export interface Voucher {
   timestamp: string
 }
 
+export interface Swap {
+  hash: string
+  token0PerToken1: string
+}
+
 export const VOUCHER_DETAILS = gql`
   query getVoucherDetails($currentTokenId: BigInt!) {
     redeems(where: { currentTokenId: $currentTokenId }, orderBy: timestamp, orderDirection: desc) {
@@ -77,6 +82,15 @@ export const SOLIDLY_PAIRS = gql`
         symbol
         decimals
       }
+    }
+  }
+`
+
+export const ALL_SWAPS = gql`
+  query getSwaps {
+    swaps(first: 5, where: { poolAddress: "0xaF918eF5b9f33231764A5557881E6D3e5277d456" }) {
+      hash
+      token0PerToken1
     }
   }
 `

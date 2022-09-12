@@ -1,5 +1,9 @@
+import { getApolloClient } from 'apollo/client/deiStats'
+import { ALL_SWAPS, CURRENT_PRICE, Price, Swap } from 'apollo/queries'
 import Dropdown from 'components/DropDown'
-import { useState } from 'react'
+import { FALLBACK_CHAIN_ID } from 'constants/chains'
+import useWeb3React from 'hooks/useWeb3'
+import { useCallback, useEffect, useState } from 'react'
 import { isMobile } from 'react-device-detect'
 import { ResponsiveContainer, YAxis, AreaChart, Area, CartesianGrid } from 'recharts'
 import styled, { useTheme } from 'styled-components'
@@ -89,8 +93,11 @@ export default function SingleChart({
   secondaryColor: string
   uniqueID: string
 }) {
+  const { chainId } = useWeb3React()
   const loading = false
   const theme = useTheme()
+
+  const [swaps, setSwaps] = useState<Swap[] | []>([])
 
   const timeFramesOptions = [
     { value: '15m', label: '15 mins' },
@@ -129,6 +136,37 @@ export default function SingleChart({
     { month: 'May', value: 2000, score: 2000 },
     { month: 'Jun', value: 234, score: 234 },
   ]
+
+  const fetchSwaps = useCallback(async () => {
+    const DEFAULT_RETURN: Swap[] | [] = []
+    try {
+      const client = getApolloClient(chainId ?? FALLBACK_CHAIN_ID)
+      console.log('chainId', chainId)
+      console.log('apolloClient', client)
+      if (!client) return DEFAULT_RETURN
+
+      const { data } = await client.query({
+        query: ALL_SWAPS,
+        fetchPolicy: 'no-cache',
+      })
+
+      return data.swaps as Swap[]
+    } catch (error) {
+      console.log('Unable to fetch price from The Graph Network')
+      console.error(error)
+      return []
+    }
+  }, [chainId])
+
+  useEffect(() => {
+    const getSwaps = async () => {
+      const result = await fetchSwaps()
+      setSwaps(result)
+    }
+    getSwaps()
+  }, [fetchSwaps])
+
+  console.log('swap', swaps)
 
   return (
     <Wrapper>

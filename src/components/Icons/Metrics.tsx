@@ -2,7 +2,7 @@ import React from 'react'
 
 import { useTheme } from 'styled-components'
 
-export default function Analytics({ size, ...rest }: { size: number; [x: string]: any }) {
+export default function Metrics({ size, ...rest }: { size: number; [x: string]: any }) {
   const theme = useTheme()
 
   return (

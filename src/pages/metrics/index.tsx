@@ -2,14 +2,14 @@ import React from 'react'
 import styled from 'styled-components'
 import Image from 'next/image'
 
-import ANALYTICS_LOGO from '/public/static/images/pages/analytics/DEI_Analytics.svg'
+import METRICS_LOGO from '/public/static/images/pages/analytics/DEI_Analytics.svg'
 
 import Hero from 'components/Hero'
 import { Container, Title } from 'components/App/StableCoin'
 import { RowCenter } from 'components/Row'
-import VeDeusStats from 'components/App/Analytics/VeDeusStats'
-import DeiStats from 'components/App/Analytics/DeiStats'
-import DeusStats from 'components/App/Analytics/DeusStats'
+import VeDeusStats from 'components/App/Metrics/VeDeusStats'
+import DeiStats from 'components/App/Metrics/DeiStats'
+import DeusStats from 'components/App/Metrics/DeusStats'
 
 const Wrapper = styled(RowCenter)`
   max-width: 1300px;
@@ -35,12 +35,12 @@ const Wrapper = styled(RowCenter)`
   }
 `
 
-export default function Analytics() {
+export default function Metrics() {
   return (
     <Container>
       <Hero>
-        <Image src={ANALYTICS_LOGO} height={'80px'} alt="Analytics logo" />
-        <Title>Analytics</Title>
+        <Image src={METRICS_LOGO} height={'80px'} alt="Metrics logo" />
+        <Title>Metrics</Title>
       </Hero>
       <Wrapper>
         <DeiStats />
