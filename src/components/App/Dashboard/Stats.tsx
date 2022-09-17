@@ -14,6 +14,9 @@ import { getMaximumDate } from 'utils/vest'
 import { RowBetween } from 'components/Row'
 import StatsItem from './StatsItem'
 import Chart from './Chart'
+import { DEI_ADDRESS, veDEUS } from 'constants/addresses'
+import { SupportedChainId } from 'constants/chains'
+import { ChainInfo } from 'constants/chainInfo'
 
 const Wrapper = styled(RowBetween)`
   background: ${({ theme }) => theme.bg0};
@@ -123,25 +126,50 @@ export default function Stats() {
         <StatsWrapper>
           <Title>DEI Stats</Title>
           <Info>
-            <StatsItem name="DEI Price" value={'$1.00'} linkIcon={true} />
-            <StatsItem name="Total Supply" value={formatAmount(totalSupply, 2)} linkIcon={true} />
-            <StatsItem name="Total Protocol Holdings" value={formatAmount(totalProtocolHoldings, 2)} linkIcon={true} />
-            <StatsItem name="Circulating Supply" value={formatAmount(circulatingSupply, 2)} linkIcon={true} />
-            <StatsItem name="Total Reserve Assets" value={formatDollarAmount(totalUSDCReserves, 2)} linkIcon={true} />
+            <StatsItem name="DEI Price" value={'$1.00'} href="https://www.coingecko.com/en/coins/dei-token" />
             <StatsItem
-              name="USDC Backing Per DEI"
-              value={formatAmount(collateralRatio, 1).toString() + '%'}
-              linkIcon={true}
+              name="Total Supply"
+              value={formatAmount(totalSupply, 2)}
+              href={
+                ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/token/' + DEI_ADDRESS[SupportedChainId.FANTOM]
+              }
             />
+            <StatsItem
+              name="Total Protocol Holdings"
+              value={formatAmount(totalProtocolHoldings, 2)}
+              href={
+                ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl +
+                '/token/' +
+                DEI_ADDRESS[SupportedChainId.FANTOM] +
+                '#balances'
+              }
+            />
+            <StatsItem
+              name="Circulating Supply"
+              value={formatAmount(circulatingSupply, 2)}
+              href={
+                ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/token/' + DEI_ADDRESS[SupportedChainId.FANTOM]
+              }
+            />
+            <StatsItem name="Total Reserve Assets" value={formatDollarAmount(totalUSDCReserves, 2)} />
+            <StatsItem name="USDC Backing Per DEI" value={formatAmount(collateralRatio, 1).toString() + '%'} />
           </Info>
         </StatsWrapper>
         <StatsWrapper>
           <DeusTitle>DEUS Stats</DeusTitle>
           <Info>
-            <StatsItem name="DEUS Price" value={formatDollarAmount(parseFloat(deusPrice), 2)} linkIcon={true} />
-            <StatsItem name="Total Supply" value="N/A" linkIcon={true} />
-            <StatsItem name="Market Cap" value="N/A" linkIcon={true} />
-            <StatsItem name="veDEUS Supply" value={formatAmount(parseFloat(lockedVeDEUS), 0)} linkIcon={true} />
+            <StatsItem
+              name="DEUS Price"
+              value={formatDollarAmount(parseFloat(deusPrice), 2)}
+              href={'https://www.coingecko.com/en/coins/deus-finance'}
+            />
+            <StatsItem name="Total Supply" value="N/A" />
+            <StatsItem name="Market Cap" value="N/A" />
+            <StatsItem
+              name="veDEUS Supply"
+              value={formatAmount(parseFloat(lockedVeDEUS), 0)}
+              href={ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/address/' + veDEUS[SupportedChainId.FANTOM]}
+            />
           </Info>
         </StatsWrapper>
       </AllStats>
