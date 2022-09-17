@@ -39,10 +39,20 @@ const Value = styled.div<{ isLink?: boolean }>`
   }
 `
 
-export default function StatsItem({ name, value, href }: { name: string; value: string; href?: string }) {
+export default function StatsItem({
+  name,
+  value,
+  href,
+  onClick,
+}: {
+  name: string
+  value: string
+  href?: string
+  onClick?: () => void
+}) {
   const isLink = !!href
   return (
-    <Item>
+    <Item onClick={onClick}>
       <Name>{name}</Name>
       {isLink ? (
         <ExternalLink href={href} passHref>
@@ -51,6 +61,11 @@ export default function StatsItem({ name, value, href }: { name: string; value: 
             <LinkIconLogo />
           </Value>
         </ExternalLink>
+      ) : !!onClick ? (
+        <Value isLink>
+          {value}
+          <LinkIconLogo />
+        </Value>
       ) : (
         <Value>{value}</Value>
       )}

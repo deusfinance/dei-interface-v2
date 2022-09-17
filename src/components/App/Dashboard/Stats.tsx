@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import Image from 'next/image'
 
@@ -11,12 +11,14 @@ import { useVestedAPY } from 'hooks/useVested'
 import { formatAmount, formatDollarAmount } from 'utils/numbers'
 import { getMaximumDate } from 'utils/vest'
 
+import { Modal, ModalHeader } from 'components/Modal'
 import { RowBetween } from 'components/Row'
 import StatsItem from './StatsItem'
 import Chart from './Chart'
-import { DEI_ADDRESS, veDEUS } from 'constants/addresses'
+import { CollateralPool, DEI_ADDRESS, USDCReserves1, USDCReserves2, veDEUS } from 'constants/addresses'
 import { SupportedChainId } from 'constants/chains'
 import { ChainInfo } from 'constants/chainInfo'
+import { Loader } from 'components/Icons'
 
 const Wrapper = styled(RowBetween)`
   background: ${({ theme }) => theme.bg0};
@@ -114,71 +116,222 @@ const BackgroundImageWrapper = styled.div`
   `};
 `
 
+const ModalWrapper = styled.div`
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  gap: 8px;
+  width: 100%;
+  padding: 1.5rem;
+
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+  padding: 1rem;
+`};
+
+  > div {
+    margin: 4px 0px;
+  }
+`
+
+const ModalInfoWrapper = styled(RowBetween)<{
+  active?: boolean
+}>`
+  align-items: center;
+  margin-top: 1px;
+  white-space: nowrap;
+  margin: auto;
+  background-color: #0d0d0d;
+  border: 1px solid #1c1c1c;
+  border-radius: 15px;
+  padding: 1.25rem 2rem;
+  font-size: 0.75rem;
+  min-width: 250px;
+  width: 100%;
+
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+      padding: 0.75rem 1rem;
+      width: 90%;
+      min-width: 265px;
+    `}
+  ${({ theme, active }) =>
+    active &&
+    `
+    border: 1px solid ${theme.text1};
+  `}
+`
+
+const ModalItemValue = styled.div`
+  display: flex;
+  align-self: end;
+  color: ${({ theme }) => theme.yellow3};
+  margin-left: 5px;
+
+  > span {
+    margin-left: 5px;
+    color: ${({ theme }) => theme.text1};
+  }
+`
+
 export default function Stats() {
   const deusPrice = useDeusPrice()
-  const { totalSupply, totalProtocolHoldings, collateralRatio, circulatingSupply, totalUSDCReserves } = useDeiStats()
+  const {
+    totalSupply,
+    collateralRatio,
+    circulatingSupply,
+    totalUSDCReserves,
+    totalProtocolHoldings,
+    usdcReserves1,
+    usdcReserves2,
+    usdcPoolReserves,
+  } = useDeiStats()
 
   const { lockedVeDEUS } = useVestedAPY(undefined, getMaximumDate())
 
+  function getModalBody() {
+    return (
+      <ModalWrapper>
+        <div>DEI Total Reserve Assets are held in three wallets.</div>
+        <div>Below is the USDC holdings in each wallet.</div>
+        <ModalInfoWrapper>
+          <a
+            href={
+              ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/address/' + USDCReserves1[SupportedChainId.FANTOM]
+            }
+            target={'_blank'}
+            rel={'noreferrer'}
+          >
+            Reserves 1
+          </a>
+          {usdcReserves1 === null ? <Loader /> : <ModalItemValue>{formatAmount(usdcReserves1, 2)}</ModalItemValue>}
+        </ModalInfoWrapper>
+        <ModalInfoWrapper>
+          <a
+            href={
+              ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/address/' + USDCReserves2[SupportedChainId.FANTOM]
+            }
+            target={'_blank'}
+            rel={'noreferrer'}
+          >
+            Reserves 2
+          </a>
+          {usdcReserves2 === null ? <Loader /> : <ModalItemValue>{formatAmount(usdcReserves2, 2)}</ModalItemValue>}
+        </ModalInfoWrapper>
+        <ModalInfoWrapper>
+          <a
+            href={
+              ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl +
+              '/address/' +
+              CollateralPool[SupportedChainId.FANTOM]
+            }
+            target={'_blank'}
+            rel={'noreferrer'}
+          >
+            Collateral Pool
+          </a>
+          {usdcPoolReserves === null ? (
+            <Loader />
+          ) : (
+            <ModalItemValue>{formatAmount(usdcPoolReserves, 2)}</ModalItemValue>
+          )}
+        </ModalInfoWrapper>
+        <ModalInfoWrapper active>
+          <p>Total USDC holdings</p>
+          {totalProtocolHoldings === null ? (
+            <Loader />
+          ) : (
+            <ModalItemValue>{formatAmount(usdcReserves1 + usdcReserves2 + usdcPoolReserves, 2)}</ModalItemValue>
+          )}
+        </ModalInfoWrapper>
+      </ModalWrapper>
+    )
+  }
+
+  const [toggleDashboardModal, setToggleDashboardModal] = useState(false)
+
+  function getModalContent() {
+    return (
+      <>
+        <ModalHeader title={'Total Reserve Assets'} onClose={() => setToggleDashboardModal(false)} />
+        {getModalBody()}
+      </>
+    )
+  }
+
   return (
-    <Wrapper>
-      <AllStats>
-        <StatsWrapper>
-          <Title>DEI Stats</Title>
-          <Info>
-            <StatsItem name="DEI Price" value={'$1.00'} href="https://www.coingecko.com/en/coins/dei-token" />
-            <StatsItem
-              name="Total Supply"
-              value={formatAmount(totalSupply, 2)}
-              href={
-                ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/token/' + DEI_ADDRESS[SupportedChainId.FANTOM]
-              }
-            />
-            <StatsItem
-              name="Total Protocol Holdings"
-              value={formatAmount(totalProtocolHoldings, 2)}
-              href={
-                ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl +
-                '/token/' +
-                DEI_ADDRESS[SupportedChainId.FANTOM] +
-                '#balances'
-              }
-            />
-            <StatsItem
-              name="Circulating Supply"
-              value={formatAmount(circulatingSupply, 2)}
-              href={
-                ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/token/' + DEI_ADDRESS[SupportedChainId.FANTOM]
-              }
-            />
-            <StatsItem name="Total Reserve Assets" value={formatDollarAmount(totalUSDCReserves, 2)} />
-            <StatsItem name="USDC Backing Per DEI" value={formatAmount(collateralRatio, 1).toString() + '%'} />
-          </Info>
-        </StatsWrapper>
-        <StatsWrapper>
-          <DeusTitle>DEUS Stats</DeusTitle>
-          <Info>
-            <StatsItem
-              name="DEUS Price"
-              value={formatDollarAmount(parseFloat(deusPrice), 2)}
-              href={'https://www.coingecko.com/en/coins/deus-finance'}
-            />
-            <StatsItem name="Total Supply" value="N/A" />
-            <StatsItem name="Market Cap" value="N/A" />
-            <StatsItem
-              name="veDEUS Supply"
-              value={formatAmount(parseFloat(lockedVeDEUS), 0)}
-              href={ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/address/' + veDEUS[SupportedChainId.FANTOM]}
-            />
-          </Info>
-        </StatsWrapper>
-      </AllStats>
-      <ChartWrapper>
-        <Chart />
-      </ChartWrapper>
-      <BackgroundImageWrapper>
-        <Image src={BG_DASHBOARD} alt="swap bg" layout="fill" objectFit="cover" />
-      </BackgroundImageWrapper>
-    </Wrapper>
+    <>
+      <Wrapper>
+        <AllStats>
+          <StatsWrapper>
+            <Title>DEI Stats</Title>
+            <Info>
+              <StatsItem name="DEI Price" value={'$1.00'} href="https://www.coingecko.com/en/coins/dei-token" />
+              <StatsItem
+                name="Total Supply"
+                value={formatAmount(totalSupply, 2)}
+                href={
+                  ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/token/' + DEI_ADDRESS[SupportedChainId.FANTOM]
+                }
+              />
+              <StatsItem
+                name="Total Protocol Holdings"
+                value={formatAmount(totalProtocolHoldings, 2)}
+                href={
+                  ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl +
+                  '/token/' +
+                  DEI_ADDRESS[SupportedChainId.FANTOM] +
+                  '#balances'
+                }
+              />
+              <StatsItem
+                name="Circulating Supply"
+                value={formatAmount(circulatingSupply, 2)}
+                href={
+                  ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/token/' + DEI_ADDRESS[SupportedChainId.FANTOM]
+                }
+              />
+              <StatsItem
+                name="Total Reserve Assets"
+                value={formatDollarAmount(totalUSDCReserves, 2)}
+                onClick={() => setToggleDashboardModal(true)}
+              />
+              <StatsItem name="USDC Backing Per DEI" value={formatAmount(collateralRatio, 1).toString() + '%'} />
+            </Info>
+          </StatsWrapper>
+          <StatsWrapper>
+            <DeusTitle>DEUS Stats</DeusTitle>
+            <Info>
+              <StatsItem
+                name="DEUS Price"
+                value={formatDollarAmount(parseFloat(deusPrice), 2)}
+                href={'https://www.coingecko.com/en/coins/deus-finance'}
+              />
+              <StatsItem name="Total Supply" value="N/A" />
+              <StatsItem name="Market Cap" value="N/A" />
+              <StatsItem
+                name="veDEUS Supply"
+                value={formatAmount(parseFloat(lockedVeDEUS), 0)}
+                href={
+                  ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/address/' + veDEUS[SupportedChainId.FANTOM]
+                }
+              />
+            </Info>
+          </StatsWrapper>
+        </AllStats>
+        <ChartWrapper>
+          <Chart />
+        </ChartWrapper>
+        <BackgroundImageWrapper>
+          <Image src={BG_DASHBOARD} alt="swap bg" layout="fill" objectFit="cover" />
+        </BackgroundImageWrapper>
+      </Wrapper>
+      <Modal
+        width="500px"
+        isOpen={toggleDashboardModal}
+        onBackgroundClick={() => setToggleDashboardModal(false)}
+        onEscapeKeydown={() => setToggleDashboardModal(false)}
+      >
+        {getModalContent()}
+      </Modal>
+    </>
   )
 }
