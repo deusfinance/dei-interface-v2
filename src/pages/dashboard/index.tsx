@@ -18,7 +18,7 @@ import DEI_LOGO from '/public/static/images/pages/dashboard/DEI_Dashboard.png'
 
 import { useDeiStats } from 'hooks/useDeiStats'
 import useWeb3React from 'hooks/useWeb3'
-import { formatAmount } from 'utils/numbers'
+import { formatAmount, formatDollarAmount } from 'utils/numbers'
 
 import Hero from 'components/Hero'
 import StatsHeader from 'components/StatsHeader'
@@ -28,6 +28,7 @@ import { Card } from 'components/App/Dashboard/card'
 import { SocialCard } from 'components/App/Dashboard/SocialCard'
 import Stats from 'components/App/Dashboard/Stats'
 import DeiBondStats from 'components/App/Dashboard/DeiBondStats'
+import { useDeiPrice } from 'hooks/useCoingeckoPrice'
 
 const Wrapper = styled(RowCenter)`
   max-width: 1300px;
@@ -66,15 +67,16 @@ const CardWrapper = styled(RowBetween)`
 export default function Dashboard() {
   const { account } = useWeb3React()
   const { totalSupply, totalUSDCReserves, collateralRatio } = useDeiStats()
+  const deiPrice = useDeiPrice()
 
   const items = useMemo(
     () => [
-      { name: 'DEI Price', value: '$1.00' },
+      { name: 'DEI Price', value: formatDollarAmount(parseFloat(deiPrice), 3) ?? '$1.00' },
       { name: 'DEI Total Supply', value: formatAmount(totalSupply, 2) ?? '-' },
       { name: 'Collateral Ratio', value: formatAmount(collateralRatio, 1) + '%' },
       { name: 'Total USDC Holdings', value: formatAmount(totalUSDCReserves, 2) },
     ],
-    [totalSupply, totalUSDCReserves, collateralRatio]
+    [deiPrice, totalSupply, collateralRatio, totalUSDCReserves]
   )
 
   return (

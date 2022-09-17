@@ -4,7 +4,7 @@ import Image from 'next/image'
 
 import BG_DASHBOARD from '/public/static/images/pages/dashboard/bg.svg'
 
-import { useDeusPrice } from 'hooks/useCoingeckoPrice'
+import { useDeiPrice, useDeusPrice } from 'hooks/useCoingeckoPrice'
 import { useDeiStats } from 'hooks/useDeiStats'
 import { useVestedAPY } from 'hooks/useVested'
 
@@ -186,6 +186,7 @@ export default function Stats() {
   } = useDeiStats()
 
   const { lockedVeDEUS } = useVestedAPY(undefined, getMaximumDate())
+  const deiPrice = useDeiPrice()
 
   function getModalBody() {
     return (
@@ -264,7 +265,11 @@ export default function Stats() {
           <StatsWrapper>
             <Title>DEI Stats</Title>
             <Info>
-              <StatsItem name="DEI Price" value={'$1.00'} href="https://www.coingecko.com/en/coins/dei-token" />
+              <StatsItem
+                name="DEI Price"
+                value={formatDollarAmount(parseFloat(deiPrice), 3)}
+                href="https://www.coingecko.com/en/coins/dei-token"
+              />
               <StatsItem
                 name="Total Supply"
                 value={formatAmount(totalSupply, 2)}
@@ -305,7 +310,11 @@ export default function Stats() {
                 value={formatDollarAmount(parseFloat(deusPrice), 2)}
                 href={'https://www.coingecko.com/en/coins/deus-finance'}
               />
-              <StatsItem name="Total Supply" value="N/A" />
+              <StatsItem
+                name="Total Supply"
+                value="650k"
+                href={'https://lafayettetabor.medium.com/a-wealth-creating-revamped-redeem-plan-601dadcc29a1'}
+              />
               <StatsItem name="Market Cap" value="N/A" />
               <StatsItem
                 name="veDEUS Supply"
