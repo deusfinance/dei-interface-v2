@@ -1,4 +1,5 @@
-// import { Link } from 'components/Icons'
+import { Link as LinkIconLogo } from 'components/Icons'
+import { ExternalLink } from 'components/Link'
 import styled from 'styled-components'
 
 const Item = styled.div`
@@ -27,21 +28,47 @@ const Name = styled.div`
   `};
 `
 
-const Value = styled.div`
+const Value = styled.div<{ isLink?: boolean }>`
   font-weight: 500;
   font-size: 14px;
   color: ${({ theme }) => theme.yellow4};
   margin-top: 10px;
+  cursor: ${({ isLink }) => (isLink ? 'pointer' : 'auto')};
+  & > * {
+    margin-left: 6px;
+  }
 `
 
-export default function StatsItem({ name, value, linkIcon }: { name: string; value: string; linkIcon?: boolean }) {
+export default function StatsItem({
+  name,
+  value,
+  href,
+  onClick,
+}: {
+  name: string
+  value: string
+  href?: string
+  onClick?: () => void
+}) {
+  const isLink = !!href
   return (
-    <Item>
+    <Item onClick={onClick}>
       <Name>{name}</Name>
-      <Value>
-        {value}
-        {/* {value} {linkIcon ? <Link /> : ''} */}
-      </Value>
+      {isLink ? (
+        <ExternalLink href={href} passHref>
+          <Value isLink>
+            {value}
+            <LinkIconLogo />
+          </Value>
+        </ExternalLink>
+      ) : !!onClick ? (
+        <Value isLink>
+          {value}
+          <LinkIconLogo />
+        </Value>
+      ) : (
+        <Value>{value}</Value>
+      )}
     </Item>
   )
 }
