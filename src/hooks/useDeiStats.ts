@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { formatUnits } from '@ethersproject/units'
 
-import { ProtocolHoldings1, ProtocolHoldings2, USDCReserves1, USDCReserves2 } from 'constants/addresses'
+import { AMO, ProtocolHoldings1, ProtocolHoldings2, USDCReserves1, USDCReserves2 } from 'constants/addresses'
 import { DEI_TOKEN, USDC_TOKEN } from 'constants/tokens'
 import { SupportedChainId } from 'constants/chains'
 import { toBN } from 'utils/numbers'
@@ -16,6 +16,7 @@ export function useDeiStats(): {
   deiProtocolHoldings1: number
   deiProtocolHoldings2: number
   totalProtocolHoldings: number
+  AMOReserve: number
   circulatingSupply: number
   usdcPoolReserves: number
   usdcReserves1: number
@@ -30,6 +31,7 @@ export function useDeiStats(): {
   const collateralPoolAddress = CollateralPool[SupportedChainId.FANTOM]
   const usdcReserves1Address = USDCReserves1[SupportedChainId.FANTOM]
   const usdcReserves2Address = USDCReserves2[SupportedChainId.FANTOM]
+  const AMOAddress = AMO[SupportedChainId.FANTOM]
   const unclaimedCollateralAmount = useUnclaimedCollateralAmount()
 
   const calls = !deiContract
@@ -81,18 +83,26 @@ export function useDeiStats(): {
           methodName: 'balanceOf',
           callInputs: [usdcReserves2Address],
         },
+        {
+          methodName: 'balanceOf',
+          callInputs: [AMOAddress],
+        },
       ]
 
-  const [usdcPoolBalance, usdcBalance1, usdcBalance2] = useSingleContractMultipleMethods(usdcContract, reservesCalls)
-  const { usdcPoolReserves, usdcReserves1, usdcReserves2 } = useMemo(() => {
+  const [usdcPoolBalance, usdcBalance1, usdcBalance2, AMOBalance] = useSingleContractMultipleMethods(
+    usdcContract,
+    reservesCalls
+  )
+  const { usdcPoolReserves, usdcReserves1, usdcReserves2, AMOReserve } = useMemo(() => {
     return {
       usdcPoolReserves: usdcPoolBalance?.result
         ? toBN(formatUnits(usdcPoolBalance.result[0], 6)).minus(unclaimedCollateralAmount).toNumber()
         : 0,
       usdcReserves1: usdcBalance1?.result ? toBN(formatUnits(usdcBalance1.result[0], 6)).toNumber() : 0,
       usdcReserves2: usdcBalance2?.result ? toBN(formatUnits(usdcBalance2.result[0], 6)).toNumber() : 0,
+      AMOReserve: AMOBalance?.result ? toBN(formatUnits(AMOBalance.result[0], 6)).toNumber() : 0,
     }
-  }, [unclaimedCollateralAmount, usdcPoolBalance, usdcBalance1, usdcBalance2])
+  }, [unclaimedCollateralAmount, usdcPoolBalance, usdcBalance1, usdcBalance2, AMOBalance])
 
   const totalUSDCReserves = useMemo(
     () => usdcReserves1 + usdcReserves2 + usdcPoolReserves,
@@ -108,6 +118,7 @@ export function useDeiStats(): {
     deiProtocolHoldings1,
     deiProtocolHoldings2,
     totalProtocolHoldings,
+    AMOReserve,
     circulatingSupply,
     usdcPoolReserves,
     usdcReserves1,

@@ -15,7 +15,7 @@ import { Modal, ModalHeader } from 'components/Modal'
 import { RowBetween } from 'components/Row'
 import StatsItem from './StatsItem'
 import Chart from './Chart'
-import { CollateralPool, DEI_ADDRESS, USDCReserves1, USDCReserves2, veDEUS } from 'constants/addresses'
+import { AMO, CollateralPool, DEI_ADDRESS, USDCReserves1, USDCReserves2, veDEUS } from 'constants/addresses'
 import { SupportedChainId } from 'constants/chains'
 import { ChainInfo } from 'constants/chainInfo'
 import { Loader } from 'components/Icons'
@@ -180,6 +180,7 @@ export default function Stats() {
     circulatingSupply,
     totalUSDCReserves,
     totalProtocolHoldings,
+    AMOReserve,
     usdcReserves1,
     usdcReserves2,
     usdcPoolReserves,
@@ -279,13 +280,8 @@ export default function Stats() {
               />
               <StatsItem
                 name="Total Protocol Holdings"
-                value={formatAmount(totalProtocolHoldings, 2)}
-                href={
-                  ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl +
-                  '/token/' +
-                  DEI_ADDRESS[SupportedChainId.FANTOM] +
-                  '#balances'
-                }
+                value={formatAmount(AMOReserve, 2)}
+                href={ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/address/' + AMO[SupportedChainId.FANTOM]}
               />
               <StatsItem
                 name="Circulating Supply"

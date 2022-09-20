@@ -142,3 +142,7 @@ export const DeiBondRedeemNFT: AddressMap = {
 export const TwapOracle: AddressMap = {
   [SupportedChainId.FANTOM]: '0x733570cB9e76fD5293c028e124FC9F0a2234F07c',
 }
+
+export const AMO: AddressMap = {
+  [SupportedChainId.FANTOM]: '0x521cde355a65144679d15e8aedb5f423778899c9',
+}
