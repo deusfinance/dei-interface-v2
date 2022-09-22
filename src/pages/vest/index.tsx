@@ -29,6 +29,7 @@ import { Container } from 'components/App/StableCoin'
 import { useSearch, SearchField, Table } from 'components/App/Vest'
 import LockManager from 'components/App/Vest/LockManager'
 import APYManager from 'components/App/Vest/APYManager'
+import InfoHeader from 'components/InfoHeader'
 
 const Wrapper = styled(Container)`
   margin: 0 auto;
@@ -141,7 +142,7 @@ export default function Vest() {
   const rewards = useDistRewards()
   const toggleWalletModal = useWalletModalToggle()
 
-  // const [showTopBanner, setShowTopBanner] = useState(false)
+  const [showTopBanner, setShowTopBanner] = useState(true)
 
   const { snapshot, searchProps } = useSearch()
   const snapshotList = useMemo(() => {
@@ -293,12 +294,15 @@ export default function Vest() {
 
   return (
     <Container>
-      {/* {showTopBanner && (
-        <InfoHeader onClose={setShowTopBanner} text={'Some random text! some random text! some random text!'} />
-      )} */}
+      {showTopBanner && (
+        <InfoHeader
+          onClose={setShowTopBanner}
+          text={`In preparation for the launch of DEUS v3, we are currently overhauling the veDEUS’s tokenomics, fee accruing mechanisms, and reward contracts. We will release an article with more information shortly. This update especially concerns the veDEUS anti-dilution and rewards payout.`}
+        />
+      )}
       <Hero>
         <Image src={veDEUS_LOGO} height={'90px'} alt="Logo" />
-        <StatsHeader items={items} hasBox />
+        <StatsHeader items={items} />
       </Hero>
       <Wrapper>
         {getUpperRow()}

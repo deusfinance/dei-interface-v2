@@ -40,12 +40,12 @@ const Wrapper = styled(RowCenter)`
   overflow: hidden;
   padding: 0 20px;
   ${({ theme }) => theme.mediaWidth.upToMedium`
-  gap: 10px;
-`};
+    gap: 10px;
+  `};
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
-  gap: 8px;
-`};
+    gap: 8px;
+  `};
 
   & > * {
     width: 100%;
@@ -60,8 +60,8 @@ const CardWrapper = styled(RowBetween)`
     flex: 1;
   }
   ${({ theme }) => theme.mediaWidth.upToSmall`
-  gap: 12px;
-`};
+    gap: 12px;
+  `};
 `
 
 export default function Dashboard() {
