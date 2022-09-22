@@ -16,7 +16,7 @@ export function getApolloClient(chainId: SupportedChainId) {
 export function getSubgraphName(chainId: SupportedChainId) {
   switch (chainId) {
     case SupportedChainId.FANTOM:
-      return 'mmd-mostafaee/dei-stats'
+      return 'mmd-mostafaee/vedeus-stats'
     default:
       console.error(`${chainId} is not a supported subgraph network`)
       return null

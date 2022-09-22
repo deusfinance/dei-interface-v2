@@ -28,9 +28,9 @@ export interface Voucher {
   timestamp: string
 }
 
-export interface Swap {
-  hash: string
-  token0PerToken1: string
+export interface VeDeusSupply {
+  timestamp: string
+  value: string
 }
 
 export const VOUCHER_DETAILS = gql`
@@ -86,11 +86,11 @@ export const SOLIDLY_PAIRS = gql`
   }
 `
 
-export const ALL_SWAPS = gql`
-  query getSwaps {
-    swaps(first: 5, where: { poolAddress: "0xaF918eF5b9f33231764A5557881E6D3e5277d456" }) {
-      hash
-      token0PerToken1
+export const VEDEUS_SUPPLY = gql`
+  query getSupply {
+    veDEUSSupplies(first: 7, where: { timestamp_gt: 1663309497 }) {
+      timestamp
+      value
     }
   }
 `

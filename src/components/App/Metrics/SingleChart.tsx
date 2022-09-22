@@ -1,12 +1,14 @@
+import { formatUnits } from '@ethersproject/units'
 import { getApolloClient } from 'apollo/client/deiStats'
-import { ALL_SWAPS, CURRENT_PRICE, Price, Swap } from 'apollo/queries'
+import { VeDeusSupply, VEDEUS_SUPPLY } from 'apollo/queries'
 import Dropdown from 'components/DropDown'
-import { FALLBACK_CHAIN_ID } from 'constants/chains'
+import { VEDEUS_TOKEN } from 'constants/tokens'
 import useWeb3React from 'hooks/useWeb3'
 import { useCallback, useEffect, useState } from 'react'
 import { isMobile } from 'react-device-detect'
 import { ResponsiveContainer, YAxis, AreaChart, Area, CartesianGrid } from 'recharts'
 import styled, { useTheme } from 'styled-components'
+import { formatAmount, toBN } from 'utils/numbers'
 
 const Wrapper = styled.div`
   display: flex;
@@ -97,7 +99,7 @@ export default function SingleChart({
   const loading = false
   const theme = useTheme()
 
-  const [swaps, setSwaps] = useState<Swap[] | []>([])
+  const [supply, setSupply] = useState<VeDeusSupply[] | []>([])
 
   const timeFramesOptions = [
     { value: '15m', label: '15 mins' },
@@ -137,36 +139,50 @@ export default function SingleChart({
     { month: 'Jun', value: 234, score: 234 },
   ]
 
-  const fetchSwaps = useCallback(async () => {
-    const DEFAULT_RETURN: Swap[] | [] = []
+  const fetchTransactions = useCallback(async () => {
+    const DEFAULT_RETURN: VeDeusSupply[] = []
+    if (uniqueID != 'veDEUSSupply') return DEFAULT_RETURN
     try {
-      const client = getApolloClient(chainId ?? FALLBACK_CHAIN_ID)
-      console.log('chainId', chainId)
-      console.log('apolloClient', client)
+      if (!chainId) return DEFAULT_RETURN
+      const client = getApolloClient(chainId)
       if (!client) return DEFAULT_RETURN
 
       const { data } = await client.query({
-        query: ALL_SWAPS,
+        query: VEDEUS_SUPPLY,
         fetchPolicy: 'no-cache',
       })
 
-      return data.swaps as Swap[]
+      return data.veDEUSSupplies as VeDeusSupply[]
     } catch (error) {
-      console.log('Unable to fetch price from The Graph Network')
+      console.log('Unable to fetch supply from The Graph Network')
       console.error(error)
       return []
     }
   }, [chainId])
 
   useEffect(() => {
-    const getSwaps = async () => {
-      const result = await fetchSwaps()
-      setSwaps(result)
-    }
-    getSwaps()
-  }, [fetchSwaps])
+    const getTransactions = async () => {
+      const result = await fetchTransactions()
+      result.forEach((obj) => {
+        const date = new Date(Number(obj.timestamp) * 1000)
+        obj.timestamp =
+          date.getDate().toString() +
+          '-' +
+          date.getMonth().toString() +
+          '-' +
+          date.getUTCFullYear().toString() +
+          ':' +
+          date.getTime().toString()
+        obj.value = toBN(formatUnits(obj.value, VEDEUS_TOKEN.decimals)).toFixed(2)
 
-  console.log('swap', swaps)
+        console.log('formatted timestamp', obj.timestamp)
+      })
+      setSupply(result)
+    }
+    getTransactions()
+  }, [fetchTransactions])
+
+  console.log('uniqueID', uniqueID, ' - ', 'supply', supply)
 
   return (
     <Wrapper>
@@ -196,11 +212,11 @@ export default function SingleChart({
       </TitleWrapper>
       <Container
         loading={loading}
-        content={!data.length ? 'Chart is not available' : loading ? 'Loading...' : ''}
+        content={supply.length == 0 ? 'Chart is not available' : loading ? 'Loading...' : ''}
         width="100%"
         height={350}
       >
-        <AreaChart data={data} margin={{ top: 8, right: 8, left: -16, bottom: 8 }}>
+        <AreaChart data={supply} margin={{ top: 8, right: 8, left: -16, bottom: 8 }}>
           <defs>
             <linearGradient id={uniqueID} x1="0" y1="0" x2="1" y2="0">
               <stop offset="0%" stopColor={primaryColor} stopOpacity={1} />
