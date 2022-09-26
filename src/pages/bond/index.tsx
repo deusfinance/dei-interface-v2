@@ -123,6 +123,7 @@ export default function BDei() {
         <StatsHeader items={items} />
       </Hero>
       <Wrapper>
+        <Table nfts={[]} isMobile={isMobile} isLoading={ownedNfts.isLoading} />
         {isMobile ? getUpperRowMobile() : getUpperRow()}
         <Table nfts={snapshotList as BondNFT[]} isMobile={isMobile} isLoading={ownedNfts.isLoading} />
       </Wrapper>
