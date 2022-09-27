@@ -146,3 +146,7 @@ export const TwapOracle: AddressMap = {
 export const AMO: AddressMap = {
   [SupportedChainId.FANTOM]: '0x521cde355a65144679d15e8aedb5f423778899c9',
 }
+
+export const MSIG: AddressMap = {
+  [SupportedChainId.FANTOM]: '0xEf6b0872CfDF881Cf9Fe0918D3FA979c616AF983',
+}

@@ -15,7 +15,7 @@ import { Modal, ModalHeader } from 'components/Modal'
 import { RowBetween } from 'components/Row'
 import StatsItem from './StatsItem'
 import Chart from './Chart'
-import { AMO, CollateralPool, DEI_ADDRESS, USDCReserves1, USDCReserves2, veDEUS } from 'constants/addresses'
+import { AMO, CollateralPool, DEI_ADDRESS, MSIG, USDCReserves1, USDCReserves2, veDEUS } from 'constants/addresses'
 import { SupportedChainId } from 'constants/chains'
 import { ChainInfo } from 'constants/chainInfo'
 import { Loader } from 'components/Icons'
@@ -172,6 +172,12 @@ const ModalItemValue = styled.div`
   }
 `
 
+export enum Dashboard {
+  EMPTY = 'EMPTY',
+  TOTAL_RESERVE_ASSETS = 'Total Reserve Assets',
+  TOTAL_PROTOCOL_HOLDINGS = 'Total Protocol Holdings',
+}
+
 export default function Stats() {
   const deusPrice = useDeusPrice()
   const {
@@ -181,6 +187,7 @@ export default function Stats() {
     totalUSDCReserves,
     totalProtocolHoldings,
     AMOReserve,
+    MSIGReserve,
     usdcReserves1,
     usdcReserves2,
     usdcPoolReserves,
@@ -189,71 +196,121 @@ export default function Stats() {
   const { lockedVeDEUS } = useVestedAPY(undefined, getMaximumDate())
   const deiPrice = useDeiPrice()
 
+  const [stat, setStat] = useState(Dashboard.EMPTY)
+
   function getModalBody() {
-    return (
-      <ModalWrapper>
-        <div>DEI Total Reserve Assets are held in three wallets.</div>
-        <div>Below is the USDC holdings in each wallet.</div>
-        <ModalInfoWrapper>
-          <a
-            href={
-              ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/address/' + USDCReserves1[SupportedChainId.FANTOM]
-            }
-            target={'_blank'}
-            rel={'noreferrer'}
-          >
-            Reserves 1
-          </a>
-          {usdcReserves1 === null ? <Loader /> : <ModalItemValue>{formatAmount(usdcReserves1, 2)}</ModalItemValue>}
-        </ModalInfoWrapper>
-        <ModalInfoWrapper>
-          <a
-            href={
-              ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/address/' + USDCReserves2[SupportedChainId.FANTOM]
-            }
-            target={'_blank'}
-            rel={'noreferrer'}
-          >
-            Reserves 2
-          </a>
-          {usdcReserves2 === null ? <Loader /> : <ModalItemValue>{formatAmount(usdcReserves2, 2)}</ModalItemValue>}
-        </ModalInfoWrapper>
-        <ModalInfoWrapper>
-          <a
-            href={
-              ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl +
-              '/address/' +
-              CollateralPool[SupportedChainId.FANTOM]
-            }
-            target={'_blank'}
-            rel={'noreferrer'}
-          >
-            Collateral Pool
-          </a>
-          {usdcPoolReserves === null ? (
-            <Loader />
-          ) : (
-            <ModalItemValue>{formatAmount(usdcPoolReserves, 2)}</ModalItemValue>
-          )}
-        </ModalInfoWrapper>
-        <ModalInfoWrapper active>
-          <p>Total USDC holdings</p>
-          {totalProtocolHoldings === null ? (
-            <Loader />
-          ) : (
-            <ModalItemValue>{formatAmount(usdcReserves1 + usdcReserves2 + usdcPoolReserves, 2)}</ModalItemValue>
-          )}
-        </ModalInfoWrapper>
-      </ModalWrapper>
-    )
+    switch (stat) {
+      case Dashboard.EMPTY:
+        return null
+      case Dashboard.TOTAL_RESERVE_ASSETS:
+        return (
+          <ModalWrapper>
+            <div>DEI Total Reserve Assets are held in three wallets.</div>
+            <div>Below is the USDC holdings in each wallet.</div>
+            <ModalInfoWrapper>
+              <a
+                href={
+                  ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl +
+                  '/address/' +
+                  USDCReserves1[SupportedChainId.FANTOM]
+                }
+                target={'_blank'}
+                rel={'noreferrer'}
+              >
+                Reserves 1
+              </a>
+              {usdcReserves1 === null ? <Loader /> : <ModalItemValue>{formatAmount(usdcReserves1, 2)}</ModalItemValue>}
+            </ModalInfoWrapper>
+            <ModalInfoWrapper>
+              <a
+                href={
+                  ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl +
+                  '/address/' +
+                  USDCReserves2[SupportedChainId.FANTOM]
+                }
+                target={'_blank'}
+                rel={'noreferrer'}
+              >
+                Reserves 2
+              </a>
+              {usdcReserves2 === null ? <Loader /> : <ModalItemValue>{formatAmount(usdcReserves2, 2)}</ModalItemValue>}
+            </ModalInfoWrapper>
+            <ModalInfoWrapper>
+              <a
+                href={
+                  ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl +
+                  '/address/' +
+                  CollateralPool[SupportedChainId.FANTOM]
+                }
+                target={'_blank'}
+                rel={'noreferrer'}
+              >
+                Collateral Pool
+              </a>
+              {usdcPoolReserves === null ? (
+                <Loader />
+              ) : (
+                <ModalItemValue>{formatAmount(usdcPoolReserves, 2)}</ModalItemValue>
+              )}
+            </ModalInfoWrapper>
+            <ModalInfoWrapper active>
+              <p>Total USDC holdings</p>
+              {totalProtocolHoldings === null ? (
+                <Loader />
+              ) : (
+                <ModalItemValue>{formatAmount(usdcReserves1 + usdcReserves2 + usdcPoolReserves, 2)}</ModalItemValue>
+              )}
+            </ModalInfoWrapper>
+          </ModalWrapper>
+        )
+      case Dashboard.TOTAL_PROTOCOL_HOLDINGS:
+        return (
+          <ModalWrapper>
+            <ModalInfoWrapper>
+              <a
+                href={ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/address/' + AMO[SupportedChainId.FANTOM]}
+                target={'_blank'}
+                rel={'noreferrer'}
+              >
+                AMO
+              </a>
+              {AMOReserve === null ? <Loader /> : <ModalItemValue>{formatAmount(AMOReserve, 2)}</ModalItemValue>}
+            </ModalInfoWrapper>
+
+            <ModalInfoWrapper>
+              <a
+                href={ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/address/' + MSIG[SupportedChainId.FANTOM]}
+                target={'_blank'}
+                rel={'noreferrer'}
+              >
+                DEUS Owned Gnosis
+              </a>
+              {MSIGReserve === null ? <Loader /> : <ModalItemValue>{formatAmount(MSIGReserve, 2)}</ModalItemValue>}
+            </ModalInfoWrapper>
+            <ModalInfoWrapper active>
+              <p>Total Protocol holdings</p>
+              {totalProtocolHoldings === null ? (
+                <Loader />
+              ) : (
+                <ModalItemValue>{formatAmount(MSIGReserve + AMOReserve, 2)}</ModalItemValue>
+              )}
+            </ModalInfoWrapper>
+          </ModalWrapper>
+        )
+    }
   }
 
   const [toggleDashboardModal, setToggleDashboardModal] = useState(false)
 
+  function handleClick(flag: Dashboard) {
+    setStat(flag)
+    setToggleDashboardModal(!toggleDashboardModal)
+  }
+
   function getModalContent() {
     return (
       <>
-        <ModalHeader title={'Total Reserve Assets'} onClose={() => setToggleDashboardModal(false)} />
+        <ModalHeader title={stat} onClose={() => setToggleDashboardModal(false)} />
         {getModalBody()}
       </>
     )
@@ -280,8 +337,8 @@ export default function Stats() {
               />
               <StatsItem
                 name="Total Protocol Holdings"
-                value={formatAmount(AMOReserve, 2)}
-                href={ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/address/' + AMO[SupportedChainId.FANTOM]}
+                value={formatAmount(AMOReserve + MSIGReserve, 2)}
+                onClick={() => handleClick(Dashboard.TOTAL_PROTOCOL_HOLDINGS)}
               />
               <StatsItem
                 name="Circulating Supply"
@@ -293,9 +350,9 @@ export default function Stats() {
               <StatsItem
                 name="Total Reserve Assets"
                 value={formatDollarAmount(totalUSDCReserves, 2)}
-                onClick={() => setToggleDashboardModal(true)}
+                onClick={() => handleClick(Dashboard.TOTAL_RESERVE_ASSETS)}
               />
-              <StatsItem name="USDC Backing Per DEI" value={formatAmount(collateralRatio, 1).toString() + '%'} />
+              <StatsItem name="USDC Backing Per DEI" value={formatAmount(collateralRatio, 3).toString()} />
             </Info>
           </StatsWrapper>
           <StatsWrapper>
