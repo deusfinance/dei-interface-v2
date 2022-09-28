@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import Image from 'next/image'
 
@@ -12,6 +12,8 @@ import ANALYTICS_LOGO from '/public/static/images/pages/dashboard/ic_analytics_g
 import ANALYTICS_HOVER_LOGO from '/public/static/images/pages/dashboard/ic_analytics_hover.svg'
 import VEDEUS_LOGO from '/public/static/images/pages/dashboard/ic_vedeus_gray.svg'
 import VEDEUS_HOVER_LOGO from '/public/static/images/pages/dashboard/ic_vedeus_hover.svg'
+// import VDEUS_LOGO from '/public/static/images/pages/dashboard/ic_vdeus_gray.svg'
+// import VDEUS_HOVER_LOGO from '/public/static/images/pages/dashboard/ic_vdeus_hover.svg'
 import DEI_LOGO from '/public/static/images/pages/dashboard/DEI_Dashboard.png'
 
 import { useDeiStats } from 'hooks/useDeiStats'
@@ -26,6 +28,7 @@ import { Card } from 'components/App/Dashboard/card'
 import { SocialCard } from 'components/App/Dashboard/SocialCard'
 import Stats from 'components/App/Dashboard/Stats'
 import DeiBondStats from 'components/App/Dashboard/DeiBondStats'
+import { useDeiPrice } from 'hooks/useCoingeckoPrice'
 
 const Wrapper = styled(RowCenter)`
   max-width: 1300px;
@@ -37,12 +40,12 @@ const Wrapper = styled(RowCenter)`
   overflow: hidden;
   padding: 0 20px;
   ${({ theme }) => theme.mediaWidth.upToMedium`
-  gap: 10px;
-`};
+    gap: 10px;
+  `};
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
-  gap: 8px;
-`};
+    gap: 8px;
+  `};
 
   & > * {
     width: 100%;
@@ -57,25 +60,29 @@ const CardWrapper = styled(RowBetween)`
     flex: 1;
   }
   ${({ theme }) => theme.mediaWidth.upToSmall`
-  gap: 12px;
-`};
+    gap: 12px;
+  `};
 `
 
 export default function Dashboard() {
   const { account } = useWeb3React()
-  const { totalSupply, totalUSDCReserves } = useDeiStats()
+  const { totalSupply, totalUSDCReserves, collateralRatio } = useDeiStats()
+  const deiPrice = useDeiPrice()
 
-  const items = [
-    { name: 'DEI Price', value: '$1.00' },
-    { name: 'DEI Total Supply', value: formatDollarAmount(totalSupply, 2) ?? '-' },
-    { name: 'Collateral Ratio', value: '100%' },
-    { name: 'Total USDC Holdings', value: formatAmount(totalUSDCReserves, 2) },
-  ]
+  const items = useMemo(
+    () => [
+      { name: 'DEI Price', value: formatDollarAmount(parseFloat(deiPrice), 3) ?? '$1.00' },
+      { name: 'DEI Total Supply', value: formatAmount(totalSupply, 2) ?? '-' },
+      { name: 'Collateral Ratio', value: formatAmount(collateralRatio, 1) + '%' },
+      { name: 'Total USDC Holdings', value: formatAmount(totalUSDCReserves, 2) },
+    ],
+    [deiPrice, totalSupply, collateralRatio, totalUSDCReserves]
+  )
 
   return (
     <Container>
       <Hero>
-        <Image src={DEI_LOGO} height={'120px'} width={'140px'} alt="DEI logo" />
+        <Image src={DEI_LOGO} height={'105px'} width={'120px'} alt="DEI logo" />
         <StatsHeader items={items} />
       </Hero>
       <Wrapper>
@@ -90,7 +97,7 @@ export default function Dashboard() {
             HoverIcon={REDEEM_HOVER_LOGO}
           />
           <Card
-            href="/bdei"
+            href="/bond"
             title={'DEI Bonds'}
             subTitle="Redeem your DEI Bonds"
             MainIcon={BOND_LOGO}
@@ -99,17 +106,24 @@ export default function Dashboard() {
           <Card
             href="/vest"
             title={'veDEUS'}
-            subTitle="Lock your deus and earn rewards"
+            subTitle="Lock your DEUS and earn rewards"
             MainIcon={VEDEUS_LOGO}
             HoverIcon={VEDEUS_HOVER_LOGO}
           />
           <Card
-            href="/analytics"
+            href=""
             title={'Analytics'}
-            subTitle="DEI and DEUS Stats"
+            subTitle="Coming Soon..." // DEI and DEUS Stats
             MainIcon={ANALYTICS_LOGO}
             HoverIcon={ANALYTICS_HOVER_LOGO}
           />
+          {/* <Card
+            href="https://legacy.dei.finance/"
+            title={'vDEUS'}
+            subTitle="Migrate to vDEUS ERC20"
+            MainIcon={VDEUS_LOGO}
+            HoverIcon={VDEUS_HOVER_LOGO}
+          /> */}
           <SocialCard />
         </CardWrapper>
         <Stats />

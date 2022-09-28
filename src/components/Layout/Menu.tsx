@@ -2,8 +2,11 @@ import React, { useState, useRef } from 'react'
 import { useRouter } from 'next/router'
 import styled from 'styled-components'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Z_INDEX } from 'theme'
 
+import LEGACY_DEI_LOGO from '/public/static/images/LegacyDeiLogo.svg'
+import { Link as LinkIcon } from 'components/Icons'
 import useOnOutsideClick from 'hooks/useOnOutsideClick'
 
 import {
@@ -14,7 +17,7 @@ import {
   Mint as MintIcon,
   Redeem as RedeemIcon,
   DeiBonds as DeiBondsIcon,
-  Analytics as AnalyticsIcon,
+  // Analytics as AnalyticsIcon,
 } from 'components/Icons'
 import { Card } from 'components/Card'
 import { ExternalLink } from 'components/Link'
@@ -59,11 +62,23 @@ const Row = styled.div<{
   `};
 `
 
+const LegacyWrapper = styled.div`
+  color: ${({ theme }) => theme.white};
+`
+
 const NavToggle = styled(NavToggleIcon)`
-  &:hover {
+  &:hover,
+  &:focus {
+    filter: brightness(1.5);
     cursor: pointer;
-    opacity: 0.6;
   }
+`
+
+const Separator = styled.div`
+  width: 225px;
+  margin-left: -13px;
+  height: 1px;
+  background: ${({ theme }) => theme.bg4};
 `
 
 export default function Menu() {
@@ -77,6 +92,7 @@ export default function Menu() {
   return (
     <Container ref={ref}>
       <NavToggle onClick={() => toggle()} />
+      {/* <Image src={BURGER_ICON} alt="burger-icon" onClick={() => toggle()} /> */}
       <div>
         <InlineModal isOpen={isOpen}>
           <Link href="/dashboard" passHref>
@@ -87,59 +103,69 @@ export default function Menu() {
               </IconWrapper>
             </Row>
           </Link>
+
+          <Link href="/mint" passHref>
+            <Row active={router.route === '/mint'}>
+              <div>Mint</div>
+              <IconWrapper>
+                <MintIcon size={20} />
+              </IconWrapper>
+            </Row>
+          </Link>
+
+          <Link href="/redemption" passHref>
+            <Row active={router.route === '/redemption'}>
+              <div>Redeem</div>
+              <IconWrapper>
+                <RedeemIcon size={20} />
+              </IconWrapper>
+            </Row>
+          </Link>
+
+          <Link href="/bond" passHref>
+            <Row active={router.route === '/bond'}>
+              <div>Bond</div>
+              <IconWrapper>
+                <DeiBondsIcon size={20} />
+              </IconWrapper>
+            </Row>
+          </Link>
+
           <Link href="/vest" passHref>
-            <Row active={router.route === '/vest'}>
+            <Row active={router.route.includes('/vest')}>
               <div>veDEUS</div>
               <IconWrapper>
                 <VeDeusIcon size={20} />
               </IconWrapper>
             </Row>
           </Link>
-          <Link href="/mint" passHref>
-            <Row active={router.route === '/mint'}>
-              <div>Mint DEI</div>
-              <IconWrapper>
-                <MintIcon size={20} />
-              </IconWrapper>
+
+          <ExternalLink href="https://docs.deus.finance/contracts/disclaimer">
+            <Row onClick={() => toggle()}>
+              <div>Terms</div>
             </Row>
-          </Link>
-          <Link href="/redemption" passHref>
-            <Row active={router.route === '/redemption'}>
-              <div>Redemption</div>
-              <IconWrapper>
-                <RedeemIcon size={20} />
-              </IconWrapper>
-            </Row>
-          </Link>
-          <Link href="/deibonds" passHref>
-            <Row active={router.route === '/deibonds'}>
-              <div>DEI-Bonds</div>
-              <IconWrapper>
-                <DeiBondsIcon size={20} />
-              </IconWrapper>
-            </Row>
-          </Link>
-          <Link href="/analytics" passHref>
-            <Row active={router.route === '/analytics'}>
-              <div>Analytics</div>
-              <IconWrapper>
-                <AnalyticsIcon size={20} />
-              </IconWrapper>
-            </Row>
-          </Link>
+          </ExternalLink>
+
           <ExternalLink href="https://twitter.com/deusdao">
             <Row onClick={() => toggle()}>
               <div>Twitter</div>
             </Row>
           </ExternalLink>
-          {/* <ExternalLink href="https://t.me/deusfinance">
-            <Row onClick={() => toggle()}>
-              <div>Community</div>
-            </Row>
-          </ExternalLink> */}
+
           <ExternalLink href="https://github.com/deusfinance">
             <Row onClick={() => toggle()}>
               <div>Github</div>
+            </Row>
+          </ExternalLink>
+          <Separator />
+
+          <ExternalLink href="https://legacy.dei.finance/">
+            <Row onClick={() => toggle()}>
+              <LegacyWrapper>
+                Legacy App
+                <LinkIcon style={{ marginLeft: '4px' }} />
+              </LegacyWrapper>
+              <Image src={LEGACY_DEI_LOGO} width={'20px'} height={'15px'} alt={'dei-logo'} />
             </Row>
           </ExternalLink>
         </InlineModal>

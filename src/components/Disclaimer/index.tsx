@@ -54,7 +54,10 @@ export default function Disclaimer() {
   return (
     <Wrapper>
       <Text>
-        <ExternalLink href="https://deus.finance" style={{ opacity: 0.5 }}>
+        <ExternalLink
+          href="https://groups.csail.mit.edu/mac/classes/6.805/articles/crypto/cypherpunks/may-crypto-manifesto.html"
+          style={{ opacity: 0.5 }}
+        >
           {new Date().getFullYear()} DEI Stablecoin. All rights to the people.
         </ExternalLink>
       </Text>

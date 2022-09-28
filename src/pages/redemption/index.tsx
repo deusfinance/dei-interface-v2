@@ -7,31 +7,41 @@ import REDEEM_IMG from '/public/static/images/pages/redemption/TableauBackground
 import DEUS_LOGO from '/public/static/images/pages/redemption/DEUS_logo.svg'
 
 import { DEI_TOKEN, DEUS_TOKEN, USDC_TOKEN } from 'constants/tokens'
-import { CollateralPool, DynamicRedeemer } from 'constants/addresses'
 import { tryParseAmount } from 'utils/parse'
-import { getRemainingTime } from 'utils/time'
+import { getTimeLength } from 'utils/time'
 
 import { useCurrencyBalance } from 'state/wallet/hooks'
-import { useWalletModalToggle } from 'state/application/hooks'
+import {
+  useRedemptionFee,
+  useRedeemPaused,
+  useExpiredPrice,
+  useCollateralCollectionDelay,
+  useDeusCollectionDelay,
+} from 'state/dei/hooks'
 import useWeb3React from 'hooks/useWeb3'
-import { useSupportedChainId } from 'hooks/useSupportedChainId'
-import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
 import useRedemptionCallback from 'hooks/useRedemptionCallback'
-import { useGetCollateralRatios, useRedeemAmountOut, useRedeemData } from 'hooks/useRedemptionPage'
+import { useGetCollateralRatios, useRedeemAmountOut } from 'hooks/useRedemptionPage'
+import useUpdateCallback from 'hooks/useOracleCallback'
 
-import { DotFlashing } from 'components/Icons'
 import Hero from 'components/Hero'
 import StatsHeader from 'components/StatsHeader'
-import { BottomWrapper, Container, InputWrapper, Title, Wrapper, MainButton } from 'components/App/StableCoin'
 import InputBox from 'components/InputBox'
+import DefaultReviewModal from 'components/ReviewModal/DefaultReviewModal'
+import {
+  BottomWrapper,
+  Container,
+  InputWrapper,
+  Wrapper,
+  MainButton,
+  ConnectWallet,
+  GradientButton,
+} from 'components/App/StableCoin'
+import InputBoxInDollar from 'components/App/Redemption/InputBoxInDollar'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
-import DefaultReviewModal from 'components/ReviewModal/DefaultReviewModal'
 import Claim from 'components/App/Redemption/Claim'
-import { useDeusPrice, useUSDCPrice } from 'hooks/useCoingeckoPrice'
-import { formatDollarAmount } from 'utils/numbers'
-import { SupportedChainId } from 'constants/chains'
-import { truncateAddress } from 'utils/address'
+import usePoolStats from 'components/App/StableCoin/PoolStats'
+import WarningModal from 'components/ReviewModal/Warning'
 
 const MainWrap = styled.div`
   display: flex;
@@ -70,21 +80,20 @@ const PlusIcon = styled(Plus)`
 
 export default function Redemption() {
   const { chainId, account } = useWeb3React()
-  const toggleWalletModal = useWalletModalToggle()
-  const isSupportedChainId = useSupportedChainId()
   const [amountIn, setAmountIn] = useState('')
+  const redemptionFee = useRedemptionFee()
+  const redeemPaused = useRedeemPaused()
   // const debouncedAmountIn = useDebounce(amountIn, 500)
   const deiCurrency = DEI_TOKEN
   const usdcCurrency = USDC_TOKEN
   const deusCurrency = DEUS_TOKEN
   const deiCurrencyBalance = useCurrencyBalance(account ?? undefined, deiCurrency)
   const [isOpenReviewModal, toggleReviewModal] = useState(false)
+  const [isOpenWarningModal, toggleWarningModal] = useState(false)
   const [amountOut1, setAmountOut1] = useState('')
   const [amountOut2, setAmountOut2] = useState('')
 
-  // const deiPrice = useDeiPrice()
-  const usdcPrice = useUSDCPrice()
-  const deusCoingeckoPrice = useDeusPrice()
+  const expiredPrice = useExpiredPrice()
 
   const { collateralAmount, deusValue } = useRedeemAmountOut(amountIn)
 
@@ -92,8 +101,6 @@ export default function Redemption() {
     setAmountOut1(collateralAmount)
     setAmountOut2(deusValue)
   }, [collateralAmount, deusValue])
-
-  const { redeemPaused, redeemTranche } = useRedeemData()
 
   const deiAmount = useMemo(() => {
     return tryParseAmount(amountIn, deiCurrency || undefined)
@@ -104,31 +111,36 @@ export default function Redemption() {
     return deiCurrencyBalance?.lessThan(deiAmount)
   }, [deiCurrencyBalance, deiAmount])
 
+  const { callback: updateOracleCallback } = useUpdateCallback()
+
   const {
     state: redeemCallbackState,
     callback: redeemCallback,
     error: redeemCallbackError,
   } = useRedemptionCallback(deiAmount)
 
-  const { redeemCollateralRatio } = useGetCollateralRatios()
+  const { mintCollateralRatio, redeemCollateralRatio } = useGetCollateralRatios()
 
-  const [awaitingApproveConfirmation, setAwaitingApproveConfirmation] = useState<boolean>(false)
   const [awaitingRedeemConfirmation, setAwaitingRedeemConfirmation] = useState<boolean>(false)
+  const [awaitingUpdateConfirmation, setAwaitingUpdateConfirmation] = useState<boolean>(false)
 
-  const spender = useMemo(() => (chainId ? DynamicRedeemer[chainId] : undefined), [chainId])
-  const [approvalState, approveCallback] = useApproveCallback(deiCurrency ?? undefined, spender)
-  const [showApprove, showApproveLoader] = useMemo(() => {
-    const show = deiCurrency && approvalState !== ApprovalState.APPROVED && !!amountIn
-    return [show, show && approvalState === ApprovalState.PENDING]
-  }, [deiCurrency, approvalState, amountIn])
-
-  const { diff } = getRemainingTime(redeemTranche.endTime)
-
-  const handleApprove = async () => {
-    setAwaitingApproveConfirmation(true)
-    await approveCallback()
-    setAwaitingApproveConfirmation(false)
-  }
+  const handleUpdatePrice = useCallback(async () => {
+    if (!updateOracleCallback) return
+    try {
+      setAwaitingUpdateConfirmation(true)
+      const txHash = await updateOracleCallback()
+      console.log({ txHash })
+      // toggleUpdateOracleModal(false)
+      setAwaitingUpdateConfirmation(false)
+    } catch (e) {
+      setAwaitingUpdateConfirmation(false)
+      if (e instanceof Error) {
+        console.error(e)
+      } else {
+        console.error(e)
+      }
+    }
+  }, [updateOracleCallback])
 
   const handleRedeem = useCallback(async () => {
     console.log('called handleRedeem')
@@ -139,8 +151,12 @@ export default function Redemption() {
       const txHash = await redeemCallback()
       setAwaitingRedeemConfirmation(false)
       console.log({ txHash })
+      toggleReviewModal(false)
+      setAmountIn('')
     } catch (e) {
       setAwaitingRedeemConfirmation(false)
+      toggleWarningModal(true)
+      toggleReviewModal(false)
       if (e instanceof Error) {
         console.error(e)
       } else {
@@ -149,87 +165,60 @@ export default function Redemption() {
     }
   }, [redeemCallbackState, redeemCallback, redeemCallbackError])
 
-  function getApproveButton(): JSX.Element | null {
-    if (!isSupportedChainId || !account) {
-      return null
-    } else if (awaitingApproveConfirmation) {
-      return (
-        <MainButton active>
-          Awaiting Confirmation <DotFlashing style={{ marginLeft: '10px' }} />
-        </MainButton>
-      )
-    } else if (showApproveLoader) {
-      return (
-        <MainButton active>
-          Approving <DotFlashing style={{ marginLeft: '10px' }} />
-        </MainButton>
-      )
-    } else if (showApprove) {
-      return <MainButton onClick={handleApprove}>Allow us to spend {deiCurrency?.symbol}</MainButton>
-    }
-    return null
-  }
-
   function getActionButton(): JSX.Element | null {
     if (!chainId || !account) {
-      return <MainButton onClick={toggleWalletModal}>Connect Wallet</MainButton>
-    } else if (showApprove) {
-      return null
+      return <ConnectWallet />
     } else if (redeemPaused) {
       return <MainButton disabled>Redeem Paused</MainButton>
-    } else if (diff < 0 && redeemTranche.trancheId != null) {
-      return <MainButton disabled>Tranche Ended</MainButton>
-    } else if (Number(amountOut1) > redeemTranche.amountRemaining) {
-      return <MainButton disabled>Exceeds Available Amount</MainButton>
+    } else if (awaitingUpdateConfirmation) {
+      return <GradientButton title={'Updating Oracle'} awaiting />
+    } else if (expiredPrice) {
+      return <GradientButton onClick={handleUpdatePrice} title={'Update Oracle'} />
     } else if (insufficientBalance) {
       return <MainButton disabled>Insufficient {deiCurrency?.symbol} Balance</MainButton>
     }
-    // if (awaitingRedeemConfirmation) {
-    //   return (
-    //     <MainButton>
-    //       Redeeming DEI <DotFlashing style={{ marginLeft: '10px' }} />
-    //     </MainButton>
-    //   )
-    // }
     return (
       <MainButton
         onClick={() => {
-          if (amountIn && amountIn !== '0') toggleReviewModal(true)
+          if (amountIn && amountIn !== '0' && amountIn !== '' && amountIn !== '0.') toggleReviewModal(true)
         }}
       >
         Redeem DEI
       </MainButton>
     )
   }
+  const items = usePoolStats()
 
-  const items = [
-    { name: 'DEI Price', value: '$1.00' },
-    { name: 'USDC Price', value: formatDollarAmount(parseFloat(usdcPrice), 2) ?? '-' },
-    { name: 'DEUS Price', value: formatDollarAmount(parseFloat(deusCoingeckoPrice), 2) ?? '-' },
-    { name: 'Pool(V3)', value: truncateAddress(CollateralPool[chainId ?? SupportedChainId.FANTOM]) ?? '-' },
-  ]
+  const collateralCollectionDelay = useCollateralCollectionDelay()
+  const deusCollectionDelay = useDeusCollectionDelay()
 
-  const info = useMemo(
-    () => [
-      { title: 'USDC claimable time', value: '30s' },
-      { title: 'DEUS claimable time', value: '8h' },
-      // { title: 'Min Received', value: amountOut1 + ' USDC + ' + amountOut2 + ' DEUS' },
-    ],
-    []
-  )
+  const info = useMemo(() => {
+    return [
+      {
+        title: 'USDC claimable time',
+        value: getTimeLength(collateralCollectionDelay * 1000).fullLength ?? '30 sec',
+      },
+      { title: 'DEUS claimable time', value: getTimeLength(deusCollectionDelay * 1000).fullLength ?? '30 min' },
+    ]
+  }, [collateralCollectionDelay, deusCollectionDelay])
+
   return (
     <>
       <Container>
         <Hero>
           <Image src={DEUS_LOGO} height={'90px'} alt="Logo" />
-          <Title>Redemption</Title>
           <StatsHeader items={items} />
         </Hero>
         <MainWrap>
           <Wrapper>
             <Tableau title={'Redeem DEI'} imgSrc={REDEEM_IMG} />
             <RedemptionWrapper>
-              <InputBox currency={deiCurrency} value={amountIn} onChange={(value: string) => setAmountIn(value)} />
+              <InputBox
+                currency={deiCurrency}
+                value={amountIn}
+                onChange={(value: string) => setAmountIn(value)}
+                disabled={expiredPrice}
+              />
               <ArrowDown />
 
               <InputBox
@@ -239,24 +228,25 @@ export default function Redemption() {
                 disabled={true}
               />
               <PlusIcon size={'24px'} />
-              <InputBox
-                currency={deusCurrency}
-                value={amountOut2}
-                onChange={(value: string) => console.log(value)}
-                disabled={true}
-              />
+              <InputBoxInDollar currency={deusCurrency} value={amountOut2} />
               <div style={{ marginTop: '20px' }}></div>
-              {getApproveButton()}
               {getActionButton()}
             </RedemptionWrapper>
             <BottomWrapper>
-              <InfoItem name={'USDC Ratio'} value={(Number(redeemCollateralRatio) / 100).toString()} />
-              <InfoItem name={'DEUS Ratio'} value={((100 - Number(redeemCollateralRatio)) / 100).toString()} />
+              <InfoItem name={'Redemption Fee'} value={redemptionFee + '%'} />
+              <InfoItem name={'Redeem Ratio'} value={Number(redeemCollateralRatio).toString() + '%'} />
+              <InfoItem name={'Mint Ratio'} value={Number(mintCollateralRatio).toString() + '%'} />
             </BottomWrapper>
           </Wrapper>
-          <Claim redeemCollateralRatio={redeemCollateralRatio} />
+          <Claim redeemCollateralRatio={redeemCollateralRatio} handleUpdatePrice={handleUpdatePrice} />
         </MainWrap>
       </Container>
+
+      <WarningModal
+        isOpen={isOpenWarningModal}
+        toggleModal={(action: boolean) => toggleWarningModal(action)}
+        summary={['Transaction rejected', `Redeeming ${amountIn} DEI to ${amountOut1} USDC and ${amountOut2} DEUS`]}
+      />
 
       <DefaultReviewModal
         title="Review Redeem Transaction"
@@ -268,8 +258,9 @@ export default function Redemption() {
         amountsOut={[amountOut1, amountOut2]}
         info={info}
         data={''}
-        buttonText={awaitingRedeemConfirmation ? 'Redeeming ' : 'Confirm Redeem'}
+        buttonText={'Confirm Redeem'}
         awaiting={awaitingRedeemConfirmation}
+        summary={`Redeeming ${amountIn} DEI to ${amountOut1} USDC and ${amountOut2} DEUS`}
         handleClick={handleRedeem}
       />
     </>

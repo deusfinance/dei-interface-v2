@@ -1,10 +1,6 @@
 import React from 'react'
 
-import { useTheme } from 'styled-components'
-
 export default function DeiBonds({ size, ...rest }: { size: number; [x: string]: any }) {
-  const theme = useTheme()
-
   return (
     <svg width={size} height={size} viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" {...rest}>
       <path

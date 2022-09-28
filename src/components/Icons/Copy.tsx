@@ -1,14 +1,6 @@
 import React from 'react'
 
-export default function Copy({
-  size = 12,
-  color = 'white',
-  ...rest
-}: {
-  size?: number
-  color?: string
-  [x: string]: any
-}) {
+export default function Copy({ size = 12, ...rest }: { size?: number; [x: string]: any }) {
   return (
     <svg width={size} height={size} viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg" {...rest}>
       <path

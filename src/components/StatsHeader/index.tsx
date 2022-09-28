@@ -3,13 +3,16 @@ import styled from 'styled-components'
 
 import { ToolTip } from 'components/ToolTip'
 import { Info } from 'components/Icons'
+import { ChainInfo } from 'constants/chainInfo'
+import { SupportedChainId } from 'constants/chains'
+import { ExternalLink } from 'components/Link'
 
 const Wrapper = styled.div`
   width: 100%;
   overflow-x: auto;
   white-space: nowrap;
   -webkit-overflow-scrolling: touch;
-  margin: 17px 2px 0px 2px;
+  margin: 20px 2px 0px 2px;
   display: flex;
   justify-content: center;
 
@@ -47,6 +50,15 @@ const Value = styled.div`
   margin-top: 10px;
 `
 
+const ValueLink = styled(Value)`
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+    color: ${({ theme }) => theme.darkPink};
+  }
+`
+
 const CustomTooltip = styled(ToolTip)`
   max-width: 380px !important;
 `
@@ -81,7 +93,7 @@ export default function StatsHeader({
   items,
   hasBox,
 }: {
-  items: { name: string; value: string | number }[]
+  items: { name: string; value: string | number; link?: string }[]
   hasBox?: boolean
 }) {
   return (
@@ -89,11 +101,17 @@ export default function StatsHeader({
       {items.map((item, index) => (
         <Item key={index} rightBorder={index < items.length - 1 || hasBox}>
           <Name>{item.name}</Name>
-          <Value>{item.value}</Value>
+          {!item.link ? (
+            <Value>{item.value}</Value>
+          ) : (
+            <ExternalLink href={ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/address/' + item.link}>
+              <ValueLink>{item.value}</ValueLink>
+            </ExternalLink>
+          )}
         </Item>
       ))}
       {hasBox && (
-        <ItemBox data-for="id" data-tip={'veDEUS rewards are fully accruing in the Background'}>
+        <ItemBox data-for="id" data-tip={'Rewards are accruing in the background'}>
           <CustomTooltip id="id" />
           <AprWrapper target={'target'} href={'https://lafayettetabor.medium.com/vedeus-dynamics-40a4a5489ae1'}>
             <TextContent>APR</TextContent> <InfoIcon size={20} />

@@ -3,40 +3,44 @@ import styled from 'styled-components'
 import { ArrowDown, Plus } from 'react-feather'
 import Image from 'next/image'
 
-import { useCurrencyBalance } from 'state/wallet/hooks'
-import { useWalletModalToggle } from 'state/application/hooks'
-import useWeb3React from 'hooks/useWeb3'
-// import useDebounce from 'hooks/useDebounce'
-import { useSupportedChainId } from 'hooks/useSupportedChainId'
-import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
-import { tryParseAmount } from 'utils/parse'
-import { CollateralPool } from 'constants/addresses'
 import MINT_IMG from '/public/static/images/pages/mint/TableauBackground.svg'
 import DEI_LOGO from '/public/static/images/pages/mint/DEI_Logo.svg'
+
+import { SupportedChainId } from 'constants/chains'
+import { DEUS_TOKEN } from 'constants/tokens'
+import { MINT__INPUTS, MINT__OUTPUTS } from 'constants/inputs'
+import { CollateralPool } from 'constants/addresses'
+import { tryParseAmount } from 'utils/parse'
+
+import { useCurrencyBalance } from 'state/wallet/hooks'
+import { useExpiredPrice, useMintingFee, useMintPaused } from 'state/dei/hooks'
+import useWeb3React from 'hooks/useWeb3'
+import { useSupportedChainId } from 'hooks/useSupportedChainId'
+import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
+import { useMintPage } from 'hooks/useMintPage'
+import useMintCallback from 'hooks/useMintCallback'
+import useUpdateCallback from 'hooks/useOracleCallback'
+import { useGetCollateralRatios } from 'hooks/useRedemptionPage'
 
 import { DotFlashing } from 'components/Icons'
 import Hero from 'components/Hero'
 import InputBox from 'components/InputBox'
-// import AdvancedOptions from 'components/App/Swap/AdvancedOptions'
 import StatsHeader from 'components/StatsHeader'
-import { BottomWrapper, Container, InputWrapper, Title, Wrapper, MainButton } from 'components/App/StableCoin'
+import DefaultReviewModal from 'components/ReviewModal/DefaultReviewModal'
+import {
+  BottomWrapper,
+  Container,
+  InputWrapper,
+  Wrapper,
+  MainButton,
+  ConnectWallet,
+  GradientButton,
+} from 'components/App/StableCoin'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
 import TokensModal from 'components/App/StableCoin/TokensModal'
-import { MINT__INPUTS, MINT__OUTPUTS } from 'constants/inputs'
-import { SupportedChainId } from 'constants/chains'
-import useMintCallback from 'hooks/useMintCallback'
-import { useGetDeusPrice, useMintAmountOut } from 'hooks/useMintPage'
-import { DEUS_TOKEN } from 'constants/tokens'
-import DefaultReviewModal from 'components/ReviewModal/DefaultReviewModal'
-import { useDeusPrice, useUSDCPrice } from 'hooks/useCoingeckoPrice'
-import { formatDollarAmount } from 'utils/numbers'
-import { truncateAddress } from 'utils/address'
-import { useGetCollateralRatios } from 'hooks/useRedemptionPage'
-
-// const SlippageWrapper = styled(RowBetween)`
-//   margin-top: 10px;
-// `
+import usePoolStats from 'components/App/StableCoin/PoolStats'
+import WarningModal from 'components/ReviewModal/Warning'
 
 const PlusIcon = styled(Plus)`
   z-index: 1000;
@@ -77,17 +81,21 @@ const ComboInputBox = styled.div`
 
 export default function Mint() {
   const { chainId, account } = useWeb3React()
-  const toggleWalletModal = useWalletModalToggle()
   const isSupportedChainId = useSupportedChainId()
-  const tokens = useMemo(() => MINT__INPUTS[chainId ?? SupportedChainId.FANTOM], [chainId])
+  const mintingFee = useMintingFee()
+  const mintPaused = useMintPaused()
+  const tokens = useMemo(
+    () => MINT__INPUTS[isSupportedChainId && chainId ? chainId : SupportedChainId.FANTOM],
+    [chainId, isSupportedChainId]
+  )
 
   const [fullCollateralIndex, partialCollateralIndex] = useMemo(() => {
-    let fullCollateralIndex = tokens.indexOf(
+    let fullCollateralIndex = tokens?.indexOf(
       tokens.filter((item) => {
         return item.length === 1 && item[0]?.symbol === 'USDC'
       })[0]
     )
-    let partialCollateralIndex = tokens.indexOf(
+    let partialCollateralIndex = tokens?.indexOf(
       tokens.filter((item) => {
         return item.length > 1 && item[0]?.symbol === 'USDC' && item[1]?.symbol === 'DEUS'
       })[0]
@@ -97,34 +105,35 @@ export default function Mint() {
     return [fullCollateralIndex, partialCollateralIndex]
   }, [tokens])
 
-  const [amountIn1, setAmountIn1] = useState('')
-  const [amountIn2, setAmountIn2] = useState('')
-  // const debouncedAmountIn1 = useDebounce(amountIn1, 500)
-  // const debouncedAmountIn2 = useDebounce(amountIn2, 500)
   const [isOpenTokensModal, toggleTokensModal] = useState(false)
   const [inputTokenIndex, setInputTokenIndex] = useState<number>(fullCollateralIndex)
   const [hasPair, setHasPair] = useState(!!inputTokenIndex)
   const [isOpenReviewModal, toggleReviewModal] = useState(false)
-  const [slippage, setSlippage] = useState(0.5)
-  const [amountOut, setAmountOut] = useState('')
+  const [isOpenWarningModal, toggleWarningModal] = useState(false)
 
-  // const deiPrice = useDeiPrice()
-  const usdcPrice = useUSDCPrice()
-  const deusCoingeckoPrice = useDeusPrice()
-  const deusPrice = useGetDeusPrice()
+  const expiredPrice = useExpiredPrice()
 
   const inputToken = tokens[inputTokenIndex]
   const token1Currency = inputToken[0]
   const token2Currency = hasPair ? inputToken[1] : DEUS_TOKEN
 
-  const tokensOut = useMemo(() => MINT__OUTPUTS[chainId ?? SupportedChainId.FANTOM], [chainId])
+  const tokensOut = useMemo(
+    () => MINT__OUTPUTS[isSupportedChainId && chainId ? chainId : SupportedChainId.FANTOM],
+    [chainId, isSupportedChainId]
+  )
   const outputToken = tokensOut[0]
   const outputTokenCurrency = outputToken[0]
 
   const token1CurrencyBalance = useCurrencyBalance(account ?? undefined, token1Currency)
   const token2CurrencyBalance = useCurrencyBalance(account ?? undefined, token2Currency)
 
-  const { mintCollateralRatio } = useGetCollateralRatios()
+  const { mintCollateralRatio, redeemCollateralRatio } = useGetCollateralRatios()
+
+  const { amountIn1, amountIn2, amountOut, onUserInput1, onUserInput2, onUserOutput } = useMintPage(
+    token1Currency,
+    token2Currency,
+    outputTokenCurrency
+  )
 
   useEffect(() => {
     if (Number(mintCollateralRatio) === 100) {
@@ -135,68 +144,6 @@ export default function Mint() {
       setInputTokenIndex(partialCollateralIndex)
     }
   }, [fullCollateralIndex, mintCollateralRatio, partialCollateralIndex])
-
-  // useEffect(() => {
-  //   if (inputToken.length > 1) {
-  //     setAmountIn2('')
-  //     setHasPair(true)
-  //   } else {
-  //     setAmountIn2('')
-  //     setHasPair(false)
-  //   }
-  // }, [inputToken.length, inputTokenIndex, tokens])
-
-  // const [focusType, setFocusType] = useState('from1')
-
-  // useEffect(() => {
-  //   if (amountIn1 === '' && focusType === 'from1') {
-  //     setAmountIn2('')
-  //   } else if (amountIn2 === '' && focusType === 'from2') {
-  //     setAmountIn1('')
-  //   }
-  // }, [amountIn1, amountIn2, focusType])
-
-  // useEffect(() => {
-  //   if (deiPrices && hasPair) {
-  //     const { collateral_price, deus_price } = deiPrices
-
-  //     const in1Unit = collateralRatio === 0 ? deus_price : collateral_price
-  //     const in2Unit = deus_price
-  //     let a1 = ''
-  //     let a2 = ''
-
-  //     if (focusType === 'from1' && amountIn1 !== '') {
-  //       a1 = amountIn1
-  //       a2 =
-  //         collateralRatio > 0 && collateralRatio < 100
-  //           ? toBN(a1)
-  //               .times(in1Unit)
-  //               .times(100 - collateralRatio)
-  //               .div(collateralRatio)
-  //               .div(in2Unit)
-  //               .toString()
-  //           : '0'
-  //     } else if (focusType === 'from2' && amountIn2 !== '') {
-  //       a2 = amountIn2
-  //       a1 = toBN(a2)
-  //         .times(in2Unit)
-  //         .times(collateralRatio)
-  //         .div(100 - collateralRatio)
-  //         .div(in1Unit)
-  //         .toString()
-  //     }
-  //     setAmountIn1(a1)
-  //     setAmountIn2(a2)
-  //   }
-  // }, [debouncedAmountIn1, amountIn2, focusType, amountIn1, debouncedAmountIn2, deiPrices, hasPair, collateralRatio])
-
-  // const amountOut = useMintAmountOut(token1Currency, token2Currency, debouncedAmountIn1, debouncedAmountIn2, mintingFee)
-
-  const { collatAmount, deusAmount } = useMintAmountOut(amountOut, deusPrice)
-  useEffect(() => {
-    setAmountIn1(collatAmount)
-    setAmountIn2(deusAmount)
-  }, [collatAmount, deusAmount])
 
   const token1Amount = useMemo(() => {
     return tryParseAmount(amountIn1, token1Currency || undefined)
@@ -222,9 +169,10 @@ export default function Mint() {
   }, [amountOut, outputTokenCurrency])
 
   const { state: mintCallbackState, callback: mintCallback, error: mintCallbackError } = useMintCallback(deiAmount)
-
+  const { callback: updateOracleCallback } = useUpdateCallback()
   const [awaitingApproveConfirmation, setAwaitingApproveConfirmation] = useState<boolean>(false)
   const [awaitingMintConfirmation, setAwaitingMintConfirmation] = useState<boolean>(false)
+  const [awaitingUpdateConfirmation, setAwaitingUpdateConfirmation] = useState<boolean>(false)
 
   const spender = useMemo(() => (chainId ? CollateralPool[chainId] : undefined), [chainId])
   const [approvalState1, approveCallback1] = useApproveCallback(token1Currency ?? undefined, spender)
@@ -240,6 +188,29 @@ export default function Mint() {
     const show = token2Currency && approvalState2 !== ApprovalState.APPROVED && !!amountIn2 && Number(amountIn2) !== 0
     return [show, show && approvalState2 === ApprovalState.PENDING]
   }, [hasPair, token2Currency, approvalState2, amountIn2])
+
+  const handleUpdatePrice = useCallback(async () => {
+    if (!updateOracleCallback) return
+    try {
+      setAwaitingUpdateConfirmation(true)
+      const txHash = await updateOracleCallback()
+      console.log({ txHash })
+      setAwaitingUpdateConfirmation(false)
+    } catch (e) {
+      setAwaitingUpdateConfirmation(false)
+      if (e instanceof Error) {
+        console.error(e)
+      } else {
+        console.error(e)
+      }
+    }
+  }, [updateOracleCallback])
+
+  useEffect(() => {
+    if (expiredPrice) {
+      onUserInput1('')
+    }
+  }, [expiredPrice, onUserInput1])
 
   const handleApprove = async (focusType: string) => {
     setAwaitingApproveConfirmation(true)
@@ -257,28 +228,32 @@ export default function Mint() {
       const txHash = await mintCallback()
       setAwaitingMintConfirmation(false)
       console.log({ txHash })
+      toggleReviewModal(false)
+      onUserInput1('')
     } catch (e) {
       setAwaitingMintConfirmation(false)
+      toggleWarningModal(true)
+      toggleReviewModal(false)
       if (e instanceof Error) {
         console.error(e)
       } else {
         console.error(e)
       }
     }
-  }, [mintCallback, mintCallbackError, mintCallbackState])
+  }, [mintCallback, mintCallbackError, mintCallbackState, onUserInput1])
 
   function getApproveButton(): JSX.Element | null {
     if (!isSupportedChainId || !account) return null
     else if (awaitingApproveConfirmation) {
       return (
         <MainButton active>
-          Awaiting Confirmation <DotFlashing style={{ marginLeft: '10px' }} />
+          Awaiting Confirmation <DotFlashing />
         </MainButton>
       )
     } else if (showApproveLoader1 || showApproveLoader2) {
       return (
         <MainButton active>
-          Approving <DotFlashing style={{ marginLeft: '10px' }} />
+          Approving <DotFlashing />
         </MainButton>
       )
     } else if (showApprove1)
@@ -290,23 +265,29 @@ export default function Mint() {
   }
 
   function getActionButton(): JSX.Element | null {
-    if (!chainId || !account) return <MainButton onClick={toggleWalletModal}>Connect Wallet</MainButton>
+    if (!chainId || !account) return <ConnectWallet />
     else if (showApprove1 || showApprove2) return null
     else if (insufficientBalance1)
       return <MainButton disabled>Insufficient {token1Currency?.symbol} Balance</MainButton>
     else if (insufficientBalance2)
       return <MainButton disabled>Insufficient {token2Currency?.symbol} Balance</MainButton>
-    else if (awaitingMintConfirmation) {
+    else if (mintPaused) {
+      return <MainButton disabled>Mint Paused</MainButton>
+    } else if (awaitingUpdateConfirmation) {
+      return <GradientButton title={'Updating Oracle'} awaiting />
+    } else if (expiredPrice) {
+      return <GradientButton onClick={handleUpdatePrice} title={'Update Oracle'} />
+    } else if (awaitingMintConfirmation) {
       return (
         <MainButton>
-          Minting {outputTokenCurrency?.symbol} <DotFlashing style={{ marginLeft: '10px' }} />
+          Minting {outputTokenCurrency?.symbol} <DotFlashing />
         </MainButton>
       )
     }
     return (
       <MainButton
         onClick={() => {
-          if (amountOut !== '0') toggleReviewModal(true)
+          if (amountOut !== '0' && amountOut !== '' && amountOut !== '0.') toggleReviewModal(true)
         }}
       >
         Mint {outputTokenCurrency?.symbol}
@@ -314,25 +295,13 @@ export default function Mint() {
     )
   }
 
-  const items = [
-    { name: 'DEI Price', value: '$1.00' },
-    { name: 'USDC Price', value: formatDollarAmount(parseFloat(usdcPrice), 2) ?? '-' },
-    { name: 'DEUS Price', value: formatDollarAmount(parseFloat(deusCoingeckoPrice), 2) ?? '-' },
-    { name: 'Pool(V3)', value: truncateAddress(CollateralPool[chainId ?? SupportedChainId.FANTOM]) ?? '-' },
-  ]
-  const info = useMemo(
-    () => [
-      { title: 'Txn Deadline', value: '20 min' },
-      // { title: 'Min Received', value: amountOut },
-    ],
-    []
-  )
+  const items = usePoolStats()
+
   return (
     <>
       <Container>
         <Hero>
           <Image src={DEI_LOGO} height={'90px'} alt="Logo" />
-          <Title>Mint</Title>
           <StatsHeader items={items} />
         </Hero>
 
@@ -345,10 +314,8 @@ export default function Mint() {
                 <InputBox
                   currency={token1Currency}
                   value={amountIn1}
-                  onChange={(value: string) => setAmountIn1(value)}
-                  // setFocusType={setFocusType}
-                  // focusType="from1"
-                  disabled={true}
+                  onChange={(value: string) => onUserInput1(value)}
+                  disabled={expiredPrice}
                   // onTokenSelect={() => {
                   //   toggleTokensModal(true)
                   //   setInputTokenIndex(inputTokenIndex)
@@ -358,10 +325,9 @@ export default function Mint() {
                 <InputBox
                   currency={token2Currency}
                   value={amountIn2}
-                  onChange={(value: string) => setAmountIn2(value)}
-                  // setFocusType={setFocusType}
-                  // focusType="from2"
-                  disabled={true}
+                  onChange={(value: string) => onUserInput2(value)}
+                  disabled={expiredPrice}
+
                   // onTokenSelect={() => {
                   //   toggleTokensModal(true)
                   //   setInputTokenIndex(inputTokenIndex)
@@ -372,10 +338,8 @@ export default function Mint() {
               <InputBox
                 currency={token1Currency}
                 value={amountIn1}
-                onChange={(value: string) => setAmountIn1(value)}
-                // setFocusType={setFocusType}
-                // focusType="from1"
-                disabled={true}
+                onChange={(value: string) => onUserInput1(value)}
+                disabled={expiredPrice}
                 // onTokenSelect={() => {
                 //   toggleTokensModal(true)
                 //   setInputTokenIndex(inputTokenIndex)
@@ -387,20 +351,18 @@ export default function Mint() {
             <InputBox
               currency={outputTokenCurrency}
               value={amountOut}
-              onChange={(value: string) => setAmountOut(value)}
-              // setFocusType={setFocusType}
-              // focusType="to"
+              onChange={(value: string) => onUserOutput(value)}
+              disabled={expiredPrice}
             />
             <div style={{ marginTop: '30px' }}></div>
             {getApproveButton()}
             {getActionButton()}
           </InputWrapper>
+
           <BottomWrapper>
-            {/* <SlippageWrapper>
-              <AdvancedOptions slippage={slippage} setSlippage={setSlippage} />
-            </SlippageWrapper> */}
-            <InfoItem name={'Minter Contract'} value={'CollateralPool'} />
-            <InfoItem name={'Minting Fee'} value={slippage + '%'} />
+            <InfoItem name={'Minting Fee'} value={mintingFee == 0 ? 'Zero' : `${mintingFee}%`} />
+            <InfoItem name={'Mint Ratio'} value={Number(mintCollateralRatio).toString() + '%'} />
+            <InfoItem name={'Redeem Ratio'} value={Number(redeemCollateralRatio).toString() + '%'} />
           </BottomWrapper>
         </Wrapper>
         <TokensModal
@@ -411,6 +373,12 @@ export default function Mint() {
         />
       </Container>
 
+      <WarningModal
+        isOpen={isOpenWarningModal}
+        toggleModal={(action: boolean) => toggleWarningModal(action)}
+        summary={['Transaction rejected', `Minting ${amountOut} DEI by ${amountIn1} USDC`]}
+      />
+
       <DefaultReviewModal
         title="Review Mint Transaction"
         isOpen={isOpenReviewModal}
@@ -419,10 +387,11 @@ export default function Mint() {
         outputTokens={outputToken}
         amountsIn={[amountIn1, amountIn2]}
         amountsOut={[amountOut]}
-        info={info}
+        info={[]}
         data={''}
-        buttonText={awaitingMintConfirmation ? 'Minting ' : 'Confirm Mint'}
+        buttonText={'Confirm Mint'}
         awaiting={awaitingMintConfirmation}
+        summary={`Minting ${amountOut} DEI by ${amountIn1} USDC`}
         handleClick={handleMint}
       />
     </>

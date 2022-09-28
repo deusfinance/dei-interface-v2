@@ -98,7 +98,7 @@ function colors(themeName: SupportedThemes): Colors {
       primary7: 'linear-gradient(90deg, #B63562 10%, #CF8D49 90%)',
 
       // color text
-      primaryText1: '#FFB463', // TODO check if we want these values
+      primaryText1: '#FFB463',
 
       // secondary colors
       secondary1: '#1749FA',
@@ -162,7 +162,7 @@ function colors(themeName: SupportedThemes): Colors {
       primary6: 'linear-gradient(-90deg, #B63562 10%, #CF8D49 90%)',
       primary7: 'linear-gradient(90deg, #ff538f 10%, #ffb56c 90%)',
       // color text
-      primaryText1: '#1749FA', // TODO check if we want these values
+      primaryText1: '#1749FA',
 
       // secondary colors
       secondary1: '#1749FA',

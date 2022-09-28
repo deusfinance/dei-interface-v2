@@ -1,7 +1,9 @@
 import styled from 'styled-components'
 
+import { useWalletModalToggle } from 'state/application/hooks'
+import { DotFlashing } from 'components/Icons'
 import { PrimaryButton } from 'components/Button'
-import { Row, RowBetween, RowEnd } from 'components/Row'
+import { Row, RowCenter, RowBetween, RowEnd } from 'components/Row'
 
 export const Container = styled(Row)`
   flex-flow: column nowrap;
@@ -94,3 +96,57 @@ export const MainButton = styled(PrimaryButton)`
     height: 60px;
   `}
 `
+
+const GradientButtonWrap = styled(PrimaryButton)`
+  background: ${({ theme }) => theme.specialBG1};
+  border-radius: 12px;
+  padding: 2px;
+  width: 100%;
+  height: 72px;
+  cursor: pointer;
+`
+
+export const GradientButtonRow = styled(RowCenter)`
+  background: ${({ theme }) => theme.bg2};
+  border-radius: 8px;
+  height: 100%;
+  width: 100%;
+  white-space: nowrap;
+`
+
+export const GradientButtonText = styled.span`
+  display: flex;
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 24px;
+  background: -webkit-linear-gradient(0deg, #e29d52 -10.26%, #de4a7b 80%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+`
+
+export function GradientButton({
+  title,
+  awaiting,
+  onClick,
+}: {
+  title: string
+  awaiting?: boolean
+  onClick?: () => void
+}) {
+  return (
+    <GradientButtonWrap onClick={onClick}>
+      <GradientButtonRow>
+        <GradientButtonText>
+          {title} {awaiting && <DotFlashing />}
+        </GradientButtonText>
+      </GradientButtonRow>
+    </GradientButtonWrap>
+  )
+}
+
+export function ConnectWallet() {
+  const toggleWalletModal = useWalletModalToggle()
+  return <GradientButton title="Connect Wallet" onClick={toggleWalletModal} />
+}

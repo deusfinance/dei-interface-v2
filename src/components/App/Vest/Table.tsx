@@ -16,7 +16,7 @@ import Pagination from 'components/Pagination'
 import ImageWithFallback from 'components/ImageWithFallback'
 import { RowCenter } from 'components/Row'
 import Column from 'components/Column'
-import { PrimaryButtonWhite, PrimaryButtonWide } from 'components/Button'
+import { PrimaryButtonWide } from 'components/Button'
 import { DotFlashing } from 'components/Icons'
 
 import DEUS_LOGO from '/public/static/images/tokens/deus.svg'
@@ -27,7 +27,7 @@ import LOADING_LOCK_MOBILE from '/public/static/images/pages/veDEUS/loadingLockM
 
 import { formatAmount } from 'utils/numbers'
 import { DefaultHandlerError } from 'utils/parseError'
-import { ButtonText } from 'pages/vest'
+import { ButtonText, TopBorder, TopBorderWrap } from 'pages/vest'
 import useWeb3React from 'hooks/useWeb3'
 
 dayjs.extend(utc)
@@ -147,28 +147,6 @@ const MobileWrapper = styled.div`
   margin-bottom: 20px;
 `
 
-const TopBorderWrap = styled.div<{ active?: any }>`
-  background: ${({ theme }) => theme.primary2};
-  padding: 1px;
-  border-radius: 8px;
-  margin-right: 4px;
-  margin-left: 3px;
-  border: 1px solid ${({ theme }) => theme.bg0};
-  /* flex: 1; */
-
-  &:hover {
-    border: 1px solid ${({ theme, active }) => (active ? theme.bg0 : theme.warning)};
-  }
-`
-
-const TopBorder = styled.div`
-  background: ${({ theme }) => theme.bg0};
-  border-radius: 6px;
-  height: 100%;
-  width: 100%;
-  display: flex;
-`
-
 const itemsPerPage = 10
 
 export default function Table({
@@ -239,7 +217,7 @@ export default function Table({
                   ) : isLoading ? (
                     <NoResults>Loading...</NoResults>
                   ) : (
-                    <NoResults>You have no lock!</NoResults>
+                    <NoResults>No lock found</NoResults>
                   )}
                 </td>
               </tr>
@@ -259,7 +237,6 @@ export default function Table({
 function TableRow({
   nftId,
   toggleLockManager,
-  toggleAPYManager,
   index,
   isMobile,
   reward,
@@ -333,52 +310,14 @@ function TableRow({
     )
   }
 
-  function getClaimButton() {
-    if (ClaimAwaitingConfirmation) {
-      return (
-        <PrimaryButtonWide isSmall={true} active>
-          <ButtonText>
-            Confirming <DotFlashing style={{ marginLeft: '10px' }} />
-          </ButtonText>
-        </PrimaryButtonWide>
-      )
-    }
-    if (showTransactionPending) {
-      return (
-        <PrimaryButtonWide isSmall={true} active>
-          <ButtonText>
-            Claiming <DotFlashing style={{ marginLeft: '10px' }} />
-          </ButtonText>
-        </PrimaryButtonWide>
-      )
-    }
-    return (
-      <PrimaryButtonWide style={{ margin: '0 auto' }} isSmall={true} onClick={onClaim}>
-        <ButtonText>Claim {formatAmount(reward, 3)}</ButtonText>
-      </PrimaryButtonWide>
-    )
-  }
-
   function getClaimWithdrawCell() {
-    if (awaitingConfirmation) {
+    if (awaitingConfirmation || showTransactionPending) {
       return (
         <TopBorderWrap>
           <TopBorder>
-            <PrimaryButtonWide width={'100%'} disabled>
-              <ButtonText style={{ margin: '-6px' }} disabled>
-                Confirming ...
-              </ButtonText>
-            </PrimaryButtonWide>
-          </TopBorder>
-        </TopBorderWrap>
-      )
-    } else if (showTransactionPending) {
-      return (
-        <TopBorderWrap>
-          <TopBorder>
-            <PrimaryButtonWide width={'100%'} disabled>
-              <ButtonText style={{ margin: '-5px' }} disabled>
-                Withdrawing ...
+            <PrimaryButtonWide transparentBG>
+              <ButtonText gradientText>
+                {awaitingConfirmation ? 'Confirming' : 'Withdrawing'} <DotFlashing />
               </ButtonText>
             </PrimaryButtonWide>
           </TopBorder>
@@ -388,15 +327,28 @@ function TableRow({
       return (
         <TopBorderWrap>
           <TopBorder>
-            <PrimaryButtonWide width={'100%'} disabled onClick={onWithdraw}>
-              <ButtonText style={{ margin: '-6px' }} disabled>
-                Withdraw
-              </ButtonText>
+            <PrimaryButtonWide transparentBG onClick={onWithdraw}>
+              <ButtonText gradientText>Withdraw</ButtonText>
             </PrimaryButtonWide>
           </TopBorder>
         </TopBorderWrap>
       )
-    } else if (reward) return getClaimButton()
+    } else if (reward) {
+      if (ClaimAwaitingConfirmation || showTransactionPending) {
+        return (
+          <PrimaryButtonWide>
+            <ButtonText>
+              {ClaimAwaitingConfirmation ? 'Confirming' : 'Claiming'} <DotFlashing />
+            </ButtonText>
+          </PrimaryButtonWide>
+        )
+      }
+      return (
+        <PrimaryButtonWide style={{ margin: '0 auto' }} onClick={onClaim}>
+          <ButtonText>Claim {formatAmount(reward, 3)}</ButtonText>
+        </PrimaryButtonWide>
+      )
+    }
     return null
   }
 
@@ -427,9 +379,9 @@ function TableRow({
         <Cell style={{ padding: '5px 10px' }}>{getClaimWithdrawCell()}</Cell>
 
         <Cell style={{ padding: '5px 10px' }}>
-          <PrimaryButtonWhite disabled onClick={() => toggleLockManager(nftId)}>
+          <PrimaryButtonWide whiteBorder onClick={() => toggleLockManager(nftId)}>
             <ButtonText>Update Lock</ButtonText>
-          </PrimaryButtonWhite>
+          </PrimaryButtonWide>
         </Cell>
       </>
     )
@@ -446,12 +398,12 @@ function TableRow({
             </NFTWrap>
           </RowCenter>
 
-          <RowCenter style={{ padding: '5px 10px' }}>{getClaimWithdrawCell()}</RowCenter>
+          <RowCenter style={{ padding: '5px 2px' }}>{getClaimWithdrawCell()}</RowCenter>
 
-          <RowCenter style={{ padding: '5px 10px' }}>
-            <PrimaryButtonWhite disabled onClick={() => toggleLockManager(nftId)}>
+          <RowCenter style={{ padding: '5px 2px' }}>
+            <PrimaryButtonWide whiteBorder onClick={() => toggleLockManager(nftId)}>
               <ButtonText>Update Lock</ButtonText>
-            </PrimaryButtonWhite>
+            </PrimaryButtonWide>
           </RowCenter>
         </FirstRow>
 

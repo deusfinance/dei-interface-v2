@@ -37,7 +37,7 @@ const DeiInfo = styled(RowEnd)`
   & > * {
     width: unset;
     min-width: unset;
-    &:nth-child(4) {
+    &:nth-child(3) {
       border-right: none;
     }
   }
@@ -90,12 +90,16 @@ const ClaimedValue = styled.span`
 export default function DeiBondStats() {
   const userStats = useUserDeiBondInfo()
 
+  if (!userStats.length || !(userStats[0].value !== 'N/A' || userStats[1].value !== 'N/A')) {
+    return <></>
+  }
+
   return (
     <Wrapper>
       <DeiStats>
         <Title>Your DEI Bond stats</Title>
         <ClaimedDei>
-          Total Dei Claimed: <ClaimedValue>0</ClaimedValue>
+          Total DEI Claimed: <ClaimedValue>0</ClaimedValue>
         </ClaimedDei>
       </DeiStats>
       <DeiInfo>

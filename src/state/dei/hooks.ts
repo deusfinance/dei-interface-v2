@@ -30,11 +30,13 @@ export const useDeusPrice = () => {
   return useMemo(() => deus, [deus])
 }
 
-export const useCollateralRatio = () => {
-  // FIXME: get from contract
-  // const { collateralRatio } = useDeiState()
-  const collateralRatio = 80
-  return useMemo(() => collateralRatio, [collateralRatio])
+export const useMintCollateralRatio = () => {
+  const { mintCollateralRatio } = useDeiState()
+  return useMemo(() => mintCollateralRatio, [mintCollateralRatio])
+}
+export const useRedeemCollateralRatio = () => {
+  const { redeemCollateralRatio } = useDeiState()
+  return useMemo(() => redeemCollateralRatio, [redeemCollateralRatio])
 }
 
 export const useMintingFee = () => {
@@ -47,16 +49,6 @@ export const useRedemptionFee = () => {
   return useMemo(() => redemptionFee, [redemptionFee])
 }
 
-export const usePoolCeiling = () => {
-  const { poolCeiling } = useDeiState()
-  return useMemo(() => poolCeiling, [poolCeiling])
-}
-
-export const usePoolBalance = () => {
-  const { poolBalance } = useDeiState()
-  return useMemo(() => poolBalance, [poolBalance])
-}
-
 export const useMintPaused = () => {
   const { mintPaused } = useDeiState()
   return useMemo(() => mintPaused, [mintPaused])
@@ -65,4 +57,24 @@ export const useMintPaused = () => {
 export const useRedeemPaused = () => {
   const { redeemPaused } = useDeiState()
   return useMemo(() => redeemPaused, [redeemPaused])
+}
+
+export const useCollateralCollectionDelay = () => {
+  const { collateralCollectionDelay } = useDeiState()
+  return useMemo(() => collateralCollectionDelay, [collateralCollectionDelay])
+}
+
+export const useDeusCollectionDelay = () => {
+  const { deusCollectionDelay } = useDeiState()
+  return useMemo(() => deusCollectionDelay, [deusCollectionDelay])
+}
+
+export const useUnclaimedCollateralAmount = () => {
+  const { unclaimedCollateralAmount } = useDeiState()
+  return useMemo(() => unclaimedCollateralAmount, [unclaimedCollateralAmount])
+}
+
+export const useExpiredPrice = () => {
+  const { expiredPrice } = useDeiState()
+  return useMemo(() => expiredPrice, [expiredPrice])
 }

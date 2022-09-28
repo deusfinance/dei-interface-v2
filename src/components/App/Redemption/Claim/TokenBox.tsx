@@ -1,12 +1,14 @@
 import styled from 'styled-components'
 import Image from 'next/image'
 
-import { RowBetween, RowStart } from 'components/Row'
+import { AutoRow, Row, RowBetween, RowStart } from 'components/Row'
 
 import ClaimButton from './ClaimButton'
 import { formatBalance } from 'utils/numbers'
 import useCurrencyLogo from 'hooks/useCurrencyLogo'
 import { getRemainingTime } from 'utils/time'
+import { IToken } from '.'
+import Column from 'components/Column'
 
 const TokenInfo = styled.div<{ isFirst?: boolean; isLast?: boolean }>`
   color: ${({ theme }) => theme.bg0};
@@ -54,6 +56,12 @@ const Amount = styled.div`
   color: ${({ theme }) => theme.text1};
 `
 
+const SubAmount = styled.div`
+  font-size: 13px;
+  margin-left: 10px;
+  color: ${({ theme }) => theme.text2};
+`
+
 const TimeSpan = styled.span`
   color: ${({ theme }) => theme.text1};
   white-space: nowrap;
@@ -69,24 +77,21 @@ const TokenRowRight = styled(RowBetween)`
 `
 
 export const TokenBox = ({
-  symbol,
-  claimableBlock,
+  token,
   currentBlock,
-  amount,
   onSwitchNetwork,
   onClaim,
   isFirst = true,
   isLast = true,
 }: {
-  symbol: string | null
-  claimableBlock: number
+  token: IToken
   currentBlock: number
-  amount?: number | null
   onSwitchNetwork?: () => void
   onClaim?: () => void
   isFirst?: boolean
   isLast?: boolean
 }): JSX.Element => {
+  const { symbol, claimableBlock, amount } = token
   const logo = useCurrencyLogo(symbol ?? 'usdc')
 
   const isWaiting = claimableBlock - currentBlock > 0
@@ -97,11 +102,34 @@ export const TokenBox = ({
       <TokenRow isWaiting={isWaiting}>
         <RowStart alignItems="center">
           <Image width="26px" height="25px" src={logo} alt={'DEUS'} />
-          <Amount>{amount ? formatBalance(amount) : ''}</Amount>
-          <TokenName type={symbol ?? 'USDC'}>{symbol}</TokenName>
+          {symbol === 'DEUS' ? (
+            <>
+              {isFirst ? (
+                <Column>
+                  <AutoRow>
+                    <Amount>{amount ? formatBalance(amount) : ''}</Amount>
+                    <TokenName type={symbol ?? 'DEUS'}>{symbol}</TokenName>
+                  </AutoRow>
+                  <SubAmount> = ${token.usdAmount ? formatBalance(token.usdAmount) : ''}</SubAmount>
+                </Column>
+              ) : (
+                <Row>
+                  <Amount>${token.usdAmount ? formatBalance(token.usdAmount) : ''}</Amount>
+                  <TokenName type={symbol ?? 'DEUS'}>in {symbol}</TokenName>
+                </Row>
+              )}
+            </>
+          ) : (
+            <Row>
+              <Amount>{amount ? formatBalance(amount) : ''}</Amount>
+              <TokenName type={symbol ?? 'USDC'}>{symbol}</TokenName>
+            </Row>
+          )}
         </RowStart>
         {!isFirst && (
-          <>{isWaiting ? <TimeSpan>in {`${hours}:${minutes}:${seconds}`}</TimeSpan> : <TimeSpan>ready</TimeSpan>}</>
+          <Column>
+            {isWaiting ? <TimeSpan>in {`${hours}:${minutes}:${seconds}`}</TimeSpan> : <TimeSpan>ready</TimeSpan>}
+          </Column>
         )}
       </TokenRow>
       {isFirst && (

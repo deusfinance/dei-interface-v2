@@ -7,7 +7,7 @@ import { useProxyMinterContract } from './useContract'
 import { Collateral } from 'constants/addresses'
 import { MINT__PATHS } from 'constants/path'
 import { ProxyValues } from 'state/mint/reducer'
-import { ParseProxyMinterGetAmountOutError } from 'utils/parseErrors'
+import { DefaultHandlerError } from 'utils/parseError'
 
 type Params = Array<string | string[]>
 
@@ -62,7 +62,7 @@ export default function useProxiedAmountOutCallback(
         const result: ProxyValues = await ProxyMinterContract[method](...params)
         return result
       } catch (err) {
-        toast.error(ParseProxyMinterGetAmountOutError(err))
+        toast.error(DefaultHandlerError(err))
         return null
       }
     },

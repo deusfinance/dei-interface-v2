@@ -33,3 +33,21 @@ export function getRemainingTime(timeStamp: number): {
 
   return { diff, day, hours, minutes, seconds }
 }
+
+export function getTimeLength(timeLength: number): {
+  hours: string
+  minutes: string
+  seconds: string
+  fullLength: string
+} {
+  const hours = dayjs.utc(timeLength).hour() + ' hr'
+  const minutes = dayjs.utc(timeLength).minute() + ' min'
+  const seconds = dayjs.utc(timeLength).second() + ' sec'
+
+  let fullLength = ''
+  if (hours[0] !== '0') fullLength += hours
+  if (minutes[0] !== '0') fullLength += minutes
+  if (seconds[0] !== '0') fullLength += seconds
+
+  return { hours, minutes, seconds, fullLength }
+}

@@ -18,14 +18,19 @@ export function DefaultHandlerError(error: any): string | null {
 }
 
 //TODO: get All error and make a readable message here
-export function MintErrorToUserReadableMessage(error: any): string {
-  let reason: string | undefined
+export function CollateralPoolErrorToUserReadableMessage(error: any): string {
+  const reason = getErrorState(error)
 
-  while (Boolean(error)) {
-    reason = error.reason ?? error.message ?? reason
-    error = error.error ?? error.data?.originalError
+  switch (reason) {
+    case 'TwapUniOracle: NOT_UPDATED':
+      return `please "Update Oracle".`
+
+    case 'DEIPool: COLLATERAL_COLLECTION_DELAY':
+      return `wait a few seconds and try again`
+
+    case 'DEIV2Pool: DEUS_COLLECTION_DELAY':
+      return `wait a few seconds and try again`
   }
 
-  if (reason?.indexOf('execution reverted: ') === 0) reason = reason.substr('execution reverted: '.length)
-  return `Unknown error${reason ? `: "${reason}"` : ''}. Try increasing your slippage tolerance.`
+  return `${reason ? `"${reason}"` : ''}.`
 }
