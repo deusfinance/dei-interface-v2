@@ -37,6 +37,18 @@ export const InputWrapper = styled.div`
   `}
 `
 
+const NumericalWrapper = styled.div`
+  width: 100%;
+  font-size: 24px;
+  position: relative;
+  color: ${({ theme }) => theme.text1};
+
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    font-size: 14px;
+    right: 0;
+  `}
+`
+
 export const CurrencySymbol = styled.div<{ active?: any }>`
   font-weight: 600;
   font-size: 16px;
@@ -133,8 +145,6 @@ export default function InputBox({
   const logo = useCurrencyLogo((currency as Token)?.address)
   const currencyBalance = useCurrencyBalance(account ?? undefined, currency ?? undefined)
 
-  const placeholder = disabled ? '0.0' : 'Enter an amount'
-
   const [balanceExact, balanceDisplay] = useMemo(() => {
     return [maxAmountSpend(currencyBalance)?.toExact(), currencyBalance?.toSignificant(6)]
   }, [currencyBalance])
@@ -145,44 +155,41 @@ export default function InputBox({
   }, [balanceExact, disabled, onChange])
 
   return (
-    <>
-      <Wrapper>
-        <LogoWrapper onClick={onTokenSelect ? () => onTokenSelect() : undefined} active={onTokenSelect ? true : false}>
-          <ImageWithFallback
-            src={logo}
-            width={getImageSize()}
-            height={getImageSize()}
-            alt={`${currency?.symbol} Logo`}
-            round
-          />
-          {onTokenSelect ? <ChevronDown /> : null}
-        </LogoWrapper>
+    <Wrapper>
+      <LogoWrapper onClick={onTokenSelect ? () => onTokenSelect() : undefined} active={onTokenSelect ? true : false}>
+        <ImageWithFallback
+          src={logo}
+          width={getImageSize()}
+          height={getImageSize()}
+          alt={`${currency?.symbol} Logo`}
+          round
+        />
+        {onTokenSelect ? <ChevronDown /> : null}
+      </LogoWrapper>
 
-        <RightWrapper>
-          <RowBetween>
-            <CurrencySymbol
-              onClick={onTokenSelect ? () => onTokenSelect() : undefined}
-              active={onTokenSelect ? true : false}
-            >
-              {currency?.symbol}
-            </CurrencySymbol>
-            <Balance disabled={disabled} onClick={handleClick}>
-              balance: {balanceDisplay ? balanceDisplay : '0.00'}
-              {!disabled && <span>MAX</span>}
-            </Balance>
-          </RowBetween>
-          <InputWrapper>
-            <NumericalInput
-              value={value || ''}
-              onUserInput={onChange}
-              placeholder={placeholder}
-              autoFocus
-              disabled={disabled}
-              style={{ textAlign: 'left', fontSize: '24px', marginLeft: '5px' }}
-            />
-          </InputWrapper>
-        </RightWrapper>
-      </Wrapper>
-    </>
+      <RightWrapper>
+        <RowBetween>
+          <CurrencySymbol
+            onClick={onTokenSelect ? () => onTokenSelect() : undefined}
+            active={onTokenSelect ? true : false}
+          >
+            {currency?.symbol}
+          </CurrencySymbol>
+          <Balance disabled={disabled} onClick={handleClick}>
+            balance: {balanceDisplay ? balanceDisplay : '0.00'}
+            {!disabled && <span>MAX</span>}
+          </Balance>
+        </RowBetween>
+        <NumericalWrapper>
+          <NumericalInput
+            value={value || ''}
+            onUserInput={onChange}
+            placeholder={disabled ? '0.0' : 'Enter an amount'}
+            autoFocus
+            disabled={disabled}
+          />
+        </NumericalWrapper>
+      </RightWrapper>
+    </Wrapper>
   )
 }

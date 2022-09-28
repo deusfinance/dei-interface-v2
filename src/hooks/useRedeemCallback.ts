@@ -1,16 +1,16 @@
 import { useMemo, useCallback } from 'react'
 import { TransactionResponse } from '@ethersproject/abstract-provider'
+import { Token } from '@sushiswap/core-sdk'
 
 import { ORACLE_BASE_URL } from 'constants/muon'
 import { makeHttpRequest } from 'utils/http'
 import useWeb3React from 'hooks/useWeb3'
 import { useCollateralPoolContract } from './useContract'
-import { useCollateralRatio } from 'state/dei/hooks'
+import { useRedeemCollateralRatio } from 'state/dei/hooks'
 import { useTransactionAdder } from 'state/transactions/hooks'
 
 import { calculateGasMargin, toWei } from 'utils/web3'
 import { dynamicPrecision } from 'utils/numbers'
-import { Token } from '@sushiswap/core-sdk'
 
 export enum RedeemCallbackState {
   INVALID = 'INVALID',
@@ -38,7 +38,7 @@ export default function useRedeemCallback(
   const { chainId, account, library } = useWeb3React()
   const CollateralPoolContract = useCollateralPoolContract()
   const addTransaction = useTransactionAdder()
-  const collateralRatio = useCollateralRatio()
+  const collateralRatio = useRedeemCollateralRatio()
 
   const amountInBN = useMemo(() => {
     return toWei(amountIn, TokenIn?.decimals ?? 18, true)
@@ -57,64 +57,6 @@ export default function useRedeemCallback(
     [chainId]
   )
 
-  /*
-   const handleRedeem = useCallback(async () => {
-          if (validChainId && chainId !== validChainId) return false
-          let fn = null
-          if (collatRatio === 100) {
-              const result = await makeDeiRequest("/redeem-1to1", validChainId)
-              fn = redeem1to1Dei(
-                  getToWei(amountIn, fromCurrency.decimals).toFixed(0),
-                  result.collateral_price,
-                  result.expire_block,
-                  result.signature,
-                  chainId,
-                  web3,
-              )
-          } else if (collatRatio > 0) {
-              const result = await makeDeiRequest("/redeem-fractional", validChainId)
-              fn = redeemFractionalDei(
-                  result.collateral_price,
-                  result.deus_price,
-                  result.expire_block,
-                  result.signature,
-                  getToWei(amountIn, fromCurrency.decimals).toFixed(0),
-                  chainId,
-                  web3,
-              )
-          } else {
-              const result = await makeDeiRequest("/redeem-algorithmic", validChainId)
-              fn = redeemAlgorithmicDei(
-                  result.deus_price,
-                  result.expire_block,
-                  result.signature,
-                  getToWei(amountIn, fromCurrency.decimals).toFixed(0),
-                  chainId,
-                  web3,
-              )
-          }
-  
-          export const redeem1to1Dei = (amountIn, collateral_price, expire_block, signature, chainId, web3) => {
-      return getCollateralPoolContract(web3, chainId)
-          .methods
-          .redeem1t1DEI(amountIn, collateral_price, expire_block, [signature])
-  }
-  
-  export const redeemFractionalDei = (collateral_price, deus_price, expire_block, signature, amountIn, chainId, web3) => {
-      return getCollateralPoolContract(web3, chainId)
-          .methods
-          .redeemFractionalDEI(amountIn, collateral_price, deus_price, expire_block, [signature])
-  }
-  
-  export const redeemAlgorithmicDei = (deus_price, expire_block, signature, amountIn, chainId, web3) => {
-      return getCollateralPoolContract(web3, chainId)
-          .methods
-          .redeemAlgorithmicDEI(amountIn, deus_price, expire_block, [signature])
-  }
-  
-  
-      */
-  //TODO: [signature] or signature
   const getParamsRedeem = useCallback(async () => {
     try {
       if (collateralRatio == 1) {
@@ -199,7 +141,7 @@ export default function useRedeemCallback(
             .catch((callError) => {
               console.debug('Call threw an error', call, callError)
               return {
-                error: new Error(callError), // TODO make this human readable
+                error: new Error(callError),
               }
             })
         })
@@ -235,7 +177,7 @@ export default function useRedeemCallback(
               throw new Error('Transaction rejected.')
             } else {
               // otherwise, the error was unexpected and we need to convey that
-              throw new Error(`Redeem failed: ${error.message}`) // TODO make this human readable, see: https://github.com/sushiswap/sushiswap-interface/blob/2082b7ded0162324e83aeffad261cc511441f00e/src/hooks/useSwapCallback.ts#L470
+              throw new Error(`Redeem failed: ${error.message}`)
             }
           })
       },
@@ -322,7 +264,7 @@ export function useCollectRedemptionCallback(
             .catch((callError) => {
               console.debug('Call threw an error', call, callError)
               return {
-                error: new Error(callError), // TODO make this human readable
+                error: new Error(callError),
               }
             })
         })
@@ -361,7 +303,7 @@ export function useCollectRedemptionCallback(
               throw new Error('Transaction rejected.')
             } else {
               // otherwise, the error was unexpected and we need to convey that
-              throw new Error(`Redeem failed: ${error.message}`) // TODO make this human readable, see: https://github.com/sushiswap/sushiswap-interface/blob/2082b7ded0162324e83aeffad261cc511441f00e/src/hooks/useSwapCallback.ts#L470
+              throw new Error(`Redeem failed: ${error.message}`)
             }
           })
       },

@@ -21,7 +21,7 @@ export const USDC_ADDRESS = {
                 DEI ADDRESS
 ===================================== */
 export const DEI_ADDRESS: AddressMap = {
-  ...constructSameAddressMap('0x836dC7fFa231E1e2FC7b7A92658064FaBa51b4e2', [
+  ...constructSameAddressMap('0xDE1E704dae0B4051e80DAbB26ab6ad6c12262DA0', [
     SupportedChainId.MAINNET,
     SupportedChainId.POLYGON,
     SupportedChainId.FANTOM,
@@ -115,10 +115,6 @@ export const Reimburse: AddressMap = {
   [SupportedChainId.FANTOM]: '0x85B6996ab768600C14dA1464205bd6b3a864417D',
 }
 
-export const DynamicRedeemer: AddressMap = {
-  [SupportedChainId.FANTOM]: '0xFD74E924dc96c72Ba52439e28CE780908A630D13',
-}
-
 export const veDist: AddressMap = {
   [SupportedChainId.FANTOM]: '0x09cE8C8E2704E84750E9c1a4F54A30eF60aF0073',
 }
@@ -127,32 +123,12 @@ export const DeiBonder: AddressMap = {
   [SupportedChainId.FANTOM]: '0x958C24d5cDF94fAF47cF4d66400Af598Dedc6e62',
 }
 
-export const SwapFlashLoan: AddressMap = {
-  [SupportedChainId.FANTOM]: '0x9caC3CE5D8327aa5AF54b1b4e99785F991885Bf3',
-}
-
-export const MasterChefV2: AddressMap = {
-  [SupportedChainId.FANTOM]: '0x67932809213AFd6bac5ECD2e4e214Fe18209c419',
-}
-
-export const vDeusMasterChefV2: AddressMap = {
-  [SupportedChainId.FANTOM]: '0x120FF9821817eA2bbB700e1131e5c856ccC20d1b',
-}
-
-export const vDeusStaking: AddressMap = {
-  [SupportedChainId.FANTOM]: '0x978b5d59DeE843C99B205A81ca82F66F35B1Ba35',
-}
-
-export const bDeiRedeemer: AddressMap = {
-  [SupportedChainId.FANTOM]: '0x978b5d59DeE843C99B205A81ca82F66F35B1Ba35',
-}
-
 export const MintProxy: AddressMap = {
   [SupportedChainId.FANTOM]: '',
 }
 
 export const CollateralPool: AddressMap = {
-  [SupportedChainId.FANTOM]: '0x3C541005a3A1AC12a5d01756102EE754Ceae729B',
+  [SupportedChainId.FANTOM]: '0x6E0098A8c651F7A6A9510B270CD02c858C344D94',
 }
 
 export const Collateral: AddressMap = {
@@ -161,4 +137,12 @@ export const Collateral: AddressMap = {
 
 export const DeiBondRedeemNFT: AddressMap = {
   [SupportedChainId.FANTOM]: '0x44656b5f0454b3ddbc03471dc391056331f19476',
+}
+
+export const TwapOracle: AddressMap = {
+  [SupportedChainId.FANTOM]: '0x733570cB9e76fD5293c028e124FC9F0a2234F07c',
+}
+
+export const AMO: AddressMap = {
+  [SupportedChainId.FANTOM]: '0x521cde355a65144679d15e8aedb5f423778899c9',
 }

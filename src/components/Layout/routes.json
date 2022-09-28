@@ -1,0 +1,32 @@
+[
+  {
+    "text": "Dashboard",
+    "path": "/dashboard",
+    "exact": true
+  },
+  {
+    "text": "Mint",
+    "path": "/mint",
+    "exact": true
+  },
+  {
+    "text": "Redeem",
+    "path": "/redemption",
+    "exact": true
+  },
+  {
+    "text": "Bond",
+    "path": "/bond",
+    "exact": true
+  },
+  {
+    "text": "veDEUS",
+    "path": "/vest",
+    "exact": true
+  },
+  {
+    "text": "Metrics",
+    "path": "/metrics",
+    "exact": true
+  }
+]

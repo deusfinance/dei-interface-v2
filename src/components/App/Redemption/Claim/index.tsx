@@ -2,31 +2,37 @@ import React, { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import Image from 'next/image'
 import { isMobile } from 'react-device-detect'
+import { formatUnits } from '@ethersproject/units'
 
-import IC_CLAIM_EMPTY from '/public/static/images/pages/redemption/ic_claim_empty.svg'
+// import IC_CLAIM_EMPTY from '/public/static/images/pages/redemption/ic_claim_empty.svg'
+// import IC_CLAIM_EMPTY_MOBILE from '/public/static/images/pages/redemption/ic_claim_empty_mobile.svg'
 import IC_CLAIM_LOADING from '/public/static/images/pages/redemption/ic_claim_loading.svg'
-import IC_CLAIM_NOTCONNECTED from '/public/static/images/pages/redemption/ic_claim_notconnected.svg'
-
-import IC_CLAIM_EMPTY_MOBILE from '/public/static/images/pages/redemption/ic_claim_empty_mobile.svg'
+import IC_CLAIM_NOT_CONNECTED from '/public/static/images/pages/redemption/ic_claim_not_connected.svg'
+import CLAIM_LOGO from '/public/static/images/pages/redemption/claim.svg'
 import IC_CLAIM_LOADING_MOBILE from '/public/static/images/pages/redemption/ic_claim_loading_mobile.svg'
-import IC_CLAIM_NOTCONNECTED_MOBILE from '/public/static/images/pages/redemption/ic_claim_notconnected_mobile.svg'
+import IC_CLAIM_NOT_CONNECTED_MOBILE from '/public/static/images/pages/redemption/ic_claim_not_connected_mobile.svg'
+
+import { DEUS_TOKEN } from 'constants/tokens'
+import { SupportedChainId } from 'constants/chains'
+import { BN_TEN, toBN } from 'utils/numbers'
+
+import { useCollateralCollectionDelay, useDeusCollectionDelay, useExpiredPrice } from 'state/dei/hooks'
+import useWeb3React from 'hooks/useWeb3'
+import { useCollectCollateralCallback, useCollectDeusCallback } from 'hooks/useRedemptionCallback'
+import { useGetDeusPrice } from 'hooks/useMintPage'
+import useRpcChangerCallback from 'hooks/useRpcChangerCallback'
+import { useGetPoolData } from 'hooks/useRedemptionPage'
 
 import { Card } from 'components/Card'
-import { Row } from 'components/Row'
+import { Row, RowCenter } from 'components/Row'
+import UpdateModal from 'components/ReviewModal/UpdateModal'
+import InfoItem from 'components/App/StableCoin/InfoItem'
 import { TokenBox } from './TokenBox'
-import useRpcChangerCallback from 'hooks/useRpcChangerCallback'
-import { SupportedChainId } from 'constants/chains'
-import { useGetPoolData } from 'hooks/useRedemptionPage'
-import { DEUS_TOKEN } from 'constants/tokens'
-import { formatUnits } from '@ethersproject/units'
-import { toBN } from 'utils/numbers'
-import { useCollectCollateralCallback, useCollectDeusCallback } from 'hooks/useRedemptionCallback'
-import useWeb3React from 'hooks/useWeb3'
 
 const ActionWrap = styled(Card)`
   background: transparent;
   border-radius: 12px;
-  margin-top: 28px;
+  margin-top: 25px;
   width: 320px;
   padding: 2px;
 
@@ -38,6 +44,8 @@ const ActionWrap = styled(Card)`
 `
 
 export const ClaimBox = styled.div`
+  background: ${({ theme }) => theme.bg0};
+  padding: 12px;
   display: flex;
   flex-flow: column nowrap;
   flex: 1;
@@ -46,10 +54,13 @@ export const ClaimBox = styled.div`
 const DeusBox = styled.div`
   background: ${({ theme }) => theme.bg2};
   border-radius: 12px;
+  border: 1px solid ${({ theme }) => theme.border3};
 `
 
 const UsdcBox = styled.div`
   margin-bottom: 12px;
+  border-radius: 12px;
+  border: 1px solid ${({ theme }) => theme.border3};
 `
 
 export const BottomRow = styled(Row)`
@@ -70,22 +81,70 @@ export const InfoSubHeader = styled.p`
   color: ${({ theme }) => theme.text3};
 `
 
-export const collateralRedemptionDelay = 30 + 5 // in seconds
-export const deusRedemptionDelay = 8 * 60 * 60 + 5 // in seconds
-// export const deusRedemptionDelay = 20 + 5 // for test only
+const InfoWrap = styled.div`
+  background: ${({ theme }) => theme.bg1};
+  padding: 0 15px 10px 15px;
+  border-bottom-right-radius: 12px;
+  border-bottom-left-radius: 12px;
+  width: 100%;
+`
+
+const TitleWrap = styled(RowCenter)`
+  background: ${({ theme }) => theme.bg2};
+  border-top-right-radius: 12px;
+  border-top-left-radius: 12px;
+  width: 100%;
+  height: 52px;
+`
+
+const Title = styled.div`
+  font-weight: 400;
+  font-size: 16px;
+  color: ${({ theme }) => theme.text1};
+
+  margin-top: 12px;
+  margin-left: 16px;
+  margin-bottom: 12px;
+`
+
+const NoResultWrapper = styled.div<{ warning?: boolean }>`
+  font-size: 14px;
+  text-align: center;
+  padding: 10px 12px;
+  color: ${({ theme, warning }) => (warning ? theme.warning : 'white')};
+`
+
+const EmptyToken = styled.p`
+  margin-top: 0.75rem;
+  font-size: 14px;
+  text-align: center;
+  color: ${({ theme }) => theme.text2};
+`
+
+const NoTokens = styled.div`
+  text-align: center;
+  padding: 25px 0;
+`
 
 interface IPositions {
   usdAmount: string
   timestamp: string
 }
-interface IToken {
+export interface IToken {
   symbol: string
   index: number
   claimableBlock: number
   amount: number
+  usdAmount?: number
 }
 
-export default function RedeemClaim({ redeemCollateralRatio }: { redeemCollateralRatio: string }) {
+export default function RedeemClaim({
+  redeemCollateralRatio,
+  handleUpdatePrice,
+}: {
+  redeemCollateralRatio: string
+  handleUpdatePrice: () => void
+}) {
   const {
     allPositions,
     unRedeemedPositions,
@@ -99,6 +158,10 @@ export default function RedeemClaim({ redeemCollateralRatio }: { redeemCollatera
     redeemCollateralBalances: any
     isLoading: boolean
   } = useGetPoolData()
+  const [isOpenUpdateOracleModal, toggleUpdateOracleModal] = useState(false)
+
+  const collateralRedemptionDelay = useCollateralCollectionDelay()
+  const deusRedemptionDelay = useDeusCollectionDelay()
 
   const onSwitchNetwork = useRpcChangerCallback()
   const { account } = useWeb3React()
@@ -111,27 +174,37 @@ export default function RedeemClaim({ redeemCollateralRatio }: { redeemCollatera
     return () => clearInterval(interval)
   }, [])
 
+  const deusPrice = useGetDeusPrice()
+  const expiredPrice = useExpiredPrice()
+
   const [unClaimed, setUnClaimed] = useState<IToken[]>([])
   useEffect(() => {
     setUnClaimed([])
     if (unRedeemedPositions?.length) {
       const deusTokens = unRedeemedPositions.map((position, index) => {
-        const usdAmount = position.usdAmount.toString()
+        const usdAmount = toBN(formatUnits(position.usdAmount.toString(), DEUS_TOKEN.decimals)).toFixed(6).toString()
+        const deusPriceBN = toBN(deusPrice).div(BN_TEN.pow(DEUS_TOKEN.decimals))
+        const deusAmount = toBN(usdAmount).div(deusPriceBN).toFixed(8).toString()
         const timestamp = position.timestamp.toString()
-        const deusAmount = toBN(formatUnits(usdAmount, DEUS_TOKEN.decimals))
-          .times(100 - Number(redeemCollateralRatio))
-          .toString()
         const claimableBlock = Number(timestamp) + deusRedemptionDelay
         return {
           symbol: 'DEUS',
           index,
           claimableBlock,
           amount: Number(deusAmount),
+          usdAmount: Number(usdAmount),
         }
       })
       setUnClaimed((current) => [...current, ...deusTokens])
     }
-  }, [nextRedeemId, redeemCollateralBalances, redeemCollateralRatio, unRedeemedPositions])
+  }, [
+    deusPrice,
+    deusRedemptionDelay,
+    nextRedeemId,
+    redeemCollateralBalances,
+    redeemCollateralRatio,
+    unRedeemedPositions,
+  ])
 
   const [unClaimedCollateral, setUnClaimedCollateral] = useState<IToken>()
   useEffect(() => {
@@ -141,12 +214,31 @@ export default function RedeemClaim({ redeemCollateralRatio }: { redeemCollatera
       const usdcToken: IToken = {
         symbol: 'USDC',
         index: 0,
-        claimableBlock: Number(lastRedeemTimestamp) + collateralRedemptionDelay,
+        claimableBlock: 5 + Number(lastRedeemTimestamp) + collateralRedemptionDelay,
         amount: redeemCollateralBalances,
       }
       setUnClaimedCollateral(usdcToken)
     }
-  }, [allPositions, redeemCollateralBalances])
+  }, [allPositions, collateralRedemptionDelay, redeemCollateralBalances])
+
+  const [pendingTokens, setPendingTokens] = useState<IToken[]>([])
+  const [readyCount, setReadyCount] = useState(0)
+  const [pendingCount, setPendingCount] = useState(0)
+  useEffect(() => {
+    setPendingTokens(
+      unClaimed.filter((token) => {
+        return token.claimableBlock > currentBlock
+      })
+    )
+    let rc = unClaimed.length - pendingTokens.length
+    let pc = pendingTokens.length
+    if (unClaimedCollateral) {
+      if (unClaimedCollateral.claimableBlock > currentBlock) pc++
+      else rc++
+    }
+    setReadyCount(rc)
+    setPendingCount(pc)
+  }, [currentBlock, pendingTokens.length, unClaimed, unClaimedCollateral])
 
   const {
     state: CollectCollateralCallbackState,
@@ -180,6 +272,7 @@ export default function RedeemClaim({ redeemCollateralRatio }: { redeemCollatera
         console.log('Claim DEUS')
         console.log(CollectDeusCallbackState, collectDeusCallbackError)
         if (!collectDeusCallback) return
+        if (expiredPrice) return toggleUpdateOracleModal(true)
         try {
           const txHash = await collectDeusCallback()
           console.log({ txHash })
@@ -196,59 +289,99 @@ export default function RedeemClaim({ redeemCollateralRatio }: { redeemCollatera
       collectCollateralCallbackError,
       collectDeusCallback,
       collectDeusCallbackError,
+      expiredPrice,
     ]
   )
 
   return (
-    <ActionWrap>
-      {!unClaimed || unClaimed.length == 0 ? (
-        <>
-          {!account ? (
-            <Image src={!isMobile ? IC_CLAIM_NOTCONNECTED : IC_CLAIM_NOTCONNECTED_MOBILE} alt="claim-notconnected" />
-          ) : (
+    <>
+      <ActionWrap>
+        <TitleWrap>
+          <Title>Claim your tokens</Title>
+        </TitleWrap>
+        {!unClaimed || unClaimed.length == 0 ? (
+          <ClaimBox>
+            {!account ? (
+              <Image
+                src={!isMobile ? IC_CLAIM_NOT_CONNECTED : IC_CLAIM_NOT_CONNECTED_MOBILE}
+                alt="claim_not_connected"
+              />
+            ) : (
+              <>
+                {isLoading ? (
+                  <Image src={!isMobile ? IC_CLAIM_LOADING : IC_CLAIM_LOADING_MOBILE} alt="claim-loading" />
+                ) : (
+                  <NoTokens>
+                    <Image src={CLAIM_LOGO} alt="claim" />
+                    <EmptyToken> No token to claim </EmptyToken>
+                  </NoTokens>
+                )}
+              </>
+            )}
+          </ClaimBox>
+        ) : (
+          <ClaimBox>
+            {unClaimedCollateral && (
+              <UsdcBox>
+                <TokenBox
+                  token={unClaimedCollateral}
+                  currentBlock={currentBlock}
+                  onSwitchNetwork={() => onSwitchNetwork(SupportedChainId.FANTOM)}
+                  onClaim={() => handleClaim(unClaimedCollateral)}
+                />
+              </UsdcBox>
+            )}
+            <DeusBox>
+              {unClaimed.map((token: IToken, index: number) => {
+                return (
+                  <TokenBox
+                    key={index}
+                    token={token}
+                    currentBlock={currentBlock}
+                    onSwitchNetwork={() => onSwitchNetwork(SupportedChainId.FANTOM)}
+                    onClaim={() => handleClaim(token)}
+                    isFirst={index === 0}
+                    isLast={index === unClaimed.length - 1}
+                  />
+                )
+              })}
+            </DeusBox>
+          </ClaimBox>
+        )}
+        <InfoWrap>
+          {!unClaimed || unClaimed.length == 0 ? (
             <>
-              {isLoading ? (
-                <Image src={!isMobile ? IC_CLAIM_LOADING : IC_CLAIM_LOADING_MOBILE} alt="claim-loading" />
+              {!account ? (
+                <NoResultWrapper warning> Wallet is not connected! </NoResultWrapper>
               ) : (
-                <Image src={!isMobile ? IC_CLAIM_EMPTY : IC_CLAIM_EMPTY_MOBILE} alt="claim-empty" />
+                <>
+                  {isLoading ? (
+                    <NoResultWrapper> Loading Redemptions... </NoResultWrapper>
+                  ) : (
+                    <NoResultWrapper> No tokens to claim </NoResultWrapper>
+                  )}
+                </>
               )}
             </>
+          ) : (
+            <>
+              <InfoItem name={'Ready to Claim:'} value={readyCount.toString()} />
+              <InfoItem name={'Pending:'} value={pendingCount.toString()} />
+            </>
           )}
-        </>
-      ) : (
-        <ClaimBox>
-          {unClaimedCollateral && (
-            <UsdcBox>
-              <TokenBox
-                symbol={unClaimedCollateral.symbol}
-                claimableBlock={unClaimedCollateral.claimableBlock}
-                currentBlock={currentBlock}
-                amount={unClaimedCollateral.amount}
-                onSwitchNetwork={() => onSwitchNetwork(SupportedChainId.FANTOM)}
-                onClaim={() => handleClaim(unClaimedCollateral)}
-              />
-            </UsdcBox>
-          )}
-          <DeusBox>
-            {unClaimed.map((token: IToken, index: number) => {
-              const { symbol, amount, claimableBlock } = token
-              return (
-                <TokenBox
-                  key={index}
-                  symbol={symbol}
-                  claimableBlock={claimableBlock}
-                  currentBlock={currentBlock}
-                  amount={amount}
-                  onSwitchNetwork={() => onSwitchNetwork(SupportedChainId.FANTOM)}
-                  onClaim={() => handleClaim(token)}
-                  isFirst={index === 0}
-                  isLast={index === unClaimed.length - 1}
-                />
-              )
-            })}
-          </DeusBox>
-        </ClaimBox>
-      )}
-    </ActionWrap>
+        </InfoWrap>
+      </ActionWrap>
+
+      <UpdateModal
+        title="Update Oracle"
+        isOpen={isOpenUpdateOracleModal}
+        buttonText={'Update Oracle'}
+        toggleModal={(action: boolean) => toggleUpdateOracleModal(action)}
+        handleClick={() => {
+          toggleUpdateOracleModal(false)
+          handleUpdatePrice()
+        }}
+      />
+    </>
   )
 }

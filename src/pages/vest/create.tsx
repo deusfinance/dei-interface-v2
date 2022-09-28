@@ -26,7 +26,7 @@ import { getMaximumDate, getMinimumDate } from 'utils/vest'
 
 import InputBox from 'components/InputBox'
 import { SelectDatePresets, UserLockInformation } from 'components/App/Vest'
-import Hero, { HeroSubtext } from 'components/Hero'
+import Hero from 'components/Hero'
 import { Card } from 'components/Card'
 import { ArrowBubble, DotFlashing } from 'components/Icons'
 import Image from 'next/image'
@@ -172,14 +172,14 @@ export default function Create() {
     if (awaitingApproveConfirmation) {
       return (
         <MainButton>
-          Awaiting Confirmation <DotFlashing style={{ marginLeft: '10px' }} />
+          Awaiting Confirmation <DotFlashing />
         </MainButton>
       )
     }
     if (showApproveLoader) {
       return (
         <MainButton>
-          Approving <DotFlashing style={{ marginLeft: '10px' }} />
+          Approving <DotFlashing />
         </MainButton>
       )
     }
@@ -192,15 +192,15 @@ export default function Create() {
     }
     if (awaitingConfirmation) {
       return (
-        <MainButton active>
-          Awaiting Confirmation <DotFlashing style={{ marginLeft: '10px' }} />
+        <MainButton>
+          Awaiting Confirmation <DotFlashing />
         </MainButton>
       )
     }
     if (showTransactionPending) {
       return (
         <MainButton>
-          Locking <DotFlashing style={{ marginLeft: '10px' }} />
+          Locking <DotFlashing />
         </MainButton>
       )
     }
@@ -263,17 +263,20 @@ export default function Create() {
     )
   }
 
-  const items = [
-    { name: 'DEUS Price', value: formatDollarAmount(parseFloat(deusPrice), 2) },
-    { name: 'Total veDEUS Locked', value: formatAmount(parseFloat(lockedVeDEUS), 0) },
-  ]
+  const items = useMemo(
+    () => [
+      { name: 'DEUS Price', value: formatDollarAmount(parseFloat(deusPrice), 2) },
+      { name: 'veDEUS Supply', value: formatAmount(parseFloat(lockedVeDEUS), 0) },
+    ],
+    [deusPrice, lockedVeDEUS]
+  )
 
   return (
     <Container>
       <Hero>
         <Image src={veDEUS_LOGO} height={'90px'} alt="Logo" />
-        <Title>Create Lock</Title>
-        <HeroSubtext>Vest your DEUS for a period of your liking.</HeroSubtext>
+        <Title>veDEUS</Title>
+
         <StatsHeader items={items} hasBox />
       </Hero>
 

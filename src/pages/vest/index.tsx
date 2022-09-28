@@ -5,33 +5,31 @@ import Image from 'next/image'
 import { isMobile } from 'react-device-detect'
 import toast from 'react-hot-toast'
 
-import { useDeusPrice } from 'hooks/useCoingeckoPrice'
-import useWeb3React from 'hooks/useWeb3'
-import { useVestedAPY } from 'hooks/useVested'
+import veDEUS_LOGO from '/public/static/images/pages/veDEUS/veDEUS.svg'
 
 import { formatAmount, formatDollarAmount } from 'utils/numbers'
 import { getMaximumDate } from 'utils/vest'
-import veDEUS_LOGO from '/public/static/images/pages/veDEUS/veDEUS.svg'
+import { DefaultHandlerError } from 'utils/parseError'
 
-import Hero from 'components/Hero'
-import { useSearch, SearchField, Table } from 'components/App/Vest'
-import { PrimaryButtonWide } from 'components/Button'
-import LockManager from 'components/App/Vest/LockManager'
-import APYManager from 'components/App/Vest/APYManager'
-import { RowFixed, RowBetween } from 'components/Row'
-import StatsHeader from 'components/StatsHeader'
-import { Container, Title } from 'components/App/StableCoin'
-
+import { useIsTransactionPending, useTransactionAdder } from 'state/transactions/hooks'
+import { useWalletModalToggle } from 'state/application/hooks'
+import { useDeusPrice } from 'hooks/useCoingeckoPrice'
+import useWeb3React from 'hooks/useWeb3'
+import { useVestedAPY } from 'hooks/useVested'
 import { useVeDistContract } from 'hooks/useContract'
-import useOwnedNfts from 'hooks/useOwnedNfts'
+import { useOwnerVeDeusNFTs } from 'hooks/useOwnerNfts'
 import { useSupportedChainId } from 'hooks/useSupportedChainId'
 import useDistRewards from 'hooks/useDistRewards'
 
-import { DefaultHandlerError } from 'utils/parseError'
-import { useIsTransactionPending, useTransactionAdder } from 'state/transactions/hooks'
-import { DotFlashing } from 'components/Icons'
-import { useWalletModalToggle } from 'state/application/hooks'
-// import InfoHeader from 'components/InfoHeader'
+import Hero from 'components/Hero'
+import { PrimaryButtonWide } from 'components/Button'
+import { RowFixed, RowBetween } from 'components/Row'
+import StatsHeader from 'components/StatsHeader'
+import { Container } from 'components/App/StableCoin'
+import { useSearch, SearchField, Table } from 'components/App/Vest'
+import LockManager from 'components/App/Vest/LockManager'
+import APYManager from 'components/App/Vest/APYManager'
+import InfoHeader from 'components/InfoHeader'
 
 const Wrapper = styled(Container)`
   margin: 0 auto;
@@ -76,20 +74,19 @@ const ButtonWrapper = styled(RowFixed)`
   }
 `
 
-export const ButtonText = styled.span<{ disabled?: boolean }>`
+export const ButtonText = styled.span<{ gradientText?: boolean }>`
+  display: flex;
   font-family: 'Inter';
-  font-style: normal;
   font-weight: 600;
   font-size: 15px;
-  line-height: 17px;
   color: ${({ theme }) => theme.text1};
 
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     font-size: 14px;
   `}
 
-  ${({ disabled }) =>
-    disabled &&
+  ${({ gradientText }) =>
+    gradientText &&
     `
     background: -webkit-linear-gradient(92.33deg, #e29d52 -10.26%, #de4a7b 80%);
     -webkit-background-clip: text;
@@ -97,7 +94,7 @@ export const ButtonText = styled.span<{ disabled?: boolean }>`
   `}
 `
 
-const TopBorderWrap = styled.div<{ active?: any }>`
+export const TopBorderWrap = styled.div<{ active?: boolean }>`
   background: ${({ theme }) => theme.primary2};
   padding: 1px;
   border-radius: 8px;
@@ -111,7 +108,7 @@ const TopBorderWrap = styled.div<{ active?: any }>`
   }
 `
 
-const TopBorder = styled.div`
+export const TopBorder = styled.div`
   background: ${({ theme }) => theme.bg0};
   border-radius: 6px;
   height: 100%;
@@ -127,10 +124,6 @@ const FirstRowWrapper = styled.div`
   gap: 10px;
 `
 
-const UpperRowMobile = styled(UpperRow)<{ hasSecondRow?: boolean }>`
-  /* margin-bottom: ${({ hasSecondRow }) => (hasSecondRow ? '0' : '-20px')}; */
-`
-
 export default function Vest() {
   const { chainId, account } = useWeb3React()
   const [showLockManager, setShowLockManager] = useState(false)
@@ -144,12 +137,12 @@ export default function Vest() {
   const showTransactionPending = useIsTransactionPending(pendingTxHash)
   const isSupportedChainId = useSupportedChainId()
   const veDistContract = useVeDistContract()
-  const ownedNfts = useOwnedNfts()
+  const ownedNfts = useOwnerVeDeusNFTs()
   const nftIds = ownedNfts.results
   const rewards = useDistRewards()
   const toggleWalletModal = useWalletModalToggle()
 
-  // const [showTopBanner, setShowTopBanner] = useState(false)
+  const [showTopBanner, setShowTopBanner] = useState(true)
 
   const { snapshot, searchProps } = useSearch()
   const snapshotList = useMemo(() => {
@@ -191,6 +184,7 @@ export default function Vest() {
 
   const onClaimAll = useCallback(async () => {
     try {
+      if (awaitingConfirmation || showTransactionPending || !totalRewards) return
       if (!veDistContract || !account || !isSupportedChainId || !unClaimedIds.length) return
       setAwaitingConfirmation(true)
       const response = await veDistContract.claimAll(unClaimedIds)
@@ -203,160 +197,115 @@ export default function Vest() {
       setAwaitingConfirmation(false)
       setPendingTxHash('')
     }
-  }, [veDistContract, unClaimedIds, addTransaction, account, isSupportedChainId])
+  }, [
+    awaitingConfirmation,
+    showTransactionPending,
+    totalRewards,
+    veDistContract,
+    account,
+    isSupportedChainId,
+    unClaimedIds,
+    addTransaction,
+  ])
 
   function getClaimAllButton() {
-    if (awaitingConfirmation) {
+    if (!snapshotList.length || !totalRewards) return
+    let text = ''
+    if (awaitingConfirmation) text = 'Confirming...'
+    else if (showTransactionPending) text = 'Claiming...'
+    else if (totalRewards) text = `Claim all ${formatAmount(totalRewards)} veDEUS`
+
+    if (isMobile) {
       return (
-        <PrimaryButtonWide active>
-          <ButtonText>
-            Confirming <DotFlashing style={{ marginLeft: '10px' }} />
-          </ButtonText>
+        <PrimaryButtonWide style={{ marginTop: '2px', marginBottom: '12px' }} onClick={onClaimAll}>
+          <ButtonText>{text}</ButtonText>
         </PrimaryButtonWide>
       )
-    } else if (showTransactionPending) {
-      return (
-        <PrimaryButtonWide active>
-          <ButtonText>
-            Claiming <DotFlashing style={{ marginLeft: '10px' }} />
-          </ButtonText>
-        </PrimaryButtonWide>
-      )
-    } else if (totalRewards) {
+    } else {
       return (
         <PrimaryButtonWide onClick={onClaimAll}>
-          <ButtonText>Claim all {formatAmount(totalRewards)} veDEUS</ButtonText>
+          <ButtonText>{text}</ButtonText>
         </PrimaryButtonWide>
       )
     }
-    return null
   }
 
-  function getClaimAllButtonMobile() {
-    if (awaitingConfirmation) {
-      return (
-        <PrimaryButtonWide width={'100%'} active style={{ marginTop: '2px', marginBottom: '12px' }}>
-          <ButtonText>
-            Confirming <DotFlashing style={{ marginLeft: '10px' }} />
-          </ButtonText>
-        </PrimaryButtonWide>
-      )
-    } else if (showTransactionPending) {
-      return (
-        <PrimaryButtonWide width={'100%'} active style={{ marginTop: '2px', marginBottom: '12px' }}>
-          <ButtonText>
-            Claiming <DotFlashing style={{ marginLeft: '10px' }} />
-          </ButtonText>
-        </PrimaryButtonWide>
-      )
-    } else if (totalRewards) {
-      return (
-        <PrimaryButtonWide width={'100%'} onClick={onClaimAll} style={{ marginTop: '2px', marginBottom: '12px' }}>
-          <ButtonText>Claim all {formatAmount(totalRewards)} veDEUS</ButtonText>
-        </PrimaryButtonWide>
-      )
-    }
-    return null
+  function getMainContent() {
+    return !account ? (
+      <TopBorderWrap>
+        <TopBorder>
+          <PrimaryButtonWide transparentBG onClick={toggleWalletModal}>
+            <ButtonText gradientText>Connect Wallet</ButtonText>
+          </PrimaryButtonWide>
+        </TopBorder>
+      </TopBorderWrap>
+    ) : !!snapshotList.length ? (
+      <TopBorderWrap>
+        <TopBorder>
+          <Link href="/vest/create" passHref>
+            <PrimaryButtonWide transparentBG padding={'1rem'}>
+              <ButtonText gradientText>Create Lock</ButtonText>
+            </PrimaryButtonWide>
+          </Link>
+        </TopBorder>
+      </TopBorderWrap>
+    ) : (
+      <PrimaryButtonWide>
+        <Link href="/vest/create" passHref>
+          <ButtonText>Create New Lock</ButtonText>
+        </Link>
+      </PrimaryButtonWide>
+    )
   }
 
   function getUpperRow() {
-    return (
-      <UpperRow>
-        <div>
-          <SearchField searchProps={searchProps} />
-        </div>
-
-        <ButtonWrapper>
-          {hasClaimAll && getClaimAllButton()}
-          {!account ? (
-            <TopBorderWrap>
-              <TopBorder>
-                <PrimaryButtonWide onClick={toggleWalletModal} disabled>
-                  <ButtonText disabled>Connect Wallet</ButtonText>
-                </PrimaryButtonWide>
-              </TopBorder>
-            </TopBorderWrap>
-          ) : !!snapshotList.length ? (
-            <TopBorderWrap>
-              <TopBorder>
-                <Link href="/vest/create" passHref>
-                  <PrimaryButtonWide disabled>
-                    <ButtonText disabled>Create Lock</ButtonText>
-                  </PrimaryButtonWide>
-                </Link>
-              </TopBorder>
-            </TopBorderWrap>
-          ) : (
-            <PrimaryButtonWide>
-              <Link href="/vest/create" passHref>
-                <ButtonText>Create New Lock</ButtonText>
-              </Link>
-            </PrimaryButtonWide>
-          )}
-        </ButtonWrapper>
-      </UpperRow>
-    )
+    if (isMobile) {
+      return (
+        <UpperRow>
+          <FirstRowWrapper>
+            <SearchField searchProps={searchProps} />
+            {getMainContent()}
+          </FirstRowWrapper>
+          {getClaimAllButton()}
+        </UpperRow>
+      )
+    } else {
+      return (
+        <UpperRow>
+          <div>
+            <SearchField searchProps={searchProps} />
+          </div>
+          <ButtonWrapper>
+            {getClaimAllButton()}
+            {getMainContent()}
+          </ButtonWrapper>
+        </UpperRow>
+      )
+    }
   }
 
-  function getUpperRowMobile() {
-    return (
-      <UpperRowMobile hasSecondRow={!!snapshotList.length}>
-        <FirstRowWrapper>
-          <SearchField searchProps={searchProps} />
-
-          {!account ? (
-            <TopBorderWrap>
-              <TopBorder>
-                <PrimaryButtonWide onClick={toggleWalletModal} disabled>
-                  <ButtonText disabled>Connect Wallet</ButtonText>
-                </PrimaryButtonWide>
-              </TopBorder>
-            </TopBorderWrap>
-          ) : !!snapshotList.length ? (
-            <TopBorderWrap>
-              <TopBorder>
-                <Link href="/vest/create" passHref>
-                  <PrimaryButtonWide disabled>
-                    <ButtonText disabled>Create Lock</ButtonText>
-                  </PrimaryButtonWide>
-                </Link>
-              </TopBorder>
-            </TopBorderWrap>
-          ) : (
-            <PrimaryButtonWide>
-              <Link href="/vest/create" passHref>
-                <ButtonText>Create New Lock</ButtonText>
-              </Link>
-            </PrimaryButtonWide>
-          )}
-        </FirstRowWrapper>
-
-        {hasClaimAll && getClaimAllButtonMobile()}
-      </UpperRowMobile>
-    )
-  }
-
-  const items = [
-    { name: 'DEUS Price', value: formatDollarAmount(parseFloat(deusPrice), 2) },
-    { name: 'Total veDEUS Locked', value: formatAmount(parseFloat(lockedVeDEUS), 0) },
-  ]
-  const hasClaimAll: boolean = useMemo(() => {
-    return !!snapshotList.length && !!totalRewards
-  }, [totalRewards, snapshotList.length])
+  const items = useMemo(
+    () => [
+      { name: 'DEUS Price', value: formatDollarAmount(parseFloat(deusPrice), 2) },
+      { name: 'veDEUS Supply', value: formatAmount(parseFloat(lockedVeDEUS), 0) },
+    ],
+    [deusPrice, lockedVeDEUS]
+  )
 
   return (
     <Container>
-      {/* {showTopBanner && (
-        <InfoHeader onClose={setShowTopBanner} text={'Some random text! some random text! some random text!'} />
-      )} */}
+      {showTopBanner && (
+        <InfoHeader
+          onClose={setShowTopBanner}
+          text={`In preparation for the launch of DEUS v3, we are currently overhauling the veDEUS’s tokenomics, fee accruing mechanisms, and reward contracts. We will release an article with more information shortly. This update especially concerns the veDEUS anti-dilution and rewards payout.`}
+        />
+      )}
       <Hero>
         <Image src={veDEUS_LOGO} height={'90px'} alt="Logo" />
-        <Title>veDEUS</Title>
-        <StatsHeader items={items} hasBox />
+        <StatsHeader items={items} />
       </Hero>
       <Wrapper>
-        {isMobile ? getUpperRowMobile() : getUpperRow()}
-
+        {getUpperRow()}
         <Table
           nftIds={snapshotList as number[]}
           toggleLockManager={toggleLockManager}

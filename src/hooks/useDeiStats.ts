@@ -1,35 +1,38 @@
-import { formatUnits } from '@ethersproject/units'
-import { ProtocolHoldings1, ProtocolHoldings2, SwapFlashLoan, USDCReserves1, USDCReserves2 } from 'constants/addresses'
-import { SupportedChainId } from 'constants/chains'
-import { BDEI_TOKEN, DEI_TOKEN, USDC_TOKEN } from 'constants/tokens'
 import { useMemo } from 'react'
-import { useSingleContractMultipleMethods } from 'state/multicall/hooks'
+import { formatUnits } from '@ethersproject/units'
+
+import { AMO, ProtocolHoldings1, ProtocolHoldings2, USDCReserves1, USDCReserves2 } from 'constants/addresses'
+import { DEI_TOKEN, USDC_TOKEN } from 'constants/tokens'
+import { SupportedChainId } from 'constants/chains'
 import { toBN } from 'utils/numbers'
-import { useBonderData } from './useBondsPage'
-import { useERC20Contract } from './useContract'
+
+import { useSingleContractMultipleMethods } from 'state/multicall/hooks'
+import { useERC20Contract } from 'hooks/useContract'
+import { CollateralPool } from '../constants/addresses'
+import { useUnclaimedCollateralAmount } from '../state/dei/hooks'
 
 export function useDeiStats(): {
   totalSupply: number
   deiProtocolHoldings1: number
   deiProtocolHoldings2: number
   totalProtocolHoldings: number
+  AMOReserve: number
   circulatingSupply: number
+  usdcPoolReserves: number
   usdcReserves1: number
   usdcReserves2: number
   totalUSDCReserves: number
-  sPoolDEILiquidity: number
-  sPoolbDEILiquidity: number
-  sPoolLiquidity: number
+  collateralRatio: number
 } {
-  const { deiBonded } = useBonderData()
   const deiContract = useERC20Contract(DEI_TOKEN.address)
-  const bDeiContract = useERC20Contract(BDEI_TOKEN.address)
   const usdcContract = useERC20Contract(USDC_TOKEN.address)
   const protocolHoldings1Address = ProtocolHoldings1[SupportedChainId.FANTOM]
   const protocolHoldings2Address = ProtocolHoldings2[SupportedChainId.FANTOM]
+  const collateralPoolAddress = CollateralPool[SupportedChainId.FANTOM]
   const usdcReserves1Address = USDCReserves1[SupportedChainId.FANTOM]
   const usdcReserves2Address = USDCReserves2[SupportedChainId.FANTOM]
-  const sPoolAddress = SwapFlashLoan[SupportedChainId.FANTOM]
+  const AMOAddress = AMO[SupportedChainId.FANTOM]
+  const unclaimedCollateralAmount = useUnclaimedCollateralAmount()
 
   const calls = !deiContract
     ? []
@@ -70,68 +73,57 @@ export function useDeiStats(): {
     : [
         {
           methodName: 'balanceOf',
+          callInputs: [collateralPoolAddress],
+        },
+        {
+          methodName: 'balanceOf',
           callInputs: [usdcReserves1Address],
         },
         {
           methodName: 'balanceOf',
           callInputs: [usdcReserves2Address],
         },
+        {
+          methodName: 'balanceOf',
+          callInputs: [AMOAddress],
+        },
       ]
 
-  const [usdcBalance1, usdcBalance2] = useSingleContractMultipleMethods(usdcContract, reservesCalls)
-
-  const { totalUSDCReserves, usdcReserves1, usdcReserves2 } = useMemo(() => {
+  const [usdcPoolBalance, usdcBalance1, usdcBalance2, AMOBalance] = useSingleContractMultipleMethods(
+    usdcContract,
+    reservesCalls
+  )
+  const { usdcPoolReserves, usdcReserves1, usdcReserves2, AMOReserve } = useMemo(() => {
     return {
-      totalUSDCReserves:
-        (usdcBalance1?.result ? toBN(formatUnits(usdcBalance1.result[0], 6)).toNumber() : 0) +
-        (usdcBalance2?.result ? toBN(formatUnits(usdcBalance2.result[0], 6)).toNumber() : 0),
+      usdcPoolReserves: usdcPoolBalance?.result
+        ? toBN(formatUnits(usdcPoolBalance.result[0], 6)).minus(unclaimedCollateralAmount).toNumber()
+        : 0,
       usdcReserves1: usdcBalance1?.result ? toBN(formatUnits(usdcBalance1.result[0], 6)).toNumber() : 0,
       usdcReserves2: usdcBalance2?.result ? toBN(formatUnits(usdcBalance2.result[0], 6)).toNumber() : 0,
+      AMOReserve: AMOBalance?.result ? toBN(formatUnits(AMOBalance.result[0], 6)).toNumber() : 0,
     }
-  }, [usdcBalance1, usdcBalance2])
+  }, [unclaimedCollateralAmount, usdcPoolBalance, usdcBalance1, usdcBalance2, AMOBalance])
 
-  const sPoolDEICalls = !deiContract
-    ? []
-    : [
-        {
-          methodName: 'balanceOf',
-          callInputs: [sPoolAddress],
-        },
-      ]
+  const totalUSDCReserves = useMemo(
+    () => usdcReserves1 + usdcReserves2 + usdcPoolReserves,
+    [usdcReserves1, usdcReserves2, usdcPoolReserves]
+  )
 
-  const sPoolbDEICalls = !bDeiContract
-    ? []
-    : [
-        {
-          methodName: 'balanceOf',
-          callInputs: [sPoolAddress],
-        },
-      ]
-
-  const [deiLiquidity] = useSingleContractMultipleMethods(deiContract, sPoolDEICalls)
-  const [bDeiLiquidity] = useSingleContractMultipleMethods(bDeiContract, sPoolbDEICalls)
-
-  const { sPoolDEILiquidity, sPoolbDEILiquidity, sPoolLiquidity } = useMemo(() => {
-    return {
-      sPoolLiquidity:
-        (bDeiLiquidity?.result ? toBN(formatUnits(bDeiLiquidity.result[0], 18)).toNumber() : 0) +
-        (deiLiquidity?.result ? toBN(formatUnits(deiLiquidity.result[0], 18)).toNumber() : 0),
-      sPoolbDEILiquidity: bDeiLiquidity?.result ? toBN(formatUnits(bDeiLiquidity.result[0], 18)).toNumber() : 0,
-      sPoolDEILiquidity: deiLiquidity?.result ? toBN(formatUnits(deiLiquidity.result[0], 18)).toNumber() : 0,
-    }
-  }, [bDeiLiquidity, deiLiquidity])
+  const collateralRatio = useMemo(() => {
+    return (usdcPoolReserves / circulatingSupply) * 100
+  }, [usdcPoolReserves, circulatingSupply])
 
   return {
     totalSupply: totalSupplyDEIValue,
     deiProtocolHoldings1,
     deiProtocolHoldings2,
     totalProtocolHoldings,
+    AMOReserve,
     circulatingSupply,
+    usdcPoolReserves,
     usdcReserves1,
     usdcReserves2,
     totalUSDCReserves,
-    sPoolDEILiquidity,
-    sPoolbDEILiquidity,
-    sPoolLiquidity,
+    collateralRatio,
   }
 }

@@ -65,6 +65,7 @@ export const PrimaryButton = styled(BaseButton)`
   font-weight: 600;
   font-size: 20px;
   z-index: 0;
+
   &:focus {
     box-shadow: 0 0 0 1pt ${({ theme }) => theme.primary7};
     background: ${({ theme }) => theme.primary7};
@@ -78,42 +79,44 @@ export const PrimaryButton = styled(BaseButton)`
     `
       background: ${theme.bg2};
       border: 1px solid ${theme.border1};
+      cursor: default;
 
       &:focus,
       &:hover {
-        background: inherit;
+        background: ${theme.bg2};
       }
   `}
 `
 
-export const PrimaryButtonWide = styled(BaseButton)<{ isSmall?: boolean; width?: string }>`
-  background: ${({ theme }) => theme.specialBG1};
+export const PrimaryButtonWide = styled(PrimaryButton)<{
+  padding?: string
+  transparentBG?: boolean
+  whiteBorder?: boolean
+}>`
   white-space: nowrap;
   border-radius: 8px;
-  height: 54%;
-  width: ${({ width }) => (width ? width : 'auto')};
+  padding: ${({ padding }) => (padding ? padding : '0.75rem')};
 
-  color: ${({ theme }) => theme.text1};
-  z-index: 0;
-
-  &:focus {
-    box-shadow: 0 0 0 1pt ${({ theme }) => theme.primary2};
-    background: ${({ theme }) => theme.primary7};
-  }
-  &:hover {
-    background: ${({ theme }) => theme.primary7};
-  }
-
-  ${({ theme, disabled }) =>
-    disabled &&
+  ${({ theme, transparentBG }) =>
+    transparentBG &&
     `
-      height: 100%;
       background: ${theme.bg2};
       border: 1px solid ${theme.border1};
 
-      &:focus,
-      &:hover {
+      &:focus, &:hover {
         background: inherit;
+      }
+  `}
+
+  ${({ theme, whiteBorder }) =>
+    whiteBorder &&
+    `
+      background: ${theme.bg2};
+      border: 1.5px solid ${theme.text1};
+
+      &:focus, &:hover {
+        background: ${theme.bg0};
+        border: 2px solid ${theme.text1};
       }
   `}
 
@@ -122,56 +125,9 @@ export const PrimaryButtonWide = styled(BaseButton)<{ isSmall?: boolean; width?:
       margin: -4px;
     }
   `}
-
-  ${({ isSmall, theme }) =>
-    isSmall &&
-    theme.mediaWidth.upToExtraSmall`
-      padding-top: 12px;
-      padding-bottom: 12px;
-  `}
 `
 
-export const PrimaryButtonWhite = styled(BaseButton)`
-  background: ${({ theme }) => theme.primary2};
-  white-space: nowrap;
-  border-radius: 8px;
-  height: 53%;
-
-  color: ${({ theme }) => theme.text1};
-  z-index: 0;
-
-  &:focus {
-    box-shadow: 0 0 0 1pt ${({ theme }) => theme.primary2};
-    background: ${({ theme }) => theme.bg0};
-  }
-  &:hover {
-    background: ${({ theme }) => theme.bg0};
-    border: 3px solid ${({ theme }) => theme.text1};
-  }
-
-  ${({ theme, disabled }) =>
-    disabled &&
-    `
-      background: ${theme.bg2};
-      border: 1.5px solid ${theme.text1};
-
-      &:focus,
-      &:hover {
-        background: ${theme.bg0};
-      }
-  `}
-
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    width: 110%;
-    padding-top: 12px;
-    padding-bottom: 12px;
-    & > * {
-      margin: -5px;
-    }
-  `}
-`
-
-export const OptionButton = styled(BaseButton)<{ active?: any }>`
+export const OptionButton = styled(BaseButton)<{ active?: boolean }>`
   height: 36px;
   width: 62px;
   font-size: 13px;
@@ -187,7 +143,6 @@ export const OptionButton = styled(BaseButton)<{ active?: any }>`
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
       margin-right: 3px;
-      // width: 48px;
   `}
 
   &:hover {

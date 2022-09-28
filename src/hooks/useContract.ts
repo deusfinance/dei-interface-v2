@@ -11,14 +11,10 @@ import ERC20_BYTES32_ABI from 'constants/abi/ERC20'
 import MULTICALL2_ABI from 'constants/abi/MULTICALL2.json'
 import VEDEUS_ABI from 'constants/abi/VEDEUS.json'
 import VE_DIST_ABI from 'constants/abi/VE_DIST.json'
-import DYNAMIC_REDEEMER_ABI from 'constants/abi/DYNAMIC_REDEEMER.json'
 import DEI_BONDER_ABI from 'constants/abi/DEI_Bonder.json'
-import SWAP_ABI from 'constants/abi/SWAP_ABI.json'
-import VDeusMasterChefV2_ABI from 'constants/abi/VDeusMasterChefV2_ABI.json'
-import MasterChefV2_ABI from 'constants/abi/MasterChefV2_ABI.json'
-import VDEUS_STAKING_ABI from 'constants/abi/VDEUS_STAKING.json'
 import COLLATERAL_POOL_ABI from 'constants/abi/COLLATERAL_POOL_ABI.json'
 import PROXY_MINTER_ABI from 'constants/abi/PROXY_MINTER_ABI.json'
+import TWAP_ORACLE_ABI from 'constants/abi/TWAP_ORACLE.json'
 import ORACLE_ABI from 'constants/abi/ORACLE_ABI.json'
 import DEIStrategy from 'constants/abi/DEIStrategy.json'
 
@@ -27,15 +23,11 @@ import {
   Multicall2,
   veDEUS,
   ZERO_ADDRESS,
-  DynamicRedeemer,
   DeiBonder,
   veDist,
-  SwapFlashLoan,
-  MasterChefV2,
-  vDeusStaking,
-  vDeusMasterChefV2,
   CollateralPool,
   MintProxy,
+  TwapOracle,
 } from 'constants/addresses'
 
 export function useContract<T extends Contract = Contract>(
@@ -115,39 +107,10 @@ export function useMulticall2Contract() {
   return useContract(address, MULTICALL2_ABI)
 }
 
-export function useDynamicRedeemerContract() {
-  const { chainId } = useWeb3React()
-  const address = useMemo(() => (chainId ? DynamicRedeemer[chainId] : undefined), [chainId])
-  return useContract(address, DYNAMIC_REDEEMER_ABI)
-}
-
 export function useDeiBonderContract() {
   const { chainId } = useWeb3React()
   const address = useMemo(() => (chainId ? DeiBonder[chainId] : undefined), [chainId])
   return useContract(address, DEI_BONDER_ABI)
-}
-
-export function useDeiSwapContract() {
-  const { chainId } = useWeb3React()
-  const address = useMemo(() => (chainId ? SwapFlashLoan[chainId] : undefined), [chainId])
-  return useContract(address, SWAP_ABI)
-}
-
-export function useMasterChefV2Contract() {
-  const { chainId } = useWeb3React()
-  const address = useMemo(() => (chainId ? MasterChefV2[chainId] : undefined), [chainId])
-  return useContract(address, MasterChefV2_ABI)
-}
-export function useVDeusMasterChefV2Contract() {
-  const { chainId } = useWeb3React()
-  const address = useMemo(() => (chainId ? vDeusMasterChefV2[chainId] : undefined), [chainId])
-  return useContract(address, VDeusMasterChefV2_ABI)
-}
-
-export function useVDeusStakingContract() {
-  const { chainId } = useWeb3React()
-  const address = useMemo(() => (chainId ? vDeusStaking[chainId] : undefined), [chainId])
-  return useContract(address, VDEUS_STAKING_ABI)
 }
 
 export function useCollateralPoolContract() {
@@ -162,8 +125,8 @@ export function useProxyMinterContract() {
   return useContract(address, PROXY_MINTER_ABI)
 }
 
+// FIXME: add dei contract address
 export function useDeiContract() {
-  // FIXME: add dei contract address
   const { chainId } = useWeb3React()
   const address = useMemo(() => (chainId ? MintProxy[chainId] : undefined), [chainId])
   return useContract(address, PROXY_MINTER_ABI)
@@ -175,4 +138,10 @@ export function useOracleContract(address: string) {
 
 export function useStrategyContract(address: string) {
   return useContract(address, DEIStrategy)
+}
+
+export function useTwapOracleContract() {
+  const { chainId } = useWeb3React()
+  const address = useMemo(() => (chainId ? TwapOracle[chainId] : undefined), [chainId])
+  return useContract(address, TWAP_ORACLE_ABI)
 }

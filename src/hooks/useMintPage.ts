@@ -1,75 +1,67 @@
-import { useCallback, useMemo, useState, useEffect } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 // import { formatUnits } from '@ethersproject/units'
 import { BigNumber } from 'bignumber.js'
 import debounce from 'lodash/debounce'
 import { Token } from '@sushiswap/core-sdk'
-// import { useAppDispatch } from 'state'
+import { formatUnits } from '@ethersproject/units'
 
-import useWeb3React from './useWeb3'
-// import useProxiedAmountOutCallback from './useProxiedAmountOutCallback'
-import { useCollateralRatio, useCollateralPrice } from 'state/dei/hooks'
+import { DEI_TOKEN, DEUS_TOKEN, USDC_TOKEN } from 'constants/tokens'
+import { BN_ONE, BN_TEN, toBN } from 'utils/numbers'
+
+import { useSingleContractMultipleMethods } from 'state/multicall/hooks'
+import { useCollateralPrice, useMintCollateralRatio } from 'state/dei/hooks'
+import { useMintState } from 'state/mint/reducer'
 import { useMintingFee } from 'state/dei/hooks'
 
-import { Collateral } from 'constants/addresses'
-import { BN_ONE, BN_TEN, toBN } from 'utils/numbers'
-// import { setIsProxyMinter, setProxyLoading, setProxyValues, useMintState } from 'state/mint/reducer'
-import { useMintState } from 'state/mint/reducer'
-import { DEI_TOKEN, DEUS_TOKEN, USDC_TOKEN } from 'constants/tokens'
-import { useCollateralPoolContract, useOracleContract } from './useContract'
-import { useSingleContractMultipleMethods } from 'state/multicall/hooks'
-import { formatUnits } from '@ethersproject/units'
 import { useDeusPrice } from 'hooks/useCoingeckoPrice'
-
-// TODO calculate price impact here
+import { useCollateralPoolContract, useOracleContract } from 'hooks/useContract'
 
 export function useMintPage(
   TokenIn1: Token | null,
   TokenIn2: Token | null,
   TokenOut1: Token | null
 ): {
-  amount1: string
-  amount2: string
+  amountIn1: string
+  amountIn2: string
   amountOut: string
   onUserInput1: (amount: string) => void
   onUserInput2: (amount: string) => void
   onUserOutput: (amount: string) => void
 } {
-  // const dispatch = useAppDispatch()
-  const { chainId } = useWeb3React()
-  const cRatio = useCollateralRatio()
+  const cRatio = useMintCollateralRatio()
   const cPrice = useCollateralPrice()
-  const dPrice = useDeusPrice()
+  const dPrice = useGetDeusPrice()
   const feePercentage = useMintingFee()
   const { isProxyMinter } = useMintState()
 
-  const [amount1, setAmount1] = useState<string>('')
-  const [amount2, setAmount2] = useState<string>('')
+  const [amountIn1, setAmountIn1] = useState<string>('')
+  const [amountIn2, setAmountIn2] = useState<string>('')
   const [amountOut, setAmountOut] = useState<string>('')
 
-  useEffect(() => {
-    let result = false
+  // useEffect(() => {
+  //   let result = false
 
-    if (!chainId) {
-      result = false
-    } else if (cRatio == 1 && Collateral[chainId] == TokenIn1?.address && !TokenIn2) {
-      result = false
-    } else if (cRatio == 0 && TokenIn1?.symbol == 'DEUS' && !TokenIn2) {
-      result = false
-    } else if (cRatio > 0 && cRatio < 1 && TokenIn2) {
-      result = false
-    } else {
-      result = true
-    }
+  //   if (!chainId) {
+  //     result = false
+  //   } else if (cRatio == 1 && Collateral[chainId] == TokenIn1?.address && !TokenIn2) {
+  //     result = false
+  //   } else if (cRatio == 0 && TokenIn1?.symbol == 'DEUS' && !TokenIn2) {
+  //     result = false
+  //   } else if (cRatio > 0 && cRatio < 1 && TokenIn2) {
+  //     result = false
+  //   } else {
+  //     result = true
+  //   }
 
-    // dispatch(setIsProxyMinter(result))
-  }, [chainId, cRatio, TokenIn1, TokenIn2])
+  //   // dispatch(setIsProxyMinter(result))
+  // }, [chainId, cRatio, TokenIn1, TokenIn2])
 
   const [collateralRatio, collateralPrice, deusPrice]: BigNumber[] = useMemo(() => {
-    return [new BigNumber(cRatio), new BigNumber(cPrice), new BigNumber(dPrice)]
+    return [toBN(cRatio).div(100), toBN(cPrice).div(1e6), toBN(dPrice)]
   }, [cRatio, cPrice, dPrice])
 
   const feeFactorBN: BigNumber = useMemo(() => {
-    return new BigNumber(1 - feePercentage / 100)
+    return toBN(1 - feePercentage / 100)
   }, [feePercentage])
 
   // const proxiedAmountOutCallback = useProxiedAmountOutCallback(
@@ -97,48 +89,34 @@ export function useMintPage(
 
   const debounceUserInput1 = useCallback(
     debounce(async (amount: string) => {
-      if (amount === '') {
-        setAmount2('')
+      if (amount === '' || collateralRatio.isNaN()) {
+        setAmountIn2('')
         setAmountOut('')
         return
       }
 
-      const inputAmount1 = new BigNumber(amount)
-      if (!isProxyMinter) {
-        const inputAmount2 = inputAmount1
-          .times(inputUnit1)
-          .times(BN_ONE.minus(collateralRatio))
-          .div(collateralRatio)
-          .div(inputUnit2)
-        const outputAmount = inputAmount1.times(inputUnit1).plus(inputAmount2.times(inputUnit2)).times(feeFactorBN)
-
-        setAmount2(inputAmount2.toString())
-        setAmountOut(outputAmount.toString())
-      } else {
-        // dispatch(setProxyLoading(true))
-        // const result = await proxiedAmountOutCallback(inputAmount1)
-        // dispatch(setProxyLoading(false))
-        // if (!result) {
-        //   setAmountOut('')
-        //   return
-        // }
-        // const outputAmount1 = formatUnits(result[0], TokenOut1?.decimals)
-        // setAmountOut(outputAmount1)
-        // updateProxyValues(result)
-      }
+      const inputAmount1 = toBN(amount)
+      const inputAmount2 = inputAmount1
+        .times(inputUnit1)
+        .times(BN_ONE.minus(collateralRatio))
+        .div(collateralRatio)
+        .div(inputUnit2)
+      const outputAmount = inputAmount1.times(inputUnit1).plus(inputAmount2.times(inputUnit2)).times(feeFactorBN)
+      setAmountIn2(inputAmount2.toString())
+      setAmountOut(outputAmount.toString())
     }, 500),
-    [isProxyMinter, TokenOut1, inputUnit1, inputUnit2, feeFactorBN]
+    [collateralRatio, isProxyMinter, TokenOut1, inputUnit1, inputUnit2, feeFactorBN]
   )
 
   const debounceUserInput2 = useCallback(
     debounce((amount: string) => {
-      if (amount === '') {
-        setAmount1('')
+      if (amount === '' || collateralRatio.isNaN()) {
+        setAmountIn1('')
         setAmountOut('')
         return
       }
 
-      const inputAmount2 = new BigNumber(amount)
+      const inputAmount2 = toBN(amount)
       const inputAmount1 = inputAmount2
         .times(inputUnit2)
         .times(collateralRatio)
@@ -146,7 +124,7 @@ export function useMintPage(
         .div(inputUnit1)
       const outputAmount = inputAmount1.times(inputUnit1).plus(inputAmount2.times(inputUnit2)).times(feeFactorBN)
 
-      setAmount1(inputAmount1.toString())
+      setAmountIn1(inputAmount1.toString())
       setAmountOut(outputAmount.toString())
     }, 500),
     [collateralRatio, inputUnit1, inputUnit2, feeFactorBN]
@@ -154,34 +132,36 @@ export function useMintPage(
 
   const debounceUserOutput = useCallback(
     debounce((amount: string) => {
-      if (amount === '') {
-        setAmount1('')
-        setAmount2('')
+      if (amount === '' || collateralRatio.isNaN()) {
+        setAmountIn1('')
+        setAmountIn2('')
         return
       }
 
-      if (isProxyMinter) {
-        console.log('Unable to type outputs with this proxy pair.')
-        return
-      }
+      // if (isProxyMinter) {
+      //   console.log('Unable to type outputs with this proxy pair.')
+      //   return
+      // }
 
-      const outputAmount = new BigNumber(amount)
-      const inputAmount1 = outputAmount.div(feeFactorBN).times(collateralRatio).div(inputUnit1)
+      //toBN(2).minus(feeFactorBN) = 1.005
+      const outputAmount = toBN(amount)
+      const inputAmount1 = outputAmount.times(toBN(2).minus(feeFactorBN)).times(collateralRatio).div(inputUnit1)
       const inputAmount2 = outputAmount.div(feeFactorBN).times(BN_ONE.minus(collateralRatio)).div(inputUnit2)
+      console.log(feeFactorBN.toString(), collateralRatio.toString(), inputUnit1.toString())
 
-      setAmount1(inputAmount1.toString())
-      setAmount2(inputAmount2.toString())
+      setAmountIn1(inputAmount1.toString())
+      setAmountIn2(inputAmount2.toString())
     }, 500),
     [isProxyMinter, collateralRatio, inputUnit1, inputUnit2, feeFactorBN]
   )
 
   const onUserInput1 = (amount: string): void => {
-    setAmount1(amount)
+    setAmountIn1(amount)
     debounceUserInput1(amount)
   }
 
   const onUserInput2 = (amount: string): void => {
-    setAmount2(amount)
+    setAmountIn2(amount)
     // updateProxyValues(null)
     debounceUserInput2(amount)
   }
@@ -193,24 +173,14 @@ export function useMintPage(
   }
 
   return {
-    amount1,
-    amount2,
+    amountIn1,
+    amountIn2,
     amountOut,
     onUserInput1,
     onUserInput2,
     onUserOutput,
   }
 }
-
-// export default function useMintAmountOut(
-//   TokenIn1: Token | null,
-//   TokenIn2: Token | null,
-//   amountIn1: string,
-//   amountIn2: string,
-//   fee: number
-// ): string {
-//   return (Number(amountIn1) + Number(amountIn2)).toString()
-// }
 
 export function useMintAmountOut(
   amountIn: string,

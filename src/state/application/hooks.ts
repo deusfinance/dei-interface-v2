@@ -11,6 +11,11 @@ export function useBlockNumber(): number | undefined {
   return useAppSelector((state: AppState) => state.application.blockNumber[chainId ?? -1])
 }
 
+export function useBlockTimestamp(): number | undefined {
+  const { chainId } = useWeb3React()
+  return useAppSelector((state: AppState) => state.application.blockTimestamp[chainId ?? -1])
+}
+
 export function useModalOpen(modal: ApplicationModal): boolean {
   const openModal = useAppSelector((state: AppState) => state.application.openModal)
   return openModal === modal

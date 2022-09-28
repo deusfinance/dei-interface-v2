@@ -5,11 +5,12 @@ import { Token } from '@sushiswap/core-sdk'
 import { ModalHeader, Modal } from 'components/Modal'
 import ArrowDownDark from 'components/Icons/ArrowDownDark'
 import Column from 'components/Column'
-import ModalInfo from './ModalInfo'
 import { RowCenter } from 'components/Row'
 import { PrimaryButton } from 'components/Button'
-import { DotFlashing } from 'components/Icons'
 import InputBox from 'components/InputBox'
+import ModalInfo from './ModalInfo'
+import InputBoxInDollar from 'components/App/Redemption/InputBoxInDollar'
+import LottieDei from 'components/Icons/LottieDei'
 
 const MainModal = styled(Modal)`
   display: flex;
@@ -19,9 +20,9 @@ const MainModal = styled(Modal)`
   border: 1px solid ${({ theme }) => theme.border2};
   border-radius: 24px;
 
-  ${({ theme }) => theme.mediaWidth.upToMedium`
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     width: 90%;
-    height: 560px;
+    max-height: 560px;
   `};
 `
 
@@ -34,6 +35,31 @@ const Wrapper = styled.div`
   padding: 1.5rem 0;
   overflow-y: scroll;
   height: auto;
+`
+
+const AwaitingWrapper = styled.div`
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  padding: 1.5rem 0;
+`
+
+const LottieWrap = styled.div`
+  margin-bottom: 30px;
+`
+
+const SummaryWrap = styled.div`
+  font-size: 13px;
+  color: ${({ theme }) => theme.text2};
+  margin: 20px auto;
+  max-width: 350px;
+  text-align: center;
+`
+
+const ConfirmWrap = styled(SummaryWrap)`
+  font-size: 14px;
+  margin: 0;
+  margin-top: 20px;
 `
 
 const TokenResultWrapper = styled(Column)`
@@ -68,6 +94,12 @@ const Separator = styled.div`
   background: ${({ theme }) => theme.border2};
 `
 
+const SeparatorLight = styled.div`
+  height: 2px;
+  background: ${({ theme }) => theme.bg2};
+  margin-top: 30px;
+`
+
 export default function DefaultReviewModal({
   title,
   inputTokens,
@@ -81,6 +113,7 @@ export default function DefaultReviewModal({
   toggleModal,
   handleClick,
   awaiting,
+  summary,
 }: {
   title: string
   inputTokens: Token[]
@@ -94,15 +127,32 @@ export default function DefaultReviewModal({
   toggleModal: (action: boolean) => void
   handleClick: () => void
   awaiting: boolean
+  summary: string
 }) {
   return (
-    <>
-      <MainModal
-        isOpen={isOpen}
-        onBackgroundClick={() => toggleModal(false)}
-        onEscapeKeydown={() => toggleModal(false)}
-      >
-        <ModalHeader onClose={() => toggleModal(false)} title={title} border={false} />
+    <MainModal isOpen={isOpen} onBackgroundClick={() => toggleModal(false)} onEscapeKeydown={() => toggleModal(false)}>
+      <ModalHeader onClose={() => toggleModal(false)} title={awaiting ? 'Confirmation' : title} border={false} />
+      {awaiting ? (
+        <AwaitingWrapper>
+          <LottieWrap>
+            <LottieDei />
+          </LottieWrap>
+
+          <RowCenter>
+            <span>Waiting for confirmation...</span>
+          </RowCenter>
+
+          <RowCenter>
+            <SummaryWrap>{summary}</SummaryWrap>
+          </RowCenter>
+
+          <SeparatorLight />
+
+          <RowCenter>
+            <ConfirmWrap>Confirm this transaction in your wallet</ConfirmWrap>
+          </RowCenter>
+        </AwaitingWrapper>
+      ) : (
         <Wrapper>
           <TokenResultWrapper>
             {inputTokens.map((token, index) =>
@@ -119,11 +169,13 @@ export default function DefaultReviewModal({
               )
             )}
 
-            <ArrowDownDark size={14} style={{ margin: '16px auto' }} />
+            <ArrowDownDark style={{ margin: '16px auto' }} />
 
             {outputTokens.map((token, index) =>
               amountsOut[index] === '0' ? (
                 <div style={{ display: 'none' }} key={index}></div>
+              ) : token.name === 'DEUS' ? (
+                <InputBoxInDollar key={index} currency={token} value={amountsOut[index]} />
               ) : (
                 <InputBox
                   key={index}
@@ -137,18 +189,15 @@ export default function DefaultReviewModal({
           </TokenResultWrapper>
           <ModalInfo info={info} />
         </Wrapper>
+      )}
+      {data && (
+        <>
+          <Separator />
+          <Data>{data}</Data>
+        </>
+      )}
 
-        {data && (
-          <>
-            <Separator />
-            <Data>{data}</Data>
-          </>
-        )}
-
-        <ConfirmButton onClick={() => handleClick()}>
-          {buttonText} {awaiting ? <DotFlashing style={{ marginLeft: '10px' }} /> : <></>}
-        </ConfirmButton>
-      </MainModal>
-    </>
+      {!awaiting && <ConfirmButton onClick={() => handleClick()}>{buttonText}</ConfirmButton>}
+    </MainModal>
   )
 }
