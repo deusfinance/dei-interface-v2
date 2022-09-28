@@ -87,8 +87,14 @@ export const SOLIDLY_PAIRS = gql`
 `
 
 export const VEDEUS_SUPPLY = gql`
-  query getSupply {
-    veDEUSSupplies(first: 1000, skip: 100) {
+  query getSupply($skip: Int!, $timestamp: Int!) {
+    veDEUSSupplies(
+      first: 1000
+      skip: $skip
+      where: { timestamp_lt: $timestamp }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
       timestamp
       value
     }

@@ -50,7 +50,7 @@ export default function VeDeusStats() {
           label={'Total Locked'}
           primaryColor={theme.deusPrimaryColor}
           secondaryColor={theme.deusSecondaryColor}
-          uniqueID="veDEUSTotalLocaked"
+          uniqueID="veDEUSTotalLocked"
         />
       </ChartWrapper>
     </div>
