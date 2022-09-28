@@ -205,6 +205,27 @@ export default function SingleChart({
   console.log('lowest', lowest)
   console.log('highest', highest)
 
+  const tempData = [
+    { timestamp: 'Jan', value: 800 },
+    { timestamp: 'Feb', value: 200 },
+    { timestamp: 'Mar', value: 680 },
+    { timestamp: 'Apr', value: 900 },
+    { timestamp: 'May', value: 300 },
+    { timestamp: 'Jun', value: 943 },
+    { timestamp: 'Jul', value: 1000 },
+    { timestamp: 'Aug', value: 300 },
+    { timestamp: 'Sept', value: 100 },
+    { timestamp: 'Oct', value: 220 },
+    { timestamp: 'Nov', value: 600 },
+    { timestamp: 'Dec', value: 200 },
+    { timestamp: 'Jan', value: 100 },
+    { timestamp: 'Feb', value: 20 },
+    { timestamp: 'Mar', value: 400 },
+    { timestamp: 'Apr', value: 1052 },
+    { timestamp: 'May', value: 600 },
+    { timestamp: 'Jun', value: 2340 },
+  ]
+
   return (
     <Wrapper>
       <TitleWrapper>
@@ -233,11 +254,11 @@ export default function SingleChart({
       </TitleWrapper>
       <Container
         loading={loading}
-        content={filteredData.length == 0 ? 'Chart is not available' : loading ? 'Loading...' : ''}
+        content={tempData.length == 0 ? 'Chart is not available' : loading ? 'Loading...' : ''}
         width="100%"
         height={350}
       >
-        <AreaChart data={filteredData} margin={{ top: 8, right: 8, left: -16, bottom: 8 }}>
+        <AreaChart data={tempData} margin={{ top: 8, right: 8, left: -16, bottom: 8 }}>
           <defs>
             <linearGradient id={uniqueID} x1="0" y1="0" x2="1" y2="0">
               <stop offset="0%" stopColor={primaryColor} stopOpacity={1} />
