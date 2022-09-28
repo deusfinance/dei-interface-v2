@@ -84,10 +84,6 @@ const Container = styled(ResponsiveContainer)<{
     `}
 `
 
-interface DataGroup {
-  [x: number]: VeDeusSupply
-}
-
 const timeFramesOptions = [
   { value: '15m', label: '15 mins' },
   { value: '1H', label: '1 hour' },
@@ -101,7 +97,7 @@ const timeFramesOptions = [
   // { value: 'ALL', label: 'All time' },
 ]
 
-const timeframeMap = {
+const timeframeMap: Record<string, number> = {
   '15m': 15 * 60,
   '1H': 60 * 60,
   '8H': 8 * 60 * 60,
