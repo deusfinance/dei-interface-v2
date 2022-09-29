@@ -1,30 +1,26 @@
-import React, { useMemo, useState } from 'react'
+import React from 'react'
 import styled from 'styled-components'
-import dayjs from 'dayjs'
-import relativeTime from 'dayjs/plugin/relativeTime'
-import localizedFormat from 'dayjs/plugin/localizedFormat'
-import utc from 'dayjs/plugin/utc'
 
+import BOND_NFT_LOGO from '/public/static/images/tokens/bdei.svg'
+
+// import useWeb3React from 'hooks/useWeb3'
+import { formatBalance } from 'utils/numbers'
+
+import { ButtonText } from 'pages/vest'
 import ImageWithFallback from 'components/ImageWithFallback'
 import { RowCenter } from 'components/Row'
 import Column from 'components/Column'
 import { PrimaryButton } from 'components/Button'
-import BOND_NFT_LOGO from '/public/static/images/pages/bond/BondNFT.svg'
-
-import { formatAmount } from 'utils/numbers'
-import { ButtonText } from 'pages/vest'
-import { BondNFT } from 'hooks/useBondsPage'
-import { getRemainingTime } from 'utils/time'
-import useWeb3React from 'hooks/useWeb3'
-
-dayjs.extend(utc)
-dayjs.extend(relativeTime)
-dayjs.extend(localizedFormat)
+import { InputWrapper, InputField } from 'components/Input'
+import BigNumber from 'bignumber.js'
 
 const Wrapper = styled.div`
   display: flex;
   flex-flow: column nowrap;
   justify-content: space-between;
+  margin: 0 auto;
+  margin-top: 50px;
+  width: clamp(250px, 90%, 1168px);
 `
 
 const TableWrapper = styled.table<{ isEmpty?: boolean }>`
@@ -33,15 +29,23 @@ const TableWrapper = styled.table<{ isEmpty?: boolean }>`
   table-layout: fixed;
   border-collapse: collapse;
   background: ${({ theme }) => theme.bg1};
-  border-bottom-right-radius: ${({ isEmpty }) => (isEmpty ? '12px' : '0')};
-  border-bottom-left-radius: ${({ isEmpty }) => (isEmpty ? '12px' : '0')};
-`
-
-const Row = styled.tr`
-  align-items: center;
-  height: 21px;
-  font-size: 0.8rem;
-  color: ${({ theme }) => theme.text1};
+  border-radius: 12px;
+  tbody {
+    & > * {
+      &:nth-child(4) {
+        width: 250px;
+      }
+      ${({ theme }) => theme.mediaWidth.upToSmall`
+        &:nth-child(2),
+        &:nth-child(3) {
+          display: none;
+        }
+        &:nth-child(4) {
+          width: 220px;
+        }
+      `};
+    }
+  }
 `
 
 const FirstRow = styled.div`
@@ -93,18 +97,6 @@ const Value = styled.div`
   margin-top: 10px;
 `
 
-const MaturityTimePassed = styled.div`
-  & > * {
-    color: ${({ theme }) => theme.yellow4};
-  }
-
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
-  `};
-`
-
 const MobileCell = styled.div`
   display: flex;
   justify-content: space-between;
@@ -115,6 +107,16 @@ const MobileCell = styled.div`
 const MobileWrapper = styled.div`
   margin-top: 10px;
   margin-bottom: 20px;
+`
+
+const MaxButton = styled.div`
+  position: absolute;
+  right: 25px;
+  top: 35px;
+  &:hover {
+    cursor: pointer;
+    opacity: 0.8;
+  }
 `
 
 const RedeemButton = styled(PrimaryButton)`
@@ -134,23 +136,13 @@ const RedeemButton = styled(PrimaryButton)`
   `}
 `
 
-export default function Table({
-  nfts,
-  isMobile,
-  isLoading,
-}: {
-  nfts: BondNFT[]
-  isMobile?: boolean
-  isLoading: boolean
-}) {
-  const { account } = useWeb3React()
-
+export default function Table({ remainingDEI, isMobile }: { remainingDEI: BigNumber; isMobile?: boolean }) {
   return (
     <>
       <Wrapper>
         <TableWrapper isEmpty={false}>
           <tbody>
-            <TableRow nft={nft} isMobile={isMobile} />
+            <TableRow remainingDEI={remainingDEI} isMobile={isMobile} />
           </tbody>
         </TableWrapper>
       </Wrapper>
@@ -158,30 +150,13 @@ export default function Table({
   )
 }
 
-function TableRow({ nft, isMobile }: { nft: BondNFT; isMobile?: boolean }) {
-  const { tokenId, deiAmount, redeemTime } = nft
-  const [diff, day] = useMemo(() => {
-    if (!nft.redeemTime) return [null, null]
-    const { diff, day } = getRemainingTime(nft.redeemTime)
-    return [diff, day]
-  }, [nft])
-
-  // subtracting 10 seconds to mitigate this from being true on page load
-  const lockHasEnded = useMemo(() => dayjs.utc(redeemTime).isBefore(dayjs.utc().subtract(10, 'seconds')), [redeemTime])
-
+function TableRow({ remainingDEI, isMobile }: { remainingDEI: BigNumber; isMobile?: boolean }) {
   function getMaturityTimeCell() {
-    if (!lockHasEnded)
-      return (
-        <>
-          <Name>Claimable DEI</Name>
-          <Value>{dayjs.utc(redeemTime).format('LLL')}</Value>
-        </>
-      )
     return (
-      <MaturityTimePassed>
-        <Name>Expired in</Name>
-        <Value>{dayjs.utc(redeemTime).format('LLL')}</Value>
-      </MaturityTimePassed>
+      <>
+        <Name>Claimable DEI</Name>
+        <Value>{formatBalance(remainingDEI ?? '')}</Value>
+      </>
     )
   }
 
@@ -190,7 +165,7 @@ function TableRow({ nft, isMobile }: { nft: BondNFT; isMobile?: boolean }) {
       <>
         <Cell>
           <RowCenter>
-            <ImageWithFallback src={BOND_NFT_LOGO} alt={`Bond logo`} width={30} height={30} />
+            <ImageWithFallback src={BOND_NFT_LOGO} alt={`Bond logo`} width={35} height={35} />
             <NFTWrap>
               <CellAmount>Remaining bDEI</CellAmount>
             </NFTWrap>
@@ -199,14 +174,28 @@ function TableRow({ nft, isMobile }: { nft: BondNFT; isMobile?: boolean }) {
 
         <Cell>
           <Name>Remaining bDEI</Name>
-          <Value>{formatAmount(parseFloat(deiAmount ? deiAmount.toString() : ''), 8)} bDEI</Value>
+          <Value>{formatBalance(remainingDEI ?? '')} bDEI</Value>
         </Cell>
 
         <Cell style={{ padding: '5px 10px' }}>{getMaturityTimeCell()}</Cell>
 
+        <Cell style={{ padding: '5px 10px', position: 'relative' }}>
+          <MaxButton>Max</MaxButton>
+          <InputWrapper>
+            <InputField
+              autoFocus
+              type="number"
+              placeholder="Enter Amount"
+              spellCheck="false"
+              onBlur={() => null}
+              style={{ marginLeft: '-4px', fontSize: '16px' }}
+            />
+          </InputWrapper>
+        </Cell>
+
         <Cell style={{ padding: '5px 10px' }}>
-          <RedeemButton disabled={diff && diff > 0 ? true : false} onClick={() => console.log('')}>
-            <ButtonText>{diff && diff > 0 ? `Redeem in ${day} days` : 'Redeem bDEI'}</ButtonText>
+          <RedeemButton onClick={() => console.log('')}>
+            <ButtonText>Redeem bDEI</ButtonText>
           </RedeemButton>
         </Cell>
       </>
@@ -220,20 +209,20 @@ function TableRow({ nft, isMobile }: { nft: BondNFT; isMobile?: boolean }) {
           <RowCenter>
             <ImageWithFallback src={BOND_NFT_LOGO} alt={`Bond logo`} width={30} height={30} />
             <NFTWrap>
-              <CellAmount>DEI Bond #{tokenId}</CellAmount>
+              <CellAmount>Remaining bDEI</CellAmount>
             </NFTWrap>
           </RowCenter>
 
           <RowCenter style={{ padding: '5px 10px' }}>
-            <RedeemButton disabled={diff && diff > 0 ? true : false} onClick={() => console.log('')}>
-              <ButtonText>{diff && diff > 0 ? `Redeem in ${day} days` : 'Redeem BDEI'}</ButtonText>
+            <RedeemButton onClick={() => console.log('')}>
+              <ButtonText>Redeem BDEI</ButtonText>
             </RedeemButton>
           </RowCenter>
         </FirstRow>
 
         <MobileCell>
           <Name>Bond Value</Name>
-          <Value>{formatAmount(parseFloat(deiAmount ? deiAmount.toString() : ''), 8)} bDEI</Value>
+          <Value>{formatBalance(remainingDEI ?? '')} bDEI</Value>
         </MobileCell>
 
         <MobileCell>{getMaturityTimeCell()}</MobileCell>

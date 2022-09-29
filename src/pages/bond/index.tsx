@@ -5,18 +5,22 @@ import { isMobile } from 'react-device-detect'
 
 import DEI_LOGO from '/public/static/images/pages/bond/DEI_logo.svg'
 
+import useWeb3React from 'hooks/useWeb3'
 import { useOwnerBondNFTs } from 'hooks/useOwnerNfts'
-import { BondNFT, useUserDeiBondInfo } from 'hooks/useBondsPage'
+import { BondNFT, useUserClaimableDEI, useUserDeiBondInfo } from 'hooks/useBondsPage'
 
 import Hero from 'components/Hero'
 import { RowBetween } from 'components/Row'
 import StatsHeader from 'components/StatsHeader'
 import { Container } from 'components/App/StableCoin'
+import RemainingDEI from 'components/App/Bond/RemainingDEI'
 import { useSearch, SearchField, Table } from 'components/App/Bond'
 
-const Wrapper = styled(Container)`
+const Wrapper = styled(Container)<{
+  mt?: string
+}>`
   margin: 0 auto;
-  margin-top: 50px;
+  margin-top: ${({ mt }) => mt || '50px'};
   width: clamp(250px, 90%, 1168px);
 
   & > * {
@@ -82,7 +86,8 @@ const UpperRowMobile = styled(UpperRow)<{ hasSecondRow?: boolean }>`
   /* margin-bottom: ${({ hasSecondRow }) => (hasSecondRow ? '0' : '-20px')}; */
 `
 
-export default function BDei() {
+export default function Bond() {
+  const { account } = useWeb3React()
   const ownedNfts = useOwnerBondNFTs()
   const { snapshot, searchProps } = useSearch()
   const result = snapshot.options.map((nft) => nft)
@@ -115,6 +120,7 @@ export default function BDei() {
   const userStats = useUserDeiBondInfo()
 
   const items = useMemo(() => [{ name: 'Total DEI Claimed', value: '0' }, ...userStats], [userStats])
+  const { claimedDEI } = useUserClaimableDEI()
 
   return (
     <Container>
@@ -122,8 +128,8 @@ export default function BDei() {
         <Image src={DEI_LOGO} width={'76px'} height={'90px'} alt="Logo" />
         <StatsHeader items={items} />
       </Hero>
+      {account && claimedDEI.gte(0) && <RemainingDEI remainingDEI={claimedDEI} isMobile={isMobile} />}
       <Wrapper>
-        <Table nfts={[]} isMobile={isMobile} isLoading={ownedNfts.isLoading} />
         {isMobile ? getUpperRowMobile() : getUpperRow()}
         <Table nfts={snapshotList as BondNFT[]} isMobile={isMobile} isLoading={ownedNfts.isLoading} />
       </Wrapper>
