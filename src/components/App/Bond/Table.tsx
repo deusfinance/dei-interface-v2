@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useMemo, useState, useCallback } from 'react'
 import styled from 'styled-components'
 import Image from 'next/image'
 import dayjs from 'dayjs'
@@ -21,7 +21,7 @@ import { getRemainingTime } from 'utils/time'
 import useWeb3React from 'hooks/useWeb3'
 import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
 import { useERC721ApproveAllCallback } from 'hooks/useApproveNftCallback2'
-import { BondNFT } from 'hooks/useBondsPage'
+import { BondNFT, useUserBondStats } from 'hooks/useBondsPage'
 
 import Pagination from 'components/Pagination'
 import ImageWithFallback from 'components/ImageWithFallback'
@@ -30,6 +30,7 @@ import Column from 'components/Column'
 import { PrimaryButton } from 'components/Button'
 import { ButtonText } from 'pages/vest'
 import { DotFlashing } from 'components/Icons'
+import useMigrateNftToDeiCallback from 'hooks/useBondsCallback'
 
 dayjs.extend(utc)
 dayjs.extend(relativeTime)
@@ -266,16 +267,16 @@ function TableRow({ nft, index, isMobile }: { nft: BondNFT; index: number; isMob
 
   const insufficientBalance = false
   const [awaitingApproveConfirmation, setAwaitingApproveConfirmation] = useState<boolean>(false)
-  const [awaitingRedeemConfirmation, setAwaitingRedeemConfirmation] = useState<boolean>(false)
+  const [awaitingMigrateConfirmation, setAwaitingMigrateConfirmation] = useState<boolean>(false)
 
   const bDEICurrency = BDEI_TOKEN
   const spender = useMemo(() => (chainId ? DeiBonderV3[chainId] : undefined), [chainId])
   const [approvalStateCurrency, approveCallbackCurrency] = useApproveCallback(bDEICurrency ?? undefined, spender)
 
-  const [showApproveCurrency, showApproveLoaderCurrency] = useMemo(() => {
-    const show = bDEICurrency && approvalStateCurrency !== ApprovalState.APPROVED
-    return [show, show && approvalStateCurrency === ApprovalState.PENDING]
-  }, [bDEICurrency, approvalStateCurrency])
+  const showApproveCurrency = useMemo(
+    () => bDEICurrency && approvalStateCurrency !== ApprovalState.APPROVED,
+    [bDEICurrency, approvalStateCurrency]
+  )
 
   // subtracting 10 seconds to mitigate this from being true on page load
   const lockHasEnded = useMemo(() => dayjs.utc(redeemTime).isBefore(dayjs.utc().subtract(10, 'seconds')), [redeemTime])
@@ -290,6 +291,7 @@ function TableRow({ nft, index, isMobile }: { nft: BondNFT; index: number; isMob
     chainId ? DeiBondRedeemNFT[chainId] : undefined,
     spender
   )
+
   const showApproveNFT = useMemo(() => approvalState !== ApprovalState.APPROVED, [approvalState])
 
   const handleApproveNFT = async () => {
@@ -298,11 +300,34 @@ function TableRow({ nft, index, isMobile }: { nft: BondNFT; index: number; isMob
     setAwaitingApproveConfirmation(false)
   }
 
+  const claimableAmount = toBN(nft_data.filter((nft) => nft.tokenId == tokenId)[0].amount).div(1e18)
+
+  const { bDeiBalance } = useUserBondStats()
+  const claimAmount = bDeiBalance && bDeiBalance.gt(claimableAmount) ? claimableAmount : bDeiBalance
+  const { callback: migrateCallback } = useMigrateNftToDeiCallback(tokenId, claimAmount)
+
+  const handleMigrate = useCallback(async () => {
+    if (!migrateCallback) return
+    try {
+      setAwaitingMigrateConfirmation(true)
+      const txHash = await migrateCallback()
+      setAwaitingMigrateConfirmation(false)
+      console.log({ txHash })
+    } catch (e) {
+      setAwaitingMigrateConfirmation(false)
+      if (e instanceof Error) {
+        console.error(e)
+      } else {
+        console.error(e)
+      }
+    }
+  }, [migrateCallback])
+
   function getApproveButton(): JSX.Element | null {
     if (!lockHasEnded) {
       return (
         <RedeemButton disabled>
-          <ButtonText>{`Redeem in ${day} days`}</ButtonText>
+          <ButtonText>{`Redeem in ${day ?? '-'} day${day && day > 1 ? 's' : ''}`}</ButtonText>
         </RedeemButton>
       )
     }
@@ -314,13 +339,16 @@ function TableRow({ nft, index, isMobile }: { nft: BondNFT; index: number; isMob
           </ButtonText>
         </RedeemButton>
       )
-    } else if (showApproveCurrency)
+    }
+
+    if (showApproveCurrency)
       return (
         <RedeemButton onClick={() => handleApproveCurrency()}>
           <ButtonText>Approve bDEI</ButtonText>
         </RedeemButton>
       )
-    else if (showApproveNFT)
+
+    if (showApproveNFT)
       return (
         <RedeemButton onClick={() => handleApproveNFT()}>
           <ButtonText>Approve NFT</ButtonText>
@@ -331,14 +359,13 @@ function TableRow({ nft, index, isMobile }: { nft: BondNFT; index: number; isMob
   }
 
   function getActionButton(): JSX.Element | null {
-    if (showApproveCurrency || showApproveNFT) return null
-    else if (insufficientBalance)
+    if (insufficientBalance)
       return (
         <RedeemButton disabled>
           <ButtonText>insufficient bDEI Balance</ButtonText>
         </RedeemButton>
       )
-    else if (awaitingRedeemConfirmation) {
+    if (awaitingMigrateConfirmation) {
       return (
         <RedeemButton disabled>
           <ButtonText>
@@ -348,7 +375,7 @@ function TableRow({ nft, index, isMobile }: { nft: BondNFT; index: number; isMob
       )
     }
     return (
-      <RedeemButton onClick={() => console.log('')}>
+      <RedeemButton onClick={() => handleMigrate()}>
         <ButtonText>{'Redeem bDEI'}</ButtonText>
       </RedeemButton>
     )
@@ -371,10 +398,6 @@ function TableRow({ nft, index, isMobile }: { nft: BondNFT; index: number; isMob
   }
 
   function getTableRow() {
-    const claimableAmount = toBN(nft_data.filter((nft) => nft.tokenId == tokenId)[0].amount)
-      .div(1e18)
-      .toString()
-
     return (
       <>
         <Cell>
@@ -398,10 +421,7 @@ function TableRow({ nft, index, isMobile }: { nft: BondNFT; index: number; isMob
 
         <Cell style={{ padding: '5px 10px' }}>{getMaturityTimeCell()}</Cell>
 
-        <Cell style={{ padding: '5px 10px' }}>
-          {getApproveButton()}
-          {getActionButton()}
-        </Cell>
+        <Cell style={{ padding: '5px 10px' }}>{getApproveButton() ?? getActionButton()}</Cell>
       </>
     )
   }

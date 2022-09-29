@@ -132,7 +132,7 @@ export function useUserNextMaturity(): {
 export function useUserBondStats(): {
   redeemTime: number | null
   deiAmount: number | null
-  bDeiBalance: number | null
+  bDeiBalance: BigNumber | null
   totalDeiClaimed: number | null
   claimableDei: number | null
 } {
@@ -143,7 +143,7 @@ export function useUserBondStats(): {
   return {
     redeemTime,
     deiAmount,
-    bDeiBalance: bdeiCurrencyBalance ? Number(bdeiCurrencyBalance.toExact()) : null,
+    bDeiBalance: bdeiCurrencyBalance ? toBN(bdeiCurrencyBalance.toExact()) : null,
     totalDeiClaimed: 0,
     claimableDei: 0,
   }

@@ -1,11 +1,14 @@
 import { useCallback, useMemo } from 'react'
+import BigNumber from 'bignumber.js'
 import toast from 'react-hot-toast'
 import { TransactionResponse } from '@ethersproject/abstract-provider'
 
 import nft_data from 'constants/files/nft_data.json'
-import { useTransactionAdder } from 'state/transactions/hooks'
 import { DefaultHandlerError } from 'utils/parseError'
+import { toBN } from 'utils/numbers'
 import { calculateGasMargin } from 'utils/web3'
+
+import { useTransactionAdder } from 'state/transactions/hooks'
 import useWeb3React from './useWeb3'
 import { useDeiBonderV3Contract } from './useContract'
 
@@ -17,7 +20,7 @@ export enum MigrateCallbackState {
 
 export default function useMigrateNftToDeiCallback(
   tokenId: number,
-  claimAmount: number
+  claimAmount: BigNumber | null
 ): {
   state: MigrateCallbackState
   callback: null | (() => Promise<string>)
@@ -36,12 +39,13 @@ export default function useMigrateNftToDeiCallback(
   }, [])
 
   const constructCall = useCallback(async () => {
+    console.log({ tokenId, claimAmount, nft })
     try {
-      if (!account || !library || !deiBonderV3Contract || !tokenId || !claimAmount || !nft) {
+      if (!account || !library || !deiBonderV3Contract || !claimAmount || !nft) {
         throw new Error('Missing dependencies.')
       }
       const proof = await getProofDate()
-      const args = [tokenId, nft.amount, nft.maturity_time, claimAmount, proof]
+      const args = [tokenId, toBN(nft.amount).toString(), nft.maturity_time, claimAmount.times(1e18).toString(), proof]
 
       return {
         address: deiBonderV3Contract.address,
@@ -67,8 +71,8 @@ export default function useMigrateNftToDeiCallback(
     return {
       state: MigrateCallbackState.VALID,
       error: null,
-      callback: async function onClaimDEI(): Promise<string> {
-        console.log('onClaimDEI callback')
+      callback: async function onMigrateNFT(): Promise<string> {
+        console.log('onMigrateNFT callback')
         const call = await constructCall()
         const { address, calldata, value } = call
 
@@ -120,7 +124,7 @@ export default function useMigrateNftToDeiCallback(
           })
           .then((response: TransactionResponse) => {
             console.log(response)
-            const summary = `Migrate DeiBond #${tokenId} with ${claimAmount} bDEI`
+            const summary = `Migrate DeiBond #${tokenId} with ${claimAmount?.toString()} bDEI`
             addTransaction(response, { summary })
 
             return response.hash
@@ -140,10 +144,7 @@ export default function useMigrateNftToDeiCallback(
   }, [account, chainId, library, deiBonderV3Contract, tokenId, claimAmount, constructCall, addTransaction])
 }
 
-export function useClaimDEICallback(
-  tokenId: number,
-  claimAmount: number
-): {
+export function useClaimDEICallback(claimAmount: BigNumber): {
   state: MigrateCallbackState
   callback: null | (() => Promise<string>)
   error: string | null
@@ -157,9 +158,11 @@ export function useClaimDEICallback(
       if (!account || !library || !deiBonderV3Contract || !claimAmount) {
         throw new Error('Missing dependencies.')
       }
+      const args = [toBN(claimAmount).times(1e18).toString()]
+
       return {
         address: deiBonderV3Contract.address,
-        calldata: deiBonderV3Contract.interface.encodeFunctionData('claimDEI', [claimAmount]) ?? '',
+        calldata: deiBonderV3Contract.interface.encodeFunctionData('claimDEI', args) ?? '',
         value: 0,
       }
     } catch (error) {

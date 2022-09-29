@@ -1,18 +1,21 @@
-import React from 'react'
+import React, { useState, useMemo, useCallback } from 'react'
 import styled from 'styled-components'
+import toast from 'react-hot-toast'
 
 import BOND_NFT_LOGO from '/public/static/images/tokens/bdei.svg'
 
 // import useWeb3React from 'hooks/useWeb3'
-import { formatBalance } from 'utils/numbers'
+import { BN_ZERO, formatBalance, toBN } from 'utils/numbers'
 
 import { ButtonText } from 'pages/vest'
 import ImageWithFallback from 'components/ImageWithFallback'
 import { RowCenter } from 'components/Row'
 import Column from 'components/Column'
 import { PrimaryButton } from 'components/Button'
-import { InputWrapper, InputField } from 'components/Input'
+import { InputWrapper, NumericalInput } from 'components/Input'
 import BigNumber from 'bignumber.js'
+import { useClaimDEICallback } from 'hooks/useBondsCallback'
+import { useUserBondStats } from 'hooks/useBondsPage'
 
 const Wrapper = styled.div`
   display: flex;
@@ -151,6 +154,28 @@ export default function Table({ remainingDEI, isMobile }: { remainingDEI: BigNum
 }
 
 function TableRow({ remainingDEI, isMobile }: { remainingDEI: BigNumber; isMobile?: boolean }) {
+  const [amountIn, setAmountIn] = useState('')
+  const amountInBN = toBN(amountIn)
+  const { callback: claimCallback } = useClaimDEICallback(amountInBN)
+  const { bDeiBalance } = useUserBondStats()
+  const maxAmount = useMemo(
+    () => (bDeiBalance ? (bDeiBalance.gt(remainingDEI) ? remainingDEI : bDeiBalance) : BN_ZERO),
+    [remainingDEI, bDeiBalance]
+  )
+
+  const handleClaim = useCallback(async () => {
+    if (!claimCallback) return
+    if (!amountIn || Number(amountIn) == 0) {
+      toast.error('Please enter amount')
+    }
+    try {
+      const txHash = await claimCallback()
+      console.log({ txHash })
+    } catch (e) {
+      console.error(e)
+    }
+  }, [claimCallback, amountIn])
+
   function getMaturityTimeCell() {
     return (
       <>
@@ -180,21 +205,26 @@ function TableRow({ remainingDEI, isMobile }: { remainingDEI: BigNumber; isMobil
         <Cell style={{ padding: '5px 10px' }}>{getMaturityTimeCell()}</Cell>
 
         <Cell style={{ padding: '5px 10px', position: 'relative' }}>
-          <MaxButton>Max</MaxButton>
+          <MaxButton
+            onClick={() => {
+              setAmountIn(maxAmount.toString())
+            }}
+          >
+            Max
+          </MaxButton>
           <InputWrapper>
-            <InputField
+            <NumericalInput
               autoFocus
-              type="number"
+              value={amountIn}
+              onUserInput={setAmountIn}
               placeholder="Enter Amount"
-              spellCheck="false"
-              onBlur={() => null}
               style={{ marginLeft: '-4px', fontSize: '16px' }}
             />
           </InputWrapper>
         </Cell>
 
         <Cell style={{ padding: '5px 10px' }}>
-          <RedeemButton onClick={() => console.log('')}>
+          <RedeemButton onClick={() => handleClaim()}>
             <ButtonText>Redeem bDEI</ButtonText>
           </RedeemButton>
         </Cell>

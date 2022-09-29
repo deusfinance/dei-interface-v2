@@ -128,7 +128,7 @@ export default function Bond() {
         <Image src={DEI_LOGO} width={'76px'} height={'90px'} alt="Logo" />
         <StatsHeader items={items} />
       </Hero>
-      {account && claimedDEI.gte(0) && <RemainingDEI remainingDEI={claimedDEI} isMobile={isMobile} />}
+      {account && claimedDEI.gt(0) && <RemainingDEI remainingDEI={claimedDEI} isMobile={isMobile} />}
       <Wrapper>
         {isMobile ? getUpperRowMobile() : getUpperRow()}
         <Table nfts={snapshotList as BondNFT[]} isMobile={isMobile} isLoading={ownedNfts.isLoading} />
