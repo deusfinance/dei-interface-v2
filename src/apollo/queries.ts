@@ -28,6 +28,11 @@ export interface Voucher {
   timestamp: string
 }
 
+export interface VeDeusSupply {
+  timestamp: string
+  value: string
+}
+
 export const VOUCHER_DETAILS = gql`
   query getVoucherDetails($currentTokenId: BigInt!) {
     redeems(where: { currentTokenId: $currentTokenId }, orderBy: timestamp, orderDirection: desc) {
@@ -77,6 +82,21 @@ export const SOLIDLY_PAIRS = gql`
         symbol
         decimals
       }
+    }
+  }
+`
+
+export const VEDEUS_SUPPLY = gql`
+  query getSupply($skip: Int!, $timestamp: Int!) {
+    veDEUSSupplies(
+      first: 1000
+      skip: $skip
+      where: { timestamp_lt: $timestamp }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      timestamp
+      value
     }
   }
 `

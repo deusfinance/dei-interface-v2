@@ -1,7 +1,7 @@
 import { SupportedChainId } from 'constants/chains'
 import { Token } from '@sushiswap/core-sdk'
 import { duplicateTokenByAddressMap, duplicateTokenByChainId, TokenMap } from 'utils/token'
-import { USDC_ADDRESS, DEUS_ADDRESS, DEI_ADDRESS, BDEI_ADDRESS } from './addresses'
+import { USDC_ADDRESS, DEUS_ADDRESS, DEI_ADDRESS, BDEI_ADDRESS, veDEUS } from './addresses'
 
 // import USDC_LOGO from 'assets/img/tokens/usdc.svg'
 // import USDT_LOGO from 'assets/img/tokens/usdt.svg'
@@ -27,6 +27,8 @@ export const DEIv2_TOKEN = new Token(
 export const USDC_TOKEN = new Token(SupportedChainId.FANTOM, USDC_ADDRESS[SupportedChainId.FANTOM], 6, 'USDC', 'USDC')
 
 export const DEUS_TOKEN = new Token(SupportedChainId.FANTOM, DEUS_ADDRESS[SupportedChainId.FANTOM], 18, 'DEUS', 'DEUS')
+
+export const VEDEUS_TOKEN = new Token(SupportedChainId.FANTOM, veDEUS[SupportedChainId.FANTOM], 18, 'veDEUS', 'veDEUS')
 
 export const BDEI_TOKEN = new Token(SupportedChainId.FANTOM, BDEI_ADDRESS[SupportedChainId.FANTOM], 18, 'bDEI', 'bDEI')
 

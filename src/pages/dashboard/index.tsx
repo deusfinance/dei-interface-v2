@@ -8,8 +8,8 @@ import REDEEM_LOGO from '/public/static/images/pages/dashboard/ic_redeem_gray.sv
 import REDEEM_HOVER_LOGO from '/public/static/images/pages/dashboard/ic_redeem_hover.svg'
 import BOND_LOGO from '/public/static/images/pages/dashboard/ic_bond_gray.svg'
 import BOND_HOVER_LOGO from '/public/static/images/pages/dashboard/ic_bond_hover.svg'
-import ANALYTICS_LOGO from '/public/static/images/pages/dashboard/ic_analytics_gray.svg'
-import ANALYTICS_HOVER_LOGO from '/public/static/images/pages/dashboard/ic_analytics_hover.svg'
+import METRICS_LOGO from '/public/static/images/pages/dashboard/ic_analytics_gray.svg'
+import METRICS_HOVER_LOGO from '/public/static/images/pages/dashboard/ic_analytics_hover.svg'
 import VEDEUS_LOGO from '/public/static/images/pages/dashboard/ic_vedeus_gray.svg'
 import VEDEUS_HOVER_LOGO from '/public/static/images/pages/dashboard/ic_vedeus_hover.svg'
 // import VDEUS_LOGO from '/public/static/images/pages/dashboard/ic_vdeus_gray.svg'
@@ -111,11 +111,11 @@ export default function Dashboard() {
             HoverIcon={VEDEUS_HOVER_LOGO}
           />
           <Card
-            href=""
-            title={'Analytics'}
-            subTitle="Coming Soon..." // DEI and DEUS Stats
-            MainIcon={ANALYTICS_LOGO}
-            HoverIcon={ANALYTICS_HOVER_LOGO}
+            href="/metrics"
+            title={'Metrics'}
+            subTitle="DEI and DEUS Stats"
+            MainIcon={METRICS_LOGO}
+            HoverIcon={METRICS_HOVER_LOGO}
           />
           {/* <Card
             href="https://legacy.dei.finance/"

@@ -14,8 +14,9 @@ const Wrapper = styled.div<{
   overflow: ${({ isOpen }) => !isOpen && 'hidden'};
   color: ${({ theme }) => theme.text3};
   max-width: ${({ width }) => width};
+  font-size: 12px;
+  font-weight: 600;
   width: 100%;
-  margin: 4px auto;
   position: relative;
 `
 
@@ -25,11 +26,10 @@ const Header = styled(Box)<{
 }>`
   display: flex;
   justify-content: space-between;
-  font-size: 1rem;
   text-align: left;
-  padding: 0 0.8rem;
+  padding: 8px 16px;
   align-items: center;
-  height: 100%;
+  border-radius: 8px;
   background: ${({ theme }) => theme.bg1};
   color: ${({ theme }) => theme.text1};
 
@@ -50,6 +50,7 @@ const StyledChevron = styled(({ isOpen, ...props }) => <ChevronDown {...props} /
 }>`
   transition: transform 0.5s ease-out;
   size: 2rem;
+  margin-left: 12px;
   ${(props) =>
     props.isOpen &&
     css`
@@ -80,12 +81,9 @@ const List = styled.ul<{
 
 const ListItem = styled.li`
   list-style: none;
-  text-align: left;
-  height: 40px;
+  text-align: center;
+  padding: 8px 16px;
   border-top: none;
-  line-height: 40px;
-  padding: 0 10px;
-  font-size: 13px;
   z-index: 999;
 
   &:hover {
@@ -94,7 +92,7 @@ const ListItem = styled.li`
   }
 `
 
-interface Option {
+export interface Option {
   value: string
   label: JSX.Element | string
 }
@@ -121,17 +119,16 @@ export default function Dropdown({
   useOnOutsideClick(ref, () => setIsOpen(false))
 
   useEffect(() => {
-    if (options.length > 0) {
-      const value = defaultValue ?? options[0].value
-      onSelect(value)
-      setSelectedOption(value)
-    }
-  }, [options, defaultValue, onSelect])
+    console.log('selectedOption', selectedOption)
+    if (!selectedOption) setSelectedOption(options[0]?.value ?? defaultValue)
+  }, [options, defaultValue, selectedOption])
 
   const header: JSX.Element | string = useMemo(() => {
     const option: Option | undefined = find(options, (obj) => obj.value == selectedOption)
+    console.log('selectedOption', selectedOption)
+    console.log('option header', option?.label)
     return option?.label ?? placeholder
-  }, [options, selectedOption, placeholder])
+  }, [selectedOption, options, placeholder])
 
   const toggle = () => {
     !disabled && setIsOpen(!isOpen)
