@@ -314,13 +314,13 @@ export default function SingleChart({
       </TitleWrapper>
       <Container
         content={
-          !chartData.length || !filteredData.length ? 'Loading...' : filteredData.length < 2 ? 'Insufficient data' : ''
+          !chartData.length && !filteredData.length ? 'Loading...' : filteredData.length < 2 ? 'Insufficient data' : ''
         }
         width="100%"
         height={350}
       >
         <AreaChart
-          data={!chartData.length || !filteredData.length ? tempData : filteredData}
+          data={!chartData.length && !filteredData.length ? tempData : filteredData}
           margin={{ top: 8, right: 8, left: -16, bottom: 8 }}
         >
           <defs>
