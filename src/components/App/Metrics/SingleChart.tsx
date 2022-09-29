@@ -64,7 +64,6 @@ const Item = styled.div<{
 `
 
 const Container = styled(ResponsiveContainer)<{
-  loading: boolean
   content: string
 }>`
   ${({ content, theme }) =>
@@ -101,6 +100,7 @@ const timeFramesOptions = [
   // { value: 'ALL', label: 'All time' },
 ]
 
+// map timeframe to respective seconds
 const timeframeMap: Record<string, number> = {
   '15m': 15 * 60,
   '1H': 60 * 60,
@@ -113,10 +113,27 @@ const timeframeMap: Record<string, number> = {
   '1Y': 365 * 24 * 60 * 60,
 }
 
+// map respective timeframe to seconds for grouping
+const secondsMap: Record<string, number> = {
+  '15m': 60, // to use 1m grouped data
+  '1H': 60, // to use 1m grouped data
+  '8H': 60, // to use 1m grouped data
+  '1D': 15 * 60, // to use 15m grouped data
+  '1W': 6 * 60 * 60, // to use 6h grouped data
+  '1M': 12 * 60 * 60, // to use 12h grouped data
+  '3M': 1 * 24 * 60 * 60, // to use 1d grouped data
+  '6M': 1 * 24 * 60 * 60, // to use 1d grouped data
+  '1Y': 1 * 24 * 60 * 60, // to use 1d grouped data
+}
+
 interface ChartData {
   timestamp: string
   value: string
   formattedValue: string
+}
+
+interface DataGroup {
+  [x: number]: ChartData
 }
 
 const tempData: ChartData[] = [
@@ -152,11 +169,10 @@ export default function SingleChart({
   uniqueID: string
 }) {
   const { chainId } = useWeb3React()
-  const [loading, setLoading] = useState(true)
   const theme = useTheme()
 
   const [chartData, setChartData] = useState<ChartData[]>(tempData)
-  const [currentTimeFrame, setCurrentTimeFrame] = useState('1Y')
+  const [currentTimeFrame, setCurrentTimeFrame] = useState('3M')
 
   const fetchData = useCallback(async () => {
     const fetcher = async (skip: number, timestamp: number): Promise<VeDeusSupply[]> => {
@@ -211,14 +227,28 @@ export default function SingleChart({
           formattedValue: formatAmount(parseInt(formatUnits(obj.value, VEDEUS_TOKEN.decimals))),
         }))
       )
-      setLoading(false)
     }
     getData()
   }, [fetchData])
 
+  // group the filtered data based on respective seconds.
+  const groupedData = (chartData: ChartData[], timeframe = '3M'): ChartData[] => {
+    const data = chartData.reduce((arr: DataGroup, data: ChartData) => {
+      const id = Math.floor(parseInt(data.timestamp) / secondsMap[timeframe])
+      if (!arr[id]) {
+        arr[id] = data
+      }
+      return arr
+    }, {})
+    const result: ChartData[] = Object.values(data)
+    return result
+  }
+
   const filteredData: ChartData[] = useMemo(() => {
     const earliestTimestamp = Math.floor(Date.now() / 1000) - timeframeMap[currentTimeFrame]
-    return chartData.filter((obj) => parseInt(obj.timestamp) > earliestTimestamp)
+    const filteredData = chartData.filter((obj) => parseInt(obj.timestamp) > earliestTimestamp)
+    // make sure to have not more than 100 data points for any timeframe for smoother chart
+    return groupedData(filteredData, currentTimeFrame)
   }, [chartData, currentTimeFrame])
 
   const [lowest = 20, highest = 2340] = useMemo(
@@ -232,10 +262,23 @@ export default function SingleChart({
   const CustomTooltip = ({ payload }: { payload: any }) => {
     if (payload && payload.length) {
       const date = new Date(parseInt(payload[0].payload.timestamp) * 1000)
+      // format the date `Sat, 22-May-2020 23:30` format
+      const formattedDate =
+        date.toLocaleString('default', { weekday: 'short' }) +
+        ', ' +
+        date.getUTCDate() +
+        '-' +
+        date.toLocaleString('default', { month: 'short' }) +
+        '-' +
+        date.getFullYear() +
+        ' ' +
+        date.getUTCHours() +
+        ':' +
+        date.getMinutes()
       return (
         <div className="custom-tooltip">
           <p className="label">{`${label}: ${payload[0].value}`}</p>
-          <p className="intro">{`Date: ${date.toLocaleDateString()}`}</p>
+          <p className="intro">{`${formattedDate}`}</p>
         </div>
       )
     }
@@ -270,13 +313,14 @@ export default function SingleChart({
         )}
       </TitleWrapper>
       <Container
-        loading={false}
-        content={!filteredData.length ? 'Loading Chart Data...' : ''}
+        content={
+          !chartData.length || !filteredData.length ? 'Loading...' : filteredData.length < 2 ? 'Insufficient data' : ''
+        }
         width="100%"
         height={350}
       >
         <AreaChart
-          data={!!filteredData.length ? filteredData : tempData}
+          data={!chartData.length || !filteredData.length ? tempData : filteredData}
           margin={{ top: 8, right: 8, left: -16, bottom: 8 }}
         >
           <defs>
