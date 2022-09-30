@@ -7,6 +7,8 @@ import useWeb3React from 'hooks/useWeb3'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { isMobile } from 'react-device-detect'
 import { ResponsiveContainer, YAxis, AreaChart, Area, CartesianGrid, Tooltip } from 'recharts'
+import { load } from 'redux-localstorage-simple'
+import { setProxyLoading } from 'state/mint/reducer'
 import styled, { useTheme } from 'styled-components'
 import { formatAmount, toBN } from 'utils/numbers'
 
@@ -171,6 +173,7 @@ export default function SingleChart({
   const { chainId } = useWeb3React()
   const theme = useTheme()
 
+  const [loading, setLoading] = useState(true)
   const [chartData, setChartData] = useState<ChartData[]>(tempData)
   const [currentTimeFrame, setCurrentTimeFrame] = useState('3M')
 
@@ -220,6 +223,7 @@ export default function SingleChart({
   useEffect(() => {
     const getData = async () => {
       const result = await fetchData()
+      setLoading(!result.length)
       setChartData(
         result.map((obj) => ({
           ...obj,
@@ -286,6 +290,8 @@ export default function SingleChart({
     return null
   }
 
+  console.log('loading', uniqueID, loading)
+
   return (
     <Wrapper>
       <TitleWrapper>
@@ -313,16 +319,11 @@ export default function SingleChart({
         )}
       </TitleWrapper>
       <Container
-        content={
-          !chartData.length && !filteredData.length ? 'Loading...' : filteredData.length < 2 ? 'Insufficient data' : ''
-        }
+        content={loading ? 'Loading...' : !filteredData.length ? 'Insufficient data' : ''}
         width="100%"
         height={350}
       >
-        <AreaChart
-          data={!chartData.length && !filteredData.length ? tempData : filteredData}
-          margin={{ top: 8, right: 8, left: -16, bottom: 8 }}
-        >
+        <AreaChart data={loading ? tempData : filteredData} margin={{ top: 8, right: 8, left: -16, bottom: 8 }}>
           <defs>
             <linearGradient id={uniqueID} x1="0" y1="0" x2="1" y2="0">
               <stop offset="0%" stopColor={primaryColor} stopOpacity={1} />
