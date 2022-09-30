@@ -7,8 +7,6 @@ import useWeb3React from 'hooks/useWeb3'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { isMobile } from 'react-device-detect'
 import { ResponsiveContainer, YAxis, AreaChart, Area, CartesianGrid, Tooltip } from 'recharts'
-import { load } from 'redux-localstorage-simple'
-import { setProxyLoading } from 'state/mint/reducer'
 import styled, { useTheme } from 'styled-components'
 import { formatAmount, toBN } from 'utils/numbers'
 
@@ -175,7 +173,7 @@ export default function SingleChart({
 
   const [loading, setLoading] = useState(true)
   const [chartData, setChartData] = useState<ChartData[]>(tempData)
-  const [currentTimeFrame, setCurrentTimeFrame] = useState('3M')
+  const [currentTimeFrame, setCurrentTimeFrame] = useState('1Y')
 
   const fetchData = useCallback(async () => {
     const fetcher = async (skip: number, timestamp: number): Promise<VeDeusSupply[]> => {
@@ -203,22 +201,29 @@ export default function SingleChart({
     const data: VeDeusSupply[] = []
     let skip = 0
     let done = false
-    const timestamp = Math.floor(Date.now() / 1000)
+    let lastTimestamp = 0
+    let timestamp = Math.floor(Date.now() / 1000)
 
-    while (!done) {
-      const result = await fetcher(skip, timestamp)
-      data.unshift(...result.reverse())
-      if (result.length == 1000) {
-        skip = skip + 1000
-        if (skip == 5000) done = true
-      } else {
-        done = true
+    while (timestamp > Math.floor(Date.now() / 1000) - timeframeMap[currentTimeFrame]) {
+      while (!done) {
+        const result = await fetcher(skip, timestamp)
+        lastTimestamp = parseInt(result[result?.length - 1]?.timestamp)
+        data.unshift(...result.reverse())
+        if (result.length == 1000) {
+          skip = skip + 1000
+          if (skip == 5000) done = true
+        } else {
+          done = true
+        }
       }
+      done = false
+      skip = 0
+      timestamp = lastTimestamp
     }
 
     // TODO: if theres more than 5000, get the oldest one his timestamp and then requery with that timestamp
     return data
-  }, [chainId, uniqueID])
+  }, [chainId, uniqueID, currentTimeFrame])
 
   useEffect(() => {
     const getData = async () => {
@@ -257,8 +262,8 @@ export default function SingleChart({
 
   const [lowest = 20, highest = 2340] = useMemo(
     () => [
-      Math.min(...filteredData.map((obj) => parseInt(obj.value))),
-      Math.max(...filteredData.map((obj) => parseInt(obj.value))),
+      Math.floor(Math.min(...filteredData.map((obj) => parseInt(obj.value))) / 10) * 10, // min is rounded to nearest 10
+      Math.ceil(Math.max(...filteredData.map((obj) => parseInt(obj.value))) / 10) * 10, // max is rounded to nearest 10
     ],
     [filteredData]
   )
@@ -319,7 +324,7 @@ export default function SingleChart({
         )}
       </TitleWrapper>
       <Container
-        content={loading ? 'Loading...' : !filteredData.length ? 'Insufficient data' : ''}
+        content={loading ? 'Loading...' : filteredData.length < 2 ? 'Insufficient data' : ''}
         width="100%"
         height={350}
       >
@@ -334,7 +339,7 @@ export default function SingleChart({
             dataKey={'value'}
             tick={{ fontSize: '10px' }}
             interval={0}
-            tickLine={true}
+            tickLine={false}
             axisLine={false}
             domain={[lowest, highest]}
           />
