@@ -1,28 +1,39 @@
-import React, { useMemo, useState } from 'react'
+import React, { useMemo, useState, useCallback } from 'react'
 import styled from 'styled-components'
+import Image from 'next/image'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import utc from 'dayjs/plugin/utc'
-import Image from 'next/image'
 
-import Pagination from 'components/Pagination'
-import ImageWithFallback from 'components/ImageWithFallback'
-import { RowCenter } from 'components/Row'
-import Column from 'components/Column'
-import { PrimaryButton } from 'components/Button'
 import BOND_NFT_LOGO from '/public/static/images/pages/bond/BondNFT.svg'
-
 import EMPTY_BOND from '/public/static/images/pages/bond/emptyBond.svg'
 import EMPTY_BOND_MOBILE from '/public/static/images/pages/bond/emptyBondMobile.svg'
 import LOADING_BOND from '/public/static/images/pages/bond/loadingBond.svg'
 import LOADING_BOND_MOBILE from '/public/static/images/pages/bond/loadingBondMobile.svg'
 
-import { formatAmount } from 'utils/numbers'
-import { ButtonText } from 'pages/vest'
-import { BondNFT } from 'hooks/useBondsPage'
+import nft_data from 'constants/files/nft_data.json'
+import { BDEI_TOKEN } from 'constants/tokens'
+import { DeiBonderV3, DeiBondRedeemNFT } from 'constants/addresses'
+import { formatAmount, formatBalance, toBN } from 'utils/numbers'
 import { getRemainingTime } from 'utils/time'
+
 import useWeb3React from 'hooks/useWeb3'
+import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
+import { useERC721ApproveAllCallback } from 'hooks/useApproveNftCallback2'
+import { BondNFT, useUserBondStats } from 'hooks/useBondsPage'
+
+import DefaultReviewModal from './ReviewModal'
+import Pagination from 'components/Pagination'
+import ImageWithFallback from 'components/ImageWithFallback'
+import { RowCenter } from 'components/Row'
+import Column from 'components/Column'
+import { PrimaryButton } from 'components/Button'
+import { ButtonText } from 'pages/vest'
+import { DotFlashing } from 'components/Icons'
+import useMigrateNftToDeiCallback from 'hooks/useBondsCallback'
+
+import { DEI_TOKEN } from 'constants/tokens'
 
 dayjs.extend(utc)
 dayjs.extend(relativeTime)
@@ -42,6 +53,17 @@ const TableWrapper = styled.table<{ isEmpty?: boolean }>`
   background: ${({ theme }) => theme.bg1};
   border-bottom-right-radius: ${({ isEmpty }) => (isEmpty ? '12px' : '0')};
   border-bottom-left-radius: ${({ isEmpty }) => (isEmpty ? '12px' : '0')};
+
+  tbody > tr {
+    & > * {
+      ${({ theme }) => theme.mediaWidth.upToSmall`
+        &:nth-child(2),
+        &:nth-child(4)  {
+          display: none;
+        }
+      `};
+    }
+  }
 `
 
 const Row = styled.tr`
@@ -239,14 +261,130 @@ export default function Table({
 
 function TableRow({ nft, index, isMobile }: { nft: BondNFT; index: number; isMobile?: boolean }) {
   const { tokenId, deiAmount, redeemTime } = nft
+  const { chainId } = useWeb3React()
   const [diff, day] = useMemo(() => {
     if (!nft.redeemTime) return [null, null]
     const { diff, day } = getRemainingTime(nft.redeemTime)
     return [diff, day]
   }, [nft])
 
+  const insufficientBalance = false
+  const [awaitingApproveConfirmation, setAwaitingApproveConfirmation] = useState<boolean>(false)
+  const [awaitingMigrateConfirmation, setAwaitingMigrateConfirmation] = useState<boolean>(false)
+  const [isOpenReviewModal, toggleReviewModal] = useState(false)
+
+  const bDEICurrency = BDEI_TOKEN
+  const spender = useMemo(() => (chainId ? DeiBonderV3[chainId] : undefined), [chainId])
+  const [approvalStateCurrency, approveCallbackCurrency] = useApproveCallback(bDEICurrency ?? undefined, spender)
+
+  const showApproveCurrency = useMemo(
+    () => bDEICurrency && approvalStateCurrency !== ApprovalState.APPROVED,
+    [bDEICurrency, approvalStateCurrency]
+  )
+
   // subtracting 10 seconds to mitigate this from being true on page load
   const lockHasEnded = useMemo(() => dayjs.utc(redeemTime).isBefore(dayjs.utc().subtract(10, 'seconds')), [redeemTime])
+
+  const handleApproveCurrency = async () => {
+    setAwaitingApproveConfirmation(true)
+    await approveCallbackCurrency()
+    setAwaitingApproveConfirmation(false)
+  }
+
+  const [approvalState, approveCallback] = useERC721ApproveAllCallback(
+    chainId ? DeiBondRedeemNFT[chainId] : undefined,
+    spender
+  )
+
+  const showApproveNFT = useMemo(() => approvalState !== ApprovalState.APPROVED, [approvalState])
+
+  const handleApproveNFT = async () => {
+    setAwaitingApproveConfirmation(true)
+    await approveCallback()
+    setAwaitingApproveConfirmation(false)
+  }
+
+  const claimableAmount = toBN(nft_data.filter((nft) => nft.tokenId == tokenId)[0].amount).div(1e18)
+
+  const { bDeiBalance } = useUserBondStats()
+  const claimAmount = bDeiBalance && bDeiBalance.gt(claimableAmount) ? claimableAmount : bDeiBalance
+  const { callback: migrateCallback } = useMigrateNftToDeiCallback(tokenId, claimAmount)
+
+  const handleMigrate = useCallback(async () => {
+    if (!migrateCallback) return
+    try {
+      setAwaitingMigrateConfirmation(true)
+      const txHash = await migrateCallback()
+      setAwaitingMigrateConfirmation(false)
+      console.log({ txHash })
+    } catch (e) {
+      setAwaitingMigrateConfirmation(false)
+      if (e instanceof Error) {
+        console.error(e)
+      } else {
+        console.error(e)
+      }
+    }
+  }, [migrateCallback])
+
+  function getApproveButton(): JSX.Element | null {
+    if (!lockHasEnded) {
+      const dayMsg = day == 0 ? 'today' : day + ' day'
+      return (
+        <RedeemButton disabled>
+          <ButtonText>{`Redeem in ${dayMsg ?? '-'}${day && day > 1 ? 's' : ''}`}</ButtonText>
+        </RedeemButton>
+      )
+    }
+    if (awaitingApproveConfirmation) {
+      return (
+        <RedeemButton disabled={true}>
+          <ButtonText>
+            Awaiting Confirmation <DotFlashing />
+          </ButtonText>
+        </RedeemButton>
+      )
+    }
+
+    if (showApproveCurrency)
+      return (
+        <RedeemButton onClick={() => handleApproveCurrency()}>
+          <ButtonText>Approve bDEI</ButtonText>
+        </RedeemButton>
+      )
+
+    if (showApproveNFT)
+      return (
+        <RedeemButton onClick={() => handleApproveNFT()}>
+          <ButtonText>Approve NFT</ButtonText>
+        </RedeemButton>
+      )
+
+    return null
+  }
+
+  function getActionButton(): JSX.Element | null {
+    if (insufficientBalance)
+      return (
+        <RedeemButton disabled>
+          <ButtonText>insufficient bDEI Balance</ButtonText>
+        </RedeemButton>
+      )
+    if (awaitingMigrateConfirmation) {
+      return (
+        <RedeemButton disabled>
+          <ButtonText>
+            Redeem <DotFlashing />
+          </ButtonText>
+        </RedeemButton>
+      )
+    }
+    return (
+      <RedeemButton onClick={() => toggleReviewModal(true)}>
+        <ButtonText>{'Redeem bDEI'}</ButtonText>
+      </RedeemButton>
+    )
+  }
 
   function getMaturityTimeCell() {
     if (!lockHasEnded)
@@ -278,21 +416,18 @@ function TableRow({ nft, index, isMobile }: { nft: BondNFT; index: number; isMob
 
         <Cell>
           <Name>Bond Value</Name>
-          <Value>{formatAmount(parseFloat(deiAmount ? deiAmount.toString() : ''), 8)} bDEI</Value>
+          <Value>{formatBalance(parseFloat(deiAmount ? deiAmount.toString() : ''), 8)} bDEI</Value>
         </Cell>
-        {/* 
+
         <Cell>
-          <Name>Claimable DEI</Name>
-          <Value>{'N/A'}</Value>
-        </Cell> */}
+          <Name>Claimable Amount</Name>
+          <Value>{tokenId > 42 ? 'N/A' : formatBalance(claimableAmount, 8)} DEI</Value>
+        </Cell>
 
         <Cell style={{ padding: '5px 10px' }}>{getMaturityTimeCell()}</Cell>
 
-        <Cell style={{ padding: '5px 10px' }}>
-          <RedeemButton disabled={diff && diff > 0 ? true : false} onClick={() => console.log('')}>
-            <ButtonText>{diff && diff > 0 ? `Redeem in ${day} days` : 'Redeem bDEI'}</ButtonText>
-          </RedeemButton>
-        </Cell>
+        <Cell style={{ padding: '5px 10px' }}>{getApproveButton() ?? getActionButton()}</Cell>
+        {getReviewModal()}
       </>
     )
   }
@@ -309,8 +444,8 @@ function TableRow({ nft, index, isMobile }: { nft: BondNFT; index: number; isMob
           </RowCenter>
 
           <RowCenter style={{ padding: '5px 10px' }}>
-            <RedeemButton disabled={diff && diff > 0 ? true : false} onClick={() => console.log('')}>
-              <ButtonText>{diff && diff > 0 ? `Redeem in ${day} days` : 'Redeem BDEI'}</ButtonText>
+            <RedeemButton disabled={!lockHasEnded ? true : false} onClick={() => toggleReviewModal(true)}>
+              <ButtonText>{!lockHasEnded ? `Redeem in ${day} days` : 'Redeem bDEI'}</ButtonText>
             </RedeemButton>
           </RowCenter>
         </FirstRow>
@@ -326,7 +461,29 @@ function TableRow({ nft, index, isMobile }: { nft: BondNFT; index: number; isMob
         </MobileCell> */}
 
         <MobileCell>{getMaturityTimeCell()}</MobileCell>
+        {getReviewModal()}
       </MobileWrapper>
+    )
+  }
+
+  function getReviewModal() {
+    const amount = claimAmount?.toString() ?? '0.0'
+    return (
+      <DefaultReviewModal
+        title="Review Transaction"
+        isOpen={isOpenReviewModal}
+        toggleModal={(action: boolean) => toggleReviewModal(action)}
+        inputTokens={[BDEI_TOKEN]}
+        outputTokens={[DEI_TOKEN]}
+        amountsIn={[amount]}
+        amountsOut={[amount]}
+        tokenId={tokenId}
+        data={`You don't have sufficient bDEI at this moment to claim your full amount, you can claim a portion now and the remainder later.`}
+        buttonText={'Confirm'}
+        awaiting={awaitingMigrateConfirmation}
+        summary={`Redeem DEI Bond #${tokenId} & ${amount} bDEI for ${amount} DEI`}
+        handleClick={handleMigrate}
+      />
     )
   }
 
