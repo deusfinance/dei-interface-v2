@@ -271,6 +271,7 @@ function TableRow({ nft, index, isMobile }: { nft: BondNFT; index: number; isMob
   const insufficientBalance = false
   const [awaitingApproveConfirmation, setAwaitingApproveConfirmation] = useState<boolean>(false)
   const [awaitingMigrateConfirmation, setAwaitingMigrateConfirmation] = useState<boolean>(false)
+  const [isOpenReviewModal, toggleReviewModal] = useState(false)
 
   const bDEICurrency = BDEI_TOKEN
   const spender = useMemo(() => (chainId ? DeiBonderV3[chainId] : undefined), [chainId])
@@ -325,8 +326,6 @@ function TableRow({ nft, index, isMobile }: { nft: BondNFT; index: number; isMob
       }
     }
   }, [migrateCallback])
-
-  const [isOpenReviewModal, toggleReviewModal] = useState(false)
 
   const info = useMemo(() => {
     return [
@@ -390,7 +389,6 @@ function TableRow({ nft, index, isMobile }: { nft: BondNFT; index: number; isMob
       )
     }
     return (
-      // <RedeemButton onClick={() => handleMigrate()}>
       <RedeemButton onClick={() => toggleReviewModal(true)}>
         <ButtonText>{'Redeem bDEI'}</ButtonText>
       </RedeemButton>
