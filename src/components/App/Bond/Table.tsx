@@ -23,6 +23,7 @@ import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
 import { useERC721ApproveAllCallback } from 'hooks/useApproveNftCallback2'
 import { BondNFT, useUserBondStats } from 'hooks/useBondsPage'
 
+import DefaultReviewModal from './ReviewModal'
 import Pagination from 'components/Pagination'
 import ImageWithFallback from 'components/ImageWithFallback'
 import { RowCenter } from 'components/Row'
@@ -31,6 +32,8 @@ import { PrimaryButton } from 'components/Button'
 import { ButtonText } from 'pages/vest'
 import { DotFlashing } from 'components/Icons'
 import useMigrateNftToDeiCallback from 'hooks/useBondsCallback'
+
+import { DEI_TOKEN } from 'constants/tokens'
 
 dayjs.extend(utc)
 dayjs.extend(relativeTime)
@@ -323,6 +326,18 @@ function TableRow({ nft, index, isMobile }: { nft: BondNFT; index: number; isMob
     }
   }, [migrateCallback])
 
+  const [isOpenReviewModal, toggleReviewModal] = useState(false)
+
+  const info = useMemo(() => {
+    return [
+      {
+        title: 'USDC claimable time',
+        value: '30 sec',
+      },
+      { title: 'DEUS claimable time', value: '30 min' },
+    ]
+  }, [])
+
   function getApproveButton(): JSX.Element | null {
     if (!lockHasEnded) {
       return (
@@ -375,7 +390,8 @@ function TableRow({ nft, index, isMobile }: { nft: BondNFT; index: number; isMob
       )
     }
     return (
-      <RedeemButton onClick={() => handleMigrate()}>
+      // <RedeemButton onClick={() => handleMigrate()}>
+      <RedeemButton onClick={() => toggleReviewModal(true)}>
         <ButtonText>{'Redeem bDEI'}</ButtonText>
       </RedeemButton>
     )
@@ -422,6 +438,7 @@ function TableRow({ nft, index, isMobile }: { nft: BondNFT; index: number; isMob
         <Cell style={{ padding: '5px 10px' }}>{getMaturityTimeCell()}</Cell>
 
         <Cell style={{ padding: '5px 10px' }}>{getApproveButton() ?? getActionButton()}</Cell>
+        {getReviewModal()}
       </>
     )
   }
@@ -438,7 +455,7 @@ function TableRow({ nft, index, isMobile }: { nft: BondNFT; index: number; isMob
           </RowCenter>
 
           <RowCenter style={{ padding: '5px 10px' }}>
-            <RedeemButton disabled={!lockHasEnded ? true : false} onClick={() => console.log('')}>
+            <RedeemButton disabled={!lockHasEnded ? true : false} onClick={() => toggleReviewModal(true)}>
               <ButtonText>{!lockHasEnded ? `Redeem in ${day} days` : 'Redeem bDEI'}</ButtonText>
             </RedeemButton>
           </RowCenter>
@@ -455,7 +472,29 @@ function TableRow({ nft, index, isMobile }: { nft: BondNFT; index: number; isMob
         </MobileCell> */}
 
         <MobileCell>{getMaturityTimeCell()}</MobileCell>
+        {getReviewModal()}
       </MobileWrapper>
+    )
+  }
+
+  function getReviewModal() {
+    const amount = claimAmount?.toString() ?? '0.0'
+    return (
+      <DefaultReviewModal
+        title="Review Transaction"
+        isOpen={isOpenReviewModal}
+        toggleModal={(action: boolean) => toggleReviewModal(action)}
+        inputTokens={[BDEI_TOKEN]}
+        outputTokens={[DEI_TOKEN]}
+        amountsIn={[amount]}
+        amountsOut={[amount]}
+        tokenId={tokenId}
+        data={'this part for put data in side the other things , lorem ipsum lorem'}
+        buttonText={'Confirm'}
+        awaiting={awaitingMigrateConfirmation}
+        summary={`Redeem DEI Bond #${tokenId} and ${amount} bDEI for ${amount} DEI`}
+        handleClick={handleMigrate}
+      />
     )
   }
 
