@@ -180,7 +180,7 @@ function TableRow({ remainingDEI, isMobile }: { remainingDEI: BigNumber; isMobil
     return (
       <>
         <Name>Claimable DEI</Name>
-        <Value>{formatBalance(remainingDEI ?? '')}</Value>
+        <Value>{formatBalance(remainingDEI ?? '')} DEI</Value>
       </>
     )
   }

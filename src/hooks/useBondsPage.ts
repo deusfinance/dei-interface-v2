@@ -72,7 +72,7 @@ export function useUserClaimableDEI(): {
 
   const { claimableDEIValue } = useMemo(
     () => ({
-      claimableDEIValue: claimableDEI?.result ? toBN(claimableDEI.result[0].toString()).div(18) : BN_ZERO,
+      claimableDEIValue: claimableDEI?.result ? toBN(claimableDEI.result[0].toString()).div(1e18) : BN_ZERO,
     }),
     [claimableDEI]
   )

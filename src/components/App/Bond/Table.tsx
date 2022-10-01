@@ -327,21 +327,12 @@ function TableRow({ nft, index, isMobile }: { nft: BondNFT; index: number; isMob
     }
   }, [migrateCallback])
 
-  const info = useMemo(() => {
-    return [
-      {
-        title: 'USDC claimable time',
-        value: '30 sec',
-      },
-      { title: 'DEUS claimable time', value: '30 min' },
-    ]
-  }, [])
-
   function getApproveButton(): JSX.Element | null {
     if (!lockHasEnded) {
+      const dayMsg = day == 0 ? 'today' : day + ' day'
       return (
         <RedeemButton disabled>
-          <ButtonText>{`Redeem in ${day ?? '-'} day${day && day > 1 ? 's' : ''}`}</ButtonText>
+          <ButtonText>{`Redeem in ${dayMsg ?? '-'}${day && day > 1 ? 's' : ''}`}</ButtonText>
         </RedeemButton>
       )
     }
@@ -430,7 +421,7 @@ function TableRow({ nft, index, isMobile }: { nft: BondNFT; index: number; isMob
 
         <Cell>
           <Name>Claimable Amount</Name>
-          <Value>{formatBalance(claimableAmount, 8)} DEI</Value>
+          <Value>{tokenId > 42 ? 'N/A' : formatBalance(claimableAmount, 8)} DEI</Value>
         </Cell>
 
         <Cell style={{ padding: '5px 10px' }}>{getMaturityTimeCell()}</Cell>
@@ -487,10 +478,10 @@ function TableRow({ nft, index, isMobile }: { nft: BondNFT; index: number; isMob
         amountsIn={[amount]}
         amountsOut={[amount]}
         tokenId={tokenId}
-        data={'this part for put data in side the other things , lorem ipsum lorem'}
+        data={`You don't have sufficient bDEI at this moment to claim your full amount, you can claim a portion now and the remainder later.`}
         buttonText={'Confirm'}
         awaiting={awaitingMigrateConfirmation}
-        summary={`Redeem DEI Bond #${tokenId} and ${amount} bDEI for ${amount} DEI`}
+        summary={`Redeem DEI Bond #${tokenId} & ${amount} bDEI for ${amount} DEI`}
         handleClick={handleMigrate}
       />
     )
