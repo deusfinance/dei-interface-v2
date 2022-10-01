@@ -4,8 +4,10 @@ import toast from 'react-hot-toast'
 import { TransactionResponse } from '@ethersproject/abstract-provider'
 
 import nft_data from 'constants/files/nft_data.json'
+import { INFO_URL } from 'constants/misc'
 import { DefaultHandlerError } from 'utils/parseError'
 import { toBN } from 'utils/numbers'
+import { makeHttpRequest } from 'utils/http'
 import { calculateGasMargin } from 'utils/web3'
 
 import { useTransactionAdder } from 'state/transactions/hooks'
@@ -35,8 +37,14 @@ export default function useMigrateNftToDeiCallback(
   //TODO
   //it should get proof data from the api
   const getProofDate = useCallback(async () => {
-    return []
-  }, [])
+    try {
+      // if (!tokenId) throw new Error(`tokenId didn't selected`)
+      const { href: url } = new URL(`/bond-merkle/nft/proof/${tokenId}/`, INFO_URL) //TODO
+      return makeHttpRequest(url)
+    } catch (err) {
+      throw err
+    }
+  }, [tokenId])
 
   const constructCall = useCallback(async () => {
     console.log({ tokenId, claimAmount, nft })
@@ -44,9 +52,12 @@ export default function useMigrateNftToDeiCallback(
       if (!account || !library || !deiBonderV3Contract || !claimAmount || !nft) {
         throw new Error('Missing dependencies.')
       }
-      const proof = await getProofDate()
-      const args = [tokenId, toBN(nft.amount).toString(), nft.maturity_time, claimAmount.times(1e18).toString(), proof]
+      const proofResponse = await getProofDate()
+      const proof = proofResponse['proof']
+      const { maturity_time, amount } = proofResponse['value']
+      const args = [tokenId, amount, maturity_time, claimAmount.times(1e18).toString(), proof]
 
+      console.log({ args })
       return {
         address: deiBonderV3Contract.address,
         calldata: deiBonderV3Contract.interface.encodeFunctionData('migrateNFTToDEI', args) ?? '',
