@@ -1,6 +1,6 @@
 import { formatUnits } from '@ethersproject/units'
 import { getApolloClient } from 'apollo/client/deiStats'
-import { VeDeusSupply, VEDEUS_SUPPLY } from 'apollo/queries'
+import { ChartData, VEDEUS_LOCKED_SUPPLY, VEDEUS_SUPPLY } from 'apollo/queries'
 import Dropdown from 'components/DropDown'
 import { VEDEUS_TOKEN } from 'constants/tokens'
 import useWeb3React from 'hooks/useWeb3'
@@ -8,7 +8,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { isMobile } from 'react-device-detect'
 import { ResponsiveContainer, YAxis, AreaChart, Area, CartesianGrid, Tooltip } from 'recharts'
 import styled, { useTheme } from 'styled-components'
-import { formatAmount, toBN } from 'utils/numbers'
+import { toBN } from 'utils/numbers'
 
 const Wrapper = styled.div`
   display: flex;
@@ -126,35 +126,29 @@ const secondsMap: Record<string, number> = {
   '1Y': 1 * 24 * 60 * 60, // to use 1d grouped data
 }
 
-interface ChartData {
-  timestamp: string
-  value: string
-  formattedValue: string
-}
-
 interface DataGroup {
   [x: number]: ChartData
 }
 
 const tempData: ChartData[] = [
-  { timestamp: 'Jan', value: '400', formattedValue: '400' },
-  { timestamp: 'Feb', value: '200', formattedValue: '200' },
-  { timestamp: 'Mar', value: '700', formattedValue: '700' },
-  { timestamp: 'Apr', value: '300', formattedValue: '300' },
-  { timestamp: 'May', value: '600', formattedValue: '600' },
-  { timestamp: 'Jun', value: '350', formattedValue: '350' },
-  { timestamp: 'Jul', value: '400', formattedValue: '400' },
-  { timestamp: 'Aug', value: '300', formattedValue: '300' },
-  { timestamp: 'Sept', value: '280', formattedValue: '280' },
-  { timestamp: 'Oct', value: '400', formattedValue: '400' },
-  { timestamp: 'Nov', value: '300', formattedValue: '300' },
-  { timestamp: 'Dec', value: '380', formattedValue: '380' },
-  { timestamp: 'Jan', value: '250', formattedValue: '250' },
-  { timestamp: 'Feb', value: '500', formattedValue: '500' },
-  { timestamp: 'Mar', value: '600', formattedValue: '600' },
-  { timestamp: 'Apr', value: '400', formattedValue: '400' },
-  { timestamp: 'May', value: '600', formattedValue: '600' },
-  { timestamp: 'Jun', value: '900', formattedValue: '900' },
+  { timestamp: 'Jan', value: '400' },
+  { timestamp: 'Feb', value: '200' },
+  { timestamp: 'Mar', value: '700' },
+  { timestamp: 'Apr', value: '300' },
+  { timestamp: 'May', value: '600' },
+  { timestamp: 'Jun', value: '350' },
+  { timestamp: 'Jul', value: '400' },
+  { timestamp: 'Aug', value: '300' },
+  { timestamp: 'Sep', value: '280' },
+  { timestamp: 'Oct', value: '400' },
+  { timestamp: 'Nov', value: '300' },
+  { timestamp: 'Dec', value: '380' },
+  { timestamp: 'Jan', value: '250' },
+  { timestamp: 'Feb', value: '500' },
+  { timestamp: 'Mar', value: '600' },
+  { timestamp: 'Apr', value: '400' },
+  { timestamp: 'May', value: '600' },
+  { timestamp: 'Jun', value: '900' },
 ]
 
 export default function SingleChart({
@@ -173,37 +167,51 @@ export default function SingleChart({
 
   const [loading, setLoading] = useState(true)
   const [chartData, setChartData] = useState<ChartData[]>(tempData)
-  const [currentTimeFrame, setCurrentTimeFrame] = useState('1Y')
+  const [currentTimeFrame, setCurrentTimeFrame] = useState('1M')
 
   const fetchData = useCallback(async () => {
-    const fetcher = async (skip: number, timestamp: number): Promise<VeDeusSupply[]> => {
-      const DEFAULT_RETURN: VeDeusSupply[] = []
-      if (uniqueID != 'veDEUSSupply') return DEFAULT_RETURN
+    const fetcher = async (skip: number, timestamp: number): Promise<ChartData[]> => {
+      const DEFAULT_RETURN: ChartData[] = []
       try {
         if (!chainId) return DEFAULT_RETURN
         const client = getApolloClient(chainId)
         if (!client) return DEFAULT_RETURN
 
-        const { data } = await client.query({
-          query: VEDEUS_SUPPLY,
-          variables: { skip, timestamp },
-          fetchPolicy: 'no-cache',
-        })
-
-        return data.veDEUSSupplies as VeDeusSupply[]
+        // query different subgraphs and respective schemas to fetch respective chart data
+        switch (uniqueID) {
+          case 'veDEUSSupply': {
+            const { data } = await client.query({
+              query: VEDEUS_SUPPLY,
+              variables: { skip, timestamp },
+              fetchPolicy: 'no-cache',
+            })
+            return data.veDEUSSupplies as ChartData[]
+          }
+          case 'veDEUSTotalLocked': {
+            const { data } = await client.query({
+              query: VEDEUS_LOCKED_SUPPLY,
+              variables: { skip, timestamp },
+              fetchPolicy: 'no-cache',
+            })
+            return data.totalLockeds as ChartData[]
+          }
+          default:
+            return []
+        }
       } catch (error) {
-        console.log('Unable to fetch supply from The Graph Network')
+        console.log(`Unable to ${uniqueID} data from The Graph Network`)
         console.error(error)
         return []
       }
     }
 
-    const data: VeDeusSupply[] = []
+    const data: ChartData[] = []
     let skip = 0
     let done = false
     let lastTimestamp = 0
     let timestamp = Math.floor(Date.now() / 1000)
 
+    // if theres more than 5000, get the oldest one his timestamp and then requery with that timestamp
     while (timestamp > Math.floor(Date.now() / 1000) - timeframeMap[currentTimeFrame]) {
       while (!done) {
         const result = await fetcher(skip, timestamp)
@@ -221,9 +229,8 @@ export default function SingleChart({
       timestamp = lastTimestamp
     }
 
-    // TODO: if theres more than 5000, get the oldest one his timestamp and then requery with that timestamp
     return data
-  }, [chainId, uniqueID, currentTimeFrame])
+  }, [uniqueID, chainId, currentTimeFrame])
 
   useEffect(() => {
     const getData = async () => {
@@ -233,7 +240,6 @@ export default function SingleChart({
         result.map((obj) => ({
           ...obj,
           value: toBN(formatUnits(obj.value, VEDEUS_TOKEN.decimals)).toFixed(0),
-          formattedValue: formatAmount(parseInt(formatUnits(obj.value, VEDEUS_TOKEN.decimals))),
         }))
       )
     }
@@ -253,6 +259,7 @@ export default function SingleChart({
     return result
   }
 
+  // filter data based on selected timeframe
   const filteredData: ChartData[] = useMemo(() => {
     const earliestTimestamp = Math.floor(Date.now() / 1000) - timeframeMap[currentTimeFrame]
     const filteredData = chartData.filter((obj) => parseInt(obj.timestamp) > earliestTimestamp)
@@ -260,6 +267,7 @@ export default function SingleChart({
     return groupedData(filteredData, currentTimeFrame)
   }, [chartData, currentTimeFrame])
 
+  // lowest and highest values for the Y-axis
   const [lowest = 20, highest = 2340] = useMemo(
     () => [
       Math.floor(Math.min(...filteredData.map((obj) => parseInt(obj.value))) / 10) * 10, // min is rounded to nearest 10
@@ -294,8 +302,6 @@ export default function SingleChart({
 
     return null
   }
-
-  console.log('loading', uniqueID, loading)
 
   return (
     <Wrapper>
