@@ -478,7 +478,11 @@ function TableRow({ nft, index, isMobile }: { nft: BondNFT; index: number; isMob
         amountsIn={[amount]}
         amountsOut={[amount]}
         tokenId={tokenId}
-        data={`You don't have sufficient bDEI at this moment to claim your full amount, you can claim a portion now and the remainder later.`}
+        data={
+          claimableAmount.gt(amount)
+            ? `You don't have sufficient bDEI at this moment to claim your full amount, you can claim a portion now and the remainder later.`
+            : ''
+        }
         buttonText={'Confirm'}
         awaiting={awaitingMigrateConfirmation}
         summary={`Redeem DEI Bond #${tokenId} & ${amount} bDEI for ${amount} DEI`}
