@@ -1,8 +1,14 @@
+import { formatUnits } from '@ethersproject/units'
+import { getDeiStatsApolloClient } from 'apollo/client/deiStats'
+import { ChartData, DEI_REDEMPTION_RATIOS, DEI_RESERVES_BALANCE } from 'apollo/queries'
 import Dropdown from 'components/DropDown'
-import { useState } from 'react'
+import { DEI_TOKEN, USDC_TOKEN } from 'constants/tokens'
+import useWeb3React from 'hooks/useWeb3'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { isMobile } from 'react-device-detect'
-import { ResponsiveContainer, YAxis, AreaChart, Area, CartesianGrid } from 'recharts'
+import { ResponsiveContainer, YAxis, AreaChart, Area, CartesianGrid, Tooltip } from 'recharts'
 import styled, { useTheme } from 'styled-components'
+import { toBN } from 'utils/numbers'
 
 const Wrapper = styled.div`
   display: flex;
@@ -53,24 +59,27 @@ const Item = styled.div<{
 `
 
 const Container = styled(ResponsiveContainer)<{
-  loading: boolean
   content: string
 }>`
   ${({ content, theme }) =>
     content &&
     `
-      position: relative;
-      &:after {
-        content: '${content}';
-        display: flex;
-        justify-content: center;
-        width: 100%;
-        height: 350px;
-        color: ${theme.bg0};
-        opacity: 0.2;
-        pointer-events: none;
-      }
-    `}
+    position: relative;
+    &:after {
+      content: '${content}';
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+      position: absolute;
+      color: ${theme.text1};
+      backdrop-filter: blur(5px);
+      pointer: none;
+    }
+  `}
 `
 
 const LabelWrapper = styled.div`
@@ -130,83 +139,268 @@ const SecondaryLabel = styled.div<{
   }
 `
 
+const timeFramesOptions = [
+  { value: '15m', label: '15 mins' },
+  { value: '1H', label: '1 hour' },
+  { value: '8H', label: '8 hours' },
+  { value: '1D', label: '1 day' },
+  { value: '1W', label: '1 week' },
+  { value: '1M', label: '1 month' },
+  { value: '3M', label: '3 months' },
+  { value: '6M', label: '6 months' },
+  { value: '1Y', label: '1 year' },
+  // { value: 'ALL', label: 'All time' },
+]
+
+// map timeframe to respective seconds
+const timeframeMap: Record<string, number> = {
+  '15m': 15 * 60,
+  '1H': 60 * 60,
+  '8H': 8 * 60 * 60,
+  '1D': 1 * 24 * 60 * 60,
+  '1W': 7 * 24 * 60 * 60,
+  '1M': 30 * 24 * 60 * 60,
+  '3M': 90 * 24 * 60 * 60,
+  '6M': 180 * 24 * 60 * 60,
+  '1Y': 365 * 24 * 60 * 60,
+}
+
+// map respective timeframe to seconds for grouping
+const secondsMap: Record<string, number> = {
+  '15m': 60, // to use 1m grouped data
+  '1H': 60, // to use 1m grouped data
+  '8H': 60, // to use 1m grouped data
+  '1D': 15 * 60, // to use 15m grouped data
+  '1W': 6 * 60 * 60, // to use 6h grouped data
+  '1M': 12 * 60 * 60, // to use 12h grouped data
+  '3M': 1 * 24 * 60 * 60, // to use 1d grouped data
+  '6M': 1 * 24 * 60 * 60, // to use 1d grouped data
+  '1Y': 1 * 24 * 60 * 60, // to use 1d grouped data
+}
+
+interface DataGroup {
+  [x: number]: ChartData
+}
+
+const temp1Data: ChartData[] = [
+  { timestamp: 'Jan', value: '400' },
+  { timestamp: 'Feb', value: '200' },
+  { timestamp: 'Mar', value: '700' },
+  { timestamp: 'Apr', value: '300' },
+  { timestamp: 'May', value: '600' },
+  { timestamp: 'Jun', value: '350' },
+  { timestamp: 'Jul', value: '400' },
+  { timestamp: 'Aug', value: '300' },
+  { timestamp: 'Sep', value: '280' },
+  { timestamp: 'Oct', value: '400' },
+  { timestamp: 'Nov', value: '300' },
+  { timestamp: 'Dec', value: '380' },
+  { timestamp: 'Jan', value: '250' },
+  { timestamp: 'Feb', value: '500' },
+  { timestamp: 'Mar', value: '600' },
+  { timestamp: 'Apr', value: '400' },
+  { timestamp: 'May', value: '600' },
+  { timestamp: 'Jun', value: '900' },
+]
+
+const temp2Data: ChartData[] = [
+  { timestamp: 'Mar', value: '700' },
+  { timestamp: 'Apr', value: '300' },
+  { timestamp: 'May', value: '600' },
+  { timestamp: 'Jan', value: '400' },
+  { timestamp: 'Feb', value: '200' },
+  { timestamp: 'Sep', value: '280' },
+  { timestamp: 'Oct', value: '400' },
+  { timestamp: 'Nov', value: '300' },
+  { timestamp: 'Jun', value: '350' },
+  { timestamp: 'Jul', value: '400' },
+  { timestamp: 'Aug', value: '300' },
+  { timestamp: 'Mar', value: '600' },
+  { timestamp: 'Apr', value: '400' },
+  { timestamp: 'May', value: '600' },
+  { timestamp: 'Jun', value: '900' },
+  { timestamp: 'Dec', value: '380' },
+  { timestamp: 'Jan', value: '250' },
+  { timestamp: 'Feb', value: '500' },
+]
+
 export default function MultipleChart({
   primaryLabel,
   secondaryLabel,
   primaryColor,
   secondaryColor,
-  uniqueID,
+  primaryID,
+  secondaryID,
 }: {
   primaryLabel: string
   secondaryLabel: string
   primaryColor: string
   secondaryColor: string
-  uniqueID: string
+  primaryID: string
+  secondaryID: string
 }) {
+  const { chainId } = useWeb3React()
   const theme = useTheme()
-  const loading = false
+
+  const [loading, setLoading] = useState(true)
+  const [chartData, setChartData] = useState<ChartData[]>(temp1Data)
+  const [currentTimeFrame, setCurrentTimeFrame] = useState('1M')
   const [currentTab, setCurrentTab] = useState(primaryLabel)
 
-  const timeFramesOptions = [
-    { value: '15m', label: '15 mins' },
-    { value: '1H', label: '1 hour' },
-    { value: '8H', label: '8 hours' },
-    { value: '1D', label: '1 day' },
-    { value: '1W', label: '1 week' },
-    { value: '1M', label: '1 month' },
-    { value: '3M', label: '3 months' },
-    { value: '6M', label: '6 months' },
-    { value: '1Y', label: '1 year' },
-    { value: 'ALL', label: 'All time' },
-  ]
-  const [currentTimeFrame, setCurrentTimeFrame] = useState('3M')
+  const currentTempData = useMemo(() => {
+    return currentTab === primaryLabel ? temp1Data : temp2Data
+  }, [currentTab, primaryLabel])
 
-  // TODO :  Use subgraph data
-  // to be fetched from subgraph api endpoint for default tab and default timeframe and selected label
-  // format is important. this format has to be followed at subgraph API when returning the result
-  const primaryData = [
-    { month: 'Jan', value: 200, score: 200 },
-    { month: 'Feb', value: 500, score: 500 },
-    { month: 'Mar', value: 212, score: 212 },
-    { month: 'Apr', value: 900, score: 900 },
-    { month: 'May', value: 300, score: 300 },
-    { month: 'Jun', value: 543, score: 543 },
-    { month: 'Jul', value: 1000, score: 1000 },
-    { month: 'Aug', value: 99, score: 99 },
-    { month: 'Sept', value: 894, score: 894 },
-    { month: 'Oct', value: 0, score: 0 },
-    { month: 'Nov', value: 542, score: 542 },
-    { month: 'Dec', value: 123, score: 123 },
-    { month: 'Jan', value: 986, score: 986 },
-    { month: 'Feb', value: 432, score: 432 },
-    { month: 'Mar', value: 1543, score: 1543 },
-    { month: 'Apr', value: 1052, score: 2552 },
-    { month: 'May', value: 2000, score: 2000 },
-    { month: 'Jun', value: 234, score: 234 },
-  ]
+  const currentID = useMemo(() => {
+    return currentTab === primaryLabel ? primaryID : secondaryID
+  }, [currentTab, primaryLabel, primaryID, secondaryID])
 
-  const secondaryData = [
-    { month: 'Jan', value: 200, score: 200 },
-    { month: 'Feb', value: 560, score: 560 },
-    { month: 'Mar', value: 670, score: 670 },
-    { month: 'Apr', value: 340, score: 340 },
-    { month: 'May', value: 450, score: 450 },
-    { month: 'Jun', value: 200, score: 200 },
-    { month: 'Jul', value: 590, score: 590 },
-    { month: 'Aug', value: 500, score: 500 },
-    { month: 'Sept', value: 1090, score: 1090 },
-    { month: 'Oct', value: 1600, score: 1600 },
-    { month: 'Nov', value: 1200, score: 1200 },
-    { month: 'Dec', value: 1400, score: 1400 },
-    { month: 'Jan', value: 2000, score: 2000 },
-    { month: 'Feb', value: 1600, score: 1600 },
-    { month: 'Mar', value: 1800, score: 1800 },
-    { month: 'Apr', value: 1300, score: 1300 },
-    { month: 'May', value: 1700, score: 1700 },
-    { month: 'Jun', value: 1100, score: 1100 },
-  ]
+  const fetchData = useCallback(async () => {
+    const fetcher = async (skip: number, timestamp: number): Promise<ChartData[]> => {
+      const DEFAULT_RETURN: ChartData[] = []
+      try {
+        if (!chainId) return DEFAULT_RETURN
 
-  const [currentData, setCurrentData] = useState(primaryData)
+        // query different subgraphs and respective schemas to fetch respective chart data
+        switch (currentID) {
+          case 'DEIRdemptionRatio': {
+            const client = getDeiStatsApolloClient(chainId)
+            if (!client) return DEFAULT_RETURN
+
+            const { data } = await client.query({
+              query: DEI_REDEMPTION_RATIOS,
+              variables: { skip, timestamp },
+              fetchPolicy: 'no-cache',
+            })
+
+            const result: ChartData[] = data.redeemRatios as ChartData[]
+
+            return result.map((obj) => ({
+              ...obj,
+              value: toBN(formatUnits(obj.value, 6)).toFixed(2),
+            }))
+          }
+          case 'DEIReservesTotalValue': {
+            const client = getDeiStatsApolloClient(chainId)
+            if (!client) return DEFAULT_RETURN
+
+            const { data } = await client.query({
+              query: DEI_RESERVES_BALANCE,
+              variables: { skip, timestamp },
+              fetchPolicy: 'no-cache',
+            })
+
+            const result: ChartData[] = data.deipollUSDCBalances as ChartData[]
+
+            return result.map((obj) => ({
+              ...obj,
+              value: toBN(formatUnits(obj.value, USDC_TOKEN.decimals)).toFixed(0),
+            }))
+          }
+          default:
+            return []
+        }
+      } catch (error) {
+        console.log(`Unable to ${currentID} data from The Graph Network`)
+        console.error(error)
+        return []
+      }
+    }
+
+    const data: ChartData[] = []
+    let skip = 0
+    let done = false
+    let lastTimestamp = 0
+    let timestamp = Math.floor(Date.now() / 1000)
+
+    // if theres more than 5000, get the oldest one his timestamp and then requery with that timestamp
+    while (timestamp > Math.floor(Date.now() / 1000) - timeframeMap[currentTimeFrame]) {
+      while (!done) {
+        const result = await fetcher(skip, timestamp)
+        lastTimestamp = parseInt(result[result?.length - 1]?.timestamp)
+        data.unshift(...result.reverse())
+        if (result.length == 1000) {
+          skip = skip + 1000
+          if (skip == 5000) done = true
+        } else {
+          done = true
+        }
+      }
+      done = false
+      skip = 0
+      timestamp = lastTimestamp
+    }
+
+    return data
+  }, [currentID, chainId, currentTimeFrame])
+
+  useEffect(() => {
+    const getData = async () => {
+      const result = await fetchData()
+      setLoading(!result.length)
+      setChartData(result)
+    }
+    getData()
+  }, [fetchData])
+
+  // group the filtered data based on respective seconds.
+  const groupedData = (chartData: ChartData[], timeframe = '3M'): ChartData[] => {
+    const data = chartData.reduce((arr: DataGroup, data: ChartData) => {
+      const id = Math.floor(parseInt(data.timestamp) / secondsMap[timeframe])
+      if (!arr[id]) {
+        arr[id] = data
+      }
+      return arr
+    }, {})
+    const result: ChartData[] = Object.values(data)
+    return result
+  }
+
+  // filter data based on selected timeframe
+  const filteredData: ChartData[] = useMemo(() => {
+    const earliestTimestamp = Math.floor(Date.now() / 1000) - timeframeMap[currentTimeFrame]
+    const filteredData = chartData.filter((obj) => parseInt(obj.timestamp) > earliestTimestamp)
+    // make sure to have not more than 100 data points for any timeframe for smoother chart
+    return groupedData(filteredData, currentTimeFrame)
+  }, [chartData, currentTimeFrame])
+
+  // lowest and highest values for the Y-axis
+  const [lowest = 20, highest = 2340] = useMemo(
+    () => [
+      Math.floor(Math.min(...filteredData.map((obj) => parseInt(obj.value))) / 10) * 10, // min is rounded to nearest 10
+      Math.ceil(Math.max(...filteredData.map((obj) => parseInt(obj.value))) / 10) * 10, // max is rounded to nearest 10
+    ],
+    [filteredData]
+  )
+
+  console.log('data', filteredData)
+
+  const CustomTooltip = ({ payload }: { payload: any }) => {
+    if (payload && payload.length) {
+      const date = new Date(parseInt(payload[0].payload.timestamp) * 1000)
+      // format the date `Sat, 22-May-2020 23:30` format
+      const formattedDate =
+        date.toLocaleString('default', { weekday: 'short' }) +
+        ', ' +
+        date.getUTCDate() +
+        '-' +
+        date.toLocaleString('default', { month: 'short' }) +
+        '-' +
+        date.getFullYear() +
+        ' ' +
+        date.getUTCHours() +
+        ':' +
+        date.getMinutes()
+      return (
+        <div className="custom-tooltip">
+          <p className="label">{`${currentTab}: ${payload[0].value}`}</p>
+          <p className="intro">{`${formattedDate}`}</p>
+        </div>
+      )
+    }
+
+    return null
+  }
 
   return (
     <Wrapper>
@@ -216,7 +410,7 @@ export default function MultipleChart({
             active={currentTab === primaryLabel}
             onClick={() => {
               setCurrentTab(primaryLabel)
-              setCurrentData(primaryData)
+              setChartData(temp1Data)
             }}
           >
             {primaryLabel}
@@ -225,7 +419,7 @@ export default function MultipleChart({
             active={currentTab === secondaryLabel}
             onClick={() => {
               setCurrentTab(secondaryLabel)
-              setCurrentData(secondaryData)
+              setChartData(temp2Data)
             }}
           >
             {secondaryLabel}
@@ -254,27 +448,34 @@ export default function MultipleChart({
         )}
       </TitleWrapper>
       <Container
-        loading={loading}
-        content={!currentData.length ? 'Chart is not available' : loading ? 'Loading...' : ''}
+        content={loading ? 'Loading...' : filteredData.length < 1 ? 'Insufficient data' : ''}
         width="100%"
         height={350}
       >
-        <AreaChart data={currentData} margin={{ top: 8, right: 8, left: -16, bottom: 8 }}>
+        <AreaChart data={loading ? currentTempData : filteredData} margin={{ top: 8, right: 8, left: -16, bottom: 8 }}>
           <defs>
-            <linearGradient id={uniqueID} x1="0" y1="0" x2="1" y2="0">
+            <linearGradient id={primaryID} x1="0" y1="0" x2="1" y2="0">
               <stop offset="0%" stopColor={primaryColor} stopOpacity={1} />
               <stop offset="100%" stopColor={secondaryColor} stopOpacity={1} />
             </linearGradient>
           </defs>
-          <YAxis tick={{ fontSize: '12px' }} interval={0} tickLine={false} axisLine={false} />
+          <YAxis
+            dataKey={'value'}
+            tick={{ fontSize: '10px' }}
+            interval={0}
+            tickLine={false}
+            axisLine={false}
+            domain={[lowest, highest]}
+          />
           <CartesianGrid stroke={theme.border3} vertical={false} horizontal={true} />
+          <Tooltip content={<CustomTooltip payload={filteredData} />} />
           <Area
             type="monotone"
             dataKey="value"
-            stroke={`url(#${uniqueID})`}
+            stroke={`url(#${primaryID})`}
             strokeWidth={2}
             fillOpacity={0.75}
-            fill={`url(#${uniqueID})`}
+            fill={`url(#${primaryID})`}
           />
         </AreaChart>
       </Container>

@@ -116,6 +116,36 @@ export const VEDEUS_LOCKED_SUPPLY = gql`
   }
 `
 
+export const DEI_REDEMPTION_RATIOS = gql`
+  query getDeiRedemptionRatio($skip: Int!, $timestamp: Int!) {
+    redeemRatios(
+      first: 1000
+      skip: $skip
+      where: { timestamp_lt: $timestamp }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      timestamp
+      value
+    }
+  }
+`
+
+export const DEI_RESERVES_BALANCE = gql`
+  query getDeiReservesBalance($skip: Int!, $timestamp: Int!) {
+    deipollUSDCBalances(
+      first: 1000
+      skip: $skip
+      where: { timestamp_lt: $timestamp }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      timestamp
+      value
+    }
+  }
+`
+
 export const SUBGRAPH_HEALTH = gql`
   query health($subgraphName: String!) {
     indexingStatusForCurrentVersion(subgraphName: $subgraphName) {

@@ -1,5 +1,5 @@
 import { formatUnits } from '@ethersproject/units'
-import { getApolloClient } from 'apollo/client/deiStats'
+import { getVeDeusStatsApolloClient } from 'apollo/client/veDeusStats'
 import { ChartData, VEDEUS_LOCKED_SUPPLY, VEDEUS_SUPPLY } from 'apollo/queries'
 import Dropdown from 'components/DropDown'
 import { VEDEUS_TOKEN } from 'constants/tokens'
@@ -174,25 +174,31 @@ export default function SingleChart({
       const DEFAULT_RETURN: ChartData[] = []
       try {
         if (!chainId) return DEFAULT_RETURN
-        const client = getApolloClient(chainId)
-        if (!client) return DEFAULT_RETURN
 
         // query different subgraphs and respective schemas to fetch respective chart data
         switch (uniqueID) {
           case 'veDEUSSupply': {
+            const client = getVeDeusStatsApolloClient(chainId)
+            if (!client) return DEFAULT_RETURN
+
             const { data } = await client.query({
               query: VEDEUS_SUPPLY,
               variables: { skip, timestamp },
               fetchPolicy: 'no-cache',
             })
+
             return data.veDEUSSupplies as ChartData[]
           }
           case 'veDEUSTotalLocked': {
+            const client = getVeDeusStatsApolloClient(chainId)
+            if (!client) return DEFAULT_RETURN
+
             const { data } = await client.query({
               query: VEDEUS_LOCKED_SUPPLY,
               variables: { skip, timestamp },
               fetchPolicy: 'no-cache',
             })
+
             return data.totalLockeds as ChartData[]
           }
           default:
@@ -330,7 +336,7 @@ export default function SingleChart({
         )}
       </TitleWrapper>
       <Container
-        content={loading ? 'Loading...' : filteredData.length < 2 ? 'Insufficient data' : ''}
+        content={loading ? 'Loading...' : filteredData.length < 1 ? 'Insufficient data' : ''}
         width="100%"
         height={350}
       >
