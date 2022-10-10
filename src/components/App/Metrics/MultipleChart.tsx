@@ -1,6 +1,6 @@
 import { formatUnits } from '@ethersproject/units'
 import { getDeiStatsApolloClient } from 'apollo/client/deiStats'
-import { ChartData, DEI_REDEMPTION_RATIOS, DEI_RESERVES_BALANCE } from 'apollo/queries'
+import { ChartData, DEI_REDEMPTION_RATIOS, DEI_RESERVES_BALANCE, DEI_SUPPLY } from 'apollo/queries'
 import Dropdown from 'components/DropDown'
 import { DEI_TOKEN, USDC_TOKEN } from 'constants/tokens'
 import useWeb3React from 'hooks/useWeb3'
@@ -295,6 +295,23 @@ export default function MultipleChart({
             return result.map((obj) => ({
               ...obj,
               value: toBN(formatUnits(obj.value, USDC_TOKEN.decimals)).toFixed(0),
+            }))
+          }
+          case 'DEISupply': {
+            const client = getDeiStatsApolloClient(chainId)
+            if (!client) return DEFAULT_RETURN
+
+            const { data } = await client.query({
+              query: DEI_SUPPLY,
+              variables: { skip, timestamp },
+              fetchPolicy: 'no-cache',
+            })
+
+            const result: ChartData[] = data.deisupplies as ChartData[]
+
+            return result.map((obj) => ({
+              ...obj,
+              value: toBN(formatUnits(obj.value, DEI_TOKEN.decimals)).toFixed(0),
             }))
           }
           default:

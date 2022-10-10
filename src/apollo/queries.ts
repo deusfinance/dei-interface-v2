@@ -146,6 +146,21 @@ export const DEI_RESERVES_BALANCE = gql`
   }
 `
 
+export const DEI_SUPPLY = gql`
+  query getDeiSupply($skip: Int!, $timestamp: Int!) {
+    deisupplies(
+      first: 1000
+      skip: $skip
+      where: { timestamp_lt: $timestamp }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      timestamp
+      value
+    }
+  }
+`
+
 export const SUBGRAPH_HEALTH = gql`
   query health($subgraphName: String!) {
     indexingStatusForCurrentVersion(subgraphName: $subgraphName) {
