@@ -151,7 +151,7 @@ export default function InputBox({
             alt={`${currency?.symbol} Logo`}
             round
           />
-          {onTokenSelect ? <ChevronDown /> : <></>}
+          {onTokenSelect && <ChevronDown />}
         </LogoWrapper>
 
         <RightWrapper>

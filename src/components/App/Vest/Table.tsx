@@ -254,7 +254,7 @@ function TableRow({
   const { deusAmount, veDEUSAmount, lockEnd } = useVestedInformation(nftId)
   const veDEUSContract = useVeDeusContract()
   const addTransaction = useTransactionAdder()
-  const showTransactionPending = useHasPendingVest(pendingTxHash)
+  const showTransactionPending = useHasPendingVest(pendingTxHash, true)
   const veDistContract = useVeDistContract()
 
   // subtracting 10 seconds to mitigate this from being true on page load
