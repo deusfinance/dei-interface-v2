@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { formatUnits } from '@ethersproject/units'
 
-import { AMO, ProtocolHoldings1, ProtocolHoldings2, USDCReserves1, USDCReserves2 } from 'constants/addresses'
+import { AMO, MSIG, ProtocolHoldings1, ProtocolHoldings2, USDCReserves1, USDCReserves2 } from 'constants/addresses'
 import { DEI_TOKEN, USDC_TOKEN } from 'constants/tokens'
 import { SupportedChainId } from 'constants/chains'
 import { toBN } from 'utils/numbers'
@@ -17,6 +17,7 @@ export function useDeiStats(): {
   deiProtocolHoldings2: number
   totalProtocolHoldings: number
   AMOReserve: number
+  MSIGReserve: number
   circulatingSupply: number
   usdcPoolReserves: number
   usdcReserves1: number
@@ -32,6 +33,7 @@ export function useDeiStats(): {
   const usdcReserves1Address = USDCReserves1[SupportedChainId.FANTOM]
   const usdcReserves2Address = USDCReserves2[SupportedChainId.FANTOM]
   const AMOAddress = AMO[SupportedChainId.FANTOM]
+  const MSIGAddress = MSIG[SupportedChainId.FANTOM]
   const unclaimedCollateralAmount = useUnclaimedCollateralAmount()
 
   const calls = !deiContract
@@ -64,10 +66,6 @@ export function useDeiStats(): {
     }
   }, [totalSupplyDEI, ph1DeiHoldings, ph2DeiHoldings])
 
-  const circulatingSupply = useMemo(() => {
-    return totalSupplyDEIValue - totalProtocolHoldings
-  }, [totalSupplyDEIValue, totalProtocolHoldings])
-
   const reservesCalls = !usdcContract
     ? []
     : [
@@ -87,13 +85,17 @@ export function useDeiStats(): {
           methodName: 'balanceOf',
           callInputs: [AMOAddress],
         },
+        {
+          methodName: 'balanceOf',
+          callInputs: [MSIGAddress],
+        },
       ]
 
-  const [usdcPoolBalance, usdcBalance1, usdcBalance2, AMOBalance] = useSingleContractMultipleMethods(
+  const [usdcPoolBalance, usdcBalance1, usdcBalance2, AMOBalance, MSIGBalance] = useSingleContractMultipleMethods(
     usdcContract,
     reservesCalls
   )
-  const { usdcPoolReserves, usdcReserves1, usdcReserves2, AMOReserve } = useMemo(() => {
+  const { usdcPoolReserves, usdcReserves1, usdcReserves2, AMOReserve, MSIGReserve } = useMemo(() => {
     return {
       usdcPoolReserves: usdcPoolBalance?.result
         ? toBN(formatUnits(usdcPoolBalance.result[0], 6)).minus(unclaimedCollateralAmount).toNumber()
@@ -101,8 +103,13 @@ export function useDeiStats(): {
       usdcReserves1: usdcBalance1?.result ? toBN(formatUnits(usdcBalance1.result[0], 6)).toNumber() : 0,
       usdcReserves2: usdcBalance2?.result ? toBN(formatUnits(usdcBalance2.result[0], 6)).toNumber() : 0,
       AMOReserve: AMOBalance?.result ? toBN(formatUnits(AMOBalance.result[0], 6)).toNumber() : 0,
+      MSIGReserve: MSIGBalance?.result ? toBN(formatUnits(MSIGBalance.result[0], 6)).toNumber() : 0,
     }
-  }, [unclaimedCollateralAmount, usdcPoolBalance, usdcBalance1, usdcBalance2, AMOBalance])
+  }, [unclaimedCollateralAmount, usdcPoolBalance, usdcBalance1, usdcBalance2, AMOBalance, MSIGBalance])
+
+  const circulatingSupply = useMemo(() => {
+    return totalSupplyDEIValue - AMOReserve - MSIGReserve
+  }, [totalSupplyDEIValue, AMOReserve, MSIGReserve])
 
   const totalUSDCReserves = useMemo(
     () => usdcReserves1 + usdcReserves2 + usdcPoolReserves,
@@ -110,7 +117,7 @@ export function useDeiStats(): {
   )
 
   const collateralRatio = useMemo(() => {
-    return (usdcPoolReserves / circulatingSupply) * 100
+    return usdcPoolReserves / circulatingSupply
   }, [usdcPoolReserves, circulatingSupply])
 
   return {
@@ -119,6 +126,7 @@ export function useDeiStats(): {
     deiProtocolHoldings2,
     totalProtocolHoldings,
     AMOReserve,
+    MSIGReserve,
     circulatingSupply,
     usdcPoolReserves,
     usdcReserves1,
