@@ -421,7 +421,7 @@ function TableRow({ nft, index, isMobile }: { nft: BondNFT; index: number; isMob
 
         <Cell>
           <Name>Claimable Amount</Name>
-          <Value>{tokenId > 42 ? 'N/A' : formatBalance(claimableAmount, 8)} DEI</Value>
+          <Value>{formatBalance(claimableAmount, 8)} DEI</Value>
         </Cell>
 
         <Cell style={{ padding: '5px 10px' }}>{getMaturityTimeCell()}</Cell>
