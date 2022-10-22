@@ -150,3 +150,7 @@ export const TwapOracle: AddressMap = {
 export const AMO: AddressMap = {
   [SupportedChainId.FANTOM]: '0x521cde355a65144679d15e8aedb5f423778899c9',
 }
+
+export const escrow: AddressMap = {
+  [SupportedChainId.FANTOM]: '0xFb05aedf0caC43C6ce291D2d1be1eab568D155B4',
+}
