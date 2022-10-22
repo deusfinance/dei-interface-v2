@@ -294,10 +294,10 @@ export default function Stats() {
     )
   }
 
-  const UsdcBackingPerDei = useMemo(() => {
+  const usdcBackingPerDei = useMemo(() => {
     if (collateralRatio > 100) return '100%'
     else if (collateralRatio < 90) return '90%'
-    return `${collateralRatio}%`
+    return `${formatAmount(collateralRatio, 1).toString()}%`
   }, [collateralRatio])
 
   return (
@@ -336,7 +336,7 @@ export default function Stats() {
                 value={formatDollarAmount(totalUSDCReserves, 2)}
                 onClick={() => setToggleDashboardModal(true)}
               />
-              <StatsItem name="USDC Backing Per DEI" value={UsdcBackingPerDei} />
+              <StatsItem name="USDC Backing Per DEI" value={usdcBackingPerDei} />
             </Info>
           </StatsWrapper>
           <StatsWrapper>
