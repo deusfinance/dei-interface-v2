@@ -23,5 +23,10 @@
     "text": "veDEUS",
     "path": "/vest",
     "exact": true
+  },
+  {
+    "text": "Lending",
+    "path": "/lending",
+    "exact": true
   }
 ]

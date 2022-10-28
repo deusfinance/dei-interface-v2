@@ -94,7 +94,6 @@ export default function Redemption() {
   const [amountOut2, setAmountOut2] = useState('')
 
   const expiredPrice = useExpiredPrice()
-
   const { collateralAmount, deusValue } = useRedeemAmountOut(amountIn)
 
   useEffect(() => {
