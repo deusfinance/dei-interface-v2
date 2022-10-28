@@ -199,7 +199,7 @@ export function useMintAmountOut(
         : [
             {
               methodName: 'collatAndDeusAmountForMinting',
-              callInputs: [amountInBN, deusPrice],
+              callInputs: [amountInBN, deusPrice, '1'],
             },
           ],
     [amountInBN, deusPrice]
