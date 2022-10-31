@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 
 const InfoWrap = styled.div<{ size?: string }>`
-  flex-basis: ${({ size }) => (size ? size : '12%')};
+  flex-basis: ${({ size }) => (size ? size : '20%')};
 `
 
 export const TitleWrap = styled.span<{ active?: boolean }>`

@@ -9,7 +9,7 @@ import { RowCenter } from 'components/Row'
 import { useRouter } from 'next/router'
 import TokenBox from 'components/App/Lending/TokenBox'
 import InfoCell from 'components/App/Lending/InfoCell'
-import AssetsBox from 'components/App/Lending/AssetsBox'
+// import AssetsBox from 'components/App/Lending/AssetsBox'
 import { default as CollateralTable } from 'components/App/Lending/CollateralTable'
 import { default as AssetsTable } from 'components/App/Lending/AssetsTable'
 
@@ -92,10 +92,11 @@ export default function Lending() {
           <TopWrapper key={index} onClick={() => handleClick(id)}>
             <StakeBox>
               <TokenBox tokens={collaterals} title={name} />
-              <AssetsBox tokens={assets} />
-              <InfoCell title={'APR'} text={'4%'} />
-              <InfoCell title={'TVL'} text={'$4.58m'} />
-              {/* <InfoCell title={'Your Stake'} text={`1.38 ${lpToken.symbol}`} size={'22%'} /> */}
+              <TokenBox tokens={assets} />
+              {/* <AssetsBox tokens={assets} /> */}
+              <InfoCell title={'Pool Number'} text={id.toString()} />
+              <InfoCell title={'Total supplied'} text={'$128671m'} />
+              <InfoCell title={'Total borrowed'} text={'$123761238m'} />
             </StakeBox>
           </TopWrapper>
         )

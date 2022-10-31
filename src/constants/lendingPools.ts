@@ -13,7 +13,7 @@ export const LendingPool: LendingPoolType[] = [
     id: 0,
     name: 'pool 1',
     collaterals: [DEI_TOKEN, USDC_TOKEN],
-    assets: [DEUS_TOKEN],
+    assets: [DEUS_TOKEN, USDC_TOKEN],
   },
   {
     id: 1,

@@ -10,6 +10,7 @@ const TokenCell = styled.div`
   flex-flow: row nowrap;
   align-items: center;
   gap: 10px;
+  flex-basis: 20%;
 `
 
 const TokenWrap = styled.div`
