@@ -1,18 +1,15 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import { Token } from '@sushiswap/core-sdk'
 
-import BOND_NFT_LOGO from '/public/static/images/pages/bond/BondNFT.svg'
-
 import { ModalHeader, Modal } from 'components/Modal'
-import ArrowDownDark from 'components/Icons/ArrowDownDark'
+
 import Column from 'components/Column'
 import { Row, RowCenter } from 'components/Row'
 import { PrimaryButton } from 'components/Button'
-import InputBox, { getImageSize } from 'components/InputBox'
-import InputBoxInDollar from 'components/App/Redemption/InputBoxInDollar'
+import InputBox from 'components/InputBox'
 import LottieDei from 'components/Icons/LottieDei'
-import ImageWithFallback from 'components/ImageWithFallback'
+import ModalInfo from './ModalInfo'
 
 const MainModal = styled(Modal)`
   display: flex;
@@ -116,9 +113,10 @@ const DeiBondWrap = styled(Row)`
   `}
 `
 
-const NFTWrap = styled(Column)`
+const NFTWrap = styled(Row)`
   margin-left: 10px;
   align-items: flex-start;
+  cursor: pointer;
 `
 
 const CellAmount = styled.div`
@@ -131,6 +129,15 @@ const CellAmount = styled.div`
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     font-size: 0.95rem;
   `};
+`
+
+const Item = styled.div<{ active?: boolean }>`
+  width: 50%;
+  height: 100%;
+  text-align: center;
+  /* border-bottom: 1px solid ${({ theme }) => theme.white}; */
+  border-bottom: ${({ active, theme }) => active && `1px solid ${theme.white}`};
+  cursor: pointer;
 `
 
 export default function DefaultReviewModal({
@@ -147,6 +154,7 @@ export default function DefaultReviewModal({
   handleClick,
   awaiting,
   summary,
+  info,
 }: {
   title: string
   inputTokens: Token[]
@@ -161,7 +169,13 @@ export default function DefaultReviewModal({
   handleClick: () => void
   awaiting: boolean
   summary: string
+  info: { title: string; value: string }[]
 }) {
+  const [mode, setMode] = useState(0)
+  const [amount, setAmount] = useState('')
+  function onClickItem(mode: number) {
+    setMode(mode)
+  }
   return (
     <MainModal isOpen={isOpen} onBackgroundClick={() => toggleModal(false)} onEscapeKeydown={() => toggleModal(false)}>
       <ModalHeader onClose={() => toggleModal(false)} title={awaiting ? 'Confirmation' : title} border={false} />
@@ -189,42 +203,24 @@ export default function DefaultReviewModal({
         <Wrapper>
           <TokenResultWrapper>
             <DeiBondWrap>
-              <ImageWithFallback src={BOND_NFT_LOGO} alt={`Bond logo`} width={getImageSize()} height={getImageSize()} />
+              {/* <ImageWithFallback src={BOND_NFT_LOGO} alt={`Bond logo`} width={getImageSize()} height={getImageSize()} /> */}
               <NFTWrap>
-                <CellAmount>DEI Bond #{tokenId}</CellAmount>
+                {/* <CellAmount>DEI Bond #{tokenId}</CellAmount> */}
+                <Item active={mode === 0} onClick={() => onClickItem(0)}>
+                  Borrow
+                </Item>
+                <Item active={mode === 1} onClick={() => onClickItem(1)}>
+                  Repay
+                </Item>
               </NFTWrap>
             </DeiBondWrap>
-            {inputTokens.map((token, index) =>
-              amountsIn[index] === '' ? (
-                <div style={{ display: 'none' }} key={index}></div>
-              ) : (
-                <InputBox
-                  key={index}
-                  currency={token}
-                  value={amountsIn[index]}
-                  onChange={() => console.log()}
-                  disabled={true}
-                />
-              )
-            )}
-
-            <ArrowDownDark style={{ margin: '16px auto' }} />
-
-            {outputTokens.map((token, index) =>
-              amountsOut[index] === '0' ? (
-                <div style={{ display: 'none' }} key={index}></div>
-              ) : token.name === 'DEUS' ? (
-                <InputBoxInDollar key={index} currency={token} value={amountsOut[index]} />
-              ) : (
-                <InputBox
-                  key={index}
-                  currency={token}
-                  value={amountsOut[index]}
-                  onChange={() => console.log()}
-                  disabled={true}
-                />
-              )
-            )}
+            <InputBox
+              currency={inputTokens[0]}
+              value={amount}
+              onChange={(value: string) => setAmount(value)}
+              disabled={false}
+            />
+            <ModalInfo info={info} />
           </TokenResultWrapper>
           {data && (
             <>

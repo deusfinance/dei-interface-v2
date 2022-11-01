@@ -30,7 +30,8 @@ import { ButtonText } from 'pages/vest'
 import { DotFlashing } from 'components/Icons'
 
 import { DEI_TOKEN } from 'constants/tokens'
-import { useCurrencyLogos } from 'hooks/useCurrencyLogo'
+import useCurrencyLogo from 'hooks/useCurrencyLogo'
+import { Token } from '@sushiswap/core-sdk'
 
 dayjs.extend(utc)
 dayjs.extend(relativeTime)
@@ -185,25 +186,26 @@ const RedeemButton = styled(PrimaryButton)`
 const itemsPerPage = 10
 
 export default function Table({
-  pools,
+  pool,
   isMobile,
   isLoading,
 }: {
-  pools: LendingPoolType[]
+  pool: LendingPoolType
   isMobile?: boolean
   isLoading: boolean
 }) {
   const { account } = useWeb3React()
 
   const [offset, setOffset] = useState(0)
+  const { collaterals } = pool
 
   const paginatedItems = useMemo(() => {
-    return pools.slice(offset, offset + itemsPerPage)
-  }, [pools, offset])
+    return collaterals.slice(offset, offset + itemsPerPage)
+  }, [collaterals, offset])
 
   const pageCount = useMemo(() => {
-    return Math.ceil(pools.length / itemsPerPage)
-  }, [pools])
+    return Math.ceil(collaterals.length / itemsPerPage)
+  }, [collaterals])
 
   const onPageChange = ({ selected }: { selected: number }) => {
     setOffset(Math.ceil(selected * itemsPerPage))
@@ -215,8 +217,8 @@ export default function Table({
         <TableWrapper isEmpty={paginatedItems.length === 0}>
           <tbody>
             {paginatedItems.length > 0 &&
-              paginatedItems.map((pool: LendingPoolType, index) => (
-                <TableRow key={index} index={index} pool={pool} isMobile={isMobile} />
+              paginatedItems.map((token: Token, index) => (
+                <TableRow key={index} index={index} token={token} isMobile={isMobile} />
               ))}
           </tbody>
           {paginatedItems.length === 0 && (
@@ -248,7 +250,7 @@ export default function Table({
         </TableWrapper>
         <PaginationWrapper>
           {paginatedItems.length > 0 && (
-            <Pagination count={pools.length} pageCount={pageCount} onPageChange={onPageChange} />
+            <Pagination count={collaterals.length} pageCount={pageCount} onPageChange={onPageChange} />
           )}
         </PaginationWrapper>
       </Wrapper>
@@ -256,11 +258,9 @@ export default function Table({
   )
 }
 
-function TableRow({ pool, index, isMobile }: { pool: LendingPoolType; index: number; isMobile?: boolean }) {
-  const { id, name, collaterals, assets } = pool
+function TableRow({ token, index, isMobile }: { token: Token; index: number; isMobile?: boolean }) {
   const { chainId } = useWeb3React()
-  const collateralAddress = collaterals.map((token) => token.address)
-  const logos = useCurrencyLogos(collateralAddress)
+  const logo = useCurrencyLogo((token as Token)?.address)
 
   const insufficientBalance = false
   const [awaitingApproveConfirmation, setAwaitingApproveConfirmation] = useState<boolean>(false)
@@ -297,6 +297,15 @@ function TableRow({ pool, index, isMobile }: { pool: LendingPoolType; index: num
     await approveCallback()
     setAwaitingApproveConfirmation(false)
   }
+
+  const info = useMemo(
+    () => [
+      { title: 'Max Slippage', value: '10 %' },
+      { title: 'Txn Deadline', value: '20 min' },
+      { title: 'Network Fee', value: 'N/A' },
+    ],
+    []
+  )
 
   // const claimableAmount = toBN(nft_data.filter((nft) => nft.tokenId == tokenId)[0].amount).div(1e18)
 
@@ -401,13 +410,11 @@ function TableRow({ pool, index, isMobile }: { pool: LendingPoolType; index: num
       <>
         <Cell>
           <RowCenter>
-            {logos.map((logo, index) => (
-              <ImageWithFallback src={logo} key={index} alt={`Bond logo`} width={30} height={30} />
-            ))}
+            <ImageWithFallback src={logo} alt={`Bond logo`} width={30} height={30} />
             {/* <Name>{name}</Name> */}
 
             <NFTWrap>
-              <CellAmount>{name}</CellAmount>
+              <CellAmount>{token.name}</CellAmount>
             </NFTWrap>
           </RowCenter>
         </Cell>
@@ -483,15 +490,12 @@ function TableRow({ pool, index, isMobile }: { pool: LendingPoolType; index: num
         outputTokens={[DEI_TOKEN]}
         amountsIn={[amount]}
         amountsOut={[amount]}
-        tokenId={id}
-        data={
-          true
-            ? `You don't have sufficient bDEI at this moment to claim your full amount, you can claim a portion now and the remainder later.`
-            : ''
-        }
+        tokenId={3}
+        info={info}
+        data={''}
         buttonText={'Confirm'}
         awaiting={awaitingMigrateConfirmation}
-        summary={`Redeem DEI Bond #${id} & ${amount} bDEI for ${amount} DEI`}
+        summary={`Redeem DEI Bond #23 & ${amount} bDEI for ${amount} DEI`}
         handleClick={() => console.log('')}
       />
     )
