@@ -51,7 +51,7 @@ export const DropDownValue = styled.p`
   font-weight: 400;
   font-size: 12px;
   text-decoration-line: underline;
-  /* margin-top: -7px; */
+  margin-top: -5px;
   color: ${({ theme }) => theme.text1};
 `
 
@@ -121,7 +121,9 @@ function DropDownOption({ name, value }: { name: string; value: string }): JSX.E
   return (
     <DropDownItem>
       <DropDownName>{name}</DropDownName>
-      <DropDownValue>{truncateAddress(value)}</DropDownValue>
+      <ExternalLink href={`https://ftmscan.com/address/${value}`} style={{ textDecoration: 'none' }}>
+        <DropDownValue>{truncateAddress(value)}</DropDownValue>
+      </ExternalLink>
     </DropDownItem>
   )
 }

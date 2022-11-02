@@ -89,6 +89,7 @@ const ListItem = styled.li`
   font-size: 13px;
   z-index: 999;
   color: ${({ theme }) => theme.text1};
+  margin: 15px 0px;
 
   &:hover {
     cursor: pointer;
@@ -103,6 +104,11 @@ const OptionItem = styled.div`
   justify-content: center;
   flex-direction: column;
   padding: 0px 8px;
+  & > * {
+    &:first-child {
+      margin-bottom: 5px;
+    }
+  }
 `
 
 interface Option {

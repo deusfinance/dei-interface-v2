@@ -45,7 +45,7 @@ const Wrapper = styled(MainWrapper)`
 `
 const MainButton = styled(MainButtonWrap)`
   background: ${({ theme }) => theme.cLqdrColor};
-  color: ${({ theme }) => theme.black};
+  color: ${({ theme, disabled }) => (disabled ? theme.white : theme.black)};
 
   &:hover {
     background: ${({ theme }) => darken(0.1, theme.cLqdrColor)};
@@ -54,14 +54,12 @@ const MainButton = styled(MainButtonWrap)`
   ${({ theme, disabled }) =>
     disabled &&
     `
-      color: ${theme.text1}
       background: ${theme.bg2};
       border: 1px solid ${theme.border1};
       cursor: default;
 
       &:focus,
       &:hover {
-        color: ${theme.text1}
         background: ${theme.bg2};
       }
   `}
