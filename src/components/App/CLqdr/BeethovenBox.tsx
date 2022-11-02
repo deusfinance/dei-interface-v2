@@ -4,6 +4,7 @@ import { RowBetween, RowCenter, RowStart } from 'components/Row'
 import ImageWithFallback from 'components/ImageWithFallback'
 
 import BEETHOVEN_ICON from '/public/static/images/pages/clqdr/ic_beethoven.svg'
+import { ExternalLink } from 'components/Link'
 
 const Wrapper = styled.div`
   margin-top: 16px;
@@ -17,14 +18,11 @@ const Wrapper = styled.div`
   `}
 `
 
-const BeethovenLogo = styled(RowCenter)`
-  /* margin-top: 10px; */
-`
-
 const RatioWrap = styled(RowBetween)`
   white-space: nowrap;
   font-size: 0.75rem;
   margin-top: 6px;
+  margin-bottom: 16px;
   height: 30px;
 `
 
@@ -47,19 +45,33 @@ const Text = styled(RowStart)`
   color: ${({ theme }) => theme.text1};
 `
 
-// const BuyBeethovenButton = styled.div``
+const BuyButton = styled.button`
+  background: ${({ theme }) => theme.black};
+  border: 2px solid #ff0000;
+  border-radius: 12px;
+
+  text-align: center;
+  width: 452px;
+  height: 56px;
+  color: ${({ theme }) => theme.cLqdrColor};
+`
 
 export default function BeethovenBox() {
   return (
     <Wrapper>
       <RowCenter>
-        <ImageWithFallback src={BEETHOVEN_ICON} width={166} height={26} alt={`nft`} />
+        <ImageWithFallback src={BEETHOVEN_ICON} width={166} height={26} alt={'icon'} />
       </RowCenter>
       <Text>Buy on Beethoven for better ratio</Text>
       <RatioWrap>
         <Name>cLQDR/LQDR Ratio:</Name>
         <Value>2123</Value>
       </RatioWrap>
+      <RowCenter>
+        <ExternalLink href={'https://beets.fi/swap'} style={{ textDecoration: 'none' }}>
+          <BuyButton>Buy cLQDR on Beethoven</BuyButton>
+        </ExternalLink>
+      </RowCenter>
     </Wrapper>
   )
 }

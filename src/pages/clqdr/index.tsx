@@ -26,22 +26,26 @@ import { useGetCollateralRatios } from 'hooks/useRedemptionPage'
 import { DotFlashing } from 'components/Icons'
 import Hero from 'components/Hero'
 import InputBox from 'components/InputBox'
-import StatsHeader from 'components/StatsHeader'
-import DefaultReviewModal from 'components/ReviewModal/DefaultReviewModal'
+import StatsHeader from 'components/App/CLqdr/StatsHeader'
+import DefaultReviewModal from 'components/App/CLqdr/DefaultReviewModal'
 import {
   BottomWrapper,
   Container,
   InputWrapper,
-  Wrapper,
+  Wrapper as MainWrapper,
   MainButton as MainButtonWrap,
   ConnectWallet,
   GradientButton,
 } from 'components/App/StableCoin'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/CLqdr/Tableau'
-import usePoolStats from 'components/App/StableCoin/PoolStats'
 import WarningModal from 'components/ReviewModal/Warning'
 import BeethovenBox from 'components/App/CLqdr/BeethovenBox'
+import { RowCenter } from 'components/Row'
+
+const Wrapper = styled(MainWrapper)`
+  margin-top: 16px;
+`
 
 const MainButton = styled(MainButtonWrap)`
   background: ${({ theme }) => theme.cLqdrColor};
@@ -54,6 +58,7 @@ const MainButton = styled(MainButtonWrap)`
   ${({ theme, disabled }) =>
     disabled &&
     `
+      color: ${theme.text1}
       background: ${theme.bg2};
       border: 1px solid ${theme.border1};
       cursor: default;
@@ -63,6 +68,18 @@ const MainButton = styled(MainButtonWrap)`
         background: ${theme.bg2};
       }
   `}
+`
+
+const ArrowBox = styled(RowCenter)`
+  width: 84px;
+  height: 27px;
+  border-radius: 4px;
+  white-space: nowrap;
+  justify-content: center;
+  padding: 3px 8px 4px 12px;
+  color: ${({ theme }) => theme.text1};
+  background: ${({ theme }) => theme.bg0};
+  border: 1px solid ${({ theme }) => theme.text1};
 `
 
 export default function Mint() {
@@ -224,7 +241,14 @@ export default function Mint() {
     )
   }
 
-  const items = usePoolStats()
+  // const items = usePoolStats()
+  const items = useMemo(
+    () => [
+      { name: 'LQDR Price', value: '$1.00' },
+      { name: 'cLQDR/LQDR Ratio', value: '-' },
+    ],
+    []
+  )
 
   return (
     <>
@@ -249,8 +273,10 @@ export default function Mint() {
               //   setInputTokenIndex(inputTokenIndex)
               // }}
             />
-
-            <ArrowDown />
+            <ArrowBox>
+              Mint
+              <ArrowDown style={{ marginLeft: '10px', minWidth: '16px', minHeight: '15px' }} />
+            </ArrowBox>
             <InputBox
               currency={outputCurrency}
               value={amountOut}
@@ -264,8 +290,6 @@ export default function Mint() {
 
           <BottomWrapper>
             <InfoItem name={'Minting Fee'} value={mintingFee == 0 ? 'Zero' : `${mintingFee}%`} />
-            <InfoItem name={'Mint Ratio'} value={Number(mintCollateralRatio).toString() + '%'} />
-            <InfoItem name={'Redeem Ratio'} value={Number(redeemCollateralRatio).toString() + '%'} />
           </BottomWrapper>
         </Wrapper>
       </Container>
