@@ -139,6 +139,14 @@ export default function Menu() {
               </IconWrapper>
             </Row>
           </Link>
+          <Link href="/clqdr" passHref>
+            <Row active={router.route.includes('/clqdr')}>
+              <div>cLQDR</div>
+              {/* <IconWrapper>
+                <VeDeusIcon size={20} />
+              </IconWrapper> */}
+            </Row>
+          </Link>
 
           <ExternalLink href="https://docs.deus.finance/contracts/disclaimer">
             <Row onClick={() => toggle()}>

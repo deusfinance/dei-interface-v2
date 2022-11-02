@@ -10,13 +10,14 @@ import CLQDR_ICON from '/public/static/images/pages/clqdr/ic_clqdr.svg'
 import { LQDR_TOKEN, cLQDR_TOKEN } from 'constants/tokens'
 import { CLQDR_ADDRESS } from 'constants/addresses'
 import { tryParseAmount } from 'utils/parse'
+import { toBN } from 'utils/numbers'
 
 import { useCurrencyBalance } from 'state/wallet/hooks'
-import { useMintingFee, useMintPaused } from 'state/dei/hooks'
 import useWeb3React from 'hooks/useWeb3'
 import { useSupportedChainId } from 'hooks/useSupportedChainId'
 import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
-import { useGetCollateralRatios } from 'hooks/useRedemptionPage'
+import { useDepositLQDRCallback } from 'hooks/useClqdrCallback'
+import { useCalcSharesFromAmount } from 'hooks/useClqdrPage'
 
 import { DotFlashing } from 'components/Icons'
 import Hero from 'components/Hero'
@@ -31,14 +32,11 @@ import {
   MainButton as MainButtonWrap,
   ConnectWallet,
 } from 'components/App/StableCoin'
+import { RowCenter } from 'components/Row'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/CLqdr/Tableau'
 import WarningModal from 'components/ReviewModal/Warning'
-import BeethovenBox from 'components/App/CLqdr/BeethovenBox'
-import { RowCenter } from 'components/Row'
-import { useDepositLQDRCallback } from 'hooks/useClqdrCallback'
-import { useCalcSharesFromAmount } from 'hooks/useClqdrPage'
-import { toBN } from 'utils/numbers'
+// import BeethovenBox from 'components/App/CLqdr/BeethovenBox'
 
 const Wrapper = styled(MainWrapper)`
   margin-top: 16px;
@@ -80,8 +78,6 @@ const ArrowBox = styled(RowCenter)`
 export default function Mint() {
   const { chainId, account } = useWeb3React()
   const isSupportedChainId = useSupportedChainId()
-  const mintingFee = useMintingFee()
-  const mintPaused = useMintPaused()
 
   const [isOpenReviewModal, toggleReviewModal] = useState(false)
   const [isOpenWarningModal, toggleWarningModal] = useState(false)
@@ -90,8 +86,6 @@ export default function Mint() {
   const outputCurrency = cLQDR_TOKEN
 
   const inputCurrencyBalance = useCurrencyBalance(account ?? undefined, inputCurrency)
-
-  const { mintCollateralRatio, redeemCollateralRatio } = useGetCollateralRatios()
 
   const [amount, setAmount] = useState('')
   const amountOutBN = useCalcSharesFromAmount(amount)
@@ -173,9 +167,7 @@ export default function Mint() {
     if (!chainId || !account) return <ConnectWallet />
     else if (showApprove) return null
     else if (insufficientBalance) return <MainButton disabled>Insufficient {inputCurrency?.symbol} Balance</MainButton>
-    else if (mintPaused) {
-      return <MainButton disabled>Mint Paused</MainButton>
-    } else if (awaitingMintConfirmation) {
+    else if (awaitingMintConfirmation) {
       return (
         <MainButton>
           Minting {outputCurrency?.symbol} <DotFlashing />
@@ -196,8 +188,8 @@ export default function Mint() {
   // const items = usePoolStats()
   const items = useMemo(
     () => [
-      { name: 'LQDR Price', value: '$1.00' },
-      { name: 'cLQDR/LQDR Ratio', value: '-' },
+      // { name: 'LQDR Price', value: '$1.00' },
+      // { name: 'cLQDR/LQDR Ratio', value: '-' },
     ],
     []
   )
@@ -210,7 +202,7 @@ export default function Mint() {
           <StatsHeader items={items} />
         </Hero>
 
-        <BeethovenBox />
+        {/* <BeethovenBox /> */}
         <Wrapper>
           <Tableau title={'cLQDR'} imgSrc={CLQDR_ICON} />
 
