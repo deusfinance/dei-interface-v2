@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, useEffect } from 'react'
+import React, { useState, useMemo, useCallback } from 'react'
 import { ArrowDown } from 'react-feather'
 import styled from 'styled-components'
 import { darken } from 'polished'
@@ -7,20 +7,15 @@ import Image from 'next/image'
 import CLQDR_LOGO from '/public/static/images/pages/clqdr/ic_lqdr_header.svg'
 import CLQDR_ICON from '/public/static/images/pages/clqdr/ic_clqdr.svg'
 
-import { SupportedChainId } from 'constants/chains'
-import { DEI_TOKEN } from 'constants/tokens'
-import { MINT__OUTPUTS } from 'constants/inputs'
-import { CollateralPool } from 'constants/addresses'
+import { LQDR_TOKEN, cLQDR_TOKEN } from 'constants/tokens'
+import { CLQDR_ADDRESS } from 'constants/addresses'
 import { tryParseAmount } from 'utils/parse'
 
 import { useCurrencyBalance } from 'state/wallet/hooks'
-import { useExpiredPrice, useMintingFee, useMintPaused } from 'state/dei/hooks'
+import { useMintingFee, useMintPaused } from 'state/dei/hooks'
 import useWeb3React from 'hooks/useWeb3'
 import { useSupportedChainId } from 'hooks/useSupportedChainId'
 import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
-// import { useMintPage } from 'hooks/useMintPage'
-import useMintCallback from 'hooks/useMintCallback'
-import useUpdateCallback from 'hooks/useOracleCallback'
 import { useGetCollateralRatios } from 'hooks/useRedemptionPage'
 
 import { DotFlashing } from 'components/Icons'
@@ -35,13 +30,15 @@ import {
   Wrapper,
   MainButton as MainButtonWrap,
   ConnectWallet,
-  GradientButton,
 } from 'components/App/StableCoin'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/CLqdr/Tableau'
 import usePoolStats from 'components/App/StableCoin/PoolStats'
 import WarningModal from 'components/ReviewModal/Warning'
 import BeethovenBox from 'components/App/CLqdr/BeethovenBox'
+import { useDepositLQDRCallback } from 'hooks/useClqdrCallback'
+import { useCalcSharesFromAmount } from 'hooks/useClqdrPage'
+import { toBN } from 'utils/numbers'
 
 const MainButton = styled(MainButtonWrap)`
   background: ${({ theme }) => theme.cLqdrColor};
@@ -74,78 +71,39 @@ export default function Mint() {
   const [isOpenReviewModal, toggleReviewModal] = useState(false)
   const [isOpenWarningModal, toggleWarningModal] = useState(false)
 
-  const expiredPrice = useExpiredPrice()
-
-  const inputToken = [DEI_TOKEN]
-  const inputCurrency = DEI_TOKEN
-
-  const tokensOut = useMemo(
-    () => MINT__OUTPUTS[isSupportedChainId && chainId ? chainId : SupportedChainId.FANTOM],
-    [chainId, isSupportedChainId]
-  )
-  const outputToken = tokensOut[0]
-  const outputCurrency = outputToken[0]
+  const inputCurrency = LQDR_TOKEN
+  const outputCurrency = cLQDR_TOKEN
 
   const inputCurrencyBalance = useCurrencyBalance(account ?? undefined, inputCurrency)
 
   const { mintCollateralRatio, redeemCollateralRatio } = useGetCollateralRatios()
 
-  // const { amountIn, amountOut, onUserInput, onUserOutput } = useMintPage(inputCurrency, outputCurrency)
-  const { amountIn, amountOut, onUserInput, onUserOutput } = {
-    amountIn: '0',
-    amountOut: '0',
-    onUserInput: (value: any) => console.log(value),
-    onUserOutput: (value: any) => console.log(value),
-  }
+  const [amount, setAmount] = useState('')
+  const amountOutBN = useCalcSharesFromAmount(amount)
+
+  const formattedAmountOut = amountOutBN == '' ? '0' : toBN(amountOutBN).div(1e18).toFixed()
+
   const token1Amount = useMemo(() => {
-    return tryParseAmount(amountIn, inputCurrency || undefined)
-  }, [amountIn, inputCurrency])
+    return tryParseAmount(amount, inputCurrency || undefined)
+  }, [amount, inputCurrency])
 
   const insufficientBalance = useMemo(() => {
     if (!token1Amount) return false
     return inputCurrencyBalance?.lessThan(token1Amount)
   }, [inputCurrencyBalance, token1Amount])
 
-  const deiAmount = useMemo(() => {
-    return tryParseAmount(amountOut, outputCurrency || undefined)
-  }, [amountOut, outputCurrency])
+  const { state: mintCallbackState, callback: mintCallback, error: mintCallbackError } = useDepositLQDRCallback(amount)
 
-  const { state: mintCallbackState, callback: mintCallback, error: mintCallbackError } = useMintCallback(deiAmount)
-  const { callback: updateOracleCallback } = useUpdateCallback()
   const [awaitingApproveConfirmation, setAwaitingApproveConfirmation] = useState<boolean>(false)
   const [awaitingMintConfirmation, setAwaitingMintConfirmation] = useState<boolean>(false)
-  const [awaitingUpdateConfirmation, setAwaitingUpdateConfirmation] = useState<boolean>(false)
 
-  const spender = useMemo(() => (chainId ? CollateralPool[chainId] : undefined), [chainId])
+  const spender = useMemo(() => (chainId ? CLQDR_ADDRESS[chainId] : undefined), [chainId])
   const [approvalState, approveCallback] = useApproveCallback(inputCurrency ?? undefined, spender)
 
   const [showApprove, showApproveLoader] = useMemo(() => {
-    const show = inputCurrency && approvalState !== ApprovalState.APPROVED && !!amountIn
+    const show = inputCurrency && approvalState !== ApprovalState.APPROVED && !!amount
     return [show, show && approvalState === ApprovalState.PENDING]
-  }, [inputCurrency, approvalState, amountIn])
-
-  const handleUpdatePrice = useCallback(async () => {
-    if (!updateOracleCallback) return
-    try {
-      setAwaitingUpdateConfirmation(true)
-      const txHash = await updateOracleCallback()
-      console.log({ txHash })
-      setAwaitingUpdateConfirmation(false)
-    } catch (e) {
-      setAwaitingUpdateConfirmation(false)
-      if (e instanceof Error) {
-        console.error(e)
-      } else {
-        console.error(e)
-      }
-    }
-  }, [updateOracleCallback])
-
-  useEffect(() => {
-    if (expiredPrice) {
-      onUserInput('')
-    }
-  }, [expiredPrice, onUserInput])
+  }, [inputCurrency, approvalState, amount])
 
   const handleApprove = async () => {
     setAwaitingApproveConfirmation(true)
@@ -163,7 +121,7 @@ export default function Mint() {
       setAwaitingMintConfirmation(false)
       console.log({ txHash })
       toggleReviewModal(false)
-      onUserInput('')
+      setAmount('')
     } catch (e) {
       setAwaitingMintConfirmation(false)
       toggleWarningModal(true)
@@ -174,7 +132,7 @@ export default function Mint() {
         console.error(e)
       }
     }
-  }, [mintCallback, mintCallbackError, mintCallbackState, onUserInput])
+  }, [mintCallback, mintCallbackError, mintCallbackState])
 
   function getApproveButton(): JSX.Element | null {
     if (!isSupportedChainId || !account) return null
@@ -202,10 +160,6 @@ export default function Mint() {
     else if (insufficientBalance) return <MainButton disabled>Insufficient {inputCurrency?.symbol} Balance</MainButton>
     else if (mintPaused) {
       return <MainButton disabled>Mint Paused</MainButton>
-    } else if (awaitingUpdateConfirmation) {
-      return <GradientButton title={'Updating Oracle'} awaiting />
-    } else if (expiredPrice) {
-      return <GradientButton onClick={handleUpdatePrice} title={'Update Oracle'} />
     } else if (awaitingMintConfirmation) {
       return (
         <MainButton>
@@ -216,7 +170,7 @@ export default function Mint() {
     return (
       <MainButton
         onClick={() => {
-          if (amountOut !== '0' && amountOut !== '' && amountOut !== '0.') toggleReviewModal(true)
+          if (amount !== '0' && amount !== '' && amount !== '0.') toggleReviewModal(true)
         }}
       >
         Mint {outputCurrency?.symbol}
@@ -241,9 +195,8 @@ export default function Mint() {
           <InputWrapper>
             <InputBox
               currency={inputCurrency}
-              value={amountIn}
-              onChange={(value: string) => onUserInput(value)}
-              disabled={expiredPrice}
+              value={amount}
+              onChange={setAmount}
               // onTokenSelect={() => {
               //   toggleTokensModal(true)
               //   setInputTokenIndex(inputTokenIndex)
@@ -253,9 +206,9 @@ export default function Mint() {
             <ArrowDown />
             <InputBox
               currency={outputCurrency}
-              value={amountOut}
-              onChange={(value: string) => onUserOutput(value)}
-              disabled={expiredPrice}
+              value={formattedAmountOut == '0' ? '' : formattedAmountOut}
+              onChange={() => console.log('')}
+              disabled
             />
             <div style={{ marginTop: '30px' }}></div>
             {getApproveButton()}
@@ -263,9 +216,7 @@ export default function Mint() {
           </InputWrapper>
 
           <BottomWrapper>
-            <InfoItem name={'Minting Fee'} value={mintingFee == 0 ? 'Zero' : `${mintingFee}%`} />
-            <InfoItem name={'Mint Ratio'} value={Number(mintCollateralRatio).toString() + '%'} />
-            <InfoItem name={'Redeem Ratio'} value={Number(redeemCollateralRatio).toString() + '%'} />
+            <InfoItem name={'Management Fee'} value={`12.5%`} />
           </BottomWrapper>
         </Wrapper>
       </Container>
@@ -273,22 +224,22 @@ export default function Mint() {
       <WarningModal
         isOpen={isOpenWarningModal}
         toggleModal={(action: boolean) => toggleWarningModal(action)}
-        summary={['Transaction rejected', `Minting ${amountOut} DEI by ${amountIn} USDC`]}
+        summary={['Transaction rejected', `Minting ${amount} cLQDR by ${amount} LQDR`]}
       />
 
       <DefaultReviewModal
         title="Review Mint Transaction"
         isOpen={isOpenReviewModal}
         toggleModal={(action: boolean) => toggleReviewModal(action)}
-        inputTokens={inputToken}
-        outputTokens={outputToken}
-        amountsIn={[amountIn]}
-        amountsOut={[amountOut]}
+        inputTokens={[LQDR_TOKEN]}
+        outputTokens={[cLQDR_TOKEN]}
+        amountsIn={[amount]}
+        amountsOut={[formattedAmountOut]}
         info={[]}
         data={''}
         buttonText={'Confirm Mint'}
         awaiting={awaitingMintConfirmation}
-        summary={`Minting ${amountOut} DEI by ${amountIn} USDC`}
+        summary={`Minting ${formattedAmountOut} cLQDR by ${amount} LQDR`}
         handleClick={handleMint}
       />
     </>
