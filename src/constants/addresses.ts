@@ -158,3 +158,14 @@ export const AMO: AddressMap = {
 export const escrow: AddressMap = {
   [SupportedChainId.FANTOM]: '0xFb05aedf0caC43C6ce291D2d1be1eab568D155B4',
 }
+
+/* =====================================
+                LQDR Tokens ADDRESS
+===================================== */
+export const CLQDR_ADDRESS: AddressMap = {
+  [SupportedChainId.FANTOM]: '0x814c66594a22404e101fecfecac1012d8d75c156',
+}
+
+export const LQDR_ADDRESS: AddressMap = {
+  [SupportedChainId.FANTOM]: '0x10b620b2dbAC4Faa7D7FFD71Da486f5D44cd86f9',
+}

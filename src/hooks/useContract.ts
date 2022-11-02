@@ -15,6 +15,7 @@ import DEI_BONDER_ABI from 'constants/abi/DEI_Bonder.json'
 import COLLATERAL_POOL_ABI from 'constants/abi/COLLATERAL_POOL_ABI.json'
 import PROXY_MINTER_ABI from 'constants/abi/PROXY_MINTER_ABI.json'
 import DEI_BONDER_V3_ABI from 'constants/abi/DEI_BONDER_V3.json'
+import CLQDR_ABI from 'constants/abi/CLQDR_ABI.json'
 import TWAP_ORACLE_ABI from 'constants/abi/TWAP_ORACLE.json'
 import ORACLE_ABI from 'constants/abi/ORACLE_ABI.json'
 import DEIStrategy from 'constants/abi/DEIStrategy.json'
@@ -30,6 +31,7 @@ import {
   MintProxy,
   TwapOracle,
   DeiBonderV3,
+  CLQDR_ADDRESS,
 } from 'constants/addresses'
 
 export function useContract<T extends Contract = Contract>(
@@ -152,4 +154,10 @@ export function useDeiBonderV3Contract() {
   const { chainId } = useWeb3React()
   const address = useMemo(() => (chainId ? DeiBonderV3[chainId] : undefined), [chainId])
   return useContract(address, DEI_BONDER_V3_ABI)
+}
+
+export function useCLQDRContract() {
+  const { chainId } = useWeb3React()
+  const address = useMemo(() => (chainId ? CLQDR_ADDRESS[chainId] : undefined), [chainId])
+  return useContract(address, CLQDR_ABI)
 }
