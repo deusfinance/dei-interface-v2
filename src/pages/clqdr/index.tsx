@@ -1,9 +1,11 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react'
 import { ArrowDown } from 'react-feather'
+import styled from 'styled-components'
+import { darken } from 'polished'
 import Image from 'next/image'
 
-import MINT_IMG from '/public/static/images/pages/mint/TableauBackground.svg'
-import DEI_LOGO from '/public/static/images/pages/mint/DEI_Logo.svg'
+import CLQDR_LOGO from '/public/static/images/pages/clqdr/ic_lqdr_header.svg'
+import CLQDR_ICON from '/public/static/images/pages/clqdr/ic_clqdr.svg'
 
 import { SupportedChainId } from 'constants/chains'
 import { DEI_TOKEN } from 'constants/tokens'
@@ -31,14 +33,37 @@ import {
   Container,
   InputWrapper,
   Wrapper,
-  MainButton,
+  MainButton as MainButtonWrap,
   ConnectWallet,
   GradientButton,
 } from 'components/App/StableCoin'
 import InfoItem from 'components/App/StableCoin/InfoItem'
-import Tableau from 'components/App/StableCoin/Tableau'
+import Tableau from 'components/App/CLqdr/Tableau'
 import usePoolStats from 'components/App/StableCoin/PoolStats'
 import WarningModal from 'components/ReviewModal/Warning'
+import BeethovenBox from 'components/App/CLqdr/BeethovenBox'
+
+const MainButton = styled(MainButtonWrap)`
+  background: ${({ theme }) => theme.cLqdrColor};
+  color: ${({ theme }) => theme.black};
+
+  &:hover {
+    background: ${({ theme }) => darken(0.1, theme.cLqdrColor)};
+  }
+
+  ${({ theme, disabled }) =>
+    disabled &&
+    `
+      background: ${theme.bg2};
+      border: 1px solid ${theme.border1};
+      cursor: default;
+
+      &:focus,
+      &:hover {
+        background: ${theme.bg2};
+      }
+  `}
+`
 
 export default function Mint() {
   const { chainId, account } = useWeb3React()
@@ -205,12 +230,13 @@ export default function Mint() {
     <>
       <Container>
         <Hero>
-          <Image src={DEI_LOGO} height={'90px'} alt="Logo" />
+          <Image src={CLQDR_LOGO} height={'90px'} alt="Logo" />
           <StatsHeader items={items} />
         </Hero>
 
+        <BeethovenBox />
         <Wrapper>
-          <Tableau title={'Mint DEI'} imgSrc={MINT_IMG} />
+          <Tableau title={'cLQDR'} imgSrc={CLQDR_ICON} />
 
           <InputWrapper>
             <InputBox

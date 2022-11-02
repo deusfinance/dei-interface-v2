@@ -65,6 +65,7 @@ export interface Colors {
 
   deusColor: Color
   deiColor: Color
+  cLqdrColor: Color
 }
 
 export type Shadow = string
