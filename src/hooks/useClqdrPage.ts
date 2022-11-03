@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 
 import { toBN } from 'utils/numbers'
-import { useCLQDRContract } from 'hooks/useContract'
+import { useCLQDRContract, usePerpetualEscrowTokenReceiverContract } from 'hooks/useContract'
 import { useSingleContractMultipleMethods } from 'state/multicall/hooks'
 
 export function useCalcSharesFromAmount(amountIn: string): string {
@@ -28,7 +28,33 @@ export function useCalcSharesFromAmount(amountIn: string): string {
     [mintAmountOut]
   )
 
-  console.log({ sharesAmount })
-
   return sharesAmount
+}
+
+export function useClqdrData(): {
+  burningFee: string
+} {
+  const contract = usePerpetualEscrowTokenReceiverContract()
+
+  const burningRateCall = useMemo(
+    () => [
+      {
+        methodName: 'burningRate',
+        callInputs: [],
+      },
+    ],
+    []
+  )
+
+  const [burningRate] = useSingleContractMultipleMethods(contract, burningRateCall)
+
+  const burningFee = useMemo(
+    () =>
+      !burningRate || !burningRate.result
+        ? ''
+        : toBN(1e18).minus(toBN(burningRate.result[0].toString())).div(1e18).times(100).toFixed(),
+    [burningRate]
+  )
+
+  return { burningFee }
 }

@@ -17,7 +17,7 @@ import useWeb3React from 'hooks/useWeb3'
 import { useSupportedChainId } from 'hooks/useSupportedChainId'
 import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
 import { useDepositLQDRCallback } from 'hooks/useClqdrCallback'
-import { useCalcSharesFromAmount } from 'hooks/useClqdrPage'
+import { useCalcSharesFromAmount, useClqdrData } from 'hooks/useClqdrPage'
 
 import { DotFlashing } from 'components/Icons'
 import Hero from 'components/Hero'
@@ -78,6 +78,8 @@ const ArrowBox = styled(RowCenter)`
 export default function Mint() {
   const { chainId, account } = useWeb3React()
   const isSupportedChainId = useSupportedChainId()
+
+  const { burningFee } = useClqdrData()
 
   const [isOpenReviewModal, toggleReviewModal] = useState(false)
   const [isOpenWarningModal, toggleWarningModal] = useState(false)
@@ -232,7 +234,7 @@ export default function Mint() {
           </InputWrapper>
 
           <BottomWrapper>
-            <InfoItem name={'Management Fee'} value={`12.5%`} />
+            <InfoItem name={'Management Fee'} value={`${burningFee}%`} />
           </BottomWrapper>
         </Wrapper>
       </Container>
