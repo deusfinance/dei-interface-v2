@@ -36,6 +36,7 @@ import { RowCenter } from 'components/Row'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/CLqdr/Tableau'
 import WarningModal from 'components/ReviewModal/Warning'
+import FireBirdBox from 'components/App/CLqdr/FirebirdBox'
 // import BeethovenBox from 'components/App/CLqdr/BeethovenBox'
 
 const Wrapper = styled(MainWrapper)`
@@ -235,6 +236,8 @@ export default function Mint() {
             <InfoItem name={'Management Fee'} value={`12.5%`} />
           </BottomWrapper>
         </Wrapper>
+
+        <FireBirdBox />
       </Container>
 
       <WarningModal

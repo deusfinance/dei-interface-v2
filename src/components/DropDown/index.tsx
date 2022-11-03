@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react'
 import styled, { css } from 'styled-components'
-import find from 'lodash/find'
+// import find from 'lodash/find'
 
 import useOnOutsideClick from 'hooks/useOnOutsideClick'
 import { ChevronDown } from 'components/Icons'
-import { DropDownName, DropDownValue } from 'components/App/CLqdr/StatsHeader'
+// import { DropDownName, DropDownValue } from 'components/App/CLqdr/StatsHeader'
 import Box from 'components/Box'
-import { truncateAddress } from 'utils/address'
+// import { truncateAddress } from 'utils/address'
 
 const Wrapper = styled.div<{
   width: string
@@ -111,6 +111,16 @@ const OptionItem = styled.div`
   }
 `
 
+const PlaceHolder = styled.div`
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 17px;
+  margin-left: 10px;
+  color: ${({ theme }) => theme.text2};
+`
+
 interface Option {
   value: string
   name: string
@@ -146,16 +156,16 @@ export default function Dropdown({
   }, [options, defaultValue, onSelect])
 
   const header: JSX.Element | string = useMemo(() => {
-    const option: Option | undefined = find(options, (obj) => obj.value == selectedOption)
-    return option ? (
-      <OptionItem>
-        <DropDownName>{option?.name}</DropDownName>
-        <DropDownValue>{truncateAddress(option?.value)}</DropDownValue>
-      </OptionItem>
-    ) : (
-      placeholder
-    )
-  }, [options, selectedOption, placeholder])
+    // const option: Option | undefined = find(options, (obj) => obj.value == selectedOption)
+    // return option ? (
+    //   <OptionItem>
+    //     <DropDownName>{option?.name}</DropDownName>
+    //     <DropDownValue>{truncateAddress(option?.value)}</DropDownValue>
+    //   </OptionItem>
+    // ) : (
+    //   placeholder
+    return <PlaceHolder>{placeholder}</PlaceHolder>
+  }, [placeholder])
 
   const toggle = () => {
     !disabled && setIsOpen(!isOpen)
