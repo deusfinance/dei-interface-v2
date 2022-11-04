@@ -37,7 +37,10 @@ import { RowCenter } from 'components/Row'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/CLqdr/Tableau'
 import WarningModal from 'components/ReviewModal/Warning'
-import BeethovenBox from 'components/App/CLqdr/BeethovenBox'
+// import FireBird1 from 'components/App/CLqdr/FireBirdBox1'
+
+import FireBird3 from 'components/App/CLqdr/FirebirdBox3'
+import FireBird1 from 'components/App/CLqdr/FirebirdBox1'
 
 const Wrapper = styled(MainWrapper)`
   margin-top: 16px;
@@ -212,7 +215,7 @@ export default function Mint() {
         </Hero>
 
         {firebird && firebird.convertRate < mintRate && (
-          <BeethovenBox ratio={formatBalance(firebird.convertRate, 4) ?? ''} />
+          <FireBird1 ratio={formatBalance(firebird.convertRate, 4) ?? ''} />
         )}
 
         <Wrapper>
@@ -251,6 +254,8 @@ export default function Mint() {
             />
           </BottomWrapper>
         </Wrapper>
+
+        <FireBird3 />
       </Container>
 
       <WarningModal

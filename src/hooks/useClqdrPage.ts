@@ -67,7 +67,7 @@ export function useClqdrData(): {
 export function useFetchFirebirdData(
   amount: string
 ): { lqdrPrice: number; cLqdrPrice: number; convertRate: number; cLqdrAmountOut: string } | null {
-  const DefaultAmount = '1'
+  const DefaultAmount = '100'
   const [data, setData] = useState()
   const SUB_URL =
     '/fantom/route?from=0x10b620b2dbac4faa7d7ffd71da486f5d44cd86f9&to=0x814c66594a22404e101fecfecac1012d8d75c156&amount='
