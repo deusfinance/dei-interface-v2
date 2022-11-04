@@ -5,8 +5,7 @@ import styled from 'styled-components'
 import { TopTableau, TitleIMGWrap, TableauTitle } from 'components/App/StableCoin'
 
 const Wrapper = styled(TopTableau)`
-  /* background: linear-gradient(339.11deg, #1984ff 9.31%, #4dd9f6 96.03%); */
-  background: transparent;
+  background: ${({ theme }) => theme.bg1};
 `
 const Title = styled(TableauTitle)`
   color: ${({ theme }) => theme.cLqdrColor};
