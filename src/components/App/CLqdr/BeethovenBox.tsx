@@ -56,7 +56,7 @@ const BuyButton = styled.button`
   color: ${({ theme }) => theme.cLqdrColor};
 `
 
-export default function BeethovenBox() {
+export default function BeethovenBox({ ratio }: { ratio: string | number }) {
   return (
     <Wrapper>
       <RowCenter>
@@ -65,7 +65,7 @@ export default function BeethovenBox() {
       <Text>Buy on Beethoven for better ratio</Text>
       <RatioWrap>
         <Name>cLQDR/LQDR Ratio:</Name>
-        <Value>2123</Value>
+        <Value>{ratio}</Value>
       </RatioWrap>
       <RowCenter>
         <ExternalLink href={'https://beets.fi/swap'} style={{ textDecoration: 'none' }}>

@@ -10,14 +10,15 @@ import CLQDR_ICON from '/public/static/images/pages/clqdr/ic_clqdr.svg'
 import { LQDR_TOKEN, cLQDR_TOKEN } from 'constants/tokens'
 import { CLQDR_ADDRESS } from 'constants/addresses'
 import { tryParseAmount } from 'utils/parse'
-import { toBN } from 'utils/numbers'
+import { formatBalance, toBN } from 'utils/numbers'
 
 import { useCurrencyBalance } from 'state/wallet/hooks'
 import useWeb3React from 'hooks/useWeb3'
 import { useSupportedChainId } from 'hooks/useSupportedChainId'
 import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
 import { useDepositLQDRCallback } from 'hooks/useClqdrCallback'
-import { useCalcSharesFromAmount, useClqdrData } from 'hooks/useClqdrPage'
+import { useCalcSharesFromAmount, useClqdrData, useFetchFirebirdData } from 'hooks/useClqdrPage'
+import useDebounce from 'hooks/useDebounce'
 
 import { DotFlashing } from 'components/Icons'
 import Hero from 'components/Hero'
@@ -36,7 +37,7 @@ import { RowCenter } from 'components/Row'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/CLqdr/Tableau'
 import WarningModal from 'components/ReviewModal/Warning'
-// import BeethovenBox from 'components/App/CLqdr/BeethovenBox'
+import BeethovenBox from 'components/App/CLqdr/BeethovenBox'
 
 const Wrapper = styled(MainWrapper)`
   margin-top: 16px;
@@ -79,7 +80,7 @@ export default function Mint() {
   const { chainId, account } = useWeb3React()
   const isSupportedChainId = useSupportedChainId()
 
-  const { burningFee } = useClqdrData()
+  const { burningFee, mintRate } = useClqdrData()
 
   const [isOpenReviewModal, toggleReviewModal] = useState(false)
   const [isOpenWarningModal, toggleWarningModal] = useState(false)
@@ -90,9 +91,12 @@ export default function Mint() {
   const inputCurrencyBalance = useCurrencyBalance(account ?? undefined, inputCurrency)
 
   const [amount, setAmount] = useState('')
+  const debouncedAmount = useDebounce(amount, 500)
   const amountOutBN = useCalcSharesFromAmount(amount)
 
   const formattedAmountOut = amountOutBN == '' ? '0' : toBN(amountOutBN).div(1e18).toFixed()
+
+  const firebird = useFetchFirebirdData(debouncedAmount)
 
   const token1Amount = useMemo(() => {
     return tryParseAmount(amount, inputCurrency || undefined)
@@ -187,13 +191,16 @@ export default function Mint() {
     )
   }
 
-  // const items = usePoolStats()
   const items = useMemo(
-    () => [
-      // { name: 'LQDR Price', value: '$1.00' },
-      // { name: 'cLQDR/LQDR Ratio', value: '-' },
-    ],
-    []
+    () =>
+      firebird
+        ? [
+            { name: 'LQDR Price', value: `$${formatBalance(firebird.lqdrPrice, 3)}` },
+            { name: 'cLQDR Price', value: `$${formatBalance(firebird.cLqdrPrice, 3)}` },
+            { name: 'cLQDR/LQDR Ratio', value: `${formatBalance(mintRate, 4)}` },
+          ]
+        : [],
+    [firebird, mintRate]
   )
 
   return (
@@ -204,7 +211,10 @@ export default function Mint() {
           <StatsHeader items={items} />
         </Hero>
 
-        {/* <BeethovenBox /> */}
+        {firebird && firebird.convertRate < mintRate && (
+          <BeethovenBox ratio={formatBalance(firebird.convertRate, 4) ?? ''} />
+        )}
+
         <Wrapper>
           <Tableau title={'cLQDR'} imgSrc={CLQDR_ICON} />
 
@@ -235,6 +245,10 @@ export default function Mint() {
 
           <BottomWrapper>
             <InfoItem name={'Management Fee'} value={`${burningFee}%`} />
+            <InfoItem
+              name={'Firebird'}
+              value={amount && Number(amount) > 0 ? `${formatBalance(firebird?.cLqdrAmountOut, 6)} cLQDR` : '-'}
+            />
           </BottomWrapper>
         </Wrapper>
       </Container>
