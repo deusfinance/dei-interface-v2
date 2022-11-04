@@ -63,7 +63,7 @@ export default function FirebirdBox1({ ratio }: { ratio: string | number }) {
       <RowCenter>
         <BuyButtonWrapper>
           <ExternalLink href={'https://app.firebird.finance/swap'} style={{ textDecoration: 'none' }}>
-            <BuyButton>Buy LQDR from Firebird</BuyButton>
+            <BuyButton>Buy cLQDR from Firebird</BuyButton>
           </ExternalLink>
         </BuyButtonWrapper>
       </RowCenter>
