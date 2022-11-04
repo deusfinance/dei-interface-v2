@@ -36,8 +36,9 @@ import { RowCenter } from 'components/Row'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/CLqdr/Tableau'
 import WarningModal from 'components/ReviewModal/Warning'
-import FireBirdBox from 'components/App/CLqdr/FirebirdBox'
-// import BeethovenBox from 'components/App/CLqdr/BeethovenBox'
+import FireBird1 from 'components/App/CLqdr/FireBirdBox1'
+import FireBird2 from 'components/App/CLqdr/FireBirdBox2'
+import FireBird3 from 'components/App/CLqdr/FirebirdBox3'
 
 const Wrapper = styled(MainWrapper)`
   margin-top: 16px;
@@ -203,7 +204,8 @@ export default function Mint() {
           <StatsHeader items={items} />
         </Hero>
 
-        {/* <BeethovenBox /> */}
+        <FireBird1 />
+        <FireBird2 />
         <Wrapper>
           <Tableau title={'cLQDR'} imgSrc={CLQDR_ICON} />
 
@@ -237,7 +239,7 @@ export default function Mint() {
           </BottomWrapper>
         </Wrapper>
 
-        <FireBirdBox />
+        <FireBird3 />
       </Container>
 
       <WarningModal
