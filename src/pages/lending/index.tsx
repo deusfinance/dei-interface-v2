@@ -2,7 +2,6 @@ import React, { useCallback } from 'react'
 import styled from 'styled-components'
 
 import Hero from 'components/Hero'
-import Disclaimer from 'components/Disclaimer'
 import ImageWithFallback from 'components/ImageWithFallback'
 import STAKE_ICON from '/public/static/images/pages/bond/DEI_logo.svg'
 import { RowCenter } from 'components/Row'
@@ -40,10 +39,6 @@ const StakeBox = styled.div`
   align-items: center;
 `
 
-const DisableCell = styled.div`
-  flex-basis: 12%;
-`
-
 export default function Lending() {
   const router = useRouter()
 
@@ -77,8 +72,6 @@ export default function Lending() {
       })}
 
       <div style={{ marginTop: '20px' }}></div>
-
-      <Disclaimer />
     </Container>
   )
 }

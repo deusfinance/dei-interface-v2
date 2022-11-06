@@ -1,0 +1,31 @@
+[
+  { "inputs": [], "stateMutability": "nonpayable", "type": "constructor" },
+  {
+    "inputs": [{ "internalType": "address", "name": "fraxlendPairCore", "type": "address" }],
+    "name": "OnlyDeployer",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "fraxlendPairCore", "type": "address" },
+      { "internalType": "address[]", "name": "tokens", "type": "address[]" },
+      { "internalType": "address[]", "name": "oracles", "type": "address[]" }
+    ],
+    "name": "defineAssets",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "fraxlendPairCore", "type": "address" },
+      { "internalType": "address[]", "name": "tokens", "type": "address[]" },
+      { "internalType": "address[]", "name": "oracles", "type": "address[]" },
+      { "internalType": "uint256[]", "name": "ltvs", "type": "uint256[]" }
+    ],
+    "name": "defineCollaterals",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]

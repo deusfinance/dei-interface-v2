@@ -18,6 +18,8 @@ import DEI_BONDER_V3_ABI from 'constants/abi/DEI_BONDER_V3.json'
 import TWAP_ORACLE_ABI from 'constants/abi/TWAP_ORACLE.json'
 import ORACLE_ABI from 'constants/abi/ORACLE_ABI.json'
 import DEIStrategy from 'constants/abi/DEIStrategy.json'
+import FUJIN_DEPLOYER_ABI from 'constants/abi/FUJIN_DEPLOYER.json'
+import TOKEN_MANAGER_ABI from 'constants/abi/TOKEN_MANAGER.json'
 
 import { Providers } from 'constants/providers'
 import {
@@ -30,6 +32,8 @@ import {
   MintProxy,
   TwapOracle,
   DeiBonderV3,
+  fujinDeployer,
+  tokenManager,
 } from 'constants/addresses'
 
 export function useContract<T extends Contract = Contract>(
@@ -152,4 +156,16 @@ export function useDeiBonderV3Contract() {
   const { chainId } = useWeb3React()
   const address = useMemo(() => (chainId ? DeiBonderV3[chainId] : undefined), [chainId])
   return useContract(address, DEI_BONDER_V3_ABI)
+}
+
+export function useFujinDeployerContract() {
+  const { chainId } = useWeb3React()
+  const address = useMemo(() => (chainId ? fujinDeployer[chainId] : undefined), [chainId])
+  return useContract(address, FUJIN_DEPLOYER_ABI)
+}
+
+export function useTokenManagerContract() {
+  const { chainId } = useWeb3React()
+  const address = useMemo(() => (chainId ? tokenManager[chainId] : undefined), [chainId])
+  return useContract(address, TOKEN_MANAGER_ABI)
 }

@@ -158,3 +158,26 @@ export const AMO: AddressMap = {
 export const escrow: AddressMap = {
   [SupportedChainId.FANTOM]: '0xFb05aedf0caC43C6ce291D2d1be1eab568D155B4',
 }
+
+/* =====================================
+              LENDING
+===================================== */
+export const fujinDeployer: AddressMap = {
+  [SupportedChainId.FANTOM]: '0x3Fbf00c62850A0613146579711adE0A6ff41F969',
+}
+
+export const tokenManager: AddressMap = {
+  [SupportedChainId.FANTOM]: '0x10Bb0ECDe027f5aEcd1e4D8677DA3d886442a95D',
+}
+
+export const staticInterestRate: AddressMap = {
+  [SupportedChainId.FANTOM]: '0x9fEF461aa61264C32cb5b73De9F48085b2fd9FDA',
+}
+
+export const linearInterestRate: AddressMap = {
+  [SupportedChainId.FANTOM]: '0x6b8AEEEcb51C7918574e5baCde74870888483CD0',
+}
+
+export const variableInterestRate: AddressMap = {
+  [SupportedChainId.FANTOM]: '0xaFA5F25DC364ca916d17930cfDC418BDdc54A200',
+}
