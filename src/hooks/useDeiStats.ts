@@ -15,7 +15,7 @@ import { SupportedChainId } from 'constants/chains'
 import { toBN } from 'utils/numbers'
 
 import { useSingleContractMultipleMethods } from 'state/multicall/hooks'
-import { useERC20Contract } from 'hooks/useContract'
+import { useAnyDEIContract, useERC20Contract } from 'hooks/useContract'
 import { CollateralPool } from '../constants/addresses'
 import { useUnclaimedCollateralAmount } from '../state/dei/hooks'
 
@@ -45,6 +45,25 @@ export function useDeiStats(): {
   const escrowAddress = escrow[SupportedChainId.FANTOM]
   const AMOAddress = AMO[SupportedChainId.FANTOM]
   const unclaimedCollateralAmount = useUnclaimedCollateralAmount()
+  const anyDEIContract = useAnyDEIContract()
+
+  const anyDEIcall = useMemo(
+    () => [
+      {
+        methodName: 'balanceOf',
+        callInputs: ['0xEf6b0872CfDF881Cf9Fe0918D3FA979c616AF983'],
+      },
+    ],
+    []
+  )
+  const [anyDEIBalance] = useSingleContractMultipleMethods(anyDEIContract, anyDEIcall)
+
+  const { AnyDEIReserve } = useMemo(
+    () => ({
+      AnyDEIReserve: anyDEIBalance?.result ? toBN(formatUnits(anyDEIBalance?.result[0], 18)).toNumber() : 0,
+    }),
+    [anyDEIBalance?.result]
+  )
 
   const calls = !deiContract
     ? []
@@ -65,16 +84,20 @@ export function useDeiStats(): {
 
   const [totalSupplyDEI, ph1DeiHoldings, ph2DeiHoldings] = useSingleContractMultipleMethods(deiContract, calls)
 
-  const { totalSupplyDEIValue, totalProtocolHoldings, deiProtocolHoldings1, deiProtocolHoldings2 } = useMemo(() => {
+  const { totalSupplyDEIValueRaw, totalProtocolHoldings, deiProtocolHoldings1, deiProtocolHoldings2 } = useMemo(() => {
     return {
-      totalSupplyDEIValue: totalSupplyDEI?.result ? toBN(formatUnits(totalSupplyDEI.result[0], 18)).toNumber() : 0,
+      totalSupplyDEIValueRaw: totalSupplyDEI?.result ? toBN(formatUnits(totalSupplyDEI.result[0], 18)).toNumber() : 0,
       totalProtocolHoldings:
         (ph1DeiHoldings?.result ? toBN(formatUnits(ph1DeiHoldings.result[0], 18)).toNumber() : 0) +
         (ph2DeiHoldings?.result ? toBN(formatUnits(ph2DeiHoldings.result[0], 18)).toNumber() : 0),
       deiProtocolHoldings1: ph1DeiHoldings?.result ? toBN(formatUnits(ph1DeiHoldings.result[0], 18)).toNumber() : 0,
       deiProtocolHoldings2: ph2DeiHoldings?.result ? toBN(formatUnits(ph2DeiHoldings.result[0], 18)).toNumber() : 0,
     }
-  }, [totalSupplyDEI, ph1DeiHoldings, ph2DeiHoldings])
+  }, [totalSupplyDEI?.result, ph1DeiHoldings?.result, ph2DeiHoldings?.result])
+
+  const totalSupplyDEIValue = useMemo(() => {
+    return totalSupplyDEIValueRaw - AnyDEIReserve
+  }, [AnyDEIReserve, totalSupplyDEIValueRaw])
 
   const circulatingSupply = useMemo(() => {
     return totalSupplyDEIValue - totalProtocolHoldings

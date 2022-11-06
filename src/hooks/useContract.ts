@@ -33,6 +33,7 @@ import {
   TwapOracle,
   DeiBonderV3,
   CLQDR_ADDRESS,
+  AnyDEI_ADDRESS,
 } from 'constants/addresses'
 
 export function useContract<T extends Contract = Contract>(
@@ -162,7 +163,14 @@ export function useCLQDRContract() {
   const address = useMemo(() => (chainId ? CLQDR_ADDRESS[chainId] : undefined), [chainId])
   return useContract(address, CLQDR_ABI)
 }
+
 export function usePerpetualEscrowTokenReceiverContract() {
   const address = '0xcd3563cd8de2602701d5d9f960db30710fcc4053'
   return useContract(address, CLQDR_FULL_ABI)
+}
+
+export function useAnyDEIContract() {
+  const { chainId } = useWeb3React()
+  const address = useMemo(() => (chainId ? AnyDEI_ADDRESS[chainId] : undefined), [chainId])
+  return useContract(address, ERC20_ABI)
 }

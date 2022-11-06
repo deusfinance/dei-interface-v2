@@ -28,6 +28,10 @@ export const DEI_ADDRESS: AddressMap = {
   ]),
 }
 
+export const AnyDEI_ADDRESS: AddressMap = {
+  ...constructSameAddressMap('0xbB8B2F05A88108F7e9227b954358110c20e97E26', [SupportedChainId.FANTOM]),
+}
+
 /* =====================================
                 DEUS ADDRESS
 ===================================== */
