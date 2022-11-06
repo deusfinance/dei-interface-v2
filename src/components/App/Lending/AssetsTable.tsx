@@ -139,7 +139,7 @@ const Value = styled.div`
 `
 
 const ZebraStripesRow = styled(Row)<{ isEven?: boolean }>`
-  background: ${({ isEven, theme }) => (isEven ? theme.bg2 : theme.bg1)};
+  background: ${({ isEven, theme }) => (isEven ? theme.bg1 : theme.bg2)};
 `
 
 const MaturityTimePassed = styled.div`
@@ -265,7 +265,7 @@ function TableRow({ token, index, isMobile }: { token: Token; index: number; isM
   const insufficientBalance = false
   const [awaitingApproveConfirmation, setAwaitingApproveConfirmation] = useState<boolean>(false)
   const [awaitingMigrateConfirmation, setAwaitingMigrateConfirmation] = useState<boolean>(false)
-  const [isOpenReviewModal, toggleReviewModal] = useState(true)
+  const [isOpenReviewModal, toggleReviewModal] = useState(false)
 
   const bDEICurrency = BDEI_TOKEN
   const spender = useMemo(() => (chainId ? DeiBonderV3[chainId] : undefined), [chainId])

@@ -3,7 +3,6 @@ import { useRouter } from 'next/router'
 import styled from 'styled-components'
 
 import Hero from 'components/Hero'
-import Disclaimer from 'components/Disclaimer'
 import ImageWithFallback from 'components/ImageWithFallback'
 import STAKE_ICON from '/public/static/images/pages/bond/DEI_logo.svg'
 // import { Stakings } from 'constants/stakingPools'
@@ -16,6 +15,7 @@ import { default as AssetsTable } from 'components/App/Lending/AssetsTable'
 
 import { LendingPool } from 'constants/lendingPools'
 import { isMobile } from 'react-device-detect'
+import Tableau from 'components/App/StableCoin/Tableau'
 
 export const Container = styled.div`
   display: flex;
@@ -79,15 +79,14 @@ export default function StakingPage() {
       </Hero>
       {/* <StatsHeader items={items} pid={pidNumber} onSelectDropDown={onSelect} /> */}
 
-      <div>Lending page: pool: {pidNumber}</div>
       <TablesWrapper>
         <CollateralWrap>
-          <div>Collaterals</div>
+          <Tableau title={'Collaterals'} />
           <CollateralTable pool={snapshotList[pidNumber]} isMobile={isMobile} isLoading={true} />
         </CollateralWrap>
-        <AssetsWrap>
-          <div>Assets</div>
 
+        <AssetsWrap>
+          <Tableau title={'Assets'} />
           <AssetsTable pool={snapshotList[pidNumber]} isMobile={isMobile} isLoading={true} />
         </AssetsWrap>
       </TablesWrapper>
@@ -96,8 +95,6 @@ export default function StakingPage() {
         {/* {pool?.tokens.length > 1 && <LiquidityPool pool={pool} />} */}
         {/* <StakingPool pool={pool} /> */}
       </TopWrapper>
-
-      <Disclaimer />
     </Container>
   )
 }

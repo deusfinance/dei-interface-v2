@@ -139,7 +139,7 @@ const Value = styled.div`
 `
 
 const ZebraStripesRow = styled(Row)<{ isEven?: boolean }>`
-  background: ${({ isEven, theme }) => (isEven ? theme.bg2 : theme.bg1)};
+  background: ${({ isEven, theme }) => (isEven ? theme.bg1 : theme.bg2)};
 `
 
 const MaturityTimePassed = styled.div`

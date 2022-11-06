@@ -9,6 +9,7 @@ import { useRouter } from 'next/router'
 import TokenBox from 'components/App/Lending/TokenBox'
 import InfoCell from 'components/App/Lending/InfoCell'
 import { LendingPool } from 'constants/lendingPools'
+import { MainButton } from 'components/App/StableCoin'
 // import AssetsBox from 'components/App/Lending/AssetsBox'
 
 export const Container = styled.div`
@@ -37,6 +38,10 @@ const StakeBox = styled.div`
   height: 100px;
   padding: 20px;
   align-items: center;
+`
+
+const CreateButton = styled.div`
+  margin: 10px auto;
 `
 
 export default function Lending() {
@@ -72,6 +77,10 @@ export default function Lending() {
       })}
 
       <div style={{ marginTop: '20px' }}></div>
+
+      <CreateButton>
+        <MainButton onClick={() => router.push(`/lending/create`)}>Create New Pool</MainButton>
+      </CreateButton>
     </Container>
   )
 }
