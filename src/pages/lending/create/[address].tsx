@@ -2,7 +2,6 @@ import styled from 'styled-components'
 import { useRouter } from 'next/router'
 
 import Hero from 'components/Hero'
-import Disclaimer from 'components/Disclaimer'
 import ImageWithFallback from 'components/ImageWithFallback'
 import STAKE_ICON from '/public/static/images/pages/bond/DEI_logo.svg'
 import MINT_IMG from '/public/static/images/pages/mint/TableauBackground.svg'
@@ -56,7 +55,6 @@ const LendingItem = styled.div`
 export default function PoolAddress() {
   const router = useRouter()
   const { address } = router.query
-  const lendingAddress = Number(address)
 
   // Assets
   const [fraxlendPairCoreAssets, setFraxlendPairCoreAssets] = useState()
@@ -67,14 +65,14 @@ export default function PoolAddress() {
 
   // Collaterals
   const [fraxlendPairCoreCollaterals, setFraxlendPairCoreCollaterals] = useState()
-  const [collteralToken, setCollteralToken] = useState<string>('')
+  const [collateralToken, setCollateralToken] = useState<string>('')
   const [collateralsTokens, setCollateralsTokens] = useState<string[]>([])
-  const [collteralOracle, setCollteralOracle] = useState<string>('')
-  const [ccollateralsOracles, setCollateralsOracles] = useState<string[]>([])
-  const [collteralLtv, setCollteralLtv] = useState<number>(0)
+  const [collateralOracle, setCollateralOracle] = useState<string>('')
+  const [collateralsOracles, setCollateralsOracles] = useState<string[]>([])
+  const [collateralLtv, setCollateralLtv] = useState<number>(0)
   const [ltvs, setLtvs] = useState<number[]>([])
 
-  console.log({ lendingAddress })
+  console.log({ address })
   return (
     <Container>
       <Hero>
@@ -164,10 +162,10 @@ export default function PoolAddress() {
               type="text"
               placeholder=""
               spellCheck="false"
-              onBlur={(event: any) => setCollteralToken(event.target.value)}
+              onBlur={(event: any) => setCollateralToken(event.target.value)}
               style={{ marginLeft: '15px', fontSize: '16px' }}
             />
-            <PlusSquare onClick={() => setCollateralsTokens([...collateralsTokens, collteralToken])} color={'white'} />
+            <PlusSquare onClick={() => setCollateralsTokens([...collateralsTokens, collateralToken])} color={'white'} />
           </InputWrapper>
           <div>
             {collateralsTokens.map((token, index) => (
@@ -185,16 +183,16 @@ export default function PoolAddress() {
               type="text"
               placeholder=""
               spellCheck="false"
-              onBlur={(event: any) => setCollteralOracle(event.target.value)}
+              onBlur={(event: any) => setCollateralOracle(event.target.value)}
               style={{ marginLeft: '15px', fontSize: '16px' }}
             />
             <PlusSquare
-              onClick={() => setCollateralsOracles([...ccollateralsOracles, collteralOracle])}
+              onClick={() => setCollateralsOracles([...collateralsOracles, collateralOracle])}
               color={'white'}
             />
           </InputWrapper>
           <div>
-            {ccollateralsOracles.map((oracle, index) => (
+            {collateralsOracles.map((oracle, index) => (
               <div key={oracle}>
                 {index + 1}-{oracle}
               </div>
@@ -209,10 +207,10 @@ export default function PoolAddress() {
               type="text"
               placeholder=""
               spellCheck="false"
-              onBlur={(event: any) => setCollteralLtv(event.target.value)}
+              onBlur={(event: any) => setCollateralLtv(event.target.value)}
               style={{ marginLeft: '15px', fontSize: '16px' }}
             />
-            <PlusSquare onClick={() => setLtvs([...ltvs, collteralLtv])} color={'white'} />
+            <PlusSquare onClick={() => setLtvs([...ltvs, collateralLtv])} color={'white'} />
           </InputWrapper>
           <div>
             {ltvs.map((ltv, index) => (
@@ -223,8 +221,6 @@ export default function PoolAddress() {
           </div>
         </LendingItem>
       </TopWrapper>
-
-      <Disclaimer />
     </Container>
   )
 }

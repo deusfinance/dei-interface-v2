@@ -25,13 +25,13 @@
     "exact": true
   },
   {
-    "text": "Lending",
-    "path": "/lending",
+    "text": "cLQDR",
+    "path": "/clqdr",
     "exact": true
   },
   {
-    "text": "cLQDR",
-    "path": "/clqdr",
+    "text": "Lending",
+    "path": "/lending",
     "exact": true
   }
 ]

@@ -190,7 +190,7 @@ export const variableInterestRate: AddressMap = {
                 LQDR Tokens ADDRESS
 ===================================== */
 export const CLQDR_ADDRESS: AddressMap = {
-  [SupportedChainId.FANTOM]: '0x814c66594a22404e101fecfecac1012d8d75c156',
+  [SupportedChainId.FANTOM]: '0x814c66594a22404e101FEcfECac1012D8d75C156',
 }
 
 export const LQDR_ADDRESS: AddressMap = {
