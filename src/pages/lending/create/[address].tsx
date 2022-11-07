@@ -10,6 +10,8 @@ import Tableau from 'components/App/StableCoin/Tableau'
 import { InputField, InputWrapper } from 'components/Input'
 import { useState } from 'react'
 import { PlusSquare } from 'react-feather'
+import { ConnectWallet, MainButton } from 'components/App/StableCoin'
+import useWeb3React from 'hooks/useWeb3'
 
 export const Container = styled.div`
   display: flex;
@@ -52,9 +54,19 @@ const LendingItem = styled.div`
   }
 `
 
+const Item = styled.div`
+  border: 1px solid ${({ theme }) => theme.border1};
+  border-radius: 4px;
+  margin: 10px auto;
+  padding: 10px;
+`
+
 export default function PoolAddress() {
+  const { chainId, account } = useWeb3React()
   const router = useRouter()
   const { address } = router.query
+
+  console.log({ address })
 
   // Assets
   const [fraxlendPairCoreAssets, setFraxlendPairCoreAssets] = useState()
@@ -72,7 +84,42 @@ export default function PoolAddress() {
   const [collateralLtv, setCollateralLtv] = useState<number>(0)
   const [ltvs, setLtvs] = useState<number[]>([])
 
-  console.log({ address })
+  function removeToken(assetOrCollateral: string, type: string, address: string | number) {
+    let filteredArray
+    if (assetOrCollateral === 'asset') {
+      if (type === 'token') {
+        filteredArray = assetsTokens.filter((token) => token !== address)
+        setAssetsTokens(filteredArray)
+      } else {
+        filteredArray = assetsOracles.filter((oracle) => oracle !== address)
+        setAssetsOracles(filteredArray)
+      }
+    } else {
+      if (type === 'token') {
+        filteredArray = collateralsTokens.filter((token) => token !== address)
+        setCollateralsTokens(filteredArray)
+      } else {
+        filteredArray = collateralsOracles.filter((token) => token !== address)
+        setCollateralsOracles(filteredArray)
+      }
+    }
+    if (assetOrCollateral === 'ltv') {
+      filteredArray = ltvs.filter((token) => token !== address)
+      setLtvs(filteredArray)
+    }
+  }
+
+  function getActionButton(): JSX.Element | null {
+    if (!chainId || !account) return <ConnectWallet />
+    // if (awaitingLendingConfirmation) {
+    //   return (
+    //     <MainButton>
+    //       Creating {name} pool <DotFlashing />
+    //     </MainButton>
+    //   )
+    // }
+    return <MainButton onClick={() => console.log('')}>Define</MainButton>
+  }
   return (
     <Container>
       <Hero>
@@ -91,7 +138,7 @@ export default function PoolAddress() {
               type="text"
               placeholder=""
               spellCheck="false"
-              onBlur={(event: any) => setFraxlendPairCoreAssets(event.target.value)}
+              onBlur={(event: any) => (event.target.value !== '' ? setFraxlendPairCoreAssets(event.target.value) : '')}
               style={{ marginLeft: '15px', fontSize: '16px' }}
             />
           </InputWrapper>
@@ -107,13 +154,18 @@ export default function PoolAddress() {
               onBlur={(event: any) => setAssetToken(event.target.value)}
               style={{ marginLeft: '15px', fontSize: '16px' }}
             />
-            <PlusSquare onClick={() => setAssetsTokens([...assetsTokens, assetToken])} color={'white'} />
+            <PlusSquare
+              onClick={() => {
+                if (assetToken !== '') setAssetsTokens([...assetsTokens, assetToken])
+              }}
+              color={'white'}
+            />
           </InputWrapper>
           <div>
             {assetsTokens.map((token, index) => (
-              <div key={token}>
+              <Item key={token} onClick={() => removeToken('asset', 'token', token)}>
                 {index + 1}-{token}
-              </div>
+              </Item>
             ))}
           </div>
 
@@ -128,15 +180,21 @@ export default function PoolAddress() {
               onBlur={(event: any) => setAssetOracle(event.target.value)}
               style={{ marginLeft: '15px', fontSize: '16px' }}
             />
-            <PlusSquare onClick={() => setAssetsOracles([...assetsOracles, assetOracle])} color={'white'} />
+            <PlusSquare
+              onClick={() => {
+                if (assetToken !== '') setAssetsOracles([...assetsOracles, assetOracle])
+              }}
+              color={'white'}
+            />
           </InputWrapper>
           <div>
             {assetsOracles.map((oracle, index) => (
-              <div key={oracle}>
+              <Item key={oracle} onClick={() => removeToken('asset', 'oracle', oracle)}>
                 {index + 1}-{oracle}
-              </div>
+              </Item>
             ))}
           </div>
+          {getActionButton()}
         </LendingItem>
         <LendingItem>
           <Tableau title={'Define Collaterals'} imgSrc={MINT_IMG} />
@@ -165,13 +223,18 @@ export default function PoolAddress() {
               onBlur={(event: any) => setCollateralToken(event.target.value)}
               style={{ marginLeft: '15px', fontSize: '16px' }}
             />
-            <PlusSquare onClick={() => setCollateralsTokens([...collateralsTokens, collateralToken])} color={'white'} />
+            <PlusSquare
+              onClick={() => {
+                if (collateralToken !== '') setCollateralsTokens([...collateralsTokens, collateralToken])
+              }}
+              color={'white'}
+            />
           </InputWrapper>
           <div>
             {collateralsTokens.map((token, index) => (
-              <div key={token}>
+              <Item key={token} onClick={() => removeToken('collateral', 'token', token)}>
                 {index + 1}-{token}
-              </div>
+              </Item>
             ))}
           </div>
 
@@ -187,15 +250,17 @@ export default function PoolAddress() {
               style={{ marginLeft: '15px', fontSize: '16px' }}
             />
             <PlusSquare
-              onClick={() => setCollateralsOracles([...collateralsOracles, collateralOracle])}
+              onClick={() => {
+                if (collateralOracle !== '') setCollateralsOracles([...collateralsOracles, collateralOracle])
+              }}
               color={'white'}
             />
           </InputWrapper>
           <div>
             {collateralsOracles.map((oracle, index) => (
-              <div key={oracle}>
+              <Item key={oracle} onClick={() => removeToken('collateral', 'oracle', oracle)}>
                 {index + 1}-{oracle}
-              </div>
+              </Item>
             ))}
           </div>
 
@@ -210,15 +275,23 @@ export default function PoolAddress() {
               onBlur={(event: any) => setCollateralLtv(event.target.value)}
               style={{ marginLeft: '15px', fontSize: '16px' }}
             />
-            <PlusSquare onClick={() => setLtvs([...ltvs, collateralLtv])} color={'white'} />
+            <PlusSquare
+              onClick={() => {
+                const ltv = Number(collateralLtv)
+                console.log({ ltv })
+                if (ltv !== 0) setLtvs([...ltvs, ltv])
+              }}
+              color={'white'}
+            />
           </InputWrapper>
           <div>
             {ltvs.map((ltv, index) => (
-              <div key={ltv}>
+              <Item key={ltv} onClick={() => removeToken('ltv', 'token', ltv)}>
                 {index + 1}-{ltv}
-              </div>
+              </Item>
             ))}
           </div>
+          {getActionButton()}
         </LendingItem>
       </TopWrapper>
     </Container>
