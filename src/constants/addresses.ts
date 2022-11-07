@@ -28,6 +28,10 @@ export const DEI_ADDRESS: AddressMap = {
   ]),
 }
 
+export const AnyDEI_ADDRESS: AddressMap = {
+  ...constructSameAddressMap('0xbB8B2F05A88108F7e9227b954358110c20e97E26', [SupportedChainId.FANTOM]),
+}
+
 /* =====================================
                 DEUS ADDRESS
 ===================================== */
@@ -180,4 +184,15 @@ export const linearInterestRate: AddressMap = {
 
 export const variableInterestRate: AddressMap = {
   [SupportedChainId.FANTOM]: '0xaFA5F25DC364ca916d17930cfDC418BDdc54A200',
+}
+
+/* =====================================
+                LQDR Tokens ADDRESS
+===================================== */
+export const CLQDR_ADDRESS: AddressMap = {
+  [SupportedChainId.FANTOM]: '0x814c66594a22404e101fecfecac1012d8d75c156',
+}
+
+export const LQDR_ADDRESS: AddressMap = {
+  [SupportedChainId.FANTOM]: '0x10b620b2dbAC4Faa7D7FFD71Da486f5D44cd86f9',
 }

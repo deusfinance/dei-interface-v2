@@ -15,6 +15,8 @@ import DEI_BONDER_ABI from 'constants/abi/DEI_Bonder.json'
 import COLLATERAL_POOL_ABI from 'constants/abi/COLLATERAL_POOL_ABI.json'
 import PROXY_MINTER_ABI from 'constants/abi/PROXY_MINTER_ABI.json'
 import DEI_BONDER_V3_ABI from 'constants/abi/DEI_BONDER_V3.json'
+import CLQDR_ABI from 'constants/abi/CLQDR_ABI.json'
+import CLQDR_FULL_ABI from 'constants/abi/CLQDR_FULL_ABI.json'
 import TWAP_ORACLE_ABI from 'constants/abi/TWAP_ORACLE.json'
 import ORACLE_ABI from 'constants/abi/ORACLE_ABI.json'
 import DEIStrategy from 'constants/abi/DEIStrategy.json'
@@ -34,6 +36,8 @@ import {
   DeiBonderV3,
   fujinDeployer,
   tokenManager,
+  CLQDR_ADDRESS,
+  AnyDEI_ADDRESS,
 } from 'constants/addresses'
 
 export function useContract<T extends Contract = Contract>(
@@ -168,4 +172,21 @@ export function useTokenManagerContract() {
   const { chainId } = useWeb3React()
   const address = useMemo(() => (chainId ? tokenManager[chainId] : undefined), [chainId])
   return useContract(address, TOKEN_MANAGER_ABI)
+}
+
+export function useCLQDRContract() {
+  const { chainId } = useWeb3React()
+  const address = useMemo(() => (chainId ? CLQDR_ADDRESS[chainId] : undefined), [chainId])
+  return useContract(address, CLQDR_ABI)
+}
+
+export function usePerpetualEscrowTokenReceiverContract() {
+  const address = '0xcd3563cd8de2602701d5d9f960db30710fcc4053'
+  return useContract(address, CLQDR_FULL_ABI)
+}
+
+export function useAnyDEIContract() {
+  const { chainId } = useWeb3React()
+  const address = useMemo(() => (chainId ? AnyDEI_ADDRESS[chainId] : undefined), [chainId])
+  return useContract(address, ERC20_ABI)
 }

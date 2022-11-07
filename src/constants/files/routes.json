@@ -28,5 +28,10 @@
     "text": "Lending",
     "path": "/lending",
     "exact": true
+  },
+  {
+    "text": "cLQDR",
+    "path": "/clqdr",
+    "exact": true
   }
 ]
