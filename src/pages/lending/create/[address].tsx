@@ -159,6 +159,7 @@ export default function PoolAddress() {
                 if (assetToken !== '') setAssetsTokens([...assetsTokens, assetToken])
               }}
               color={'white'}
+              style={{ cursor: 'pointer' }}
             />
           </InputWrapper>
           <div>
@@ -182,9 +183,10 @@ export default function PoolAddress() {
             />
             <PlusSquare
               onClick={() => {
-                if (assetToken !== '') setAssetsOracles([...assetsOracles, assetOracle])
+                if (assetOracle !== '') setAssetsOracles([...assetsOracles, assetOracle])
               }}
               color={'white'}
+              style={{ cursor: 'pointer' }}
             />
           </InputWrapper>
           <div>
@@ -228,6 +230,7 @@ export default function PoolAddress() {
                 if (collateralToken !== '') setCollateralsTokens([...collateralsTokens, collateralToken])
               }}
               color={'white'}
+              style={{ cursor: 'pointer' }}
             />
           </InputWrapper>
           <div>
@@ -254,6 +257,7 @@ export default function PoolAddress() {
                 if (collateralOracle !== '') setCollateralsOracles([...collateralsOracles, collateralOracle])
               }}
               color={'white'}
+              style={{ cursor: 'pointer' }}
             />
           </InputWrapper>
           <div>
@@ -278,10 +282,10 @@ export default function PoolAddress() {
             <PlusSquare
               onClick={() => {
                 const ltv = Number(collateralLtv)
-                console.log({ ltv })
                 if (ltv !== 0) setLtvs([...ltvs, ltv])
               }}
               color={'white'}
+              style={{ cursor: 'pointer' }}
             />
           </InputWrapper>
           <div>
