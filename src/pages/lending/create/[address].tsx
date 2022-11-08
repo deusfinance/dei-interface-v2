@@ -8,10 +8,13 @@ import MINT_IMG from '/public/static/images/pages/mint/TableauBackground.svg'
 
 import Tableau from 'components/App/StableCoin/Tableau'
 import { InputField, InputWrapper } from 'components/Input'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { PlusSquare } from 'react-feather'
 import { ConnectWallet, MainButton } from 'components/App/StableCoin'
 import useWeb3React from 'hooks/useWeb3'
+import { DotFlashing } from 'components/Icons'
+import useAssetsCallback from 'hooks/useAssetsCallback'
+import useCollateralsCallback from 'hooks/useCollateralsCallback'
 
 export const Container = styled.div`
   display: flex;
@@ -69,20 +72,73 @@ export default function PoolAddress() {
   console.log({ address })
 
   // Assets
-  const [fraxlendPairCoreAssets, setFraxlendPairCoreAssets] = useState()
+  const [fraxlendPairCoreAssets, setFraxlendPairCoreAssets] = useState('')
   const [assetToken, setAssetToken] = useState<string>('')
   const [assetsTokens, setAssetsTokens] = useState<string[]>([])
   const [assetOracle, setAssetOracle] = useState<string>('')
   const [assetsOracles, setAssetsOracles] = useState<string[]>([])
 
   // Collaterals
-  const [fraxlendPairCoreCollaterals, setFraxlendPairCoreCollaterals] = useState()
+  const [fraxlendPairCoreCollaterals, setFraxlendPairCoreCollaterals] = useState('')
   const [collateralToken, setCollateralToken] = useState<string>('')
   const [collateralsTokens, setCollateralsTokens] = useState<string[]>([])
   const [collateralOracle, setCollateralOracle] = useState<string>('')
   const [collateralsOracles, setCollateralsOracles] = useState<string[]>([])
   const [collateralLtv, setCollateralLtv] = useState<number>(0)
   const [ltvs, setLtvs] = useState<number[]>([])
+
+  const [awaitingAssetsConfirmation, setAwaitingAssetsConfirmation] = useState(false)
+  const [awaitingCollateralsConfirmation, setAwaitingCollateralsConfirmation] = useState(false)
+
+  const {
+    state: AssetsCallbackState,
+    callback: AssetsCallback,
+    error: AssetsCallbackError,
+  } = useAssetsCallback(fraxlendPairCoreAssets, assetsTokens, assetsOracles)
+
+  const handleAddAssets = useCallback(async () => {
+    console.log('called handleCrateLending')
+    console.log(AssetsCallbackState, AssetsCallbackError)
+    if (!AssetsCallback) return
+    try {
+      setAwaitingAssetsConfirmation(true)
+      const txHash = await AssetsCallback()
+      setAwaitingAssetsConfirmation(false)
+      console.log({ txHash })
+    } catch (e) {
+      setAwaitingAssetsConfirmation(false)
+      if (e instanceof Error) {
+        console.error(e)
+      } else {
+        console.error(e)
+      }
+    }
+  }, [AssetsCallback, AssetsCallbackError, AssetsCallbackState])
+
+  const {
+    state: CollateralsCallbackState,
+    callback: CollateralsCallback,
+    error: CollateralsCallbackError,
+  } = useCollateralsCallback(fraxlendPairCoreCollaterals, collateralsTokens, collateralsOracles, ltvs)
+
+  const handleAddCollaterals = useCallback(async () => {
+    console.log('called handleCrateLending')
+    console.log(CollateralsCallbackState, CollateralsCallbackError)
+    if (!CollateralsCallback) return
+    try {
+      setAwaitingCollateralsConfirmation(true)
+      const txHash = await CollateralsCallback()
+      setAwaitingCollateralsConfirmation(false)
+      console.log({ txHash })
+    } catch (e) {
+      setAwaitingCollateralsConfirmation(false)
+      if (e instanceof Error) {
+        console.error(e)
+      } else {
+        console.error(e)
+      }
+    }
+  }, [CollateralsCallback, CollateralsCallbackError, CollateralsCallbackState])
 
   function removeToken(assetOrCollateral: string, type: string, address: string | number) {
     let filteredArray
@@ -109,17 +165,30 @@ export default function PoolAddress() {
     }
   }
 
-  function getActionButton(): JSX.Element | null {
+  function getAssetsActionButton(): JSX.Element | null {
     if (!chainId || !account) return <ConnectWallet />
-    // if (awaitingLendingConfirmation) {
-    //   return (
-    //     <MainButton>
-    //       Creating {name} pool <DotFlashing />
-    //     </MainButton>
-    //   )
-    // }
-    return <MainButton onClick={() => console.log('')}>Define</MainButton>
+    if (awaitingAssetsConfirmation) {
+      return (
+        <MainButton>
+          Defining Assets <DotFlashing />
+        </MainButton>
+      )
+    }
+    return <MainButton onClick={() => handleAddAssets()}>Define Assets</MainButton>
   }
+
+  function getCollateralsActionButton(): JSX.Element | null {
+    if (!chainId || !account) return <ConnectWallet />
+    if (awaitingCollateralsConfirmation) {
+      return (
+        <MainButton>
+          Defining Collaterals <DotFlashing />
+        </MainButton>
+      )
+    }
+    return <MainButton onClick={() => handleAddCollaterals()}>Define Collaterals</MainButton>
+  }
+
   return (
     <Container>
       <Hero>
@@ -196,8 +265,9 @@ export default function PoolAddress() {
               </Item>
             ))}
           </div>
-          {getActionButton()}
+          {getAssetsActionButton()}
         </LendingItem>
+
         <LendingItem>
           <Tableau title={'Define Collaterals'} imgSrc={MINT_IMG} />
 
@@ -295,7 +365,7 @@ export default function PoolAddress() {
               </Item>
             ))}
           </div>
-          {getActionButton()}
+          {getCollateralsActionButton()}
         </LendingItem>
       </TopWrapper>
     </Container>

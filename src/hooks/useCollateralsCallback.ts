@@ -8,7 +8,12 @@ import { useTransactionAdder } from 'state/transactions/hooks'
 import { CollateralPoolErrorToUserReadableMessage } from 'utils/parseError'
 import toast from 'react-hot-toast'
 import { calculateGasMargin } from 'utils/web3'
-import { LendingCallbackState } from './useLendingCallback'
+
+export enum CollateralsCallbackState {
+  INVALID = 'INVALID',
+  PENDING = 'PENDING',
+  VALID = 'VALID',
+}
 
 export default function useCollateralsCallback(
   fraxlendPairCore: string,
@@ -16,7 +21,7 @@ export default function useCollateralsCallback(
   oracles: string[],
   ltvs: number[]
 ): {
-  state: LendingCallbackState
+  state: CollateralsCallbackState
   callback: null | (() => Promise<string>)
   error: string | null
 } {
@@ -47,21 +52,21 @@ export default function useCollateralsCallback(
   return useMemo(() => {
     if (!account || !chainId || !library || !tokenManagerContract) {
       return {
-        state: LendingCallbackState.INVALID,
+        state: CollateralsCallbackState.INVALID,
         callback: null,
         error: 'Missing dependencies',
       }
     }
     if (!fraxlendPairCore || !tokens || !oracles || !ltvs) {
       return {
-        state: LendingCallbackState.INVALID,
+        state: CollateralsCallbackState.INVALID,
         callback: null,
         error: 'Missing inputs',
       }
     }
 
     return {
-      state: LendingCallbackState.VALID,
+      state: CollateralsCallbackState.VALID,
       error: null,
       callback: async function onCreate(): Promise<string> {
         console.log('onCreate callback')
@@ -116,8 +121,7 @@ export default function useCollateralsCallback(
           })
           .then((response: TransactionResponse) => {
             console.log(response)
-            // TODO: choose a good summary
-            const summary = `Define Collaterals`
+            const summary = `Define Collaterals for pool ${fraxlendPairCore}`
             addTransaction(response, { summary })
 
             return response.hash
@@ -134,5 +138,16 @@ export default function useCollateralsCallback(
           })
       },
     }
-  }, [account, chainId, library, tokenManagerContract, fraxlendPairCore, tokens, oracles, ltvs])
+  }, [
+    account,
+    chainId,
+    library,
+    tokenManagerContract,
+    fraxlendPairCore,
+    tokens,
+    oracles,
+    ltvs,
+    constructCall,
+    addTransaction,
+  ])
 }

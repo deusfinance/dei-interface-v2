@@ -8,14 +8,19 @@ import { useTransactionAdder } from 'state/transactions/hooks'
 import { CollateralPoolErrorToUserReadableMessage } from 'utils/parseError'
 import toast from 'react-hot-toast'
 import { calculateGasMargin } from 'utils/web3'
-import { LendingCallbackState } from './useLendingCallback'
+
+export enum AssetsCallbackState {
+  INVALID = 'INVALID',
+  PENDING = 'PENDING',
+  VALID = 'VALID',
+}
 
 export default function useAssetsCallback(
   fraxlendPairCore: string,
   tokens: string[],
   oracles: string[]
 ): {
-  state: LendingCallbackState
+  state: AssetsCallbackState
   callback: null | (() => Promise<string>)
   error: string | null
 } {
@@ -46,21 +51,21 @@ export default function useAssetsCallback(
   return useMemo(() => {
     if (!account || !chainId || !library || !tokenManagerContract) {
       return {
-        state: LendingCallbackState.INVALID,
+        state: AssetsCallbackState.INVALID,
         callback: null,
         error: 'Missing dependencies',
       }
     }
     if (!fraxlendPairCore || !tokens || !oracles) {
       return {
-        state: LendingCallbackState.INVALID,
+        state: AssetsCallbackState.INVALID,
         callback: null,
         error: 'Missing inputs',
       }
     }
 
     return {
-      state: LendingCallbackState.VALID,
+      state: AssetsCallbackState.VALID,
       error: null,
       callback: async function onCreate(): Promise<string> {
         console.log('onCreate callback')
@@ -115,8 +120,7 @@ export default function useAssetsCallback(
           })
           .then((response: TransactionResponse) => {
             console.log(response)
-            // TODO: choose a good summary
-            const summary = `Define Assets`
+            const summary = `Define Assets for pool ${fraxlendPairCore}`
             addTransaction(response, { summary })
 
             return response.hash
@@ -133,5 +137,15 @@ export default function useAssetsCallback(
           })
       },
     }
-  }, [account, chainId, library, tokenManagerContract, fraxlendPairCore, tokens, oracles])
+  }, [
+    account,
+    chainId,
+    library,
+    tokenManagerContract,
+    fraxlendPairCore,
+    tokens,
+    oracles,
+    constructCall,
+    addTransaction,
+  ])
 }
