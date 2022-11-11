@@ -28,7 +28,7 @@ const Name = styled.div`
 `
 
 const Value = styled.div`
-  color: #f78c2a;
+  color: ${({ theme }) => theme.green1};
 `
 
 const Text = styled(RowStart)`
