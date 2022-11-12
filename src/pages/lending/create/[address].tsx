@@ -69,17 +69,17 @@ export default function PoolAddress() {
   const router = useRouter()
   const { address } = router.query
 
-  console.log({ address })
+  // console.log({ address })
 
   // Assets
-  const [fraxlendPairCoreAssets, setFraxlendPairCoreAssets] = useState('')
+  const [fraxlendPairCoreAssets, setFraxlendPairCoreAssets] = useState(address?.toString() || '')
   const [assetToken, setAssetToken] = useState<string>('')
   const [assetsTokens, setAssetsTokens] = useState<string[]>([])
   const [assetOracle, setAssetOracle] = useState<string>('')
   const [assetsOracles, setAssetsOracles] = useState<string[]>([])
 
   // Collaterals
-  const [fraxlendPairCoreCollaterals, setFraxlendPairCoreCollaterals] = useState('')
+  const [fraxlendPairCoreCollaterals, setFraxlendPairCoreCollaterals] = useState(address?.toString() || '')
   const [collateralToken, setCollateralToken] = useState<string>('')
   const [collateralsTokens, setCollateralsTokens] = useState<string[]>([])
   const [collateralOracle, setCollateralOracle] = useState<string>('')
@@ -206,6 +206,7 @@ export default function PoolAddress() {
               autoFocus
               type="text"
               placeholder=""
+              defaultValue={fraxlendPairCoreAssets}
               spellCheck="false"
               onBlur={(event: any) => (event.target.value !== '' ? setFraxlendPairCoreAssets(event.target.value) : '')}
               style={{ marginLeft: '15px', fontSize: '16px' }}
@@ -278,6 +279,7 @@ export default function PoolAddress() {
               autoFocus
               type="text"
               placeholder=""
+              defaultValue={fraxlendPairCoreCollaterals}
               spellCheck="false"
               onBlur={(event: any) => setFraxlendPairCoreCollaterals(event.target.value)}
               style={{ marginLeft: '15px', fontSize: '16px' }}
