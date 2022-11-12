@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
 import { SupportedChainId } from 'constants/chains'
-import { ORACLE_BASE_URL } from 'constants/muon'
+import { ORACLE_BASE_URL } from 'constants/misc'
 import { makeHttpRequest } from 'utils/http'
 
 export const DeiSupportedChains = [SupportedChainId.FANTOM]
