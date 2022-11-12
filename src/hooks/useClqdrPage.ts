@@ -75,7 +75,6 @@ export function useFetchFirebirdData(
     try {
       const firebirdAmount = !amount || amount == '' || Number(amount) == 0 ? DefaultAmount : amount
       const amountBN = toBN(firebirdAmount).times(1e18).toFixed()
-      console.log(amount, amountBN)
 
       const { href: url } = new URL(SUB_URL + amountBN, 'https://router.firebird.finance')
       const result = await makeHttpRequest(url)

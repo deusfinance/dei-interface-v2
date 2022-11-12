@@ -199,7 +199,6 @@ export default function Mint() {
       firebird
         ? [
             { name: 'LQDR Price', value: `$${formatBalance(firebird.lqdrPrice, 3)}` },
-            { name: 'cLQDR Price', value: `$${formatBalance(firebird.cLqdrPrice, 3)}` },
             { name: 'cLQDR/LQDR Ratio', value: `${formatBalance(mintRate, 4)}` },
           ]
         : [],
