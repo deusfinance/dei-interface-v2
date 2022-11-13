@@ -13,8 +13,8 @@ import { DotFlashing } from 'components/Icons'
 import useWeb3React from 'hooks/useWeb3'
 import { useLendingCallback } from 'hooks/useLendingCallback'
 import { PlusSquare } from 'react-feather'
-import { useLendingImmutables } from 'hooks/useLendingPage'
-// import { useSupportedChainId } from 'hooks/useSupportedChainId'
+import { useLendingImmutables, useUserDeployedLendingsCount } from 'hooks/useLendingPage'
+import { useRouter } from 'next/router'
 
 export const Container = styled.div`
   display: flex;
@@ -56,10 +56,11 @@ const Item = styled.div`
 
 export default function Create() {
   const { chainId, account } = useWeb3React()
-  // const isSupportedChainId = useSupportedChainId()
+  const router = useRouter()
 
   const [name, setName] = useState('')
-  const [rateContract, setRateContract] = useState<string[]>([])
+  const [rateContract, setRateContract] = useState<string>('')
+  const [capManager, setCapManager] = useState<string>('')
   const [liquidationFee, setLiquidationFee] = useState('')
 
   const [immutables, setImmutables] = useState<string[]>([])
@@ -67,9 +68,9 @@ export default function Create() {
 
   const [isBorrowerWhitelistActive, setIsBorrowerWhitelistActive] = useState(false)
   const [isLenderWhitelistActive, setIsLenderWhitelistActive] = useState(false)
-  // console.log({ name, rateContract, immutables, liquidationFee, isBorrowerWhitelistActive, isLenderWhitelistActive })
 
   const [awaitingLendingConfirmation, setAwaitingLendingConfirmation] = useState(false)
+  const [createdPool, setCreatedPool] = useState(false)
 
   const { immutablesEncoded } = useLendingImmutables(immutables)
 
@@ -80,11 +81,14 @@ export default function Create() {
   } = useLendingCallback(
     name,
     rateContract,
+    capManager,
     immutablesEncoded,
     liquidationFee,
     isBorrowerWhitelistActive,
     isLenderWhitelistActive
   )
+
+  const userDeployedLendingsCount = useUserDeployedLendingsCount()
 
   const handleCreateLending = useCallback(async () => {
     console.log('called handleCrateLending')
@@ -94,6 +98,7 @@ export default function Create() {
       setAwaitingLendingConfirmation(true)
       const txHash = await LendingCallback()
       setAwaitingLendingConfirmation(false)
+      setCreatedPool(true)
       console.log({ txHash })
     } catch (e) {
       setAwaitingLendingConfirmation(false)
@@ -157,6 +162,18 @@ export default function Create() {
         </InputWrapper>
 
         <InputWrapper>
+          <div>Cap Manager:</div>
+          <InputField
+            title="capManager"
+            type="text"
+            placeholder=""
+            spellCheck="false"
+            onBlur={(event: any) => setCapManager(event.target.value)}
+            style={{ marginLeft: '15px', fontSize: '16px' }}
+          />
+        </InputWrapper>
+
+        <InputWrapper>
           <div>Immutable:</div>
           <InputField
             title="Immutable"
@@ -215,6 +232,13 @@ export default function Create() {
 
         <div style={{ marginTop: '20px' }}></div>
         {getActionButton()}
+
+        {createdPool ||
+          (true && (
+            <MainButton onClick={() => router.push(`/lending/create/${Number(userDeployedLendingsCount) - 1}`)}>
+              Go To Next Step
+            </MainButton>
+          ))}
       </TopWrapper>
     </Container>
   )

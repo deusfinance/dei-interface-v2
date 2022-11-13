@@ -20,7 +20,7 @@ import CLQDR_FULL_ABI from 'constants/abi/CLQDR_FULL_ABI.json'
 import TWAP_ORACLE_ABI from 'constants/abi/TWAP_ORACLE.json'
 import ORACLE_ABI from 'constants/abi/ORACLE_ABI.json'
 import DEIStrategy from 'constants/abi/DEIStrategy.json'
-// import FraxlendPair_ABI from 'constants/abi/FraxlendPair.json'
+import FraxlendPair_ABI from 'constants/abi/FraxlendPair.json'
 import FUJIN_MANAGER_ABI from 'constants/abi/FUJIN_MANAGER.json'
 
 import { Providers } from 'constants/providers'
@@ -165,6 +165,10 @@ export function useFujinManagerContract() {
   const { chainId } = useWeb3React()
   const address = useMemo(() => (chainId ? fujinManager[chainId] : undefined), [chainId])
   return useContract(address, FUJIN_MANAGER_ABI)
+}
+
+export function useLendingContract(address: string) {
+  return useContract(address, FraxlendPair_ABI)
 }
 
 export function useCLQDRContract() {

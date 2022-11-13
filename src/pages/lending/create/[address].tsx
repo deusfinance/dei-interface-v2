@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { useRouter } from 'next/router'
+// import { useRouter } from 'next/router'
 
 import Hero from 'components/Hero'
 import ImageWithFallback from 'components/ImageWithFallback'
@@ -14,6 +14,8 @@ import { ConnectWallet, MainButton } from 'components/App/StableCoin'
 import useWeb3React from 'hooks/useWeb3'
 import { DotFlashing } from 'components/Icons'
 import { useAssetsCallback, useCollateralsCallback } from 'hooks/useLendingCallback'
+import { useDeployerLendings } from 'hooks/useLendingPage'
+import { RowCenter } from 'components/Row'
 
 export const Container = styled.div`
   display: flex;
@@ -47,6 +49,19 @@ const TopWrapper = styled.div`
   `}
 `
 
+const Text = styled(RowCenter)`
+  font-weight: 500;
+  font-size: 14px;
+  margin-top: 16px;
+  color: ${({ theme }) => theme.text2};
+`
+
+const TextBright = styled.span`
+  color: ${({ theme }) => theme.text1};
+  cursor: pointer;
+  margin-left: 8px;
+`
+
 const LendingItem = styled.div`
   /* margin: 15px; */
   margin: 0px 30px;
@@ -65,20 +80,21 @@ const Item = styled.div`
 
 export default function PoolAddress() {
   const { chainId, account } = useWeb3React()
-  const router = useRouter()
-  const { address } = router.query
+  // const router = useRouter()
+  // const { addressCount } = router.query
 
+  const address = useDeployerLendings()
   // console.log({ address })
 
   // Assets
-  const [fraxlendPairCoreAssets, setFraxlendPairCoreAssets] = useState(address?.toString() || '')
+  const [fraxlendPairCoreAssets, setFraxlendPairCoreAssets] = useState('')
   const [assetToken, setAssetToken] = useState<string>('')
   const [assetsTokens, setAssetsTokens] = useState<string[]>([])
   const [assetOracle, setAssetOracle] = useState<string>('')
   const [assetsOracles, setAssetsOracles] = useState<string[]>([])
 
   // Collaterals
-  const [fraxlendPairCoreCollaterals, setFraxlendPairCoreCollaterals] = useState(address?.toString() || '')
+  const [fraxlendPairCoreCollaterals, setFraxlendPairCoreCollaterals] = useState('')
   const [collateralToken, setCollateralToken] = useState<string>('')
   const [collateralsTokens, setCollateralsTokens] = useState<string[]>([])
   const [collateralOracle, setCollateralOracle] = useState<string>('')
@@ -192,12 +208,16 @@ export default function PoolAddress() {
     <Container>
       <Hero>
         <ImageWithFallback src={STAKE_ICON} width={224} height={133} alt={`Logo`} />
+        {address && (
+          <Text>
+            The most recent deployed lending address is <TextBright>{address}</TextBright>
+          </Text>
+        )}
       </Hero>
 
       <TopWrapper>
         <LendingItem>
           <Tableau title={'Define Assets'} imgSrc={MINT_IMG} />
-
           <InputWrapper>
             <div>Fraxlend Pair Core:</div>
             <InputField
@@ -238,7 +258,6 @@ export default function PoolAddress() {
               </Item>
             ))}
           </div>
-
           <InputWrapper>
             <div>Oracles:</div>
             <InputField

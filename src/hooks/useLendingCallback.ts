@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react'
 import { TransactionResponse } from '@ethersproject/abstract-provider'
 
 import useWeb3React from './useWeb3'
-import { useFujinManagerContract } from './useContract'
+import { useFujinManagerContract, useLendingContract } from './useContract'
 
 import { useTransactionAdder } from 'state/transactions/hooks'
 import { CollateralPoolErrorToUserReadableMessage } from 'utils/parseError'
@@ -11,7 +11,8 @@ import toast from 'react-hot-toast'
 
 export function useLendingCallback(
   name: string,
-  rateContract: string[],
+  rateContract: string,
+  capManager: string,
   immutables: string,
   liquidationFee: string,
   isBorrowerWhitelistActive: boolean,
@@ -33,15 +34,22 @@ export function useLendingCallback(
         !fujinManagerContract ||
         !name ||
         !rateContract ||
+        !capManager ||
         !immutables ||
-        !liquidationFee ||
-        !isBorrowerWhitelistActive ||
-        !isLenderWhitelistActive
+        !liquidationFee
       ) {
         throw new Error('Missing dependencies.')
       }
 
-      const args = [name, rateContract, immutables, liquidationFee, isBorrowerWhitelistActive, isLenderWhitelistActive]
+      const args = [
+        name,
+        rateContract,
+        capManager,
+        immutables,
+        liquidationFee,
+        isBorrowerWhitelistActive,
+        isLenderWhitelistActive,
+      ]
 
       return {
         address: fujinManagerContract.address,
@@ -59,6 +67,7 @@ export function useLendingCallback(
     fujinManagerContract,
     name,
     rateContract,
+    capManager,
     immutables,
     liquidationFee,
     isBorrowerWhitelistActive,
@@ -73,14 +82,7 @@ export function useLendingCallback(
         error: 'Missing dependencies',
       }
     }
-    if (
-      !name ||
-      !rateContract ||
-      !immutables ||
-      !liquidationFee ||
-      !isBorrowerWhitelistActive ||
-      !isLenderWhitelistActive
-    ) {
+    if (!name || !rateContract || !capManager || !immutables || !liquidationFee) {
       return {
         state: TransactionCallbackState.INVALID,
         callback: null,
@@ -168,10 +170,9 @@ export function useLendingCallback(
     fujinManagerContract,
     name,
     rateContract,
+    capManager,
     immutables,
     liquidationFee,
-    isBorrowerWhitelistActive,
-    isLenderWhitelistActive,
     constructCall,
     addTransaction,
   ])
@@ -188,7 +189,7 @@ export function useAssetsCallback(
 } {
   const { account, chainId, library } = useWeb3React()
   const addTransaction = useTransactionAdder()
-  const tokenManagerContract = useFujinManagerContract()
+  const tokenManagerContract = useLendingContract(fraxlendPairCore)
 
   const constructCall = useCallback(() => {
     try {
@@ -324,7 +325,7 @@ export function useCollateralsCallback(
 } {
   const { account, chainId, library } = useWeb3React()
   const addTransaction = useTransactionAdder()
-  const tokenManagerContract = useFujinManagerContract()
+  const tokenManagerContract = useLendingContract(fraxlendPairCore)
 
   const constructCall = useCallback(() => {
     try {
