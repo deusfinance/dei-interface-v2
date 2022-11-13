@@ -12,6 +12,7 @@ import { ConnectWallet, MainButton } from 'components/App/StableCoin'
 import { DotFlashing } from 'components/Icons'
 import useWeb3React from 'hooks/useWeb3'
 import useLendingCallback from 'hooks/useLendingCallback'
+import { PlusSquare } from 'react-feather'
 // import { useSupportedChainId } from 'hooks/useSupportedChainId'
 
 export const Container = styled.div`
@@ -45,14 +46,23 @@ const TopWrapper = styled.div`
   `}
 `
 
+const Item = styled.div`
+  border: 1px solid ${({ theme }) => theme.border1};
+  border-radius: 4px;
+  margin: 10px auto;
+  padding: 10px;
+`
+
 export default function Create() {
   const { chainId, account } = useWeb3React()
   // const isSupportedChainId = useSupportedChainId()
 
   const [name, setName] = useState('')
   const [rateContract, setRateContract] = useState<string[]>([])
-  const [immutables, setImmutables] = useState('')
   const [liquidationFee, setLiquidationFee] = useState('')
+
+  const [immutables, setImmutables] = useState<string[]>([])
+  const [immutable, setImmutable] = useState('')
 
   const [isBorrowerWhitelistActive, setIsBorrowerWhitelistActive] = useState(false)
   const [isLenderWhitelistActive, setIsLenderWhitelistActive] = useState(false)
@@ -104,6 +114,11 @@ export default function Create() {
     return <MainButton onClick={() => handleCreateLending()}>Create Pool</MainButton>
   }
 
+  function removeImmutable(immutable: string) {
+    const filteredArray = immutables.filter((imm) => imm !== immutable)
+    setImmutables(filteredArray)
+  }
+
   return (
     <Container>
       <Hero>
@@ -142,13 +157,28 @@ export default function Create() {
           <div>Immutable:</div>
           <InputField
             title="Immutable"
+            autoFocus
             type="text"
             placeholder=""
             spellCheck="false"
-            onBlur={(event: any) => setImmutables(event.target.value)}
+            onBlur={(event: any) => setImmutable(event.target.value)}
             style={{ marginLeft: '15px', fontSize: '16px' }}
           />
+          <PlusSquare
+            onClick={() => {
+              if (immutable !== '') setImmutables([...immutables, immutable])
+            }}
+            color={'white'}
+            style={{ cursor: 'pointer' }}
+          />
         </InputWrapper>
+        <div>
+          {immutables.map((immutable, index) => (
+            <Item key={immutable} onClick={() => removeImmutable(immutable)}>
+              {index + 1}-{immutable}
+            </Item>
+          ))}
+        </div>
 
         <InputWrapper>
           <div>Liquidation Fee:</div>
