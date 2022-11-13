@@ -166,12 +166,8 @@ export const escrow: AddressMap = {
 /* =====================================
               LENDING
 ===================================== */
-export const fujinDeployer: AddressMap = {
-  [SupportedChainId.FANTOM]: '0x3Fbf00c62850A0613146579711adE0A6ff41F969',
-}
-
-export const tokenManager: AddressMap = {
-  [SupportedChainId.FANTOM]: '0x10Bb0ECDe027f5aEcd1e4D8677DA3d886442a95D',
+export const fujinManager: AddressMap = {
+  [SupportedChainId.FANTOM]: '0xabeB268658c20De970FbE4655E3C685bb7705090',
 }
 
 export const staticInterestRate: AddressMap = {

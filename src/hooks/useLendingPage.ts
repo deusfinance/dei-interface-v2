@@ -1,39 +1,32 @@
 import { useMemo } from 'react'
-// import { formatUnits } from '@ethersproject/units'
-
-import { DEUS_TOKEN } from 'constants/tokens'
-import { BN_TEN, toBN } from 'utils/numbers'
-
 import { useSingleContractMultipleMethods } from 'state/multicall/hooks'
+import { useFujinManagerContract } from 'hooks/useContract'
+import useWeb3React from './useWeb3'
 
-import { useDeusPrice } from 'hooks/useCoingeckoPrice'
-import { useOracleContract } from 'hooks/useContract'
-import { useGetOracleAddress } from './useMintPage'
-
-export function useGetDeusPrice(): string {
-  const address = useGetOracleAddress()
-  const contract = useOracleContract(address)
-  const coinGeckoDeusPrice = useDeusPrice()
+export function useLendingImmutables(immutables: string[]): {
+  immutablesEncoded: string
+} {
+  const { account } = useWeb3React()
+  const contract = useFujinManagerContract()
 
   const call = useMemo(
-    () => [
-      {
-        methodName: 'getPrice',
-        callInputs: [],
-      },
-    ],
-    []
+    () =>
+      !account || immutables.length !== 3
+        ? []
+        : [
+            {
+              methodName: 'getLendingImmutables',
+              callInputs: [account, ...immutables],
+            },
+          ],
+    [account, immutables]
   )
-  const [deusPriceRes] = useSingleContractMultipleMethods(contract, call)
+  const [res] = useSingleContractMultipleMethods(contract, call)
 
-  const deusPrice =
-    !deusPriceRes || !deusPriceRes.result
-      ? coinGeckoDeusPrice
-        ? toBN(coinGeckoDeusPrice).times(BN_TEN.pow(DEUS_TOKEN.decimals)).toFixed(0)
-        : ''
-      : toBN(deusPriceRes.result[0].toString())
-          .times(BN_TEN.pow(DEUS_TOKEN.decimals - 6))
-          .toFixed(0)
+  const immutablesEncoded = !res || !res.result ? '' : res.result[0].toString()
+  console.log({ immutablesEncoded })
 
-  return deusPrice
+  return {
+    immutablesEncoded,
+  }
 }

@@ -20,8 +20,8 @@ import CLQDR_FULL_ABI from 'constants/abi/CLQDR_FULL_ABI.json'
 import TWAP_ORACLE_ABI from 'constants/abi/TWAP_ORACLE.json'
 import ORACLE_ABI from 'constants/abi/ORACLE_ABI.json'
 import DEIStrategy from 'constants/abi/DEIStrategy.json'
-import FUJIN_DEPLOYER_ABI from 'constants/abi/FUJIN_DEPLOYER.json'
-import TOKEN_MANAGER_ABI from 'constants/abi/TOKEN_MANAGER.json'
+// import FraxlendPair_ABI from 'constants/abi/FraxlendPair.json'
+import FUJIN_MANAGER_ABI from 'constants/abi/FUJIN_MANAGER.json'
 
 import { Providers } from 'constants/providers'
 import {
@@ -34,8 +34,7 @@ import {
   MintProxy,
   TwapOracle,
   DeiBonderV3,
-  fujinDeployer,
-  tokenManager,
+  fujinManager,
   CLQDR_ADDRESS,
   AnyDEI_ADDRESS,
 } from 'constants/addresses'
@@ -162,16 +161,10 @@ export function useDeiBonderV3Contract() {
   return useContract(address, DEI_BONDER_V3_ABI)
 }
 
-export function useFujinDeployerContract() {
+export function useFujinManagerContract() {
   const { chainId } = useWeb3React()
-  const address = useMemo(() => (chainId ? fujinDeployer[chainId] : undefined), [chainId])
-  return useContract(address, FUJIN_DEPLOYER_ABI)
-}
-
-export function useTokenManagerContract() {
-  const { chainId } = useWeb3React()
-  const address = useMemo(() => (chainId ? tokenManager[chainId] : undefined), [chainId])
-  return useContract(address, TOKEN_MANAGER_ABI)
+  const address = useMemo(() => (chainId ? fujinManager[chainId] : undefined), [chainId])
+  return useContract(address, FUJIN_MANAGER_ABI)
 }
 
 export function useCLQDRContract() {

@@ -13,8 +13,7 @@ import { PlusSquare } from 'react-feather'
 import { ConnectWallet, MainButton } from 'components/App/StableCoin'
 import useWeb3React from 'hooks/useWeb3'
 import { DotFlashing } from 'components/Icons'
-import useAssetsCallback from 'hooks/useAssetsCallback'
-import useCollateralsCallback from 'hooks/useCollateralsCallback'
+import { useAssetsCallback, useCollateralsCallback } from 'hooks/useLendingCallback'
 
 export const Container = styled.div`
   display: flex;

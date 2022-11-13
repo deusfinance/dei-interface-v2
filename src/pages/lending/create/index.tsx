@@ -11,8 +11,9 @@ import MINT_IMG from '/public/static/images/pages/mint/TableauBackground.svg'
 import { ConnectWallet, MainButton } from 'components/App/StableCoin'
 import { DotFlashing } from 'components/Icons'
 import useWeb3React from 'hooks/useWeb3'
-import useLendingCallback from 'hooks/useLendingCallback'
+import { useLendingCallback } from 'hooks/useLendingCallback'
 import { PlusSquare } from 'react-feather'
+import { useLendingImmutables } from 'hooks/useLendingPage'
 // import { useSupportedChainId } from 'hooks/useSupportedChainId'
 
 export const Container = styled.div`
@@ -70,6 +71,8 @@ export default function Create() {
 
   const [awaitingLendingConfirmation, setAwaitingLendingConfirmation] = useState(false)
 
+  const { immutablesEncoded } = useLendingImmutables(immutables)
+
   const {
     state: LendingCallbackState,
     callback: LendingCallback,
@@ -77,7 +80,7 @@ export default function Create() {
   } = useLendingCallback(
     name,
     rateContract,
-    immutables,
+    immutablesEncoded,
     liquidationFee,
     isBorrowerWhitelistActive,
     isLenderWhitelistActive
