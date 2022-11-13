@@ -72,7 +72,7 @@ export default function Create() {
   const [isLenderWhitelistActive, setIsLenderWhitelistActive] = useState(false)
 
   const [awaitingLendingConfirmation, setAwaitingLendingConfirmation] = useState(false)
-  const [createdPool, setCreatedPool] = useState(false)
+  const [createdPool, setCreatedPool] = useState(true)
 
   const { immutablesEncoded } = useLendingImmutables(immutables)
 
@@ -100,7 +100,7 @@ export default function Create() {
       setAwaitingLendingConfirmation(true)
       const txHash = await LendingCallback()
       setAwaitingLendingConfirmation(false)
-      setCreatedPool(true)
+      // setCreatedPool(true)
       console.log({ txHash })
     } catch (e) {
       setAwaitingLendingConfirmation(false)
@@ -233,12 +233,11 @@ export default function Create() {
         <div style={{ marginTop: '20px' }}></div>
         {getActionButton()}
 
-        {createdPool ||
-          (true && (
-            <MainButton onClick={() => router.push(`/lending/create/${Number(userDeployedLendingsCount) - 1}`)}>
-              Go To Next Step
-            </MainButton>
-          ))}
+        {createdPool && (
+          <MainButton onClick={() => router.push(`/lending/create/${Number(userDeployedLendingsCount) - 1}`)}>
+            Go To Next Step
+          </MainButton>
+        )}
       </TopWrapper>
     </Container>
   )

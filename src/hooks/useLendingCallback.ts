@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react'
 import { TransactionResponse } from '@ethersproject/abstract-provider'
 
 import useWeb3React from './useWeb3'
-import { useFujinManagerContract, useLendingContract } from './useContract'
+import { useFujinManagerContract } from './useContract'
 
 import { useTransactionAdder } from 'state/transactions/hooks'
 import { CollateralPoolErrorToUserReadableMessage } from 'utils/parseError'
@@ -189,7 +189,7 @@ export function useAssetsCallback(
 } {
   const { account, chainId, library } = useWeb3React()
   const addTransaction = useTransactionAdder()
-  const tokenManagerContract = useLendingContract(fraxlendPairCore)
+  const tokenManagerContract = useFujinManagerContract()
 
   const constructCall = useCallback(() => {
     try {
@@ -201,7 +201,7 @@ export function useAssetsCallback(
 
       return {
         address: tokenManagerContract.address,
-        calldata: tokenManagerContract.interface.encodeFunctionData('defineAssets', args) ?? '',
+        calldata: tokenManagerContract.interface.encodeFunctionData('defineLendingAssets', args) ?? '',
         value: 0,
       }
     } catch (error) {
@@ -325,7 +325,7 @@ export function useCollateralsCallback(
 } {
   const { account, chainId, library } = useWeb3React()
   const addTransaction = useTransactionAdder()
-  const tokenManagerContract = useLendingContract(fraxlendPairCore)
+  const tokenManagerContract = useFujinManagerContract()
 
   const constructCall = useCallback(() => {
     try {
@@ -337,7 +337,7 @@ export function useCollateralsCallback(
 
       return {
         address: tokenManagerContract.address,
-        calldata: tokenManagerContract.interface.encodeFunctionData('defineCollaterals', args) ?? '',
+        calldata: tokenManagerContract.interface.encodeFunctionData('defineLendingCollaterals', args) ?? '',
         value: 0,
       }
     } catch (error) {

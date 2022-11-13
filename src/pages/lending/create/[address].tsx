@@ -59,9 +59,9 @@ const Text = styled(RowCenter)`
 
 const TextBright = styled.span`
   color: ${({ theme }) => theme.text1};
-  cursor: pointer;
   display: flex;
   margin-left: 8px;
+  margin-right: 4px;
 `
 
 const LendingItem = styled.div`
@@ -86,7 +86,6 @@ export default function PoolAddress() {
   // const { addressCount } = router.query
 
   const address = useDeployerLendings()
-  // console.log({ address })
 
   // Assets
   const [fraxlendPairCoreAssets, setFraxlendPairCoreAssets] = useState('')
@@ -114,7 +113,7 @@ export default function PoolAddress() {
   } = useAssetsCallback(fraxlendPairCoreAssets, assetsTokens, assetsOracles)
 
   const handleAddAssets = useCallback(async () => {
-    console.log('called handleCrateLending')
+    console.log('called handleAddAssets')
     console.log(AssetsCallbackState, AssetsCallbackError)
     if (!AssetsCallback) return
     try {
@@ -139,7 +138,7 @@ export default function PoolAddress() {
   } = useCollateralsCallback(fraxlendPairCoreCollaterals, collateralsTokens, collateralsOracles, ltvs)
 
   const handleAddCollaterals = useCallback(async () => {
-    console.log('called handleCrateLending')
+    console.log('called handleAddCollaterals')
     console.log(CollateralsCallbackState, CollateralsCallbackError)
     if (!CollateralsCallback) return
     try {
@@ -212,11 +211,8 @@ export default function PoolAddress() {
         <ImageWithFallback src={STAKE_ICON} width={224} height={133} alt={`Logo`} />
         {address && (
           <Text>
-            The most recent deployed lending address is{' '}
-            <TextBright>
-              {address}
-              <Copy toCopy={address} text={''} />
-            </TextBright>
+            The most recent deployed lending address is <TextBright>{address}</TextBright>
+            <Copy toCopy={address} text={''} />
           </Text>
         )}
       </Hero>
@@ -231,7 +227,6 @@ export default function PoolAddress() {
               autoFocus
               type="text"
               placeholder=""
-              defaultValue={fraxlendPairCoreAssets}
               spellCheck="false"
               onBlur={(event: any) => (event.target.value !== '' ? setFraxlendPairCoreAssets(event.target.value) : '')}
               style={{ marginLeft: '15px', fontSize: '16px' }}
@@ -303,7 +298,6 @@ export default function PoolAddress() {
               autoFocus
               type="text"
               placeholder=""
-              defaultValue={fraxlendPairCoreCollaterals}
               spellCheck="false"
               onBlur={(event: any) => setFraxlendPairCoreCollaterals(event.target.value)}
               style={{ marginLeft: '15px', fontSize: '16px' }}
