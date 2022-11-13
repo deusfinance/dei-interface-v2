@@ -248,8 +248,12 @@ export default function Mint() {
           <BottomWrapper>
             <InfoItem name={'Management Fee'} value={`${burningFee}%`} />
             <InfoItem
-              name={'Firebird'}
-              value={amount && Number(amount) > 0 ? `${formatBalance(firebird?.cLqdrAmountOut, 6)} cLQDR` : '-'}
+              name={'Rate on Firebird'}
+              value={
+                amount && Number(amount) > 0
+                  ? `${formatBalance(amount, 6)} LQDR = ${formatBalance(firebird?.cLqdrAmountOut, 6)} cLQDR`
+                  : '-'
+              }
             />
           </BottomWrapper>
         </Wrapper>
