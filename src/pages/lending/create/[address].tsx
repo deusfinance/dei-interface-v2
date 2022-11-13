@@ -16,6 +16,7 @@ import { DotFlashing } from 'components/Icons'
 import { useAssetsCallback, useCollateralsCallback } from 'hooks/useLendingCallback'
 import { useDeployerLendings } from 'hooks/useLendingPage'
 import { RowCenter } from 'components/Row'
+import Copy from 'components/Copy'
 
 export const Container = styled.div`
   display: flex;
@@ -59,6 +60,7 @@ const Text = styled(RowCenter)`
 const TextBright = styled.span`
   color: ${({ theme }) => theme.text1};
   cursor: pointer;
+  display: flex;
   margin-left: 8px;
 `
 
@@ -210,7 +212,11 @@ export default function PoolAddress() {
         <ImageWithFallback src={STAKE_ICON} width={224} height={133} alt={`Logo`} />
         {address && (
           <Text>
-            The most recent deployed lending address is <TextBright>{address}</TextBright>
+            The most recent deployed lending address is{' '}
+            <TextBright>
+              {address}
+              <Copy toCopy={address} text={''} />
+            </TextBright>
           </Text>
         )}
       </Hero>

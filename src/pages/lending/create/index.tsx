@@ -15,6 +15,7 @@ import { useLendingCallback } from 'hooks/useLendingCallback'
 import { PlusSquare } from 'react-feather'
 import { useLendingImmutables, useUserDeployedLendingsCount } from 'hooks/useLendingPage'
 import { useRouter } from 'next/router'
+import { isAddress } from 'utils/validate'
 
 export const Container = styled.div`
   display: flex;
@@ -52,6 +53,7 @@ const Item = styled.div`
   border-radius: 4px;
   margin: 10px auto;
   padding: 10px;
+  cursor: pointer;
 `
 
 export default function Create() {
@@ -122,9 +124,13 @@ export default function Create() {
     return <MainButton onClick={() => handleCreateLending()}>Create Pool</MainButton>
   }
 
-  function removeImmutable(immutable: string) {
-    const filteredArray = immutables.filter((imm) => imm !== immutable)
+  function removeImmutable(immutableIndex: number) {
+    const filteredArray = immutables.filter((_, index) => index !== immutableIndex)
     setImmutables(filteredArray)
+  }
+
+  function addImmutable(address: string) {
+    if (immutable !== '' && isAddress(address)) setImmutables([...immutables, immutable])
   }
 
   return (
@@ -184,17 +190,11 @@ export default function Create() {
             onBlur={(event: any) => setImmutable(event.target.value)}
             style={{ marginLeft: '15px', fontSize: '16px' }}
           />
-          <PlusSquare
-            onClick={() => {
-              if (immutable !== '') setImmutables([...immutables, immutable])
-            }}
-            color={'white'}
-            style={{ cursor: 'pointer' }}
-          />
+          <PlusSquare onClick={() => addImmutable(immutable)} color={'white'} style={{ cursor: 'pointer' }} />
         </InputWrapper>
         <div>
           {immutables.map((immutable, index) => (
-            <Item key={immutable} onClick={() => removeImmutable(immutable)}>
+            <Item key={index} onClick={() => removeImmutable(index)}>
               {index + 1}-{immutable}
             </Item>
           ))}
