@@ -6,6 +6,7 @@ import { RowBetween, RowCenter, RowStart } from 'components/Row'
 import ImageWithFallback from 'components/ImageWithFallback'
 import { ExternalLink } from 'components/Link'
 import { BuyButton, BuyButtonWrapper, Wrapper } from '.'
+import { LQDR_ADDRESS, CLQDR_ADDRESS } from 'constants/addresses'
 
 const MainWrapper = styled(Wrapper)`
   height: 170px;
@@ -62,7 +63,10 @@ export default function FirebirdBox1({ ratio }: { ratio: string | number }) {
       </RatioWrap>
       <RowCenter>
         <BuyButtonWrapper>
-          <ExternalLink href={'https://app.firebird.finance/swap'} style={{ textDecoration: 'none' }}>
+          <ExternalLink
+            href={`https://app.firebird.finance/swap?inputCurrency=${LQDR_ADDRESS[250]}&outputCurrency=${CLQDR_ADDRESS[250]}&net=250`}
+            style={{ textDecoration: 'none' }}
+          >
             <BuyButton>Buy cLQDR from Firebird</BuyButton>
           </ExternalLink>
         </BuyButtonWrapper>
