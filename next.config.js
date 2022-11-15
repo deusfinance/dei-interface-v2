@@ -9,6 +9,11 @@ module.exports = {
         destination: '/dashboard',
         permanent: true,
       },
+      {
+        source: '/bonds',
+        destination: '/bond',
+        permanent: true,
+      },
     ]
   },
 }

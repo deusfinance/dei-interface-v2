@@ -98,24 +98,39 @@ export function useHasPendingApproval(tokenAddress: string | null | undefined, s
   )
 }
 
-export function useHasPendingVest(hash: string | null | undefined) {
+export function useHasPendingVest(hash: string | null | undefined, isSingleTx?: boolean) {
   const allTransactions = useAllTransactions()
-  return useMemo(
-    () =>
-      typeof hash === 'string' &&
-      Object.keys(allTransactions).some((hash) => {
-        const tx = allTransactions[hash]
+  return useMemo(() => {
+    if (!isSingleTx) {
+      return (
+        typeof hash === 'string' &&
+        Object.keys(allTransactions).some((hash) => {
+          const tx = allTransactions[hash]
+          if (!tx) return false
+          if (tx.receipt) {
+            return false
+          } else {
+            const vest = tx.vest
+            if (!vest) return false
+            return vest.hash === hash && isTransactionRecent(tx)
+          }
+        })
+      )
+    } else {
+      const selectedHash = Object.keys(allTransactions).find((hashItem) => hashItem === hash)
+      if (selectedHash) {
+        const tx = allTransactions[selectedHash]
         if (!tx) return false
-        if (tx.receipt) {
+        if (tx?.receipt) {
           return false
         } else {
-          const vest = tx.vest
+          const vest = tx?.vest
           if (!vest) return false
           return vest.hash === hash && isTransactionRecent(tx)
         }
-      }),
-    [allTransactions, hash]
-  )
+      }
+    }
+  }, [allTransactions, hash, isSingleTx])
 }
 
 // export function useHasPendingMint(addressMap: string | null | undefined) {

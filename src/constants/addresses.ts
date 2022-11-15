@@ -28,6 +28,10 @@ export const DEI_ADDRESS: AddressMap = {
   ]),
 }
 
+export const AnyDEI_ADDRESS: AddressMap = {
+  ...constructSameAddressMap('0xbB8B2F05A88108F7e9227b954358110c20e97E26', [SupportedChainId.FANTOM]),
+}
+
 /* =====================================
                 DEUS ADDRESS
 ===================================== */
@@ -73,6 +77,10 @@ export const USDCReserves1: AddressMap = {
 
 export const USDCReserves2: AddressMap = {
   [SupportedChainId.FANTOM]: '0xfd74e924dc96c72ba52439e28ce780908a630d13',
+}
+
+export const USDCReserves3: AddressMap = {
+  [SupportedChainId.FANTOM]: '0x37a7a2a5FCB0DF6B8138fec7730825E92f9D8207',
 }
 
 /* =====================================
@@ -139,10 +147,29 @@ export const DeiBondRedeemNFT: AddressMap = {
   [SupportedChainId.FANTOM]: '0x44656b5f0454b3ddbc03471dc391056331f19476',
 }
 
+export const DeiBonderV3: AddressMap = {
+  [SupportedChainId.FANTOM]: '0x3360d56bcd109216214ef477728A0ED1b7d36A6F',
+}
+
 export const TwapOracle: AddressMap = {
   [SupportedChainId.FANTOM]: '0x733570cB9e76fD5293c028e124FC9F0a2234F07c',
 }
 
 export const AMO: AddressMap = {
   [SupportedChainId.FANTOM]: '0x521cde355a65144679d15e8aedb5f423778899c9',
+}
+
+export const escrow: AddressMap = {
+  [SupportedChainId.FANTOM]: '0xFb05aedf0caC43C6ce291D2d1be1eab568D155B4',
+}
+
+/* =====================================
+                LQDR Tokens ADDRESS
+===================================== */
+export const CLQDR_ADDRESS: AddressMap = {
+  [SupportedChainId.FANTOM]: '0x814c66594a22404e101fecfecac1012d8d75c156',
+}
+
+export const LQDR_ADDRESS: AddressMap = {
+  [SupportedChainId.FANTOM]: '0x10b620b2dbAC4Faa7D7FFD71Da486f5D44cd86f9',
 }

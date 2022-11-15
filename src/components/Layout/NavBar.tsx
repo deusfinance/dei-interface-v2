@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { isMobileOnly as isMobile } from 'react-device-detect'
 
-import routes from './routes.json'
+import routes from 'constants/files/routes.json'
 import { Z_INDEX } from 'theme'
 
 import { sendEvent } from 'components/analytics'

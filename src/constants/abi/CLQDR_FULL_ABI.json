@@ -1,0 +1,336 @@
+[
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_escrowToken", "type": "address" },
+      { "internalType": "address", "name": "_recipient", "type": "address" },
+      { "internalType": "address", "name": "_treasury", "type": "address" },
+      { "internalType": "address", "name": "_oracle", "type": "address" }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "internalType": "address", "name": "_sender", "type": "address" },
+      { "indexed": true, "internalType": "bytes32", "name": "_actionId", "type": "bytes32" },
+      { "indexed": true, "internalType": "bytes4", "name": "_selector", "type": "bytes4" },
+      { "indexed": false, "internalType": "bytes", "name": "_data", "type": "bytes" },
+      { "indexed": false, "internalType": "uint256", "name": "_release", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "_expiration", "type": "uint256" }
+    ],
+    "name": "AnnounceDelayedAction",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "internalType": "address", "name": "_sender", "type": "address" },
+      { "indexed": true, "internalType": "bytes32", "name": "_actionId", "type": "bytes32" }
+    ],
+    "name": "ExecuteDelayedAction",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "internalType": "address", "name": "previousOwner", "type": "address" },
+      { "indexed": true, "internalType": "address", "name": "newOwner", "type": "address" }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "uint256", "name": "_oldBurningRate", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "_newBurningRate", "type": "uint256" }
+    ],
+    "name": "UpdateBurningRate",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "address", "name": "_oldExcessRecipient", "type": "address" },
+      { "indexed": false, "internalType": "address", "name": "_newExcessRecipient", "type": "address" }
+    ],
+    "name": "UpdateExcessRecipient",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "uint256", "name": "_oldMinimalGulpFactor", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "_newMinimalGulpFactor", "type": "uint256" }
+    ],
+    "name": "UpdateMinimalGulpFactor",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "address", "name": "_oldOracle", "type": "address" },
+      { "indexed": false, "internalType": "address", "name": "_newOracle", "type": "address" }
+    ],
+    "name": "UpdateOracle",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "address", "name": "_oldRecipient", "type": "address" },
+      { "indexed": false, "internalType": "address", "name": "_newRecipient", "type": "address" }
+    ],
+    "name": "UpdateRecipient",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "uint256", "name": "_oldRewardCap", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "_newRewardCap", "type": "uint256" }
+    ],
+    "name": "UpdateRewardCap",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "address", "name": "_oldTreasury", "type": "address" },
+      { "indexed": false, "internalType": "address", "name": "_newTreasury", "type": "address" }
+    ],
+    "name": "UpdateTreasury",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_token", "type": "address" },
+      { "internalType": "uint256", "name": "_minAmount", "type": "uint256" },
+      { "internalType": "address", "name": "_vault", "type": "address" },
+      { "internalType": "bytes32", "name": "_poolId", "type": "bytes32" },
+      { "internalType": "address", "name": "_target", "type": "address" }
+    ],
+    "name": "addBalancerV2Token",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_token", "type": "address" },
+      { "internalType": "uint256", "name": "_minAmount", "type": "uint256" },
+      { "internalType": "address", "name": "_router", "type": "address" },
+      { "internalType": "address", "name": "_target", "type": "address" }
+    ],
+    "name": "addUniswapV2Token",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "bytes", "name": "_data", "type": "bytes" }],
+    "name": "announceDelayedAction",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "burningRate",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "escrowToken",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "excessRecipient",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  { "inputs": [], "name": "gulp", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+  {
+    "inputs": [],
+    "name": "minimalGulpFactor",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "oracle",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "recipient",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "_token", "type": "address" }],
+    "name": "recoverLostFunds",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "_token", "type": "address" }],
+    "name": "removeToken",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  { "inputs": [], "name": "renounceOwnership", "outputs": [], "stateMutability": "nonpayable", "type": "function" },
+  {
+    "inputs": [],
+    "name": "rewardCap",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "_newBurningRate", "type": "uint256" }],
+    "name": "setBurningRate",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "_newExcessRecipient", "type": "address" }],
+    "name": "setExcessRecipient",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "_newMinimalGulpFactor", "type": "uint256" }],
+    "name": "setMinimalGulpFactor",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "_newOracle", "type": "address" }],
+    "name": "setOracle",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "_newRecipient", "type": "address" }],
+    "name": "setRecipient",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "_newRewardCap", "type": "uint256" }],
+    "name": "setRewardCap",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "_newTreasury", "type": "address" }],
+    "name": "setTreasury",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "name": "swapInfo",
+    "outputs": [
+      { "internalType": "uint256", "name": "index", "type": "uint256" },
+      { "internalType": "uint256", "name": "minAmount", "type": "uint256" },
+      { "internalType": "enum PerpetualEscrowTokenReceiver.SwapType", "name": "swapType", "type": "uint8" },
+      { "internalType": "address", "name": "router", "type": "address" },
+      { "internalType": "address", "name": "vault", "type": "address" },
+      {
+        "components": [
+          { "internalType": "bytes32", "name": "poolId", "type": "bytes32" },
+          { "internalType": "enum IVault.SwapKind", "name": "kind", "type": "uint8" },
+          { "internalType": "address", "name": "assetIn", "type": "address" },
+          { "internalType": "address", "name": "assetOut", "type": "address" },
+          { "internalType": "uint256", "name": "amount", "type": "uint256" },
+          { "internalType": "bytes", "name": "userData", "type": "bytes" }
+        ],
+        "internalType": "struct IVault.SingleSwap",
+        "name": "swap",
+        "type": "tuple"
+      },
+      {
+        "components": [
+          { "internalType": "address", "name": "sender", "type": "address" },
+          { "internalType": "bool", "name": "fromInternalBalance", "type": "bool" },
+          { "internalType": "address payable", "name": "recipient", "type": "address" },
+          { "internalType": "bool", "name": "toInternalBalance", "type": "bool" }
+        ],
+        "internalType": "struct IVault.FundManagement",
+        "name": "funds",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "name": "tokens",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "tokensCount",
+    "outputs": [{ "internalType": "uint256", "name": "_tokensCount", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "newOwner", "type": "address" }],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "treasury",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_token", "type": "address" },
+      { "internalType": "uint256", "name": "_minAmount", "type": "uint256" },
+      { "internalType": "address", "name": "_routerOrVault", "type": "address" },
+      { "internalType": "bytes32", "name": "_ignoredOrPoolId", "type": "bytes32" }
+    ],
+    "name": "updateTokenParameters",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]

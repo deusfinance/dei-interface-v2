@@ -1,17 +1,17 @@
 import { useMemo } from 'react'
-import { formatUnits } from '@ethersproject/units'
 
+import { BN_ZERO, toBN } from 'utils/numbers'
+import { getRemainingTime } from 'utils/time'
+import { formatBalance } from 'utils/numbers'
+import { ZERO_ADDRESS } from 'constants/addresses'
 import { BDEI_TOKEN } from 'constants/tokens'
 
 import { useSingleContractMultipleMethods } from 'state/multicall/hooks'
 import { useCurrencyBalance } from 'state/wallet/hooks'
 import useWeb3React from 'hooks/useWeb3'
-import { useDeiBonderContract } from 'hooks/useContract'
+import { useDeiBonderContract, useDeiBonderV3Contract } from 'hooks/useContract'
 import { useOwnerBondNFTs } from 'hooks/useOwnerNfts'
-
-import { toBN } from 'utils/numbers'
-import { getRemainingTime } from 'utils/time'
-import { formatBalance } from 'utils/numbers'
+import BigNumber from 'bignumber.js'
 
 export type BondNFT = {
   tokenId: number
@@ -20,59 +20,65 @@ export type BondNFT = {
 }
 
 export function useBonderData(): {
-  deiBonded: number
   bondingPaused: boolean
+  oracle: string
 } {
   const contract = useDeiBonderContract()
   const calls = [
     {
-      methodName: 'bondingPaused',
+      methodName: 'paused',
       callInputs: [],
     },
     {
-      methodName: 'deiBonded',
+      methodName: 'oracle',
       callInputs: [],
     },
   ]
-  const [bondingPaused, deiBonded] = useSingleContractMultipleMethods(contract, calls)
+  const [bondingPaused, oracleResp] = useSingleContractMultipleMethods(contract, calls)
 
-  const { bondingPausedValue, deiBondedValue } = useMemo(
+  const { bondingPausedValue, oracleAddress } = useMemo(
     () => ({
       bondingPausedValue: bondingPaused?.result ? bondingPaused?.result[0] : false,
-      deiBondedValue: deiBonded?.result ? toBN(formatUnits(deiBonded.result[0], 18)).toNumber() : 0,
+      oracleAddress: oracleResp?.result ? oracleResp?.result[0] : ZERO_ADDRESS,
     }),
-    [bondingPaused, deiBonded]
+    [bondingPaused, oracleResp]
   )
 
   return {
     bondingPaused: bondingPausedValue,
-    deiBonded: deiBondedValue,
+    oracle: oracleAddress,
   }
 }
 
-export function useGetRedeemTime(amountIn: string): {
-  redeemTime: number
+export function useUserClaimableDEI(): {
+  claimedDEI: BigNumber
 } {
-  const contract = useDeiBonderContract()
-  const amountInBN = toBN(amountIn).times(1e18).toFixed()
+  const contract = useDeiBonderV3Contract()
+  const { account } = useWeb3React()
 
-  const calls = [
-    {
-      methodName: 'getRedeemTime',
-      callInputs: [amountInBN],
-    },
-  ]
-  const [redeemTime] = useSingleContractMultipleMethods(contract, calls)
+  const calls = useMemo(
+    () =>
+      !account
+        ? []
+        : [
+            {
+              methodName: 'claimableDEI',
+              callInputs: [account],
+            },
+          ],
+    [account]
+  )
+  const [claimableDEI] = useSingleContractMultipleMethods(contract, calls)
 
-  const { redeemTimeValue } = useMemo(
+  const { claimableDEIValue } = useMemo(
     () => ({
-      redeemTimeValue: redeemTime?.result ? toBN(redeemTime.result[0].toString()).times(1000).toNumber() : 0,
+      claimableDEIValue: claimableDEI?.result ? toBN(claimableDEI.result[0].toString()).div(1e18) : BN_ZERO,
     }),
-    [redeemTime]
+    [claimableDEI]
   )
 
   return {
-    redeemTime: redeemTimeValue,
+    claimedDEI: claimableDEIValue,
   }
 }
 
@@ -126,7 +132,7 @@ export function useUserNextMaturity(): {
 export function useUserBondStats(): {
   redeemTime: number | null
   deiAmount: number | null
-  bDeiBalance: number | null
+  bDeiBalance: BigNumber | null
   totalDeiClaimed: number | null
   claimableDei: number | null
 } {
@@ -137,7 +143,7 @@ export function useUserBondStats(): {
   return {
     redeemTime,
     deiAmount,
-    bDeiBalance: bdeiCurrencyBalance ? Number(bdeiCurrencyBalance.toExact()) : null,
+    bDeiBalance: bdeiCurrencyBalance ? toBN(bdeiCurrencyBalance.toExact()) : null,
     totalDeiClaimed: 0,
     claimableDei: 0,
   }
