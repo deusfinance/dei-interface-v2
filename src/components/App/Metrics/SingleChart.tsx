@@ -8,7 +8,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { isMobile } from 'react-device-detect'
 import { ResponsiveContainer, YAxis, AreaChart, Area, CartesianGrid, Tooltip } from 'recharts'
 import styled, { useTheme } from 'styled-components'
-import { toBN } from 'utils/numbers'
+import { formatAmount, toBN } from 'utils/numbers'
+import { trpc } from 'utils/trpc'
 
 const Wrapper = styled.div`
   display: flex;
@@ -169,6 +170,13 @@ export default function SingleChart({
   const [chartData, setChartData] = useState<ChartData[]>(tempData)
   const [currentTimeFrame, setCurrentTimeFrame] = useState('1M')
 
+  // const apiData = useMemo(() => {
+  //   const res = trpc.chartData.useQuery({ id: uniqueID, timeframe: currentTimeFrame })
+  //   return res.data
+  // }, [currentTimeFrame, uniqueID])
+
+  //console.log('api data', apiData)
+
   const fetchData = useCallback(async () => {
     const fetcher = async (skip: number, timestamp: number): Promise<ChartData[]> => {
       const DEFAULT_RETURN: ChartData[] = []
@@ -298,9 +306,11 @@ export default function SingleChart({
         date.getUTCHours() +
         ':' +
         date.getMinutes()
+
+      const formattedValue = formatAmount(parseInt(payload[0].value))
       return (
         <div className="custom-tooltip">
-          <p className="label">{`${label}: ${payload[0].value}`}</p>
+          <p className="label">{`${label}: ${formattedValue}`}</p>
           <p className="intro">{`${formattedDate}`}</p>
         </div>
       )

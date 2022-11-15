@@ -14,6 +14,7 @@ import { useAnalyticsReporter } from '../components/analytics'
 
 import store from '../state'
 import { getLibrary } from '../utils/library'
+import { trpc } from '../utils/trpc'
 
 const Updaters = dynamic(() => import('../state/updaters'), { ssr: false })
 const Web3ProviderNetwork = dynamic(() => import('../components/Web3ProviderNetwork'), {
@@ -24,7 +25,7 @@ if (typeof window !== 'undefined' && !!window.ethereum) {
   window.ethereum.autoRefreshOnNetworkChange = false
 }
 
-export default function MyApp({ Component, pageProps }: AppProps) {
+const MyApp = ({ Component, pageProps }: AppProps) => {
   useAnalyticsReporter()
   return (
     <ReduxProvider store={store}>
@@ -48,3 +49,5 @@ export default function MyApp({ Component, pageProps }: AppProps) {
     </ReduxProvider>
   )
 }
+
+export default trpc.withTRPC(MyApp)

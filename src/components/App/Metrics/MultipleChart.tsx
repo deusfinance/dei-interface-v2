@@ -8,7 +8,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { isMobile } from 'react-device-detect'
 import { ResponsiveContainer, YAxis, AreaChart, Area, CartesianGrid, Tooltip } from 'recharts'
 import styled, { useTheme } from 'styled-components'
-import { toBN } from 'utils/numbers'
+import { formatAmount, toBN } from 'utils/numbers'
 
 const Wrapper = styled.div`
   display: flex;
@@ -408,9 +408,10 @@ export default function MultipleChart({
         date.getUTCHours() +
         ':' +
         date.getMinutes()
+      const formattedValue = formatAmount(parseInt(payload[0].value))
       return (
         <div className="custom-tooltip">
-          <p className="label">{`${currentTab}: ${payload[0].value}`}</p>
+          <p className="label">{`${currentTab}: ${formattedValue}`}</p>
           <p className="intro">{`${formattedDate}`}</p>
         </div>
       )
