@@ -1,8 +1,9 @@
 import { formatUnits } from '@ethersproject/units'
 import { getDeiStatsApolloClient } from 'apollo/client/deiStats'
-import { ChartData, DEI_REDEMPTION_RATIOS, DEI_RESERVES_BALANCE, DEI_SUPPLY } from 'apollo/queries'
+import { getDeusStatsApolloClient } from 'apollo/client/deusStats'
+import { ChartData, DEI_REDEMPTION_RATIOS, DEI_RESERVES_BALANCE, DEI_SUPPLY, DEUS_SUPPLY } from 'apollo/queries'
 import Dropdown from 'components/DropDown'
-import { DEI_TOKEN, USDC_TOKEN } from 'constants/tokens'
+import { DEI_TOKEN, DEUS_TOKEN, USDC_TOKEN } from 'constants/tokens'
 import useWeb3React from 'hooks/useWeb3'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { isMobile } from 'react-device-detect'
@@ -312,6 +313,23 @@ export default function MultipleChart({
             return result.map((obj) => ({
               ...obj,
               value: toBN(formatUnits(obj.value, DEI_TOKEN.decimals)).toFixed(0),
+            }))
+          }
+          case 'DEUSSupply': {
+            const client = getDeusStatsApolloClient(chainId)
+            if (!client) return DEFAULT_RETURN
+
+            const { data } = await client.query({
+              query: DEUS_SUPPLY,
+              variables: { skip, timestamp },
+              fetchPolicy: 'no-cache',
+            })
+
+            const result: ChartData[] = data.deussupplies as ChartData[]
+
+            return result.map((obj) => ({
+              ...obj,
+              value: toBN(formatUnits(obj.value, DEUS_TOKEN.decimals)).toFixed(0),
             }))
           }
           default:

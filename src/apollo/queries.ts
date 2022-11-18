@@ -161,6 +161,21 @@ export const DEI_SUPPLY = gql`
   }
 `
 
+export const DEUS_SUPPLY = gql`
+  query getDeusSupply($skip: Int!, $timestamp: Int!) {
+    deussupplies(
+      first: 1000
+      skip: $skip
+      where: { timestamp_lt: $timestamp }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      timestamp
+      value
+    }
+  }
+`
+
 export const SUBGRAPH_HEALTH = gql`
   query health($subgraphName: String!) {
     indexingStatusForCurrentVersion(subgraphName: $subgraphName) {

@@ -1,6 +1,7 @@
 import { formatUnits } from '@ethersproject/units'
+import { getDeusStatsApolloClient } from 'apollo/client/deusStats'
 import { getVeDeusStatsApolloClient } from 'apollo/client/veDeusStats'
-import { ChartData, VEDEUS_LOCKED_SUPPLY, VEDEUS_SUPPLY } from 'apollo/queries'
+import { ChartData, DEUS_SUPPLY, VEDEUS_LOCKED_SUPPLY, VEDEUS_SUPPLY } from 'apollo/queries'
 import Dropdown from 'components/DropDown'
 import { VEDEUS_TOKEN } from 'constants/tokens'
 import useWeb3React from 'hooks/useWeb3'
@@ -171,7 +172,7 @@ export default function SingleChart({
   const [currentTimeFrame, setCurrentTimeFrame] = useState('1M')
 
   // const apiData = useMemo(() => {
-  //   const res = trpc.chartData.useQuery({ id: uniqueID, timeframe: currentTimeFrame })
+  //   const res = trpc.chartData.useQuery({ chainId: chainId, id: uniqueID, timeframe: currentTimeFrame })
   //   return res.data
   // }, [currentTimeFrame, uniqueID])
 
