@@ -20,6 +20,8 @@ import CLQDR_FULL_ABI from 'constants/abi/CLQDR_FULL_ABI.json'
 import TWAP_ORACLE_ABI from 'constants/abi/TWAP_ORACLE.json'
 import ORACLE_ABI from 'constants/abi/ORACLE_ABI.json'
 import DEIStrategy from 'constants/abi/DEIStrategy.json'
+import MasterChefV2_ABI from 'constants/abi/MasterChefV2.json'
+import SWAP_ABI from 'constants/abi/SWAP_ABI.json'
 
 import { Providers } from 'constants/providers'
 import {
@@ -35,6 +37,8 @@ import {
   CLQDR_ADDRESS,
   AnyDEI_ADDRESS,
 } from 'constants/addresses'
+import { StakingType } from 'constants/stakingPools'
+import { StablePoolType } from 'constants/sPools'
 
 export function useContract<T extends Contract = Contract>(
   addressOrAddressMap: string | null | undefined,
@@ -173,4 +177,14 @@ export function useAnyDEIContract() {
   const { chainId } = useWeb3React()
   const address = useMemo(() => (chainId ? AnyDEI_ADDRESS[chainId] : undefined), [chainId])
   return useContract(address, ERC20_ABI)
+}
+
+export function useMasterChefContract(stakingPool: StakingType) {
+  const address = useMemo(() => (stakingPool ? stakingPool.masterChef : undefined), [stakingPool])
+  return useContract(address, MasterChefV2_ABI)
+}
+
+export function useStablePoolContract(pool: StablePoolType) {
+  const address = useMemo(() => (pool ? pool.swapFlashLoan : undefined), [pool])
+  return useContract(address, SWAP_ABI)
 }

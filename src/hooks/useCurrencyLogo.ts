@@ -38,3 +38,12 @@ export default function useCurrencyLogo(contractOrSymbol?: string): string {
     }
   }, [contractOrSymbol])
 }
+
+export function useCurrencyLogos(contractsOrSymbols: string[]): string[] {
+  return useMemo(() => {
+    return contractsOrSymbols?.map((contract) => {
+      if (contract && contract in LogoMap) return LogoMap[contract]
+      return `https://assets.spooky.fi/tokens/${contract}.png`
+    })
+  }, [contractsOrSymbols])
+}

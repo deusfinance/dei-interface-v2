@@ -28,5 +28,10 @@
     "text": "cLQDR",
     "path": "/clqdr",
     "exact": true
+  },
+  {
+    "text": "Stake",
+    "path": "/stake",
+    "exact": true
   }
 ]
