@@ -7,6 +7,7 @@ import USDC_LOGO from '/public/static/images/tokens/usdc.svg'
 import BDEI_LOGO from '/public/static/images/tokens/bdei.svg'
 import LQDR_ICON from '/public/static/images/tokens/lqdr.svg'
 import CLQDR_ICON from '/public/static/images/tokens/clqdr.svg'
+import vDEUS_LOGO from '/public/static/images/tokens/vdeus.svg'
 
 const LogoMap: { [contractOrSymbol: string]: string } = {
   // symbols
@@ -22,6 +23,7 @@ const LogoMap: { [contractOrSymbol: string]: string } = {
   '0x05f6ea7F80BDC07f6E0728BbBBAbebEA4E142eE8': BDEI_LOGO,
   '0x10b620b2dbAC4Faa7D7FFD71Da486f5D44cd86f9': LQDR_ICON,
   '0x814c66594a22404e101FEcfECac1012D8d75C156': CLQDR_ICON,
+  '0x953Cd009a490176FcEB3a26b9753e6F01645ff28': vDEUS_LOGO,
   usdc: USDC_LOGO,
   deus: DEUS_LOGO,
 }

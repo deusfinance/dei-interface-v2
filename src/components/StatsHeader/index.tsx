@@ -204,8 +204,8 @@ export default function StatsHeader({
 }: {
   items: { name: string; value: string | number; link?: string }[]
   hasBox?: boolean
-  pid: number
-  onSelectDropDown: (index: number) => void
+  pid?: number
+  onSelectDropDown?: (index: number) => void
 }) {
   const dropDownOptions = Stakings.map((staking) => {
     const { name, tokens, id } = staking
@@ -215,15 +215,17 @@ export default function StatsHeader({
 
   return (
     <Wrapper>
-      <ItemBox2 rightBorder>
-        <Dropdown2
-          options={dropDownOptions}
-          defaultValue={pid}
-          placeholder={''}
-          onSelect={onSelectDropDown}
-          width={'250px'}
-        />
-      </ItemBox2>
+      {onSelectDropDown && (
+        <ItemBox2 rightBorder>
+          <Dropdown2
+            options={dropDownOptions}
+            defaultValue={pid}
+            placeholder={''}
+            onSelect={onSelectDropDown}
+            width={'250px'}
+          />
+        </ItemBox2>
+      )}
 
       {items.map((item, index) => (
         <Item key={index} rightBorder={index < items.length - 1 || hasBox}>

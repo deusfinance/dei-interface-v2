@@ -66,7 +66,7 @@ export const Stakings: StakingType[] = [
     rewardTokens: [DEUS_TOKEN],
     masterChef: MasterChefV2[SupportedChainId.FANTOM],
     pid: 0,
-    active: true,
+    active: false,
   },
   {
     id: 2,
