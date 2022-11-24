@@ -62,9 +62,9 @@ export default function Stake() {
       <Hero>{/* <ImageWithFallback src={STAKE_ICON} width={224} height={133} alt={`Logo`} /> */}</Hero>
 
       {Stakings.map((staking, index) => {
-        const { pid, tokens, lpToken, rewardTokens, active, name } = staking
+        const { tokens, lpToken, rewardTokens, active, name, id } = staking
         return (
-          <TopWrapper key={index} active={active} onClick={active ? () => handleClick(pid) : undefined}>
+          <TopWrapper key={index} active={active} onClick={active ? () => handleClick(id) : undefined}>
             <StakeBox active={active}>
               <TokenBox tokens={tokens} title={name} />
               {active ? <InfoCell title={'APR'} text={'4%'} /> : <DisableCell>Disable</DisableCell>}

@@ -35,7 +35,7 @@ export default function StakingPage() {
   const router = useRouter()
   const { pid } = router.query
   const pidNumber = Number(pid)
-  const pool = Stakings.find((pool) => pool.pid === pidNumber) || Stakings[0]
+  const pool = Stakings.find((pool) => pool.id === pidNumber) || Stakings[0]
 
   const items = useMemo(
     () => [
