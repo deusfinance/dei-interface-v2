@@ -226,13 +226,13 @@ function TableRow({ staking, index, isMobile }: { staking: StakingType; index: n
   const [ClaimAwaitingConfirmation, setClaimAwaitingConfirmation] = useState(false)
   const [pendingTxHash, setPendingTxHash] = useState('')
 
-  const { pid, tokens, rewardTokens, active, name } = staking
+  const { id, tokens, rewardTokens, active, name } = staking
 
   const router = useRouter()
 
   const handleClick = useCallback(() => {
-    router.push(`/stake/${pid}`)
-  }, [pid, router])
+    router.push(`/stake/${id}`)
+  }, [id, router])
 
   // const veDEUSContract = useVeDeusContract()
   // const addTransaction = useTransactionAdder()

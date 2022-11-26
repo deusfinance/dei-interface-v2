@@ -41,7 +41,7 @@ export default function StakingPage() {
     () => [
       { name: 'APR', value: '4%' },
       { name: 'TVL', value: '$4.58m' },
-      { name: 'Your Stake', value: `3,120.00 ${pool?.lpToken?.symbol}` },
+      { name: 'Total Staked', value: `3,120.00 ${pool?.lpToken?.symbol}` },
     ],
     [pool?.lpToken?.symbol]
   )
