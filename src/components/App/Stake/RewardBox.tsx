@@ -3,13 +3,13 @@ import ImageWithFallback from 'components/ImageWithFallback'
 import { useCurrencyLogos } from 'hooks/useCurrencyLogo'
 import { isMobile } from 'react-device-detect'
 import styled from 'styled-components'
-import { TitleWrap } from './InfoCell'
 
 const TokenCell = styled.div`
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
   gap: 10px;
+  margin-top: 12px;
 `
 
 const TokenWrap = styled.div`
@@ -27,18 +27,17 @@ export const DeusText = styled.span`
 `
 
 function getImageSize() {
-  return isMobile ? 22 : 30
+  return isMobile ? 16 : 18
 }
 
 export default function RewardBox({ tokens }: { tokens: Token[] }) {
   const tokensAddress = tokens.map((token) => token.address)
   const logos = useCurrencyLogos(tokensAddress)
 
-  const rewardAmount = 1.24
+  const rewardAmount = Math.random() < 0.5 ? 2.4 : 0
 
   return (
     <TokenCell>
-      <TitleWrap active={!!rewardAmount}>Reward</TitleWrap>
       {tokens.map((token, index) => {
         return (
           <TokenWrap key={index}>

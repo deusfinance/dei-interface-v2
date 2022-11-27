@@ -41,7 +41,7 @@ const NumericalWrapper = styled.div`
   width: 100%;
   font-size: 24px;
   position: relative;
-  color: ${({ theme }) => theme.text1};
+  color: ${({ theme }) => theme.red1};
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
     font-size: 14px;

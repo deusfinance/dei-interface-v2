@@ -66,7 +66,7 @@ export const Stakings: StakingType[] = [
     rewardTokens: [DEUS_TOKEN],
     masterChef: MasterChefV2[SupportedChainId.FANTOM],
     pid: 0,
-    active: true,
+    active: false,
   },
   {
     id: 2,
@@ -97,7 +97,7 @@ export const Stakings: StakingType[] = [
     rewardTokens: [DEUS_TOKEN, VDEUS_TOKEN],
     masterChef: vDeusMasterChefV2[SupportedChainId.FANTOM],
     pid: 0,
-    active: true,
+    active: false,
   },
   {
     id: 5,
@@ -107,7 +107,7 @@ export const Stakings: StakingType[] = [
     rewardTokens: [DEUS_TOKEN, VDEUS_TOKEN],
     masterChef: vDeusMasterChefV2[SupportedChainId.FANTOM],
     pid: 1,
-    active: true,
+    active: false,
   },
   {
     id: 6,
@@ -117,6 +117,6 @@ export const Stakings: StakingType[] = [
     rewardTokens: [DEUS_TOKEN, VDEUS_TOKEN],
     masterChef: vDeusMasterChefV2[SupportedChainId.FANTOM],
     pid: 2,
-    active: true,
+    active: false,
   },
 ]

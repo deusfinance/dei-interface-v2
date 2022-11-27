@@ -1,14 +1,17 @@
 import { Token } from '@sushiswap/core-sdk'
 import ImageWithFallback from 'components/ImageWithFallback'
 import { useCurrencyLogos } from 'hooks/useCurrencyLogo'
+import useWeb3React from 'hooks/useWeb3'
 import { isMobile } from 'react-device-detect'
-import styled from 'styled-components'
+import styled, { useTheme } from 'styled-components'
+import { ChainInfo } from 'constants/chainInfo'
 
 const TokenCell = styled.div`
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
   flex-basis: 18%;
+  margin-left: 15px;
 
   & > * {
     &:first-child {
@@ -17,19 +20,20 @@ const TokenCell = styled.div`
   }
 `
 
-const TokenWrap = styled.div`
-  /* display: flex; */
-  /* flex-flow: row nowrap; */
-  /* align-items: center; */
-  /* gap: 10px; */
+const TokensWrap = styled.div`
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: start;
+  gap: 6px;
   /* margin: 0 10px; */
 `
 
-const MultipleImageWrapper = styled.div`
+const MultipleImageWrapper = styled.div<{ isSingle?: boolean }>`
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
   justify-content: center;
+  padding-right: ${({ isSingle }) => (isSingle ? '20px' : '0')};
 
   & > * {
     &:nth-child(2) {
@@ -58,13 +62,15 @@ function getImageSize() {
   return isMobile ? 22 : 30
 }
 
-export default function TokenBox({ tokens, title }: { tokens: Token[]; title: string }) {
+export default function TokenBox({ tokens, title, active }: { tokens: Token[]; title: string; active: boolean }) {
   const tokensAddress = tokens.map((token) => token.address)
   const logos = useCurrencyLogos(tokensAddress)
+  const theme = useTheme()
+  const { chainId } = useWeb3React()
 
   return (
     <TokenCell>
-      <MultipleImageWrapper>
+      <MultipleImageWrapper isSingle={logos.length === 1}>
         {logos.map((logo, index) => {
           return (
             <ImageWithFallback
@@ -78,15 +84,18 @@ export default function TokenBox({ tokens, title }: { tokens: Token[]; title: st
           )
         })}
       </MultipleImageWrapper>
-      <span>{title}</span>
-      {/* {tokens.map((token, index) => {
-        return (
-          <TokenWrap key={index}>
-            <span>{token.name}</span>
-            {index + 1 !== tokens.length && <span>-</span>}
-          </TokenWrap>
-        )
-      })} */}
+      <TokensWrap>
+        <span>{title}</span>
+        {active && chainId ? (
+          <div>
+            <span style={{ color: theme.blue2 }}>{ChainInfo[chainId].label}</span>
+            <span> | </span>
+            <span style={{ color: theme.green1 }}>Live</span>
+          </div>
+        ) : (
+          <span style={{ color: theme.red1 }}>Closed.</span>
+        )}
+      </TokensWrap>
     </TokenCell>
   )
 }
