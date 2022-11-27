@@ -97,7 +97,7 @@ export const MainButton = styled(PrimaryButton)`
   `}
 `
 
-const GradientButtonWrap = styled(PrimaryButton)`
+export const GradientButtonWrap = styled(PrimaryButton)`
   background: ${({ theme }) => theme.specialBG1};
   border-radius: 12px;
   padding: 2px;

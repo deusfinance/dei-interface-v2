@@ -6,7 +6,7 @@ import CLQDR_LOGO from '/public/static/images/pages/swap/tableauBackground.svg'
 // import CLQDR_ICON from '/public/static/images/pages/swap/tableauBackground.svg'
 
 import { Swap as SwapIcon } from 'components/Icons'
-import { LQDR_TOKEN, cLQDR_TOKEN, DEUS_TOKEN } from 'constants/tokens'
+import { LQDR_TOKEN, cLQDR_TOKEN, DEUS_TOKEN, DEI_TOKEN, BDEI_TOKEN } from 'constants/tokens'
 import { CLQDR_ADDRESS } from 'constants/addresses'
 import { tryParseAmount } from 'utils/parse'
 import { formatBalance, toBN } from 'utils/numbers'
@@ -23,7 +23,7 @@ import useDebounce from 'hooks/useDebounce'
 import { DotFlashing } from 'components/Icons'
 import Hero from 'components/Hero'
 import InputBox from 'components/InputBox'
-import StatsHeader from 'components/App/CLqdr/StatsHeader'
+import StatsHeader from 'components/StatsHeader'
 import DefaultReviewModal from 'components/App/CLqdr/DefaultReviewModal'
 import {
   BottomWrapper,
@@ -38,6 +38,8 @@ import WarningModal from 'components/ReviewModal/Warning'
 import AdvancedOptions from 'components/ReviewModal/AdvancedOptions'
 import { useUserSlippageTolerance, useSetUserSlippageTolerance } from 'state/user/hooks'
 import TokensModal from 'components/App/Swap/TokensModal'
+import { Currency, Token } from '@sushiswap/core-sdk'
+import LimitedSwap from 'components/App/Swap/LimitedSwap'
 
 const Wrapper = styled(MainWrapper)`
   margin-top: 16px;
@@ -49,16 +51,17 @@ export default function Swap() {
 
   const [isOpenReviewModal, toggleReviewModal] = useState(false)
   const [isOpenWarningModal, toggleWarningModal] = useState(false)
-  const [isOpenTokensModal, toggleTokensModal] = useState(true)
+  const [isOpenTokensModal, toggleTokensModal] = useState(false)
 
   // const [currentField, setCurrentField] = useState<Field>(Field.INPUT)
   // const currentFieldSide = useMemo(() => (currentField === Field.INPUT ? Field.OUTPUT : Field.INPUT), [currentField])
   // const { allowedSlippage, parsedAmount, currencies, trade, inputError: swapInputError } = useDerivedSwapInfo()
 
-  // const [inputCurrency, setInputCurrency] = useState<Token>(DEI_TOKEN)
-  // const [outputCurrency, setOutputCurrency] = useState<Token>(BDEI_TOKEN)
-  const inputCurrency = LQDR_TOKEN
-  const outputCurrency = cLQDR_TOKEN
+  const [inputCurrency, setInputCurrency] = useState<Token>(DEI_TOKEN)
+  const [outputCurrency, setOutputCurrency] = useState<Token>(BDEI_TOKEN)
+  // const inputCurrency = LQDR_TOKEN
+  // const outputCurrency = cLQDR_TOKEN
+  const [field, setField] = useState('')
 
   const inputCurrencyBalance = useCurrencyBalance(account ?? undefined, inputCurrency)
 
@@ -176,6 +179,16 @@ export default function Swap() {
   const slippageInfo =
     'Setting a high slippage tolerance can help transactions succeed, but you may not get such a good price. Use with caution.'
 
+  function setToken(currency: Currency) {
+    field === 'input' ? setInputCurrency(currency as unknown as Token) : setOutputCurrency(currency as unknown as Token)
+    setField('')
+  }
+
+  function handleClick() {
+    const currency = inputCurrency
+    setInputCurrency(outputCurrency)
+    setOutputCurrency(currency)
+  }
   return (
     <>
       <Container>
@@ -184,6 +197,7 @@ export default function Swap() {
           <StatsHeader items={items} />
         </Hero>
 
+        <LimitedSwap />
         <Wrapper>
           <Tableau title={'Swap'} />
 
@@ -194,11 +208,11 @@ export default function Swap() {
               onChange={setAmount}
               onTokenSelect={() => {
                 toggleTokensModal(true)
-                // setInputTokenIndex(inputTokenIndex)
+                setField('input')
               }}
             />
 
-            <SwapIcon />
+            <SwapIcon onClick={handleClick} />
 
             <InputBox
               currency={outputCurrency}
@@ -206,7 +220,7 @@ export default function Swap() {
               onChange={() => console.log('')}
               onTokenSelect={() => {
                 toggleTokensModal(true)
-                // setInputTokenIndex(inputTokenIndex)
+                setField('output')
               }}
               disabled
             />
@@ -230,20 +244,10 @@ export default function Swap() {
 
       <TokensModal
         isOpen={isOpenTokensModal}
-        tokens={[
-          LQDR_TOKEN,
-          cLQDR_TOKEN,
-          DEUS_TOKEN,
-          LQDR_TOKEN,
-          cLQDR_TOKEN,
-          DEUS_TOKEN,
-          LQDR_TOKEN,
-          cLQDR_TOKEN,
-          DEUS_TOKEN,
-        ]}
+        tokens={[LQDR_TOKEN, cLQDR_TOKEN, DEUS_TOKEN, DEI_TOKEN]}
         toggleModal={(action: boolean) => toggleTokensModal(action)}
-        selectedTokenIndex={2}
-        setToken={(index) => setAmount(index.toString())}
+        selectedTokenIndex={field === 'input' ? inputCurrency : outputCurrency}
+        setToken={setToken}
       />
 
       <WarningModal

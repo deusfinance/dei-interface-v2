@@ -69,7 +69,7 @@ export default function TokenBox({
   currency: Currency
   index: number
   toggleModal: (action: boolean) => void
-  setToken: (index: number) => void
+  setToken: (currency: Currency) => void
   disabled?: boolean
 }) {
   const { account } = useWeb3React()
@@ -92,7 +92,7 @@ export default function TokenBox({
       disabled={disabled}
       onClick={() => {
         toggleModal(false)
-        if (!disabled) setToken(index)
+        if (!disabled) setToken(currency)
       }}
     >
       <div>
@@ -105,6 +105,7 @@ export default function TokenBox({
             round
           />
           <Symbol disabled={disabled}>{currency?.symbol}</Symbol>
+          {/* TODO: add handle click for add token to metamask */}
           <ImageWithFallback src={METAMASK_LOGO} width={20} height={20} alt={'metamask_logo'} />
         </Row>
       </div>

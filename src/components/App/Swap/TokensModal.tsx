@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { Modal, ModalHeader } from 'components/Modal'
 import TokenBox from 'components/App/StableCoin/TokenBox'
 import Column from 'components/Column'
-import { Token } from '@sushiswap/core-sdk'
+import { Currency, Token } from '@sushiswap/core-sdk'
 
 const Wrapper = styled.div`
   display: flex;
@@ -12,7 +12,7 @@ const Wrapper = styled.div`
   gap: 0.8rem;
   padding: 0px 0px 28px 0px;
   /* width: 424px; */
-  height: 433px;
+  max-height: 433px;
   overflow: scroll;
 
   & > * {
@@ -43,8 +43,8 @@ export default function TokensModal({
 }: {
   isOpen: boolean
   toggleModal: (action: boolean) => void
-  selectedTokenIndex: number
-  setToken: (index: number) => void
+  selectedTokenIndex: Token
+  setToken: (currency: Currency) => void
   tokens: Token[]
 }) {
   return (
@@ -60,7 +60,7 @@ export default function TokensModal({
                 toggleModal={toggleModal}
                 currency={token}
                 setToken={setToken}
-                disabled={index === selectedTokenIndex}
+                disabled={token.address === selectedTokenIndex.address}
               />
             )
           })}
