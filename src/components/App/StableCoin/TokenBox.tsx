@@ -3,6 +3,8 @@ import styled from 'styled-components'
 import { Currency } from '@sushiswap/core-sdk'
 import { isMobile } from 'react-device-detect'
 
+import METAMASK_LOGO from '/public/static/images/MetamaskLogo.svg'
+
 import { useCurrencyBalance } from 'state/wallet/hooks'
 import useCurrencyLogo from 'hooks/useCurrencyLogo'
 import useWeb3React from 'hooks/useWeb3'
@@ -21,7 +23,7 @@ const Wrapper = styled(RowBetween).attrs({
   gap: 10px;
   padding: 0px 1rem;
   margin: 0 auto;
-  border: 1px solid ${({ theme, disabled }) => (disabled ? theme.bg2 : theme.border3)};
+  border: 2px solid ${({ theme, disabled }) => (disabled ? theme.bg2 : theme.bg4)};
   background: ${({ theme }) => theme.bg1};
 
   &:hover {
@@ -52,7 +54,7 @@ const Balance = styled.div<{ disabled?: boolean }>`
 `
 
 const Symbol = styled.p<{ disabled?: boolean }>`
-  margin-left: 8px;
+  margin: 0px 8px;
   font-size: 1rem;
   color: ${({ theme, disabled }) => (disabled ? theme.text3 : theme.text1)};
 `
@@ -82,7 +84,7 @@ export default function TokenBox({
   // const balanceDisplay2 = useMemo(() => currencyBalance2?.toSignificant(6), [currencyBalance2])
 
   function getImageSize() {
-    return isMobile ? 28 : 32
+    return isMobile ? 32 : 36
   }
 
   return (
@@ -103,6 +105,7 @@ export default function TokenBox({
             round
           />
           <Symbol disabled={disabled}>{currency?.symbol}</Symbol>
+          <ImageWithFallback src={METAMASK_LOGO} width={20} height={20} alt={'metamask_logo'} />
         </Row>
       </div>
       <Balance disabled={disabled}>{balanceDisplay ? balanceDisplay : '0.00'}</Balance>

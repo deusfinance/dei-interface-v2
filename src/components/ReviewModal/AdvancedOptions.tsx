@@ -11,13 +11,13 @@ import {
   Title,
   InputAmount,
   AmountsInnerWrapper,
+  DefaultOptionButtonWrapper,
+  CustomOptionWrapper,
 } from './index'
-import { Row } from 'components/Row'
+import { Row, RowBetween } from 'components/Row'
 
-const Wrapper = styled.div`
-  margin-top: 5px;
-  justify-content: space-between;
-  padding: 10px 20px;
+const Wrapper = styled(RowBetween)`
+  width: 100%;
 `
 
 const UnlockDateValue = styled.div`
@@ -86,31 +86,33 @@ export default function AdvancedOptions({
           <AmountsInnerWrapper hasCustom={hasCustom}>
             {defaultAmounts.map((a) => {
               return (
-                <DefaultOptionButton
-                  key={a}
-                  active={a === amount}
-                  onClick={() => {
-                    setAmount(a)
-                  }}
-                >
-                  {a} {unit}
-                </DefaultOptionButton>
+                <DefaultOptionButtonWrapper key={a} active={a === amount}>
+                  <DefaultOptionButton
+                    onClick={() => {
+                      setAmount(a)
+                    }}
+                  >
+                    {a} {unit}
+                  </DefaultOptionButton>
+                </DefaultOptionButtonWrapper>
               )
             })}
           </AmountsInnerWrapper>
           {hasCustom && (
-            <CustomOption active={customSelected}>
-              <InputAmount
-                value={+amount > 0 ? amount : ''}
-                active={customSelected}
-                onBlur={() => {
-                  handleMinAmount()
-                }}
-                onChange={(e) => handleCustomChange(e)}
-                placeholder={amount.toString()}
-              />
-              {unit}
-            </CustomOption>
+            <CustomOptionWrapper active={customSelected}>
+              <CustomOption active={customSelected}>
+                <InputAmount
+                  value={+amount > 0 ? amount : ''}
+                  active={customSelected}
+                  onBlur={() => {
+                    handleMinAmount()
+                  }}
+                  onChange={(e) => handleCustomChange(e)}
+                  placeholder={amount.toString()}
+                />
+                {unit}
+              </CustomOption>
+            </CustomOptionWrapper>
           )}
         </AmountsWrapper>
       </Wrapper>
