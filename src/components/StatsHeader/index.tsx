@@ -176,10 +176,10 @@ function DropDownOption(tokens: Token[], poolName: string): JSX.Element {
           <div>
             {tokens.map((token, index) => {
               return (
-                <>
+                <span key={index}>
                   <span>{token.name}</span>
                   {index + 1 !== tokens.length && <span>-</span>}
-                </>
+                </span>
               )
             })}
           </div>

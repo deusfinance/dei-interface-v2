@@ -22,7 +22,7 @@ import { useCurrencyBalance } from 'state/wallet/hooks'
 import ActionSetter, { ActionTypes } from './ActionSetter2'
 import InputBox from 'components/InputBox'
 import { StakingType } from 'constants/stakingPools'
-import { StakingPools } from 'constants/stakings'
+// import { StakingPools } from 'constants/stakings'
 
 const Container = styled.div`
   display: flex;
@@ -124,10 +124,10 @@ export default function StakingPool({ pool }: { pool: StakingType }) {
   const { chainId, account } = useWeb3React()
   const toggleWalletModal = useWalletModalToggle()
 
-  // const stakingPool = pool
-  // const pid = pool?.pid
-  const stakingPool = StakingPools[1]
-  const pid = 1
+  const stakingPool = pool
+  const pid = pool?.pid
+  // const stakingPool = StakingPools[1]
+  // const pid = 1
 
   const currency = pool?.lpToken
   const isSupportedChainId = useSupportedChainId()

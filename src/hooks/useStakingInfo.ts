@@ -10,7 +10,8 @@ import { SupportedChainId } from 'constants/chains'
 import { useVDeusMultiRewarderERC20Contract } from './useContract'
 import { StablePoolType } from 'constants/sPools'
 import { usePoolBalances } from './useStablePoolInfo'
-import { StakingType } from 'constants/stakings'
+import { StakingType } from 'constants/stakingPools'
+// import { StakingType } from 'constants/stakings'
 
 //TODO: should remove all and put it in /constants
 const pids = [0, 1]
@@ -220,4 +221,8 @@ export function useGetApy(stakingPool: StakingType): number {
   return (
     (tokenPerBlock * (allocPoint / totalAllocPoint) * parseFloat(deusPrice) * 365 * 24 * 60 * 60 * 100) / totalDeposited
   )
+}
+
+export function useV2GetApy(stakingPool: StakingType): number {
+  return stakingPool.pid === 0 ? 25 : 33
 }

@@ -22,6 +22,7 @@ import ORACLE_ABI from 'constants/abi/ORACLE_ABI.json'
 import DEIStrategy from 'constants/abi/DEIStrategy.json'
 import MasterChefV2_ABI from 'constants/abi/MasterChefV2.json'
 import SWAP_ABI from 'constants/abi/SWAP_ABI.json'
+import VEDEUS_MULTI_REWARDER_ERC20_ABI from 'constants/abi/VEDEUS_MULTI_REWARDER_ERC20.json'
 
 import { Providers } from 'constants/providers'
 import {
@@ -36,6 +37,7 @@ import {
   DeiBonderV3,
   CLQDR_ADDRESS,
   AnyDEI_ADDRESS,
+  veDEUSMultiRewarderERC20,
 } from 'constants/addresses'
 import { StakingType } from 'constants/stakingPools'
 import { StablePoolType } from 'constants/sPools'
@@ -187,4 +189,10 @@ export function useMasterChefContract(stakingPool: StakingType) {
 export function useStablePoolContract(pool: StablePoolType) {
   const address = useMemo(() => (pool ? pool.swapFlashLoan : undefined), [pool])
   return useContract(address, SWAP_ABI)
+}
+
+export function useVDeusMultiRewarderERC20Contract() {
+  const { chainId } = useWeb3React()
+  const address = useMemo(() => (chainId ? veDEUSMultiRewarderERC20[chainId] : undefined), [chainId])
+  return useContract(address, VEDEUS_MULTI_REWARDER_ERC20_ABI)
 }

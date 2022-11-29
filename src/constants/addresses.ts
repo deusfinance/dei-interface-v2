@@ -197,3 +197,8 @@ export const vDeusMasterChefV2: AddressMap = {
 export const Migrator: AddressMap = {
   [SupportedChainId.FANTOM]: '0xADC3aaa050852679bed88419CdABde7AB0bfC996',
 }
+
+//vDEUS ERC20 Staking (proxy contract)
+export const veDEUSMultiRewarderERC20: AddressMap = {
+  [SupportedChainId.FANTOM]: '0x9909E6046A9Ca950Cd2a28071338BdcB7d33f9Cb',
+}
