@@ -103,7 +103,7 @@ const Balance = styled(RowWrap)<{ disabled?: boolean }>`
   font-size: 10px;
   margin-left: 4px;
   gap: 5px;
-  color: ${({ theme }) => theme.text2};
+  color: ${({ theme }) => theme.text1};
   width: 20px;
 
   & > span {

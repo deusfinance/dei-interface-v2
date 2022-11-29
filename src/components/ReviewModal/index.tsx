@@ -2,23 +2,57 @@ import styled from 'styled-components'
 
 import { OptionButton } from 'components/Button'
 
-export const DefaultOptionButton = styled(OptionButton)`
+export const DefaultOptionButtonWrapper = styled.div<{ active?: boolean }>`
+  width: 53px;
+  height: 28px;
   display: inline-flex;
-  margin: 1px;
-  margin-right: 10px;
+  padding: 2px;
+  background: ${({ theme }) => theme.deiColor};
+  border-radius: 4px;
+  background: ${({ theme, active }) => (active ? theme.deiColor : 'transparent')};
+  margin: 0px 8px;
+  cursor: ${({ active }) => active && 'pointer'};
 
-  ${({ theme }) => theme.mediaWidth.upToSmall`
-      margin-right: 5px;
-      white-space: normal;
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    width:40px;
+    margin: 0px 4px;
+  `}
+`
+
+export const DefaultOptionButton = styled(OptionButton)`
+  width: 100%;
+  height: 100%;
+  background: ${({ theme }) => theme.bg2};
+  border-radius: 4px;
+  border: unset;
+  margin: 0px;
+  &:hover {
+    border: unset;
+  }
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    width:50px;
+    font-size: 10px;
+
+  `}
+`
+
+export const CustomOptionWrapper = styled.div<{ active?: boolean }>`
+  width: 71px;
+  height: 28px;
+  display: inline-flex;
+  padding: 2px;
+  background: ${({ theme }) => theme.deiColor};
+  border-radius: 4px;
+  background: ${({ theme, active }) => (active ? theme.deiColor : 'transparent')};
+  cursor: ${({ active }) => active && 'pointer'};
+
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    width:50px;
   `}
 `
 
 export const CustomOption = styled(DefaultOptionButton)`
   justify-content: flex-end;
-  width: 85px;
-  margin-right: 0px;
-  padding: 0 5px;
-  border-radius: 8px;
 `
 
 export const InputAmount = styled.input.attrs({ type: 'number' })<{ active?: boolean }>`
@@ -27,7 +61,7 @@ export const InputAmount = styled.input.attrs({ type: 'number' })<{ active?: boo
   outline: none;
   width: 100%;
   margin-right: 2px;
-  margin-left: 2px;
+  margin-left: 5px;
   font-size: 0.95rem;
   background: transparent;
   ${({ active, theme }) =>
@@ -35,16 +69,19 @@ export const InputAmount = styled.input.attrs({ type: 'number' })<{ active?: boo
     `
     color: ${theme.text2};
   `}
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    font-size: 10px;
+  `}
 `
 
 export const AmountsWrapper = styled.div<{ hasCustom?: boolean }>`
   display: flex;
   flex-wrap: nowrap;
   justify-content: space-between;
-  margin-top: 16px;
 `
 
 export const AmountsInnerWrapper = styled.div<{ hasCustom?: boolean }>`
+  display: flex;
   ${({ hasCustom, theme }) =>
     !hasCustom &&
     theme.mediaWidth.upToSmall`
@@ -59,6 +96,7 @@ export const QuestionMarkWrap = styled.div`
   margin-left: 6px;
   display: inline;
   background: transparent;
+  margin-top: 8px;
 `
 
 export const Title = styled.div`
@@ -67,6 +105,12 @@ export const Title = styled.div`
   display: flex;
   direction: row;
   justify-content: space-between;
+
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
     font-size: 12px;
