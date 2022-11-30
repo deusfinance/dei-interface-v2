@@ -1,11 +1,5 @@
 import styled from 'styled-components'
-import {
-  GradientButton,
-  GradientButtonRow,
-  GradientButtonText,
-  GradientButtonWrap,
-  Wrapper,
-} from 'components/App/StableCoin'
+import { GradientButtonRow, GradientButtonText, GradientButtonWrap, Wrapper } from 'components/App/StableCoin'
 import { Row, RowCenter } from 'components/Row'
 import ImageWithFallback from 'components/ImageWithFallback'
 

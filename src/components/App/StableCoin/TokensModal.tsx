@@ -9,6 +9,7 @@ import { Plus } from 'react-feather'
 import { MINT__INPUTS } from 'constants/inputs'
 import { SupportedChainId } from 'constants/chains'
 import { useSupportedChainId } from 'hooks/useSupportedChainId'
+import { Currency } from '@sushiswap/core-sdk'
 
 const Wrapper = styled.div`
   display: flex;
@@ -77,7 +78,7 @@ export default function TokensModal({
   isOpen: boolean
   toggleModal: (action: boolean) => void
   selectedTokenIndex: number
-  setToken: (index: number) => void
+  setToken: (currency: Currency) => void
 }) {
   const isSupportedChainId = useSupportedChainId()
   const { chainId } = useWeb3React()
