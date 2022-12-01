@@ -12,7 +12,6 @@ import { useUserInfo } from 'hooks/useStakingInfo'
 
 import { DefaultHandlerError } from 'utils/parseError'
 import { toBN } from 'utils/numbers'
-import { MasterChefV3 } from 'constants/addresses'
 
 import { Row } from 'components/Row'
 import { PrimaryButton } from 'components/Button'
@@ -22,7 +21,6 @@ import { useCurrencyBalance } from 'state/wallet/hooks'
 import ActionSetter, { ActionTypes } from './ActionSetter2'
 import InputBox from 'components/InputBox'
 import { StakingType } from 'constants/stakingPools'
-// import { StakingPools } from 'constants/stakings'
 
 const Container = styled.div`
   display: flex;
@@ -126,8 +124,8 @@ export default function StakingPool({ pool }: { pool: StakingType }) {
   const isSupportedChainId = useSupportedChainId()
 
   const stakingPool = pool
-  const pid = pool?.pid
-  const currency = pool?.lpToken
+  const pid = stakingPool?.pid
+  const currency = stakingPool?.lpToken
 
   const [amountIn, setAmountIn] = useState('')
   const currencyBalance = useCurrencyBalance(account ?? undefined, currency)
@@ -157,7 +155,8 @@ export default function StakingPool({ pool }: { pool: StakingType }) {
 
   const [selected, setSelected] = useState<ActionTypes>(ActionTypes.STAKE)
 
-  const spender = useMemo(() => (chainId ? MasterChefV3[chainId] : undefined), [chainId])
+  // TODO: check the spender
+  const spender = useMemo(() => (chainId ? stakingPool.masterChef : undefined), [chainId, stakingPool.masterChef])
   const [approvalState, approveCallback] = useApproveCallback(currency ?? undefined, spender)
 
   const [showApprove, showApproveLoader] = useMemo(() => {
@@ -311,7 +310,7 @@ export default function StakingPool({ pool }: { pool: StakingType }) {
         currency={currency}
         value={amountIn}
         onChange={(value: string) => setAmountIn(value)}
-        // maxValue={selected === ActionTypes.STAKE ? undefined : depositAmount}
+        maxValue={selected === ActionTypes.STAKE ? undefined : depositAmount.toString()}
       />
 
       {getApproveButton()}
@@ -320,7 +319,7 @@ export default function StakingPool({ pool }: { pool: StakingType }) {
       <BoxWrapper>
         <div>
           <span style={{ fontSize: '12px' }}>Reward:</span>
-          {pool?.rewardTokens.map((token, index) => {
+          {stakingPool?.rewardTokens.map((token, index) => {
             return (
               <RewardData key={index}>
                 <span>{rewardsAmount && rewardsAmount?.toFixed(3)}</span>
