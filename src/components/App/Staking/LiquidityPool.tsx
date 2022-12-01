@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react'
+import React, { useState, useMemo, useCallback, useEffect } from 'react'
 import styled from 'styled-components'
 import { ArrowDown } from 'react-feather'
 
@@ -12,15 +12,12 @@ import { useAddLiquidity, useRemoveLiquidity } from 'hooks/useStablePoolInfo'
 import useManageLiquidity from 'hooks/useLiquidityCallback'
 
 import { tryParseAmount } from 'utils/parse'
-import { DEUS_TOKEN, VDEUS_TOKEN } from 'constants/tokens'
 
 import { PrimaryButton } from 'components/Button'
 import { DotFlashing } from 'components/Icons'
 import ActionSetter, { ActionTypes } from './ActionSetter'
 import InputBox from 'components/InputBox'
 import { StakingType } from 'constants/stakingPools'
-import { Migrator } from 'constants/addresses'
-import { StablePools } from 'constants/sPools'
 
 const Wrapper = styled.div`
   display: flex;
@@ -62,15 +59,15 @@ export default function LiquidityPool({ pool }: { pool: StakingType }) {
   const [selected, setSelected] = useState<ActionTypes>(ActionTypes.ADD)
   const isRemove = useMemo(() => selected == ActionTypes.REMOVE, [selected])
   const [slippage, setSlippage] = useState(0.5)
-  const deusCurrency = DEUS_TOKEN
-  const vdeusCurrency = VDEUS_TOKEN
 
-  // FIXME: for test only
-  const stakingPool = StablePools[1]
-
+  const stakingPool = pool
+  const token0Currency = stakingPool.tokens[0]
+  const token1Currency = stakingPool.tokens[1]
   const lpCurrency = pool.lpToken
-  const deusCurrencyBalance = useCurrencyBalance(account ?? undefined, deusCurrency)
-  const vdeusCurrencyBalance = useCurrencyBalance(account ?? undefined, vdeusCurrency)
+
+  const token0CurrencyBalance = useCurrencyBalance(account ?? undefined, token0Currency)
+  const token1CurrencyBalance = useCurrencyBalance(account ?? undefined, token1Currency)
+  const lpCurrencyBalance = useCurrencyBalance(account ?? undefined, lpCurrency)
 
   const debouncedAmountIn = useDebounce(amountIn, 500)
   const debouncedAmountIn2 = useDebounce(amountIn2, 500)
@@ -79,19 +76,50 @@ export default function LiquidityPool({ pool }: { pool: StakingType }) {
   const amountOut = useRemoveLiquidity(stakingPool, debouncedLPAmountIn)
   const amountOut2 = useAddLiquidity(stakingPool, [debouncedAmountIn, debouncedAmountIn2]).toString()
 
-  const deusAmount = useMemo(() => {
-    return tryParseAmount(amountIn, deusCurrency || undefined)
-  }, [amountIn, deusCurrency])
+  useEffect(() => {
+    if (selected === ActionTypes.ADD) {
+      setLPAmountIn(amountOut2)
+    } else {
+      setAmountIn(amountOut[0]?.toString())
+      setAmountIn2(amountOut[1]?.toString())
+    }
+  }, [selected, amountOut2, amountOut])
 
-  const vdeusAmount = useMemo(() => {
-    return tryParseAmount(amountIn2, vdeusCurrency || undefined)
-  }, [amountIn2, vdeusCurrency])
+  useEffect(() => {
+    if (selected === ActionTypes.ADD) {
+      setAmountIn('')
+      setAmountIn2('')
+    } else {
+      setLPAmountIn('')
+    }
+  }, [selected])
 
-  const insufficientBalance = useMemo(() => {
-    // TODO: complete this later
-    if (!deusAmount || !vdeusAmount) return false
-    return deusCurrencyBalance?.lessThan(deusAmount) && vdeusCurrencyBalance?.lessThan(vdeusAmount)
-  }, [deusCurrencyBalance, vdeusCurrencyBalance, deusAmount, vdeusAmount])
+  const token0Amount = useMemo(() => {
+    return tryParseAmount(amountIn, token0Currency || undefined)
+  }, [amountIn, token0Currency])
+
+  const token1Amount = useMemo(() => {
+    return tryParseAmount(amountIn2, token1Currency || undefined)
+  }, [amountIn2, token1Currency])
+
+  const lpAmount = useMemo(() => {
+    return tryParseAmount(lpAmountIn, lpCurrency || undefined)
+  }, [lpAmountIn, lpCurrency])
+
+  const token0InsufficientBalance = useMemo(() => {
+    if (!token0Amount) return false
+    return token0CurrencyBalance?.lessThan(token0Amount)
+  }, [token0CurrencyBalance, token0Amount])
+
+  const token1InsufficientBalance = useMemo(() => {
+    if (!token1Amount) return false
+    return token1CurrencyBalance?.lessThan(token1Amount)
+  }, [token1CurrencyBalance, token1Amount])
+
+  const lpInsufficientBalance = useMemo(() => {
+    if (!lpAmount) return false
+    return lpCurrencyBalance?.lessThan(lpAmount)
+  }, [lpCurrencyBalance, lpAmount])
 
   const {
     state: liquidityCallbackState,
@@ -108,20 +136,20 @@ export default function LiquidityPool({ pool }: { pool: StakingType }) {
 
   const [awaitingApproveConfirmation, setAwaitingApproveConfirmation] = useState(false)
   const [awaitingLiquidityConfirmation, setAwaitingLiquidityConfirmation] = useState(false)
-  // FIXME: spender is wrong
-  const spender = useMemo(() => (chainId ? Migrator[chainId] : undefined), [chainId])
+  // TODO: check the spender
+  const spender = useMemo(() => (chainId ? stakingPool.swapFlashLoan : undefined), [chainId, stakingPool.swapFlashLoan])
 
-  const [approvalState, approveCallback] = useApproveCallback(vdeusCurrency ?? undefined, spender)
+  const [approvalState, approveCallback] = useApproveCallback(token1Currency ?? undefined, spender)
   const [showApprove, showApproveLoader] = useMemo(() => {
-    const show = vdeusCurrency && approvalState !== ApprovalState.APPROVED && !!amountIn
+    const show = token1Currency && approvalState !== ApprovalState.APPROVED && !!amountIn
     return [show, show && approvalState === ApprovalState.PENDING]
-  }, [vdeusCurrency, approvalState, amountIn])
+  }, [token1Currency, approvalState, amountIn])
 
-  const [approvalState2, approveCallback2] = useApproveCallback(deusCurrency ?? undefined, spender)
+  const [approvalState2, approveCallback2] = useApproveCallback(token0Currency ?? undefined, spender)
   const [showApprove2, showApproveLoader2] = useMemo(() => {
-    const show = deusCurrency && approvalState2 !== ApprovalState.APPROVED && !!amountIn2
+    const show = token0Currency && approvalState2 !== ApprovalState.APPROVED && !!amountIn2
     return [show, show && approvalState2 === ApprovalState.PENDING]
-  }, [deusCurrency, approvalState2, amountIn2])
+  }, [token0Currency, approvalState2, amountIn2])
 
   const [approvalState3, approveCallback3] = useApproveCallback(lpCurrency ?? undefined, spender)
   const [showApprove3, showApproveLoader3] = useMemo(() => {
@@ -185,11 +213,13 @@ export default function LiquidityPool({ pool }: { pool: StakingType }) {
         </DepositButton>
       )
     }
-    if (showApprove && type === 'add') {
-      return <DepositButton onClick={handleApprove}>Allow us to spend {vdeusCurrency?.symbol}</DepositButton>
-    } else if (showApprove2 && type === 'add') {
-      return <DepositButton onClick={handleApprove2}>Allow us to spend {deusCurrency?.symbol}</DepositButton>
-    } else if (showApprove3 && type === 'remove') {
+    if (showApprove && type === ActionTypes.ADD) {
+      return <DepositButton onClick={handleApprove}>Allow us to spend {token1Currency?.symbol}</DepositButton>
+    }
+    if (showApprove2 && type === ActionTypes.ADD) {
+      return <DepositButton onClick={handleApprove2}>Allow us to spend {token0Currency?.symbol}</DepositButton>
+    }
+    if (showApprove3 && type === ActionTypes.REMOVE) {
       return <DepositButton onClick={handleApprove3}>Allow us to spend {lpCurrency?.symbol}</DepositButton>
     }
     return null
@@ -198,21 +228,36 @@ export default function LiquidityPool({ pool }: { pool: StakingType }) {
   function getActionButton(type: string): JSX.Element | null {
     if (!chainId || !account || !type) {
       return <DepositButton onClick={toggleWalletModal}>Connect Wallet</DepositButton>
-    } else if ((showApprove || showApprove2) && type === 'add') {
+    }
+    if ((showApprove || showApprove2) && type === ActionTypes.ADD) {
       return null
-    } else if (showApprove3 && type === 'remove') {
+    }
+    if (showApprove3 && type === ActionTypes.REMOVE) {
       return null
-    } else if (insufficientBalance) {
-      return <DepositButton disabled>Insufficient {deusCurrency?.symbol} Balance</DepositButton>
-    } else if (awaitingLiquidityConfirmation) {
+    }
+    if (token0InsufficientBalance && type === ActionTypes.ADD) {
+      return <DepositButton disabled>Insufficient {token0Currency?.symbol} Balance</DepositButton>
+    }
+    if (token1InsufficientBalance && type === ActionTypes.ADD) {
+      return <DepositButton disabled>Insufficient {token1Currency?.symbol} Balance</DepositButton>
+    }
+    if (lpInsufficientBalance && type === ActionTypes.REMOVE) {
+      return <DepositButton disabled>Insufficient {lpCurrency?.symbol} Balance</DepositButton>
+    }
+    if (awaitingLiquidityConfirmation) {
       return (
         <DepositButton>
-          {type === 'add' ? 'Depositing DEUS/vDEUS' : 'Withdrawing DEUS/vDEUS'}
+          {type === ActionTypes.ADD ? 'Depositing ' : 'Withdrawing '}
+          {token0Currency?.symbol}/{token1Currency?.symbol}
           <DotFlashing />
         </DepositButton>
       )
     }
-    return <DepositButton onClick={() => handleLiquidity()}>{type === 'add' ? 'Deposit' : 'Withdraw'}</DepositButton>
+    return (
+      <DepositButton onClick={() => handleLiquidity()}>
+        {type === ActionTypes.ADD ? 'Deposit' : 'Withdraw'}
+      </DepositButton>
+    )
   }
 
   const getAppComponent = (): JSX.Element => {
@@ -225,18 +270,23 @@ export default function LiquidityPool({ pool }: { pool: StakingType }) {
 
           <ArrowDown style={{ margin: '12px auto' }} />
 
-          <InputBox currency={tokens[0]} value={amountIn} onChange={(value: string) => setAmountIn(value)} />
+          <InputBox currency={tokens[0]} value={amountIn} onChange={(value: string) => console.log(value)} disabled />
 
           {tokens[1] && (
             <>
               <div style={{ marginTop: '20px' }}></div>
-              <InputBox currency={tokens[1]} value={amountIn2} onChange={(value: string) => setAmountIn2(value)} />
+              <InputBox
+                currency={tokens[1]}
+                value={amountIn2}
+                onChange={(value: string) => console.log(value)}
+                disabled
+              />
             </>
           )}
 
           <div style={{ marginTop: '20px' }}></div>
-          {getApproveButton('remove')}
-          {getActionButton('remove')}
+          {getApproveButton(ActionTypes.REMOVE)}
+          {getActionButton(ActionTypes.REMOVE)}
         </>
       )
     } else {
@@ -253,11 +303,16 @@ export default function LiquidityPool({ pool }: { pool: StakingType }) {
 
           <ArrowDown style={{ margin: '12px auto' }} />
 
-          <InputBox currency={lpCurrency} value={lpAmountIn} onChange={(value: string) => setLPAmountIn(value)} />
+          <InputBox
+            currency={lpCurrency}
+            value={lpAmountIn}
+            onChange={(value: string) => console.log(value)}
+            disabled
+          />
 
           <div style={{ marginTop: '20px' }}></div>
-          {getApproveButton('add')}
-          {getActionButton('add')}
+          {getApproveButton(ActionTypes.ADD)}
+          {getActionButton(ActionTypes.ADD)}
         </>
       )
     }

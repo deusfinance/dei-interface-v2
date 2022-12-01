@@ -3,8 +3,8 @@ import styled from 'styled-components'
 import { isMobile } from 'react-device-detect'
 
 import Hero from 'components/Hero'
-// import ImageWithFallback from 'components/ImageWithFallback'
-// import STAKE_ICON from '/public/static/images/pages/ic_stake.svg'
+import ImageWithFallback from 'components/ImageWithFallback'
+import STAKE_ICON from '/public/static/images/pages/stake/ic_stake.svg'
 import { RowBetween } from 'components/Row'
 // import TokenBox from 'components/App/Stake/TokenBox'
 import { Stakings } from 'constants/stakingPools'
@@ -99,7 +99,9 @@ export default function Stake() {
 
   return (
     <Container>
-      <Hero>{/* <ImageWithFallback src={STAKE_ICON} width={224} height={133} alt={`Logo`} /> */}</Hero>
+      <Hero>
+        <ImageWithFallback src={STAKE_ICON} width={224} height={133} alt={`Logo`} />
+      </Hero>
 
       <Wrapper>
         {getUpperRow()}

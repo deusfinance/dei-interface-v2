@@ -8,8 +8,8 @@ import { useDeusPrice } from './useCoingeckoPrice'
 import { MasterChefV2 } from 'constants/addresses'
 import { SupportedChainId } from 'constants/chains'
 import { useVDeusMultiRewarderERC20Contract } from './useContract'
-import { StablePoolType } from 'constants/sPools'
-import { usePoolBalances } from './useStablePoolInfo'
+// import { StablePoolType } from 'constants/sPools'
+// import { usePoolBalances } from './useStablePoolInfo'
 import { StakingType } from 'constants/stakingPools'
 // import { StakingType } from 'constants/stakings'
 
@@ -79,10 +79,10 @@ export function useUserInfo(stakingPool: StakingType): {
           methodName: 'pendingTokens',
           callInputs: [pid.toString(), account],
         },
-        {
-          methodName: 'totalDepositedAmount',
-          callInputs: [pid.toString()],
-        },
+        // {
+        //   methodName: 'totalDepositedAmount',
+        //   callInputs: [pid.toString()],
+        // },
       ]
 
   const [userInfo, pendingTokens, totalDepositedAmount] = useSingleContractMultipleMethods(contract, calls)
@@ -105,43 +105,44 @@ export function useUserInfo(stakingPool: StakingType): {
 }
 
 //get deus reward apy for deus-vdeus lp pool
-export function useGetDeusApy(pool: StablePoolType, stakingPool: StakingType): number {
-  const contract = useVDeusMultiRewarderERC20Contract()
-  // const deusPrice = useDeusPrice()
+// export function useGetDeusApy(pool: StablePoolType, stakingPool: StakingType): number {
+//   const contract = useVDeusMultiRewarderERC20Contract()
+//   // const deusPrice = useDeusPrice()
 
-  const calls = [
-    {
-      methodName: 'retrieveTokenPerBlock',
-      callInputs: [stakingPool.pid, 0],
-    },
-  ]
-  const [retrieveTokenPerBlock] = useSingleContractMultipleMethods(contract, calls)
-  const balances = usePoolBalances(pool)
-  const vdeusBalance = balances[0]
-  const deusBalance = balances[1]
+//   const calls = [
+//     {
+//       methodName: 'retrieveTokenPerBlock',
+//       callInputs: [stakingPool.pid, 0],
+//     },
+//   ]
+//   const [retrieveTokenPerBlock] = useSingleContractMultipleMethods(contract, calls)
+//   const balances = usePoolBalances(pool)
+//   const vdeusBalance = balances[0]
+//   const deusBalance = balances[1]
 
-  const { depositAmount, totalDepositedAmount } = useUserInfo(stakingPool)
+//   const { depositAmount, totalDepositedAmount } = useUserInfo(stakingPool)
 
-  const retrieveTokenPerBlockValue = useMemo(() => {
-    return retrieveTokenPerBlock?.result ? toBN(formatUnits(retrieveTokenPerBlock.result[0], 18)).toNumber() : 0
-  }, [retrieveTokenPerBlock])
+//   const retrieveTokenPerBlockValue = useMemo(() => {
+//     return retrieveTokenPerBlock?.result ? toBN(formatUnits(retrieveTokenPerBlock.result[0], 18)).toNumber() : 0
+//   }, [retrieveTokenPerBlock])
 
-  // const totalDeposited = toBN(deusBalance).times(2).times(deusPrice).toNumber()
+//   // const totalDeposited = toBN(deusBalance).times(2).times(deusPrice).toNumber()
 
-  const ratio = depositAmount / totalDepositedAmount
-  const totalBalance = vdeusBalance + deusBalance
-  const myShare = ratio * totalBalance
-  const retrieveTokenPerYearValue = retrieveTokenPerBlockValue * 365 * 24 * 60 * 60
-  const myAprShare = ratio * retrieveTokenPerYearValue
+//   const ratio = depositAmount / totalDepositedAmount
+//   const totalBalance = vdeusBalance + deusBalance
+//   const myShare = ratio * totalBalance
+//   const retrieveTokenPerYearValue = retrieveTokenPerBlockValue * 365 * 24 * 60 * 60
+//   const myAprShare = ratio * retrieveTokenPerYearValue
 
-  // console.log({ ratio, totalBalance, myShare, retrieveTokenPerYearValue, myAprShare })
+//   // console.log({ ratio, totalBalance, myShare, retrieveTokenPerYearValue, myAprShare })
 
-  if (!myShare || myShare === 0) return (retrieveTokenPerYearValue / totalBalance) * 100
-  return (myAprShare / myShare) * 100
+//   if (!myShare || myShare === 0) return (retrieveTokenPerYearValue / totalBalance) * 100
+//   return (myAprShare / myShare) * 100
 
-  // if (totalDeposited === 0) return 0
-  // return (retrieveTokenPerBlockValue * parseFloat(deusPrice) * 365 * 24 * 60 * 60 * 100) / totalDeposited
-}
+//   // if (totalDeposited === 0) return 0
+//   // return (retrieveTokenPerBlockValue * parseFloat(deusPrice) * 365 * 24 * 60 * 60 * 100) / totalDeposited
+// }
+
 //get deus reward for deus-vdeus lp pool user
 export function useGetDeusReward(): number {
   const contract = useVDeusMultiRewarderERC20Contract()

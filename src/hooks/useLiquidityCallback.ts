@@ -8,7 +8,7 @@ import { useStablePoolContract } from 'hooks/useContract'
 import { calculateGasMargin } from 'utils/web3'
 import { DefaultHandlerError } from 'utils/parseError'
 import { BN_TEN, toBN } from 'utils/numbers'
-import { StablePoolType } from 'constants/sPools'
+import { StakingType } from 'constants/stakingPools'
 
 export enum LiquidityCallbackState {
   INVALID = 'INVALID',
@@ -18,7 +18,7 @@ export enum LiquidityCallbackState {
 export default function useManageLiquidity(
   amounts: string[],
   minAmountOut: string,
-  pool: StablePoolType,
+  pool: StakingType,
   slippage: number,
   deadline: number,
   isRemove: boolean
@@ -35,7 +35,7 @@ export default function useManageLiquidity(
   const minAmountOutBN = toBN(minAmountOut).times(1e18).toFixed(0, 1)
   const amountsInBN = amounts.map((amount, index) => {
     if (amount == '') return '0'
-    return toBN(amount).times(BN_TEN.pow(pool.liquidityTokens[index].decimals)).toFixed(0, 1)
+    return toBN(amount).times(BN_TEN.pow(pool.tokens[index].decimals)).toFixed(0, 1)
   })
 
   const constructCall = useCallback(() => {

@@ -123,14 +123,12 @@ const ButtonText = styled.span`
 export default function StakingPool({ pool }: { pool: StakingType }) {
   const { chainId, account } = useWeb3React()
   const toggleWalletModal = useWalletModalToggle()
+  const isSupportedChainId = useSupportedChainId()
 
   const stakingPool = pool
   const pid = pool?.pid
-  // const stakingPool = StakingPools[1]
-  // const pid = 1
-
   const currency = pool?.lpToken
-  const isSupportedChainId = useSupportedChainId()
+
   const [amountIn, setAmountIn] = useState('')
   const currencyBalance = useCurrencyBalance(account ?? undefined, currency)
 

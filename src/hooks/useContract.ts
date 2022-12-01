@@ -40,7 +40,6 @@ import {
   veDEUSMultiRewarderERC20,
 } from 'constants/addresses'
 import { StakingType } from 'constants/stakingPools'
-import { StablePoolType } from 'constants/sPools'
 
 export function useContract<T extends Contract = Contract>(
   addressOrAddressMap: string | null | undefined,
@@ -186,7 +185,7 @@ export function useMasterChefContract(stakingPool: StakingType) {
   return useContract(address, MasterChefV2_ABI)
 }
 
-export function useStablePoolContract(pool: StablePoolType) {
+export function useStablePoolContract(pool: StakingType) {
   const address = useMemo(() => (pool ? pool.swapFlashLoan : undefined), [pool])
   return useContract(address, SWAP_ABI)
 }
