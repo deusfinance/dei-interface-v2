@@ -18,15 +18,5 @@
     "text": "Bond",
     "path": "/bond",
     "exact": true
-  },
-  {
-    "text": "veDEUS",
-    "path": "/vest",
-    "exact": true
-  },
-  {
-    "text": "cLQDR",
-    "path": "/clqdr",
-    "exact": true
   }
 ]

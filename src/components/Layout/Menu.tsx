@@ -13,7 +13,6 @@ import {
   NavToggle as NavToggleIcon,
   IconWrapper,
   Dashboard as DashboardIcon,
-  VeDeus as VeDeusIcon,
   Mint as MintIcon,
   Redeem as RedeemIcon,
   DeiBonds as DeiBondsIcon,
@@ -21,6 +20,7 @@ import {
 } from 'components/Icons'
 import { Card } from 'components/Card'
 import { ExternalLink } from 'components/Link'
+import { RowStart } from 'components/Row'
 
 const Container = styled.div`
   overflow: hidden;
@@ -81,6 +81,22 @@ const Separator = styled.div`
   background: ${({ theme }) => theme.bg4};
 `
 
+const ExternalLinkIcon = styled(LinkIcon)`
+  margin-left: 4px;
+  path {
+    fill: ${({ theme }) => theme.text2};
+  }
+`
+const ExternalItem = styled(RowStart)`
+  &:hover {
+    svg {
+      path {
+        fill: ${({ theme }) => theme.white};
+      }
+    }
+  }
+`
+
 export default function Menu() {
   const ref = useRef(null)
   const [isOpen, setIsOpen] = useState(false)
@@ -130,29 +146,31 @@ export default function Menu() {
               </IconWrapper>
             </Row>
           </Link>
-
-          <Link href="/vest" passHref>
-            <Row active={router.route.includes('/vest')}>
-              <div>veDEUS</div>
-              <IconWrapper>
-                <VeDeusIcon size={20} />
-              </IconWrapper>
-            </Row>
-          </Link>
-          <Link href="/clqdr" passHref>
-            <Row active={router.route.includes('/clqdr')}>
-              <div>cLQDR</div>
-              {/* <IconWrapper>
-                <VeDeusIcon size={20} />
-              </IconWrapper> */}
-            </Row>
-          </Link>
-
-          <ExternalLink href="https://docs.deus.finance/contracts/disclaimer">
+          <ExternalLink href="https://app.deus.finance/vest">
             <Row onClick={() => toggle()}>
-              <div>Terms</div>
+              <ExternalItem>
+                <div>veDEUS</div>
+                <ExternalLinkIcon />
+              </ExternalItem>
             </Row>
           </ExternalLink>
+          <ExternalLink href="https://app.deus.finance/clqdr">
+            <Row onClick={() => toggle()}>
+              <ExternalItem>
+                <div>cLQDR</div>
+                <ExternalLinkIcon />
+              </ExternalItem>
+            </Row>
+          </ExternalLink>
+          <ExternalLink href="https://docs.deus.finance/contracts/disclaimer">
+            <Row onClick={() => toggle()}>
+              <ExternalItem>
+                <div>Terms</div>
+                <ExternalLinkIcon />
+              </ExternalItem>
+            </Row>
+          </ExternalLink>
+          <Separator />
 
           <ExternalLink href="https://twitter.com/deusdao">
             <Row onClick={() => toggle()}>
@@ -160,6 +178,16 @@ export default function Menu() {
             </Row>
           </ExternalLink>
 
+          <ExternalLink href="https://discord.gg/xTTaBBAMgG">
+            <Row onClick={() => toggle()}>
+              <div>Discord</div>
+            </Row>
+          </ExternalLink>
+          <ExternalLink href="https://t.me/deusfinance">
+            <Row onClick={() => toggle()}>
+              <div>Telegram</div>
+            </Row>
+          </ExternalLink>
           <ExternalLink href="https://github.com/deusfinance">
             <Row onClick={() => toggle()}>
               <div>Github</div>
