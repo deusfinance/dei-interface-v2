@@ -8,6 +8,7 @@ import STAKE_ICON from '/public/static/images/pages/stake/ic_stake.svg'
 import { LiquidityPool, Stakings } from 'constants/stakingPools'
 import StatsHeader from 'components/StatsHeader'
 import StakingPool from 'components/App/Staking/StakingPool'
+import StakingAmount from 'components/App/Staking/Amount'
 
 export const Container = styled.div`
   display: flex;
@@ -18,9 +19,8 @@ export const Container = styled.div`
 
 const TopWrapper = styled.div`
   display: flex;
-  align-items: flex-start;
+  flex-direction: column;
   margin: auto;
-
   ${({ theme }) => theme.mediaWidth.upToMedium`
     min-width: 460px;
     flex-direction: column;
@@ -58,6 +58,7 @@ export default function StakingPage() {
       </Hero>
 
       <TopWrapper>
+        <StakingAmount />
         <StakingPool pool={pool} />
       </TopWrapper>
     </Container>
