@@ -2,7 +2,7 @@ import styled from 'styled-components'
 import { isMobile } from 'react-device-detect'
 
 import ImageWithFallback from 'components/ImageWithFallback'
-import { StakingType } from 'constants/stakingPools'
+import { LiquidityType } from 'constants/stakingPools'
 import { useCurrencyLogos } from 'hooks/useCurrencyLogo'
 
 const TokenCell = styled.div`
@@ -48,7 +48,7 @@ function getImageSize() {
   return isMobile ? 20 : 20
 }
 
-export default function PoolSelector({ pool }: { pool: StakingType }) {
+export default function PoolSelector({ pool }: { pool: LiquidityType }) {
   const tokens = pool.tokens
   const tokensAddress = tokens.map((token) => token.address)
   const logos = useCurrencyLogos(tokensAddress)

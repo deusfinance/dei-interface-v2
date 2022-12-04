@@ -23,7 +23,7 @@ import LOADING_LOCK_MOBILE from '/public/static/images/pages/veDEUS/loadingLockM
 // import { formatAmount } from 'utils/numbers'
 // import { DefaultHandlerError } from 'utils/parseError'
 import useWeb3React from 'hooks/useWeb3'
-import { StakingType } from 'constants/stakingPools'
+import { LiquidityPool, StakingType } from 'constants/stakingPools'
 
 import TokenBox from 'components/App/Stake/TokenBox'
 import RewardBox from 'components/App/Stake/RewardBox'
@@ -226,7 +226,8 @@ function TableRow({ staking, index, isMobile }: { staking: StakingType; index: n
   const [ClaimAwaitingConfirmation, setClaimAwaitingConfirmation] = useState(false)
   const [pendingTxHash, setPendingTxHash] = useState('')
 
-  const { id, tokens, rewardTokens, active, name } = staking
+  const { id, rewardTokens, active, name } = staking
+  const tokens = LiquidityPool.find((p) => p.id === staking.id)?.tokens || LiquidityPool[0].tokens
 
   const router = useRouter()
 

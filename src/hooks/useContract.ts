@@ -39,7 +39,7 @@ import {
   AnyDEI_ADDRESS,
   veDEUSMultiRewarderERC20,
 } from 'constants/addresses'
-import { StakingType } from 'constants/stakingPools'
+import { LiquidityType, StakingType } from 'constants/stakingPools'
 
 export function useContract<T extends Contract = Contract>(
   addressOrAddressMap: string | null | undefined,
@@ -185,7 +185,7 @@ export function useMasterChefContract(stakingPool: StakingType) {
   return useContract(address, MasterChefV2_ABI)
 }
 
-export function useStablePoolContract(pool: StakingType) {
+export function useStablePoolContract(pool: LiquidityType) {
   const address = useMemo(() => (pool ? pool.contract : undefined), [pool])
   return useContract(address, SWAP_ABI)
 }

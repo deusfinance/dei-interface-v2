@@ -11,7 +11,7 @@ import { Token } from '@sushiswap/core-sdk'
 import { useCurrencyLogos } from 'hooks/useCurrencyLogo'
 import { isMobile } from 'react-device-detect'
 import ImageWithFallback from 'components/ImageWithFallback'
-import { Stakings } from 'constants/stakingPools'
+import { LiquidityPool, Stakings } from 'constants/stakingPools'
 
 const Wrapper = styled.div`
   width: 100%;
@@ -208,8 +208,9 @@ export default function StatsHeader({
   onSelectDropDown?: (index: number) => void
 }) {
   const dropDownOptions = Stakings.map((staking) => {
-    const { name, tokens, id } = staking
+    const { name, id } = staking
     // console.log({ name, tokens, id })
+    const tokens = LiquidityPool.find((p) => p.id === staking.id)?.tokens || LiquidityPool[0].tokens
     return { value: name, label: DropDownOption(tokens, name), index: id }
   })
 

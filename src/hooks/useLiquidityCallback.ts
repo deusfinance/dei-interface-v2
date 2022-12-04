@@ -8,7 +8,7 @@ import { useStablePoolContract } from 'hooks/useContract'
 import { calculateGasMargin } from 'utils/web3'
 import { DefaultHandlerError } from 'utils/parseError'
 import { BN_TEN, toBN } from 'utils/numbers'
-import { StakingType } from 'constants/stakingPools'
+import { LiquidityType } from 'constants/stakingPools'
 
 export enum LiquidityCallbackState {
   INVALID = 'INVALID',
@@ -18,7 +18,7 @@ export enum LiquidityCallbackState {
 export default function useManageLiquidity(
   amounts: string[],
   minAmountOut: string,
-  pool: StakingType,
+  pool: LiquidityType,
   slippage: number,
   deadline: number,
   isRemove: boolean

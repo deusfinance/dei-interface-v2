@@ -17,7 +17,7 @@ import { PrimaryButton } from 'components/Button'
 import { DotFlashing } from 'components/Icons'
 import ActionSetter, { ActionTypes } from './ActionSetter'
 import InputBox from 'components/InputBox'
-import { StakingType } from 'constants/stakingPools'
+import { LiquidityType } from 'constants/stakingPools'
 
 const Wrapper = styled.div`
   display: flex;
@@ -49,7 +49,7 @@ const DepositButton = styled(PrimaryButton)`
   border-radius: 15px;
 `
 
-export default function LiquidityPool({ pool }: { pool: StakingType }) {
+export default function LiquidityPool({ pool }: { pool: LiquidityType }) {
   const { chainId, account } = useWeb3React()
   const toggleWalletModal = useWalletModalToggle()
   const isSupportedChainId = useSupportedChainId()

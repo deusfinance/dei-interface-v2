@@ -11,29 +11,29 @@ import { useGetApy, useV2GetApy } from 'hooks/useStakingInfo'
 import { MasterChefV2, MasterChefV3, StablePool_DEI_bDEI, StablePool_DEUS_vDEUS } from './addresses'
 import { SupportedChainId } from './chains'
 
-const lpToken_1Year = new Token(
-  SupportedChainId.FANTOM,
-  '0xCf18eCa0EaC101eb47828BFd460D1922000213db',
-  18,
-  'vDEUS NFT',
-  'vDEUS NFT'
-)
+// const lpToken_1Year = new Token(
+//   SupportedChainId.FANTOM,
+//   '0xCf18eCa0EaC101eb47828BFd460D1922000213db',
+//   18,
+//   'vDEUS NFT',
+//   'vDEUS NFT'
+// )
 
-const lpToken_6Months = new Token(
-  SupportedChainId.FANTOM,
-  '0x65875f75d5CDEf890ea97ADC43E216D3f0c2b2D8',
-  18,
-  'vDEUS NFT',
-  'vDEUS NFT'
-)
+// const lpToken_6Months = new Token(
+//   SupportedChainId.FANTOM,
+//   '0x65875f75d5CDEf890ea97ADC43E216D3f0c2b2D8',
+//   18,
+//   'vDEUS NFT',
+//   'vDEUS NFT'
+// )
 
-const lpToken_3Months = new Token(
-  SupportedChainId.FANTOM,
-  '0x24651a470D08009832d62d702d1387962A2E5d60',
-  18,
-  'vDEUS NFT',
-  'vDEUS NFT'
-)
+// const lpToken_3Months = new Token(
+//   SupportedChainId.FANTOM,
+//   '0x24651a470D08009832d62d702d1387962A2E5d60',
+//   18,
+//   'vDEUS NFT',
+//   'vDEUS NFT'
+// )
 
 export enum StakingVersion {
   V1,
@@ -44,11 +44,8 @@ export enum StakingVersion {
 export type StakingType = {
   id: number
   name: string
-  tokens: Token[]
-  lpToken: Token
   rewardTokens: Token[]
   provideLink?: string
-  contract?: string
   aprHook: (h: StakingType) => number
   masterChef: string
   pid: number
@@ -56,16 +53,45 @@ export type StakingType = {
   version: StakingVersion
 }
 
+export type LiquidityType = {
+  id: number
+  tokens: Token[]
+  lpToken: Token
+  contract?: string
+}
+
+export const LiquidityPool: LiquidityType[] = [
+  {
+    id: 0,
+    tokens: [DEI_TOKEN, BDEI_TOKEN],
+    lpToken: DEI_BDEI_LP_TOKEN,
+    contract: StablePool_DEI_bDEI[SupportedChainId.FANTOM],
+  },
+  {
+    id: 1,
+    tokens: [BDEI_TOKEN], // TODO: remove
+    lpToken: BDEI_TOKEN,
+  },
+  {
+    id: 2,
+    tokens: [DEUS_TOKEN, VDEUS_TOKEN],
+    lpToken: DEUS_VDEUS_LP_TOKEN,
+    contract: StablePool_DEUS_vDEUS[SupportedChainId.FANTOM],
+  },
+  {
+    id: 3,
+    tokens: [VDEUS_TOKEN], // TODO: remove
+    lpToken: VDEUS_TOKEN,
+  },
+]
+
 export const Stakings: StakingType[] = [
   {
     id: 0,
     name: 'DEI-bDEI',
-    tokens: [DEI_TOKEN, BDEI_TOKEN],
-    lpToken: DEI_BDEI_LP_TOKEN,
     rewardTokens: [DEUS_TOKEN],
     provideLink: '/deibonds',
     aprHook: useGetApy,
-    contract: StablePool_DEI_bDEI[SupportedChainId.FANTOM],
     masterChef: MasterChefV2[SupportedChainId.FANTOM],
     pid: 1,
     active: true,
@@ -74,8 +100,6 @@ export const Stakings: StakingType[] = [
   {
     id: 1,
     name: 'bDEI',
-    tokens: [BDEI_TOKEN],
-    lpToken: BDEI_TOKEN,
     rewardTokens: [DEUS_TOKEN],
     provideLink: '/deibonds',
     aprHook: useGetApy,
@@ -87,12 +111,9 @@ export const Stakings: StakingType[] = [
   {
     id: 2,
     name: 'DEUS-vDEUS',
-    tokens: [DEUS_TOKEN, VDEUS_TOKEN],
-    lpToken: DEUS_VDEUS_LP_TOKEN,
     rewardTokens: [VDEUS_TOKEN],
     provideLink: '/vdeus/new',
     aprHook: useV2GetApy,
-    contract: StablePool_DEUS_vDEUS[SupportedChainId.FANTOM],
     masterChef: MasterChefV3[SupportedChainId.FANTOM],
     pid: 2,
     active: true,
@@ -101,8 +122,6 @@ export const Stakings: StakingType[] = [
   {
     id: 3,
     name: 'vDEUS (ERC20)',
-    tokens: [VDEUS_TOKEN],
-    lpToken: VDEUS_TOKEN,
     rewardTokens: [DEUS_TOKEN],
     provideLink: '/vdeus/new',
     aprHook: useV2GetApy,

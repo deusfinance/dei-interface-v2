@@ -5,7 +5,7 @@ import styled from 'styled-components'
 import Hero from 'components/Hero'
 import ImageWithFallback from 'components/ImageWithFallback'
 import STAKE_ICON from '/public/static/images/pages/stake/ic_stake.svg'
-import { Stakings } from 'constants/stakingPools'
+import { LiquidityPool, Stakings } from 'constants/stakingPools'
 import StatsHeader from 'components/StatsHeader'
 import StakingPool from 'components/App/Staking/StakingPool'
 
@@ -35,14 +35,15 @@ export default function StakingPage() {
   const { pid } = router.query
   const pidNumber = Number(pid)
   const pool = Stakings.find((pool) => pool.id === pidNumber) || Stakings[0]
+  const liquidityPool = LiquidityPool.find((p) => p.id === pool.id) || LiquidityPool[0]
 
   const items = useMemo(
     () => [
       { name: 'APR', value: '4%' },
       { name: 'TVL', value: '$4.58m' },
-      { name: 'Total Staked', value: `3,120.00 ${pool?.lpToken?.symbol}` },
+      { name: 'Total Staked', value: `3,120.00 ${liquidityPool?.lpToken?.symbol}` },
     ],
-    [pool?.lpToken?.symbol]
+    [liquidityPool?.lpToken?.symbol]
   )
 
   function onSelect(pid: number) {

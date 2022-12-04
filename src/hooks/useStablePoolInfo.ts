@@ -5,9 +5,9 @@ import { useSingleContractMultipleMethods } from 'state/multicall/hooks'
 import { useStablePoolContract } from 'hooks/useContract'
 
 import { BN_TEN, toBN } from 'utils/numbers'
-import { StakingType } from 'constants/stakingPools'
+import { LiquidityType } from 'constants/stakingPools'
 
-export function usePoolBalances(pool: StakingType): number[] {
+export function usePoolBalances(pool: LiquidityType): number[] {
   const contract = useStablePoolContract(pool)
 
   const tokenBalancesCall = useMemo(
@@ -30,7 +30,7 @@ export function usePoolBalances(pool: StakingType): number[] {
   }, [results, pool])
 }
 
-export function useAddLiquidity(pool: StakingType, amountIns: string[]): number {
+export function useAddLiquidity(pool: LiquidityType, amountIns: string[]): number {
   const contract = useStablePoolContract(pool)
 
   const amountsInBN: string[] = useMemo(() => {
@@ -61,7 +61,7 @@ export function useAddLiquidity(pool: StakingType, amountIns: string[]): number 
   }, [result])
 }
 
-export function useRemoveLiquidity(pool: StakingType, amountIn: string): number[] {
+export function useRemoveLiquidity(pool: LiquidityType, amountIn: string): number[] {
   const contract = useStablePoolContract(pool)
 
   const amountInBN = toBN(amountIn).times(1e18).toFixed()

@@ -3,7 +3,7 @@ import styled from 'styled-components'
 
 import { usePoolBalances } from 'hooks/useStablePoolInfo'
 import { formatDollarAmount } from 'utils/numbers'
-import { StakingType } from 'constants/stakingPools'
+import { LiquidityType, Stakings } from 'constants/stakingPools'
 import Copy from 'components/Copy'
 import { truncateAddress } from 'utils/address'
 
@@ -70,17 +70,18 @@ const RightTitle = styled.div<{ disabled?: boolean }>`
   color: ${({ theme, disabled }) => (disabled ? theme.text2 : theme.text1)};
 `
 
-export default function PoolInfo({ pool }: { pool: StakingType }) {
+export default function PoolInfo({ pool }: { pool: LiquidityType }) {
   // const { poolInfo, virtualPrice, APrice, paused } = useGlobalSyncPoolDate(pool)
   // const [adminFee, swapFee] = poolInfo
   const poolBalances = usePoolBalances(pool).reduce((a, b) => a + b, 0)
-  const active = pool?.active
+  const stakingPool = Stakings.find((p) => p.id === pool.id) || Stakings[0]
+  const active = stakingPool?.active
 
   return (
     <Wrapper>
       <Col>
         <Title>
-          {pool.name}
+          {stakingPool.name}
           <Circle disabled={!active}></Circle>
         </Title>
         <RightTitle disabled> 0.00% of Pool </RightTitle>

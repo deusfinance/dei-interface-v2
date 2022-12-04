@@ -4,13 +4,13 @@ import styled from 'styled-components'
 import { useCurrencyBalance } from 'state/wallet/hooks'
 import useWeb3React from 'hooks/useWeb3'
 import { useCurrencyLogos } from 'hooks/useCurrencyLogo'
-import { useUserInfo } from 'hooks/useStakingInfo'
+// import { useUserInfo } from 'hooks/useStakingInfo'
 import { useRemoveLiquidity } from 'hooks/useStablePoolInfo'
 
 import { formatBalance, formatDollarAmount } from 'utils/numbers'
 
 import ImageWithFallback from 'components/ImageWithFallback'
-import { StakingType } from 'constants/stakingPools'
+import { LiquidityType } from 'constants/stakingPools'
 
 const Wrapper = styled.div`
   background: ${({ theme }) => theme.bg1};
@@ -87,14 +87,15 @@ const Title = styled.div`
   color: ${({ theme }) => theme.text1};
 `
 
-export default function PoolShare({ pool }: { pool: StakingType }) {
+export default function PoolShare({ pool }: { pool: LiquidityType }) {
   const { account } = useWeb3React()
 
   const { lpToken: currency } = pool
   const tokensAddress = pool.tokens.map((token) => token.address)
   const tokensLogo = useCurrencyLogos(tokensAddress)
 
-  const { depositAmount } = useUserInfo(pool)
+  // const { depositAmount } = useUserInfo(pool)
+  const depositAmount = 0
   const currencyBalance = useCurrencyBalance(account ?? undefined, currency)?.toSignificant()
   // const { virtualPrice } = useGlobalSyncPoolDate(pool)
   const virtualPrice = 0

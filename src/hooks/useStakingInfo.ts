@@ -10,7 +10,7 @@ import { SupportedChainId } from 'constants/chains'
 import { useVDeusMultiRewarderERC20Contract } from './useContract'
 // import { StablePoolType } from 'constants/sPools'
 // import { usePoolBalances } from './useStablePoolInfo'
-import { StakingType, StakingVersion } from 'constants/stakingPools'
+import { LiquidityPool, StakingType, StakingVersion } from 'constants/stakingPools'
 // import { StakingType } from 'constants/stakings'
 
 //TODO: should remove all and put it in /constants
@@ -67,7 +67,8 @@ export function useUserInfo(stakingPool: StakingType): {
 } {
   const contract = useMasterChefContract(stakingPool)
   const { account } = useWeb3React()
-  const { pid, version, lpToken } = stakingPool
+  const { pid, version } = stakingPool
+  const lpToken = LiquidityPool.find((p) => p.id === stakingPool.id)?.lpToken || LiquidityPool[0].lpToken
 
   const additionalCall =
     version === StakingVersion.V2
