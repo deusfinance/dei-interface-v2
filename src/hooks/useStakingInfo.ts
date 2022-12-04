@@ -10,7 +10,7 @@ import { SupportedChainId } from 'constants/chains'
 import { useVDeusMultiRewarderERC20Contract } from './useContract'
 // import { StablePoolType } from 'constants/sPools'
 // import { usePoolBalances } from './useStablePoolInfo'
-import { StakingType } from 'constants/stakingPools'
+import { StakingType, StakingVersion } from 'constants/stakingPools'
 // import { StakingType } from 'constants/stakings'
 
 //TODO: should remove all and put it in /constants
@@ -67,7 +67,18 @@ export function useUserInfo(stakingPool: StakingType): {
 } {
   const contract = useMasterChefContract(stakingPool)
   const { account } = useWeb3React()
-  const pid = stakingPool.pid
+  const { pid, version, lpToken } = stakingPool
+
+  const additionalCall =
+    version === StakingVersion.V2
+      ? [
+          {
+            methodName: 'totalDepositedAmount',
+            callInputs: [pid.toString()],
+          },
+        ]
+      : []
+
   const calls = !account
     ? []
     : [
@@ -83,19 +94,41 @@ export function useUserInfo(stakingPool: StakingType): {
         //   methodName: 'totalDepositedAmount',
         //   callInputs: [pid.toString()],
         // },
+        ...additionalCall,
       ]
 
+  const ERC20Contract = useERC20Contract(lpToken.address)
+  const balanceCall = [
+    {
+      methodName: 'balanceOf',
+      callInputs: [contract?.address],
+    },
+  ]
+
   const [userInfo, pendingTokens, totalDepositedAmount] = useSingleContractMultipleMethods(contract, calls)
+  const [tokenBalance] = useSingleContractMultipleMethods(ERC20Contract, balanceCall)
 
   const { depositedValue, reward, totalDepositedAmountValue } = useMemo(() => {
     return {
       depositedValue: userInfo?.result ? toBN(formatUnits(userInfo.result[0].toString(), 18)).toNumber() : 0,
       reward: pendingTokens?.result ? toBN(formatUnits(pendingTokens.result[0], 18)).toNumber() : 0,
-      totalDepositedAmountValue: totalDepositedAmount?.result
-        ? toBN(formatUnits(totalDepositedAmount.result[0], 18)).toNumber()
-        : 0,
+      totalDepositedAmountValue:
+        version === StakingVersion.V1
+          ? tokenBalance?.result
+            ? toBN(formatUnits(tokenBalance.result[0], 18)).toNumber()
+            : 0
+          : totalDepositedAmount?.result
+          ? toBN(formatUnits(totalDepositedAmount.result[0], lpToken.decimals)).toNumber()
+          : 0,
     }
-  }, [userInfo, pendingTokens, totalDepositedAmount])
+  }, [
+    userInfo.result,
+    pendingTokens?.result,
+    version,
+    tokenBalance?.result,
+    totalDepositedAmount?.result,
+    lpToken.decimals,
+  ])
 
   return {
     depositAmount: depositedValue,

@@ -48,7 +48,7 @@ export type StakingType = {
   lpToken: Token
   rewardTokens: Token[]
   provideLink?: string
-  swapFlashLoan?: string
+  contract?: string
   aprHook: (h: StakingType) => number
   masterChef: string
   pid: number
@@ -65,7 +65,7 @@ export const Stakings: StakingType[] = [
     rewardTokens: [DEUS_TOKEN],
     provideLink: '/deibonds',
     aprHook: useGetApy,
-    swapFlashLoan: StablePool_DEI_bDEI[SupportedChainId.FANTOM],
+    contract: StablePool_DEI_bDEI[SupportedChainId.FANTOM],
     masterChef: MasterChefV2[SupportedChainId.FANTOM],
     pid: 1,
     active: true,
@@ -92,7 +92,7 @@ export const Stakings: StakingType[] = [
     rewardTokens: [VDEUS_TOKEN],
     provideLink: '/vdeus/new',
     aprHook: useV2GetApy,
-    swapFlashLoan: StablePool_DEUS_vDEUS[SupportedChainId.FANTOM],
+    contract: StablePool_DEUS_vDEUS[SupportedChainId.FANTOM],
     masterChef: MasterChefV3[SupportedChainId.FANTOM],
     pid: 2,
     active: true,

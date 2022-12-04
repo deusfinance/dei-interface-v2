@@ -6,8 +6,10 @@ import Hero from 'components/Hero'
 import ImageWithFallback from 'components/ImageWithFallback'
 import STAKE_ICON from '/public/static/images/pages/stake/ic_stake.svg'
 import { Stakings } from 'constants/stakingPools'
-import StatsHeader from 'components/StatsHeader'
-import StakingPool from 'components/App/Staking/StakingPool'
+// import StatsHeader from 'components/StatsHeader'
+import LiquidityPool from 'components/App/Staking/LiquidityPool'
+import PoolInfo from 'components/App/Staking/PoolInfo'
+import PoolShare from 'components/App/Staking/PoolShare'
 
 export const Container = styled.div`
   display: flex;
@@ -53,11 +55,15 @@ export default function StakingPage() {
     <Container>
       <Hero>
         <ImageWithFallback src={STAKE_ICON} width={185} height={133} alt={`Logo`} />
-        <StatsHeader items={items} pid={pidNumber} onSelectDropDown={onSelect} />
+        {/* <StatsHeader items={items} pid={pidNumber} onSelectDropDown={onSelect} /> */}
       </Hero>
 
       <TopWrapper>
-        <StakingPool pool={pool} />
+        {pool?.tokens.length > 1 && <LiquidityPool pool={pool} />}
+        <div>
+          <PoolInfo pool={pool} />
+          <PoolShare pool={pool} />
+        </div>
       </TopWrapper>
     </Container>
   )

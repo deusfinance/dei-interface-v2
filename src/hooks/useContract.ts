@@ -186,7 +186,7 @@ export function useMasterChefContract(stakingPool: StakingType) {
 }
 
 export function useStablePoolContract(pool: StakingType) {
-  const address = useMemo(() => (pool ? pool.swapFlashLoan : undefined), [pool])
+  const address = useMemo(() => (pool ? pool.contract : undefined), [pool])
   return useContract(address, SWAP_ABI)
 }
 
