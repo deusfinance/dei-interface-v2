@@ -34,6 +34,7 @@ export { default as Redeem } from './Redeem'
 export { default as Link } from './Link'
 export { default as Error } from './Error'
 export { default as Swap } from './Swap'
+export { default as Bridge } from './Bridge'
 
 // for wrapping react feather icons
 export const IconWrapper = styled.div<{ stroke?: string; size?: string; marginRight?: string; marginLeft?: string }>`

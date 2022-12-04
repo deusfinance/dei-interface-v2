@@ -77,6 +77,7 @@ function colors(themeName: SupportedThemes): Colors {
       bg3: '#E9E9F3',
       bg4: '#232323',
       bg5: '#181818',
+      bg6: '#8F939C',
 
       // borders
       border1: '#B8B8BE',
@@ -144,6 +145,7 @@ function colors(themeName: SupportedThemes): Colors {
       bg3: '#1B1D24',
       bg4: '#23252C',
       bg5: '#181818', //TEST
+      bg6: '#8F939C',
 
       // borders
       border1: '#23252C',

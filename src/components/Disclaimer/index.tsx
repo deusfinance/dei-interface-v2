@@ -13,17 +13,18 @@ import Telegram from '/public/static/images/footer/Telegram.svg'
 
 const Wrapper = styled(RowCenter)`
   color: ${({ theme }) => theme.text3};
-  background: ${({ theme }) => theme.bg2};
+  background: ${({ theme }) => theme.bg0};
   text-align: center;
-  gap: 20px;
+  gap: 50px;
   font-size: 13px;
-  padding: 12px 100px;
+  margin-bottom: 32px;
+  /* padding: 12px 100px; */
 
-  ${({ theme }) => theme.mediaWidth.upToMedium`
+  /* ${({ theme }) => theme.mediaWidth.upToMedium`
     flex-direction: column;
     margin-top: 20px;
     padding: 10px;
-  `}
+  `} */
 `
 
 const Text = styled.div`
@@ -41,10 +42,10 @@ const Logos = styled(RowEnd)`
       filter: brightness(1.5);
     }
   }
-  ${({ theme }) => theme.mediaWidth.upToMedium`
+  /* ${({ theme }) => theme.mediaWidth.upToMedium`
     justify-content: center;
     gap: 30px;
-  `};
+  `}; */
 `
 
 export default function Disclaimer() {
@@ -53,28 +54,28 @@ export default function Disclaimer() {
   }
   return (
     <Wrapper>
-      <Text>
+      {/* <Text>
         <ExternalLink
           href="https://groups.csail.mit.edu/mac/classes/6.805/articles/crypto/cypherpunks/may-crypto-manifesto.html"
           style={{ opacity: 0.5 }}
         >
           {new Date().getFullYear()} DEI Stablecoin. All rights to the people.
         </ExternalLink>
-      </Text>
-      <Logos>
-        <ExternalLink href="https://discord.gg/xTTaBBAMgG">
-          <Image src={Discord} alt="Discord Logo" width={getImageSize()} height={getImageSize()} />
-        </ExternalLink>
-        <ExternalLink href="https://twitter.com/DeusDao">
-          <Image src={Twitter} alt="Twitter Logo" width={getImageSize()} height={getImageSize()} />
-        </ExternalLink>
-        <ExternalLink href="http://github.com/deusfinance">
-          <Image src={Github} alt="Github Logo" width={getImageSize()} height={getImageSize()} />
-        </ExternalLink>
-        <ExternalLink href="https://t.me/deusfinance">
-          <Image src={Telegram} alt="Telegram Logo" width={getImageSize()} height={getImageSize()} />
-        </ExternalLink>
-      </Logos>
+      </Text> */}
+      {/* <Logos> */}
+      <ExternalLink href="https://discord.gg/xTTaBBAMgG">
+        <Image src={Discord} alt="Discord Logo" width={getImageSize()} height={getImageSize()} />
+      </ExternalLink>
+      <ExternalLink href="https://twitter.com/DeusDao">
+        <Image src={Twitter} alt="Twitter Logo" width={getImageSize()} height={getImageSize()} />
+      </ExternalLink>
+      <ExternalLink href="http://github.com/deusfinance">
+        <Image src={Github} alt="Github Logo" width={getImageSize()} height={getImageSize()} />
+      </ExternalLink>
+      <ExternalLink href="https://t.me/deusfinance">
+        <Image src={Telegram} alt="Telegram Logo" width={getImageSize()} height={getImageSize()} />
+      </ExternalLink>
+      {/* </Logos> */}
     </Wrapper>
   )
 }

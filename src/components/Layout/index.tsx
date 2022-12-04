@@ -3,14 +3,15 @@ import styled from 'styled-components'
 
 import { useInjectedAddress } from 'hooks/useInjectedAddress'
 
-import NavBar from './NavBar'
+// import NavBar from './NavBar'
+import NavBar2 from './NavBar2'
 import Warning from './Warning'
 import Footer from 'components/Disclaimer'
 
 const Wrapper = styled.div`
   display: flex;
-  height: 100%;
-  flex-flow: column nowrap;
+  flex-flow: row nowrap;
+  /* overflow: hidden; */
 `
 
 const Content = styled.div`
@@ -34,12 +35,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <Wrapper>
-      <NavBar />
-      {hasInjected && (
-        <Warning message={`❌ You are in "READ-ONLY" mode. Please do not confirm any transactions! ❌ `} />
-      )}
-      <Content>{children}</Content>
-      <Footer />
+      {/* <NavBar /> */}
+      <NavBar2 />
+      <div>
+        {hasInjected && (
+          <Warning message={`❌ You are in "READ-ONLY" mode. Please do not confirm any transactions! ❌ `} />
+        )}
+        <Content>{children}</Content>
+        {/* <Footer /> */}
+      </div>
     </Wrapper>
   )
 }
