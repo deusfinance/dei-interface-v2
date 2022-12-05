@@ -23,7 +23,8 @@ import InputBox from 'components/InputBox'
 import { StakingType } from 'constants/stakingPools'
 
 const Container = styled.div`
-  display: flex;
+  display: block;
+  width: 100%;
   flex-flow: column nowrap;
   overflow: visible;
   margin: 0 auto;
