@@ -9,6 +9,8 @@ import { LiquidityPool, Stakings } from 'constants/stakingPools'
 import StatsHeader from 'components/StatsHeader'
 import StakingPool from 'components/App/Staking/StakingPool'
 import StakingAmount from 'components/App/Staking/Amount'
+import StackingBalance from 'components/App/Staking/Balance'
+import StackingReading from 'components/App/Staking/Reading'
 
 export const Container = styled.div`
   display: flex;
@@ -60,6 +62,8 @@ export default function StakingPage() {
       <TopWrapper>
         <StakingAmount />
         <StakingPool pool={pool} />
+        <StackingBalance />
+        <StackingReading />
       </TopWrapper>
     </Container>
   )

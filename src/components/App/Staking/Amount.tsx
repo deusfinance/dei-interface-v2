@@ -4,29 +4,34 @@ const Container = styled.div`
   display: flex;
   flex-flow: column nowrap;
   overflow: visible;
+  margin: 0 auto;
+  margin-top: 12px;
+  display: block;
+  width: 100%;
 `
 
 const Wrapper = styled(Container)`
   margin-top: 12px;
-  background: ${({ theme }) => theme.bg2};
-  border-radius: 12px;
   justify-content: center;
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     width: 340px;
   `}
-  overflow:hidden;
+  overflow: hidden;
 `
 const BoxContent = styled.p`
-  padding: 0px 15px;
   display: flex;
   justify-content: space-between;
   font-size: 14px;
-  padding: 12px;
+  padding: 15px;
   &:first-child {
-    background-color: transparent;
+    background: ${({ theme }) => theme.bg2};
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
   }
   &:last-child {
     background-color: ${({ theme }) => theme.bg0};
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
   }
 `
 interface IContentValue {
@@ -64,6 +69,7 @@ const ClaimRewardButton = styled.button`
     }
   }
 `
+
 const Amount = () => {
   return (
     <Container>
