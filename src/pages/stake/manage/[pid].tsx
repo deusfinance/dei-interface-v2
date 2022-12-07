@@ -10,6 +10,9 @@ import { LiquidityPool as LiquidityPoolList } from 'constants/stakingPools'
 import LiquidityPool from 'components/App/Staking/LiquidityPool'
 import PoolInfo from 'components/App/Staking/PoolInfo'
 import PoolShare from 'components/App/Staking/PoolShare'
+import AvailableLP from 'components/App/Staking/AvailableLP'
+import StackedLP from 'components/App/Staking/LPStacked'
+import Reading from 'components/App/Staking/Reading'
 
 export const Container = styled.div`
   display: flex;
@@ -60,9 +63,12 @@ export default function StakingPage() {
 
       <TopWrapper>
         {pool?.tokens.length > 1 && <LiquidityPool pool={pool} />}
-        <div>
-          <PoolInfo pool={pool} />
+        <div style={{ width: '100%' }}>
+          <AvailableLP />
+          <StackedLP />
           <PoolShare pool={pool} />
+          <PoolInfo pool={pool} />
+          <Reading />
         </div>
       </TopWrapper>
     </Container>

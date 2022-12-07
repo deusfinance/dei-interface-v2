@@ -1,14 +1,6 @@
 import styled from 'styled-components'
+import Container from './common/Container'
 
-const Container = styled.div`
-  margin: 0 auto;
-  margin-top: 12px;
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    width: 340px;
-  `}
-  display: block;
-  width: 100%;
-`
 const BalanceContent = styled.div`
   background-color: ${({ theme }) => theme.bg0};
   padding: 15px;
@@ -51,14 +43,16 @@ const BalanceButton = styled.button`
 const StackingBalance = () => {
   return (
     <Container>
-      <BalanceContent>
-        <p>Your DEUS-vDEUS LP balance :</p>
-        <p>389.00 LP</p>
-      </BalanceContent>
-      <BalanceContent>
-        <BalanceButton>Add liquidity</BalanceButton>
-        <BalanceButton>Remove liquidity</BalanceButton>
-      </BalanceContent>
+      <>
+        <BalanceContent>
+          <p>Your DEUS-vDEUS LP balance :</p>
+          <p>389.00 LP</p>
+        </BalanceContent>
+        <BalanceContent>
+          <BalanceButton>Add liquidity</BalanceButton>
+          <BalanceButton>Remove liquidity</BalanceButton>
+        </BalanceContent>
+      </>
     </Container>
   )
 }

@@ -1,15 +1,7 @@
 import Image from 'next/image'
 import styled from 'styled-components'
+import Container from './common/Container'
 
-const ReadingContainer = styled.div`
-  margin: 0 auto;
-  margin-top: 12px;
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    width: 340px;
-    `}
-  display: block;
-  width: 100%;
-`
 const ReadingContent = styled.div`
   background-image: url('/static/images/pages/stake/staking-background.png');
   background-color: ${({ theme }) => theme.bg0};
@@ -37,9 +29,9 @@ const ReadingHeader = styled.div`
 `
 const Icon = styled(Image)``
 
-const Reading = () => {
+export const Reading = () => {
   return (
-    <ReadingContainer>
+    <Container>
       <ReadingContent>
         <ReadingHeader>
           <p>DEUS-vDEUS Stacking</p>
@@ -50,7 +42,7 @@ const Reading = () => {
         </ReadingHeader>
         <p style={{ marginTop: 6 }}>. . . </p>
       </ReadingContent>
-    </ReadingContainer>
+    </Container>
   )
 }
 
