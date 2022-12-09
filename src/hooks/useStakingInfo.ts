@@ -123,7 +123,7 @@ export function useUserInfo(stakingPool: StakingType): {
           : 0,
     }
   }, [
-    userInfo.result,
+    userInfo?.result,
     pendingTokens?.result,
     version,
     tokenBalance?.result,

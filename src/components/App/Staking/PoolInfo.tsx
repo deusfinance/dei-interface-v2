@@ -6,54 +6,13 @@ import { formatDollarAmount } from 'utils/numbers'
 import { LiquidityType, Stakings } from 'constants/stakingPools'
 import Copy from 'components/Copy'
 import { truncateAddress } from 'utils/address'
+import Container from './common/Container'
+import { ContentTable, Label, TableHeader, Value, VStack } from './common/Layout'
 
-const Wrapper = styled.div`
-  background: ${({ theme }) => theme.bg1};
-  color: ${({ theme }) => theme.text2};
-  border: 1px solid ${({ theme }) => theme.bg0};
-  white-space: nowrap;
-  gap: 10px;
+const Wrapper = styled(VStack)`
+  padding: 12px;
+  background-color: ${({ theme }) => theme.bg1};
   border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 20px 20px;
-  position: relative;
-  z-index: 1;
-  width: 400px;
-  margin-top: 50px;
-
-  ${({ theme }) => theme.mediaWidth.upToMedium`
-    margin: 12px 0;
-    padding: 0.5rem;
-  `}
-
-  &>* {
-    margin-bottom: 10px;
-  }
-`
-
-const Column = styled.div`
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: space-between;
-`
-
-const Title = styled.span`
-  font-size: 24px;
-  font-weight: 900;
-  font-family: 'Space Grotesk';
-  color: ${({ theme }) => theme.text1};
-`
-
-const Col = styled(Column)`
-  color: ${({ theme }) => theme.text1};
-  font-size: 20px;
-`
-
-const Col2 = styled(Column)`
-  margin-top: 10px;
-  font-size: 16px;
 `
 
 const Circle = styled.div<{ disabled: boolean }>`
@@ -66,77 +25,77 @@ const Circle = styled.div<{ disabled: boolean }>`
   height: 10px;
 `
 
-const RightTitle = styled.div<{ disabled?: boolean }>`
-  color: ${({ theme, disabled }) => (disabled ? theme.text2 : theme.text1)};
-`
-
 export default function PoolInfo({ pool }: { pool: LiquidityType }) {
-  // const { poolInfo, virtualPrice, APrice, paused } = useGlobalSyncPoolDate(pool)
-  // const [adminFee, swapFee] = poolInfo
   const poolBalances = usePoolBalances(pool).reduce((a, b) => a + b, 0)
   const stakingPool = Stakings.find((p) => p.id === pool.id) || Stakings[0]
   const active = stakingPool?.active
 
   return (
-    <Wrapper>
-      <Col>
-        <Title>
-          {stakingPool.name}
-          <Circle disabled={!active}></Circle>
-        </Title>
-        <RightTitle disabled> 0.00% of Pool </RightTitle>
-      </Col>
+    <Container>
+      <Wrapper>
+        <TableHeader>
+          <p>
+            {stakingPool.name}
+            <Circle disabled={!active}></Circle>
+          </p>
+          <p> 0.00% of Pool </p>
+        </TableHeader>
 
-      <Col2>
-        <div> APR: </div>
-        <RightTitle> N/A </RightTitle>
-      </Col2>
+        <ContentTable>
+          <Label>APR:</Label>
+          <Value> N/A </Value>
+        </ContentTable>
 
-      <Col2>
-        <div> Total Locked: </div>
-        <RightTitle> {formatDollarAmount(poolBalances)} </RightTitle>
-      </Col2>
+        <ContentTable>
+          <Label> Total Locked: </Label>
+          <Value> {formatDollarAmount(poolBalances)} </Value>
+        </ContentTable>
 
-      <Col2>
-        <div> Fee: </div>
-        <RightTitle> N/A </RightTitle>
-      </Col2>
+        <ContentTable>
+          <Label> Fee: </Label>
+          <Value> N/A </Value>
+        </ContentTable>
 
-      <Col2>
-        <div> Virtual Price: </div>
-        <RightTitle> N/A </RightTitle>
-      </Col2>
+        <ContentTable>
+          <Label> Virtual Price: </Label>
+          <Value> N/A </Value>
+        </ContentTable>
 
-      <Col2>
-        <div> Total Reserve Value: </div>
-        <RightTitle> N/A </RightTitle>
-      </Col2>
+        <ContentTable>
+          <Label> Total Reserve Value: </Label>
+          <Value> N/A </Value>
+        </ContentTable>
 
-      <Col2>
-        <div> {pool.tokens[0].symbol} Reserve: </div>
-        <RightTitle> N/A </RightTitle>
-      </Col2>
+        <ContentTable>
+          <Label> {pool.tokens[0].symbol} Reserve: </Label>
+          <Value> N/A </Value>
+        </ContentTable>
 
-      <Col2>
-        <div> {pool.tokens[1].symbol} Reserve: </div>
-        <RightTitle> N/A </RightTitle>
-      </Col2>
+        <ContentTable>
+          <Label> {pool.tokens[1].symbol} Reserve: </Label>
+          <Value> N/A </Value>
+        </ContentTable>
 
-      <Col2>
-        <div> Pool Address: </div>
-        <RightTitle>
-          {pool?.contract && <Copy toCopy={pool?.contract} text={truncateAddress(pool?.contract)} />}
-        </RightTitle>
-      </Col2>
+        <ContentTable>
+          <Label> Pool Address: </Label>
+          <Value>
+            <p style={{ textDecoration: 'underline' }}>
+              {pool?.contract && <Copy toCopy={pool?.contract} text={truncateAddress(pool?.contract)} />}
+            </p>
+          </Value>
+        </ContentTable>
 
-      <Col2>
-        <div> LP Token Address: </div>
-        <RightTitle>
-          {pool?.lpToken.address && (
-            <Copy toCopy={pool?.lpToken.address} text={truncateAddress(pool?.lpToken.address)} />
-          )}
-        </RightTitle>
-      </Col2>
-    </Wrapper>
+        <ContentTable>
+          <Label> LP Token Address: </Label>
+          <Value>
+            <p style={{ textDecoration: 'underline' }}>
+              {pool?.lpToken.address && (
+                <Copy toCopy={pool?.lpToken.address} text={truncateAddress(pool?.lpToken.address)} />
+              )}
+            </p>
+          </Value>
+        </ContentTable>
+      </Wrapper>
+    </Container>
   )
 }

@@ -23,7 +23,7 @@ const Wrapper = styled.div`
   display: flex;
   flex-flow: column nowrap;
   margin: 0 10px;
-  margin-top: 50px;
+  margin-top: 12px;
   background: ${({ theme }) => theme.bg1};
   padding: 20px 15px;
   border: 1px solid rgb(0, 0, 0);
