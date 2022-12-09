@@ -3,7 +3,7 @@ import { FunctionFragment, Interface } from '@ethersproject/abi'
 import { BigNumber } from '@ethersproject/bignumber'
 import { Contract } from '@ethersproject/contracts'
 
-import useActiveWeb3React from 'hooks/useWeb3'
+import { UseDefaultWeb3React } from 'hooks/useWeb3'
 import { useBlockNumber } from 'state/application/hooks'
 import { useAppDispatch, useAppSelector } from 'state'
 
@@ -48,7 +48,7 @@ function useCallsData(
   calls: (Call | undefined)[],
   { blocksPerFetch }: ListenerOptions = { blocksPerFetch: 1 }
 ): CallResult[] {
-  const { chainId } = useActiveWeb3React()
+  const chainId = UseDefaultWeb3React()
   const callResults = useAppSelector((state) => state.multicall.callResults)
   const dispatch = useAppDispatch()
 

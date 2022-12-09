@@ -6,9 +6,9 @@ import { useInjectedAddress } from 'hooks/useInjectedAddress'
 import NavBar from './NavBar'
 import Warning from './Warning'
 import Footer from 'components/Disclaimer'
-import useWeb3React from 'hooks/useWeb3'
-import { FALLBACK_CHAIN_ID, SupportedChainId } from 'constants/chains'
-import useRpcChangerCallback from 'hooks/useRpcChangerCallback'
+// import useWeb3React from 'hooks/useWeb3'
+// import { FALLBACK_CHAIN_ID, SupportedChainId } from 'constants/chains'
+// import useRpcChangerCallback from 'hooks/useRpcChangerCallback'
 
 const Wrapper = styled.div`
   display: flex;
@@ -34,9 +34,9 @@ const Content = styled.div`
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const hasInjected = useInjectedAddress()
-  const { chainId } = useWeb3React()
-  const rpcChangerCallback = useRpcChangerCallback()
-  if (chainId && chainId !== SupportedChainId.FANTOM) rpcChangerCallback(FALLBACK_CHAIN_ID)
+  // const { chainId } = useWeb3React()
+  // const rpcChangerCallback = useRpcChangerCallback()
+  // if (chainId && chainId !== SupportedChainId.FANTOM) rpcChangerCallback(FALLBACK_CHAIN_ID)
 
   return (
     <Wrapper>

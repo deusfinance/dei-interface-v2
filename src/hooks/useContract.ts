@@ -4,7 +4,7 @@ import { Contract } from '@ethersproject/contracts'
 import { AddressZero } from '@ethersproject/constants'
 import { Web3Provider } from '@ethersproject/providers'
 
-import useWeb3React from './useWeb3'
+import useWeb3React, { UseDefaultWeb3React } from './useWeb3'
 
 import ERC20_ABI from 'constants/abi/ERC20.json'
 import ERC20_BYTES32_ABI from 'constants/abi/ERC20'
@@ -41,7 +41,8 @@ export function useContract<T extends Contract = Contract>(
   ABI: any,
   withSignerIfPossible = true
 ): T | null {
-  const { library, account, chainId } = useWeb3React()
+  const { library, account } = useWeb3React()
+  const chainId = UseDefaultWeb3React()
 
   return useMemo(() => {
     if (!addressOrAddressMap || !ABI || !library || !chainId) return null
@@ -50,7 +51,7 @@ export function useContract<T extends Contract = Contract>(
     else address = addressOrAddressMap[chainId]
     if (!address || address === ZERO_ADDRESS) return null
     try {
-      return getContract(address, ABI, library, withSignerIfPossible && account ? account : undefined)
+      return getContract(address, ABI, library, withSignerIfPossible && account ? account : undefined, chainId)
     } catch (error) {
       console.error('Failed to get contract', error)
       return null
@@ -96,44 +97,44 @@ export function useBytes32TokenContract(tokenAddress?: string, withSignerIfPossi
 }
 
 export function useVeDeusContract() {
-  const { chainId } = useWeb3React()
+  const chainId = UseDefaultWeb3React()
   const address = useMemo(() => (chainId ? veDEUS[chainId] : undefined), [chainId])
   return useContract(address, VEDEUS_ABI)
 }
 
 export function useVeDistContract() {
-  const { chainId } = useWeb3React()
+  const chainId = UseDefaultWeb3React()
   const address = useMemo(() => (chainId ? veDist[chainId] : undefined), [chainId])
   return useContract(address, VE_DIST_ABI)
 }
 
 export function useMulticall2Contract() {
-  const { chainId } = useWeb3React()
+  const chainId = UseDefaultWeb3React()
   const address = useMemo(() => (chainId ? Multicall2[chainId] : undefined), [chainId])
   return useContract(address, MULTICALL2_ABI)
 }
 
 export function useDeiBonderContract() {
-  const { chainId } = useWeb3React()
+  const chainId = UseDefaultWeb3React()
   const address = useMemo(() => (chainId ? DeiBonder[chainId] : undefined), [chainId])
   return useContract(address, DEI_BONDER_ABI)
 }
 
 export function useCollateralPoolContract() {
-  const { chainId } = useWeb3React()
+  const chainId = UseDefaultWeb3React()
   const address = useMemo(() => (chainId ? CollateralPool[chainId] : undefined), [chainId])
   return useContract(address, COLLATERAL_POOL_ABI)
 }
 
 export function useProxyMinterContract() {
-  const { chainId } = useWeb3React()
+  const chainId = UseDefaultWeb3React()
   const address = useMemo(() => (chainId ? MintProxy[chainId] : undefined), [chainId])
   return useContract(address, PROXY_MINTER_ABI)
 }
 
 // FIXME: add dei contract address
 export function useDeiContract() {
-  const { chainId } = useWeb3React()
+  const chainId = UseDefaultWeb3React()
   const address = useMemo(() => (chainId ? MintProxy[chainId] : undefined), [chainId])
   return useContract(address, PROXY_MINTER_ABI)
 }
@@ -147,19 +148,19 @@ export function useStrategyContract(address: string) {
 }
 
 export function useTwapOracleContract() {
-  const { chainId } = useWeb3React()
+  const chainId = UseDefaultWeb3React()
   const address = useMemo(() => (chainId ? TwapOracle[chainId] : undefined), [chainId])
   return useContract(address, TWAP_ORACLE_ABI)
 }
 
 export function useDeiBonderV3Contract() {
-  const { chainId } = useWeb3React()
+  const chainId = UseDefaultWeb3React()
   const address = useMemo(() => (chainId ? DeiBonderV3[chainId] : undefined), [chainId])
   return useContract(address, DEI_BONDER_V3_ABI)
 }
 
 export function useCLQDRContract() {
-  const { chainId } = useWeb3React()
+  const chainId = UseDefaultWeb3React()
   const address = useMemo(() => (chainId ? CLQDR_ADDRESS[chainId] : undefined), [chainId])
   return useContract(address, CLQDR_ABI)
 }
@@ -170,7 +171,7 @@ export function usePerpetualEscrowTokenReceiverContract() {
 }
 
 export function useAnyDEIContract() {
-  const { chainId } = useWeb3React()
+  const chainId = UseDefaultWeb3React()
   const address = useMemo(() => (chainId ? AnyDEI_ADDRESS[chainId] : undefined), [chainId])
   return useContract(address, ERC20_ABI)
 }

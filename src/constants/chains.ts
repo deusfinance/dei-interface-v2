@@ -49,6 +49,8 @@ export const SUPPORTED_CHAIN_IDS: SupportedChainId[] = Object.values(SupportedCh
 
 export const SolidlyChains = [SupportedChainId.FANTOM]
 
+export const ActiveChains = [SupportedChainId.FANTOM]
+
 export const FALLBACK_CHAIN_ID = SupportedChainId.FANTOM
 
 export const NETWORK_URLS: { [chainId: number]: string } = {
