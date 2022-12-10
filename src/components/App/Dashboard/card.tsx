@@ -37,15 +37,26 @@ const Wrapper = styled(RowBetween)<{ disabled?: boolean }>`
       }
   }
   `};
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    & > * {
+      &:first-child {
+        height: 100px;
+      }
+  }
+  `};
 `
 
 const LeftWrap = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-
+  order: 0;
   ${({ theme }) => theme.mediaWidth.upToSmall`
     width:130px;
+  `};
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+  order: 1 ;
+  text-align:center
   `};
 `
 
@@ -71,6 +82,9 @@ const TitleWrap = styled.div<{ DeiActive?: boolean; DeusActive?: boolean }>`
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
     font-size: 16px;
+  `}
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    margin-block:4px
   `}
 `
 
@@ -98,6 +112,14 @@ const AnchorTag = styled.a<{ disabled?: boolean }>`
     disabled &&
     `
     pointer-events: none;
+  `};
+  order: 1;
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    flex-direction:column;
+    align-items:center;
+    span{
+      order:0;
+    }
   `};
 `
 

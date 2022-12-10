@@ -50,6 +50,12 @@ const TelegramWrap = styled.div`
             padding: 12px;
         }
   `};
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    & > * {
+        &:first-child {
+            height: 100px;
+        }
+  `};
 `
 const DiscordWrap = styled(TelegramWrap)`
   & > * {
