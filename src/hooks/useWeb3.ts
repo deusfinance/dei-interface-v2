@@ -7,7 +7,7 @@ import { isMobile } from 'react-device-detect'
 import { injected } from '../connectors'
 import { useInjectedAddress } from './useInjectedAddress'
 
-import { SupportedChainId } from 'constants/chains'
+import { FALLBACK_CHAIN_ID, SupportedChainId, ActiveChains } from 'constants/chains'
 import { NETWORK_CONTEXT_NAME } from 'constants/misc'
 
 export default function useWeb3React(): Web3ReactContextInterface<Web3Provider> & {
@@ -18,6 +18,11 @@ export default function useWeb3React(): Web3ReactContextInterface<Web3Provider> 
   const injectedContext = injectedAddress ? { ...context, account: injectedAddress } : context
   const contextNetwork = useWeb3ReactCore<Web3Provider>(NETWORK_CONTEXT_NAME)
   return context.active ? injectedContext : contextNetwork
+}
+
+export function UseDefaultWeb3React(): SupportedChainId {
+  const { chainId } = useWeb3React()
+  return chainId && ActiveChains.includes(chainId) ? chainId : FALLBACK_CHAIN_ID
 }
 
 export function useEagerConnect() {
