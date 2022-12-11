@@ -68,6 +68,16 @@ const StakedLPRewardButton = styled(BaseButton)`
       -webkit-text-fill-color: transparent;
     }
   }
+  &:hover {
+    & > span {
+      background: -webkit-linear-gradient(90deg, #0badf4 0%, #30efe4 93.4%);
+      & > p {
+        background: ${({ theme }) => theme.bg0};
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+    }
+  }
 `
 const UnStakedContainer = styled(Wrapper)`
   background-color: ${({ theme }) => theme.bg2};
@@ -89,6 +99,11 @@ const UnStakedButton = styled(BaseButton)`
     background-color: ${({ theme }) => theme.bg0};
     & > p {
       color: ${({ theme }) => theme.text1};
+    }
+  }
+  &:hover {
+    & > span {
+      background-color: ${({ theme }) => theme.bg2};
     }
   }
 `
