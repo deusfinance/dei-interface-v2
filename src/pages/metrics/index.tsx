@@ -46,7 +46,7 @@ export default function Metrics() {
       <Wrapper>
         <DeiStats />
         <DeusStats />
-        <VeDeusStats />
+        {/* <VeDeusStats /> */}
       </Wrapper>
     </Container>
   )

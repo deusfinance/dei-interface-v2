@@ -1,4 +1,7 @@
 import StatsHeader from 'components/StatsHeader'
+import { useDeusPrice } from 'hooks/useCoingeckoPrice'
+import { useDeusStats } from 'hooks/useDeusStats'
+import { useMemo } from 'react'
 import styled, { useTheme } from 'styled-components'
 import { formatAmount, formatDollarAmount } from 'utils/numbers'
 import MultipleChart from './MultipleChart'
@@ -27,11 +30,16 @@ const ChartWrapper = styled.div`
 export default function DeusStats() {
   const theme = useTheme()
 
-  // TODO : use actual values from hooks
+  const deusPrice = useDeusPrice() ?? '-'
+  const { totalSupply } = useDeusStats()
+  const marketCap = useMemo(() => {
+    return totalSupply * parseFloat(deusPrice)
+  }, [totalSupply, deusPrice])
+
   const items = [
-    { name: 'Price', value: formatDollarAmount(89) ?? '-' },
-    { name: 'Supply', value: formatAmount(121530000) ?? '-' },
-    { name: 'Market Cap', value: formatDollarAmount(15467530000, 2) ?? '-' },
+    { name: 'Price', value: formatDollarAmount(parseInt(deusPrice)) },
+    { name: 'Total Supply', value: formatAmount(totalSupply) },
+    { name: 'Total Market Cap', value: formatDollarAmount(marketCap) },
   ]
 
   return (
@@ -47,7 +55,7 @@ export default function DeusStats() {
         />
         <MultipleChart
           primaryLabel="Market Cap"
-          secondaryLabel="Supply"
+          secondaryLabel="Total Supply"
           primaryColor={theme.deusPrimaryColor}
           secondaryColor={theme.deusSecondaryColor}
           primaryID="DEUSMarketCap"

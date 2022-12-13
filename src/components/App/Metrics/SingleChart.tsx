@@ -1,8 +1,9 @@
 import { formatUnits } from '@ethersproject/units'
 import { getDeusStatsApolloClient } from 'apollo/client/deusStats'
 import { getVeDeusStatsApolloClient } from 'apollo/client/veDeusStats'
-import { ChartData, DEUS_SUPPLY, VEDEUS_LOCKED_SUPPLY, VEDEUS_SUPPLY } from 'apollo/queries'
+import { ChartData, DEUS_SUPPLY, VEDEUS_LOCKED_SUPPLY, VEDEUS_STATS, VEDEUS_SUPPLY } from 'apollo/queries'
 import Dropdown from 'components/DropDown'
+import { FALLBACK_CHAIN_ID } from 'constants/chains'
 import { VEDEUS_TOKEN } from 'constants/tokens'
 import useWeb3React from 'hooks/useWeb3'
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -164,7 +165,7 @@ export default function SingleChart({
   secondaryColor: string
   uniqueID: string
 }) {
-  const { chainId } = useWeb3React()
+  const { chainId = FALLBACK_CHAIN_ID } = useWeb3React()
   const theme = useTheme()
 
   const [loading, setLoading] = useState(true)
@@ -178,45 +179,40 @@ export default function SingleChart({
 
   //console.log('api data', apiData)
 
-  const fetchData = useCallback(async () => {
-    const fetcher = async (skip: number, timestamp: number): Promise<ChartData[]> => {
-      const DEFAULT_RETURN: ChartData[] = []
+  const getRawData = useCallback(
+    async (skip: number, timestamp: number) => {
       try {
-        if (!chainId) return DEFAULT_RETURN
+        // query subgraph and fetch all entities at once
+        const client = getVeDeusStatsApolloClient(chainId)
+        if (!client) return []
 
-        // query different subgraphs and respective schemas to fetch respective chart data
-        switch (uniqueID) {
-          case 'veDEUSSupply': {
-            const client = getVeDeusStatsApolloClient(chainId)
-            if (!client) return DEFAULT_RETURN
+        const { data } = await client.query({
+          query: VEDEUS_STATS,
+          variables: { skip, timestamp },
+          fetchPolicy: 'no-cache',
+        })
 
-            const { data } = await client.query({
-              query: VEDEUS_SUPPLY,
-              variables: { skip, timestamp },
-              fetchPolicy: 'no-cache',
-            })
-
-            return data.veDEUSSupplies as ChartData[]
-          }
-          case 'veDEUSTotalLocked': {
-            const client = getVeDeusStatsApolloClient(chainId)
-            if (!client) return DEFAULT_RETURN
-
-            const { data } = await client.query({
-              query: VEDEUS_LOCKED_SUPPLY,
-              variables: { skip, timestamp },
-              fetchPolicy: 'no-cache',
-            })
-
-            return data.totalLockeds as ChartData[]
-          }
-          default:
-            return []
-        }
+        return data
       } catch (error) {
-        console.log(`Unable to ${uniqueID} data from The Graph Network`)
+        console.log(`Unable to query data from The Graph Network`)
         console.error(error)
         return []
+      }
+    },
+    [chainId]
+  )
+
+  const fetchData = useCallback(async () => {
+    const fetcher = async (skip: number, timestamp: number): Promise<ChartData[]> => {
+      const data = await getRawData(skip, timestamp)
+
+      switch (uniqueID) {
+        case 'veDEUSSupply':
+          return data?.veDEUSSupplies as ChartData[]
+        case 'veDEUSTotalLocked':
+          return data?.totalLockeds as ChartData[]
+        default:
+          return [] as ChartData[]
       }
     }
 
@@ -245,7 +241,7 @@ export default function SingleChart({
     }
 
     return data
-  }, [uniqueID, chainId, currentTimeFrame])
+  }, [currentTimeFrame, getRawData, uniqueID])
 
   useEffect(() => {
     const getData = async () => {

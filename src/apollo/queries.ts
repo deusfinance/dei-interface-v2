@@ -86,6 +86,32 @@ export const SOLIDLY_PAIRS = gql`
   }
 `
 
+export const VEDEUS_STATS = gql`
+  query getAllStats($skip: Int!, $timestamp: Int!) {
+    veDEUSSupplies(
+      first: 1000
+      skip: $skip
+      where: { timestamp_lt: $timestamp }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      timestamp
+      value
+    }
+
+    totalLockeds(
+      first: 1000
+      skip: $skip
+      where: { timestamp_lt: $timestamp }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      timestamp
+      value
+    }
+  }
+`
+
 export const VEDEUS_SUPPLY = gql`
   query getSupply($skip: Int!, $timestamp: Int!) {
     veDEUSSupplies(
