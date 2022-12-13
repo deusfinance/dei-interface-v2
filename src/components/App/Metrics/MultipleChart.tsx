@@ -393,11 +393,26 @@ export default function MultipleChart({
     const currentTimestamp = Date.now() / 1000
     const earliestTimestamp = Math.floor(currentTimestamp) - timeframeMap[currentTimeFrame]
     const filteredData = chartData.filter((obj) => parseInt(obj.timestamp) > earliestTimestamp)
+    // When there is no CHANGE in value detected in last selected timeframe, add 2 data points same as the last recorded value but with different timestamps
+    if (!filteredData.length) {
+      filteredData.push(
+        ...filteredData,
+        {
+          ...chartData[chartData.length - 1],
+          timestamp: currentTimestamp.toString(),
+        },
+        {
+          ...chartData[chartData.length - 1],
+          timestamp: earliestTimestamp.toString(),
+        }
+      )
+    }
     // adding the latest data available as the current data. This is to handle cases where we get just 1 data point in selected timeframe.
-    filteredData.push(...filteredData, {
-      ...filteredData[filteredData.length - 1],
-      timestamp: currentTimestamp.toString(),
-    })
+    else
+      filteredData.push(...filteredData, {
+        ...filteredData[filteredData.length - 1],
+        timestamp: currentTimestamp.toString(),
+      })
     // make sure to have not more than 100 data points for any timeframe for smoother chart
     return groupedData(filteredData, currentTimeFrame)
   }, [chartData, currentTimeFrame])
@@ -488,7 +503,7 @@ export default function MultipleChart({
         )}
       </TitleWrapper>
       <Container
-        content={loading ? 'Loading...' : filteredData.length < 1 ? 'Insufficient data' : ''}
+        content={loading ? 'Loading...' : filteredData.length < 2 ? 'Insufficient data' : ''}
         width="100%"
         height={350}
       >
