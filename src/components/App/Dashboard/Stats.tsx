@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import styled from 'styled-components'
 import Image from 'next/image'
 
@@ -15,7 +15,16 @@ import { Modal, ModalHeader } from 'components/Modal'
 import { RowBetween } from 'components/Row'
 import StatsItem from './StatsItem'
 import Chart from './Chart'
-import { AMO, CollateralPool, DEI_ADDRESS, USDCReserves1, USDCReserves2, veDEUS } from 'constants/addresses'
+import {
+  AMO,
+  CollateralPool,
+  DEI_ADDRESS,
+  escrow,
+  USDCReserves1,
+  USDCReserves2,
+  USDCReserves3,
+  veDEUS,
+} from 'constants/addresses'
 import { SupportedChainId } from 'constants/chains'
 import { ChainInfo } from 'constants/chainInfo'
 import { Loader } from 'components/Icons'
@@ -183,7 +192,9 @@ export default function Stats() {
     AMOReserve,
     usdcReserves1,
     usdcReserves2,
+    usdcReserves3,
     usdcPoolReserves,
+    escrowReserve,
   } = useDeiStats()
 
   const { lockedVeDEUS } = useVestedAPY(undefined, getMaximumDate())
@@ -221,6 +232,28 @@ export default function Stats() {
         <ModalInfoWrapper>
           <a
             href={
+              ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/address/' + USDCReserves3[SupportedChainId.FANTOM]
+            }
+            target={'_blank'}
+            rel={'noreferrer'}
+          >
+            Reserves 3
+          </a>
+          {usdcReserves3 === null ? <Loader /> : <ModalItemValue>{formatAmount(usdcReserves3, 2)}</ModalItemValue>}
+        </ModalInfoWrapper>
+        <ModalInfoWrapper>
+          <a
+            href={ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/address/' + escrow[SupportedChainId.FANTOM]}
+            target={'_blank'}
+            rel={'noreferrer'}
+          >
+            Reserves 4
+          </a>
+          {escrowReserve === null ? <Loader /> : <ModalItemValue>{formatAmount(escrowReserve, 2)}</ModalItemValue>}
+        </ModalInfoWrapper>
+        <ModalInfoWrapper>
+          <a
+            href={
               ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl +
               '/address/' +
               CollateralPool[SupportedChainId.FANTOM]
@@ -241,7 +274,9 @@ export default function Stats() {
           {totalProtocolHoldings === null ? (
             <Loader />
           ) : (
-            <ModalItemValue>{formatAmount(usdcReserves1 + usdcReserves2 + usdcPoolReserves, 2)}</ModalItemValue>
+            <ModalItemValue>
+              {formatAmount(usdcReserves1 + usdcReserves2 + usdcPoolReserves + usdcReserves3 + escrowReserve, 2)}
+            </ModalItemValue>
           )}
         </ModalInfoWrapper>
       </ModalWrapper>
@@ -258,6 +293,12 @@ export default function Stats() {
       </>
     )
   }
+
+  const usdcBackingPerDei = useMemo(() => {
+    if (collateralRatio > 100) return '100%'
+    else if (collateralRatio < 90) return '90%'
+    return `${formatAmount(collateralRatio, 1).toString()}%`
+  }, [collateralRatio])
 
   return (
     <>
@@ -295,7 +336,7 @@ export default function Stats() {
                 value={formatDollarAmount(totalUSDCReserves, 2)}
                 onClick={() => setToggleDashboardModal(true)}
               />
-              <StatsItem name="USDC Backing Per DEI" value={formatAmount(collateralRatio, 1).toString() + '%'} />
+              <StatsItem name="USDC Backing Per DEI" value={usdcBackingPerDei} />
             </Info>
           </StatsWrapper>
           <StatsWrapper>

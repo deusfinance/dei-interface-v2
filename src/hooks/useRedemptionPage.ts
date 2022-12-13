@@ -24,7 +24,7 @@ export function useRedeemAmountOut(amountIn: string): {
         : [
             {
               methodName: 'collateralAndDeusValueForRedeeming',
-              callInputs: [amountInBN],
+              callInputs: [amountInBN, '1'],
             },
           ],
     [amountInBN]

@@ -10,3 +10,6 @@ export const DEFAULT_RETRY_OPTIONS: RetryOptions = { n: 3, minWait: 1000, maxWai
 export const NETWORK_POLLING_INTERVALS: { [chainId: number]: number } = {}
 
 export const INFO_URL = 'https://info.deus.finance'
+
+//oracle api
+export const ORACLE_BASE_URL = new URL('https://oracle4.deus.finance')

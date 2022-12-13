@@ -126,6 +126,7 @@ function colors(themeName: SupportedThemes): Colors {
       warning: '#FF8F00',
       deusColor: 'linear-gradient(90deg, #0badf4 0%, #30efe4 93.4%)',
       deiColor: 'linear-gradient(90deg, #E0974C 0%, #C93F6F 100%);',
+      cLqdrColor: '#06EBC8',
     },
     [SupportedThemes.DARK]: {
       themeName: SupportedThemes.DARK,
@@ -195,6 +196,7 @@ function colors(themeName: SupportedThemes): Colors {
 
       deusColor: 'linear-gradient(90deg, #0badf4 0%, #30efe4 93.4%)',
       deiColor: 'linear-gradient(90deg, #E0974C 0%, #C93F6F 100%);',
+      cLqdrColor: '#06EBC8',
     },
   }
   // default the theme to light mode

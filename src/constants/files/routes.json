@@ -28,5 +28,10 @@
     "text": "Metrics",
     "path": "/metrics",
     "exact": true
+  },
+  {
+    "text": "cLQDR",
+    "path": "/clqdr",
+    "exact": true
   }
 ]

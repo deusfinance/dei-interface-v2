@@ -79,6 +79,7 @@ export const ButtonText = styled.span<{ gradientText?: boolean }>`
   font-family: 'Inter';
   font-weight: 600;
   font-size: 15px;
+  white-space: nowrap;
   color: ${({ theme }) => theme.text1};
 
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`

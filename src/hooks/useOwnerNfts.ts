@@ -50,7 +50,7 @@ function useOwnerNfts(address: string | null | undefined, ABI?: any): { results:
         .reduce((acc: number[], value) => {
           if (!value.result) return acc
           const result = value.result[0].toString()
-          if (!result || result === '0') return acc
+          if (!result) return acc
           acc.push(parseInt(result))
           return acc
         }, [])

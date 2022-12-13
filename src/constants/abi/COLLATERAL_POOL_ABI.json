@@ -1,28 +1,5 @@
 [
   {
-    "inputs": [
-      { "internalType": "address", "name": "admin", "type": "address" },
-      { "internalType": "address", "name": "deiAddress", "type": "address" },
-      { "internalType": "address", "name": "deusAddress", "type": "address" },
-      { "internalType": "address", "name": "collateralAddress", "type": "address" },
-      { "internalType": "address", "name": "oracle_", "type": "address" },
-      { "internalType": "address", "name": "strategy_", "type": "address" }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      { "indexed": false, "internalType": "address", "name": "token", "type": "address" },
-      { "indexed": false, "internalType": "address", "name": "sender", "type": "address" },
-      { "indexed": false, "internalType": "address", "name": "to", "type": "address" },
-      { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }
-    ],
-    "name": "AMOWithdraw",
-    "type": "event"
-  },
-  {
     "anonymous": false,
     "inputs": [
       { "indexed": false, "internalType": "address", "name": "user", "type": "address" },
@@ -50,6 +27,23 @@
       { "indexed": false, "internalType": "uint256", "name": "twapDeus", "type": "uint256" }
     ],
     "name": "CollectDeus",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "address", "name": "token", "type": "address" },
+      { "indexed": false, "internalType": "address", "name": "sender", "type": "address" },
+      { "indexed": false, "internalType": "address", "name": "to", "type": "address" },
+      { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }
+    ],
+    "name": "EmergencyWithdraw",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [{ "indexed": false, "internalType": "uint8", "name": "version", "type": "uint8" }],
+    "name": "Initialized",
     "type": "event"
   },
   {
@@ -179,6 +173,13 @@
   },
   {
     "inputs": [],
+    "name": "EMERGENCY_WITHDRAW_ROLE",
+    "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "PAUSER_ROLE",
     "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
     "stateMutability": "view",
@@ -200,19 +201,9 @@
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "token", "type": "address" },
-      { "internalType": "address", "name": "to", "type": "address" },
-      { "internalType": "uint256", "name": "amount", "type": "uint256" }
-    ],
-    "name": "amoGateway",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
       { "internalType": "uint256", "name": "deiAmount", "type": "uint256" },
-      { "internalType": "uint256", "name": "deusPrice", "type": "uint256" }
+      { "internalType": "uint256", "name": "deusPrice", "type": "uint256" },
+      { "internalType": "bool", "name": "includeFees", "type": "bool" }
     ],
     "name": "collatAndDeusAmountForMinting",
     "outputs": [
@@ -243,7 +234,10 @@
     "type": "function"
   },
   {
-    "inputs": [{ "internalType": "uint256", "name": "deiAmount", "type": "uint256" }],
+    "inputs": [
+      { "internalType": "uint256", "name": "deiAmount", "type": "uint256" },
+      { "internalType": "bool", "name": "includeFees", "type": "bool" }
+    ],
     "name": "collateralAndDeusValueForRedeeming",
     "outputs": [
       { "internalType": "uint256", "name": "collateralAmount", "type": "uint256" },
@@ -307,6 +301,17 @@
     "type": "function"
   },
   {
+    "inputs": [
+      { "internalType": "address", "name": "token", "type": "address" },
+      { "internalType": "address", "name": "to", "type": "address" },
+      { "internalType": "uint256", "name": "amount", "type": "uint256" }
+    ],
+    "name": "emergencyWithdraw",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [{ "internalType": "address", "name": "user", "type": "address" }],
     "name": "getAllPositions",
     "outputs": [
@@ -315,7 +320,7 @@
           { "internalType": "uint256", "name": "usdAmount", "type": "uint256" },
           { "internalType": "uint256", "name": "timestamp", "type": "uint256" }
         ],
-        "internalType": "struct DEIPool.RedeemPosition[]",
+        "internalType": "struct MinterPool.RedeemPosition[]",
         "name": "positinos",
         "type": "tuple[]"
       }
@@ -339,7 +344,7 @@
           { "internalType": "uint256", "name": "usdAmount", "type": "uint256" },
           { "internalType": "uint256", "name": "timestamp", "type": "uint256" }
         ],
-        "internalType": "struct DEIPool.RedeemPosition[]",
+        "internalType": "struct MinterPool.RedeemPosition[]",
         "name": "positions",
         "type": "tuple[]"
       }
@@ -365,6 +370,20 @@
     "name": "hasRole",
     "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "admin", "type": "address" },
+      { "internalType": "address", "name": "deiAddress", "type": "address" },
+      { "internalType": "address", "name": "deusAddress", "type": "address" },
+      { "internalType": "address", "name": "collateralAddress", "type": "address" },
+      { "internalType": "address", "name": "oracle_", "type": "address" },
+      { "internalType": "address", "name": "strategy_", "type": "address" }
+    ],
+    "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {

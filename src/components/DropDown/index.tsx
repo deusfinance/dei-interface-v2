@@ -1,37 +1,40 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react'
 import styled, { css } from 'styled-components'
-import find from 'lodash/find'
+// import find from 'lodash/find'
 
 import useOnOutsideClick from 'hooks/useOnOutsideClick'
 import { ChevronDown } from 'components/Icons'
+// import { DropDownName, DropDownValue } from 'components/App/CLqdr/StatsHeader'
 import Box from 'components/Box'
+// import { truncateAddress } from 'utils/address'
 
 const Wrapper = styled.div<{
   width: string
-  isOpen?: boolean
 }>`
   display: block;
-  overflow: ${({ isOpen }) => !isOpen && 'hidden'};
+  overflow: hidden;
+  margin-left: 12px;
   color: ${({ theme }) => theme.text3};
   max-width: ${({ width }) => width};
   font-size: 12px;
   font-weight: 600;
   width: 100%;
-  position: relative;
 `
 
 const Header = styled(Box)<{
   noHover?: boolean
   isOpen?: boolean
+  width: string
 }>`
   display: flex;
   justify-content: space-between;
   text-align: left;
-  padding: 8px 16px;
+  padding: 0 0rem;
   align-items: center;
-  border-radius: 8px;
+  height: 48px;
   background: ${({ theme }) => theme.bg1};
   color: ${({ theme }) => theme.text1};
+  width: ${({ width }) => width};
 
   &:hover {
     cursor: ${({ noHover }) => (noHover ? 'default' : 'pointer')};
@@ -81,35 +84,64 @@ const List = styled.ul<{
 
 const ListItem = styled.li`
   list-style: none;
-  text-align: center;
-  padding: 8px 16px;
+  text-align: left;
+  height: 48px;
   border-top: none;
+  line-height: 40px;
+  font-size: 13px;
   z-index: 999;
+  color: ${({ theme }) => theme.text1};
+  margin: 15px 0px;
 
   &:hover {
     cursor: pointer;
-    background: ${({ theme }) => theme.bg1};
+    background: ${({ theme }) => theme.bg4};
   }
 `
 
-export interface Option {
+const OptionItem = styled.div`
+  background: ${({ theme }) => theme.bg1};
+  width: 162px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  padding: 0px 8px;
+  & > * {
+    &:first-child {
+      margin-bottom: 5px;
+    }
+  }
+`
+
+const PlaceHolder = styled.div`
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 17px;
+  margin-left: 10px;
+  color: ${({ theme }) => theme.text2};
+`
+
+interface Option {
   value: string
+  name: string
   label: JSX.Element | string
 }
 
 export default function Dropdown({
   options = [],
-  placeholder = 'Select',
+  placeholder = 'Contracts',
   onSelect,
-  defaultValue,
   width,
+  defaultValue,
   disabled = false,
 }: {
   options: Option[]
   placeholder: string
-  onSelect: (val: string) => void
-  defaultValue?: string
+  onSelect: (val: number) => void
   width: string
+  defaultValue?: number
   disabled?: boolean
 }) {
   const ref = useRef() as React.MutableRefObject<HTMLInputElement>
@@ -119,16 +151,23 @@ export default function Dropdown({
   useOnOutsideClick(ref, () => setIsOpen(false))
 
   useEffect(() => {
-    console.log('selectedOption', selectedOption)
-    if (!selectedOption) setSelectedOption(options[0]?.value ?? defaultValue)
-  }, [options, defaultValue, selectedOption])
+    if (options.length > 0) {
+      const value = defaultValue ? options[defaultValue].value : options[0].value
+      setSelectedOption(value)
+    }
+  }, [options, defaultValue, onSelect])
 
   const header: JSX.Element | string = useMemo(() => {
-    const option: Option | undefined = find(options, (obj) => obj.value == selectedOption)
-    console.log('selectedOption', selectedOption)
-    console.log('option header', option?.label)
-    return option?.label ?? placeholder
-  }, [selectedOption, options, placeholder])
+    // const option: Option | undefined = find(options, (obj) => obj.value == selectedOption)
+    // return option ? (
+    //   <OptionItem>
+    //     <DropDownName>{option?.name}</DropDownName>
+    //     <DropDownValue>{truncateAddress(option?.value)}</DropDownValue>
+    //   </OptionItem>
+    // ) : (
+    //   placeholder
+    return <PlaceHolder>{placeholder}</PlaceHolder>
+  }, [placeholder])
 
   const toggle = () => {
     !disabled && setIsOpen(!isOpen)
@@ -137,7 +176,9 @@ export default function Dropdown({
   if (!options.length) {
     return (
       <Wrapper ref={ref} width={width}>
-        <Header noHover>No options available</Header>
+        <Header width={width} noHover>
+          No options available
+        </Header>
       </Wrapper>
     )
   }
@@ -145,14 +186,16 @@ export default function Dropdown({
   if (options.length == 1) {
     return (
       <Wrapper ref={ref} width={width}>
-        <Header noHover>{options[0].label}</Header>
+        <Header width={width} noHover>
+          {options[0].label}
+        </Header>
       </Wrapper>
     )
   }
 
   return (
-    <Wrapper ref={ref} width={width} isOpen={isOpen}>
-      <Header onClick={toggle} isOpen={isOpen}>
+    <Wrapper ref={ref} width={width}>
+      <Header onClick={toggle} isOpen={isOpen} width={width}>
         {header}
         {!disabled && <StyledChevron isOpen={isOpen} />}
       </Header>
@@ -162,7 +205,7 @@ export default function Dropdown({
             key={i}
             onClick={() => {
               const selected = option.value
-              onSelect(selected)
+              onSelect(i)
               setSelectedOption(selected)
               toggle()
             }}

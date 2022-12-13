@@ -1,7 +1,7 @@
 import { SupportedChainId } from 'constants/chains'
 import { Token } from '@sushiswap/core-sdk'
 import { duplicateTokenByAddressMap, duplicateTokenByChainId, TokenMap } from 'utils/token'
-import { USDC_ADDRESS, DEUS_ADDRESS, DEI_ADDRESS, BDEI_ADDRESS, veDEUS } from './addresses'
+import { USDC_ADDRESS, DEUS_ADDRESS, DEI_ADDRESS, BDEI_ADDRESS, LQDR_ADDRESS, CLQDR_ADDRESS } from './addresses'
 
 // import USDC_LOGO from 'assets/img/tokens/usdc.svg'
 // import USDT_LOGO from 'assets/img/tokens/usdt.svg'
@@ -28,8 +28,6 @@ export const USDC_TOKEN = new Token(SupportedChainId.FANTOM, USDC_ADDRESS[Suppor
 
 export const DEUS_TOKEN = new Token(SupportedChainId.FANTOM, DEUS_ADDRESS[SupportedChainId.FANTOM], 18, 'DEUS', 'DEUS')
 
-export const VEDEUS_TOKEN = new Token(SupportedChainId.FANTOM, veDEUS[SupportedChainId.FANTOM], 18, 'veDEUS', 'veDEUS')
-
 export const BDEI_TOKEN = new Token(SupportedChainId.FANTOM, BDEI_ADDRESS[SupportedChainId.FANTOM], 18, 'bDEI', 'bDEI')
 
 export const DEI_BDEI_LP_TOKEN = new Token(
@@ -38,6 +36,20 @@ export const DEI_BDEI_LP_TOKEN = new Token(
   18,
   'DB-LP',
   'DB-LP'
+)
+
+/* =====================================
+                LQDR ADDRESS
+===================================== */
+
+export const LQDR_TOKEN = new Token(SupportedChainId.FANTOM, LQDR_ADDRESS[SupportedChainId.FANTOM], 18, 'LQDR', 'LQDR')
+
+export const cLQDR_TOKEN = new Token(
+  SupportedChainId.FANTOM,
+  CLQDR_ADDRESS[SupportedChainId.FANTOM],
+  18,
+  'cLQDR',
+  'cLQDR'
 )
 
 /* =====================================
