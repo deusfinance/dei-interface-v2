@@ -141,8 +141,7 @@ const SecondaryLabel = styled.div<{
 `
 
 const timeFramesOptions = [
-  { value: '15m', label: '15 mins' },
-  { value: '1H', label: '1 hour' },
+  { value: '4H', label: '4 hours' },
   { value: '8H', label: '8 hours' },
   { value: '1D', label: '1 day' },
   { value: '1W', label: '1 week' },
@@ -155,8 +154,7 @@ const timeFramesOptions = [
 
 // map timeframe to respective seconds
 const timeframeMap: Record<string, number> = {
-  '15m': 15 * 60,
-  '1H': 60 * 60,
+  '4H': 4 * 60 * 60,
   '8H': 8 * 60 * 60,
   '1D': 1 * 24 * 60 * 60,
   '1W': 7 * 24 * 60 * 60,
@@ -168,8 +166,7 @@ const timeframeMap: Record<string, number> = {
 
 // map respective timeframe to seconds for grouping
 const secondsMap: Record<string, number> = {
-  '15m': 60, // to use 1m grouped data
-  '1H': 60, // to use 1m grouped data
+  '4H': 60, // to use 1m grouped data
   '8H': 60, // to use 1m grouped data
   '1D': 15 * 60, // to use 15m grouped data
   '1W': 6 * 60 * 60, // to use 6h grouped data
@@ -393,8 +390,14 @@ export default function MultipleChart({
 
   // filter data based on selected timeframe
   const filteredData: ChartData[] = useMemo(() => {
-    const earliestTimestamp = Math.floor(Date.now() / 1000) - timeframeMap[currentTimeFrame]
+    const currentTimestamp = Date.now() / 1000
+    const earliestTimestamp = Math.floor(currentTimestamp) - timeframeMap[currentTimeFrame]
     const filteredData = chartData.filter((obj) => parseInt(obj.timestamp) > earliestTimestamp)
+    // adding the latest data available as the current data. This is to handle cases where we get just 1 data point in selected timeframe.
+    filteredData.push(...filteredData, {
+      ...filteredData[filteredData.length - 1],
+      timestamp: currentTimestamp.toString(),
+    })
     // make sure to have not more than 100 data points for any timeframe for smoother chart
     return groupedData(filteredData, currentTimeFrame)
   }, [chartData, currentTimeFrame])

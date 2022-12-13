@@ -23,7 +23,6 @@ import {
   USDCReserves1,
   USDCReserves2,
   USDCReserves3,
-  veDEUS,
 } from 'constants/addresses'
 import { SupportedChainId } from 'constants/chains'
 import { ChainInfo } from 'constants/chainInfo'
