@@ -307,7 +307,7 @@ export default function SingleChart({
         ':' +
         date.getMinutes()
 
-      const formattedValue = formatAmount(parseInt(payload[0].value))
+      const formattedValue = formatAmount(parseFloat(payload[0].value), 2)
       return (
         <div className="custom-tooltip">
           <p className="label">{`${label}: ${formattedValue}`}</p>

@@ -428,8 +428,9 @@ export default function MultipleChart({
         ' ' +
         date.getUTCHours() +
         ':' +
-        date.getMinutes()
-      const formattedValue = formatAmount(parseInt(payload[0].value))
+        date.getMinutes() +
+        ' Hr(s)'
+      const formattedValue = formatAmount(parseFloat(payload[0].value), 2)
       return (
         <div className="custom-tooltip">
           <p className="label">{`${currentTab}: ${formattedValue}`}</p>
