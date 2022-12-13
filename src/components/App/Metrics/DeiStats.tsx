@@ -1,4 +1,7 @@
 import StatsHeader from 'components/StatsHeader'
+import { useDeiPrice } from 'hooks/useCoingeckoPrice'
+import { useDeiStats } from 'hooks/useDeiStats'
+import { useMemo } from 'react'
 import styled, { useTheme } from 'styled-components'
 import { formatAmount, formatDollarAmount } from 'utils/numbers'
 import MultipleChart from './MultipleChart'
@@ -27,14 +30,21 @@ const ChartWrapper = styled.div`
 export default function DeiStats() {
   const theme = useTheme()
 
-  // TODO : use actual values from hooks
+  const deiPrice = useDeiPrice()
+  const { totalSupply, totalUSDCReserves } = useDeiStats()
+  const marketCap = useMemo(() => {
+    return totalSupply * parseFloat(deiPrice)
+  }, [totalSupply, deiPrice])
+  const collatRatio = useMemo(() => {
+    return (totalUSDCReserves / totalSupply) * 100
+  }, [totalSupply, totalUSDCReserves])
+
   const items = [
-    { name: 'Price', value: formatDollarAmount(1) ?? '-' },
-    { name: 'Supply', value: formatAmount(21530000) ?? '-' },
-    { name: 'Market Cap', value: formatDollarAmount(5467530000, 2) ?? '-' },
-    { name: 'Minting Ratio', value: '90%' },
-    { name: 'Redemption Ratio', value: '85%' },
-    { name: 'Collateralization Ratio', value: '90%' },
+    { name: 'Price', value: formatDollarAmount(parseFloat(deiPrice), 3) },
+    { name: 'Supply', value: formatAmount(totalSupply) },
+    { name: 'Market Cap', value: formatDollarAmount(marketCap, 2) },
+    { name: 'Total Reserve Assets', value: formatDollarAmount(totalUSDCReserves) },
+    { name: 'Collateralization Ratio', value: formatAmount(collatRatio, 2) + '%' },
   ]
 
   return (

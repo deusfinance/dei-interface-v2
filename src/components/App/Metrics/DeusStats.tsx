@@ -30,7 +30,7 @@ const ChartWrapper = styled.div`
 export default function DeusStats() {
   const theme = useTheme()
 
-  const deusPrice = useDeusPrice() ?? '-'
+  const deusPrice = useDeusPrice()
   const { totalSupply } = useDeusStats()
   const marketCap = useMemo(() => {
     return totalSupply * parseFloat(deusPrice)

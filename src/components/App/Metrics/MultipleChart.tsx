@@ -3,6 +3,7 @@ import { getDeiStatsApolloClient } from 'apollo/client/deiStats'
 import { getDeusStatsApolloClient } from 'apollo/client/deusStats'
 import { ChartData, DEI_REDEMPTION_RATIOS, DEI_RESERVES_BALANCE, DEI_SUPPLY, DEUS_SUPPLY } from 'apollo/queries'
 import Dropdown from 'components/DropDown'
+import { FALLBACK_CHAIN_ID } from 'constants/chains'
 import { DEI_TOKEN, DEUS_TOKEN, USDC_TOKEN } from 'constants/tokens'
 import useWeb3React from 'hooks/useWeb3'
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -237,7 +238,7 @@ export default function MultipleChart({
   primaryID: string
   secondaryID: string
 }) {
-  const { chainId } = useWeb3React()
+  const { chainId = FALLBACK_CHAIN_ID } = useWeb3React()
   const theme = useTheme()
 
   const [loading, setLoading] = useState(true)
