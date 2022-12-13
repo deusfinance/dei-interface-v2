@@ -66,7 +66,7 @@ export default function StakingPage() {
       <TopWrapper>
         {pool?.tokens.length > 1 && (
           <VStack>
-            <BalanceToken />
+            <BalanceToken pool={pool} />
             <LiquidityPool pool={pool} />
           </VStack>
         )}

@@ -22,8 +22,8 @@ const Wrapper = styled(VStack)`
 export default function PoolShare({ pool }: { pool: LiquidityType }) {
   const { account } = useWeb3React()
 
-  const { lpToken: currency } = pool
-  const tokensAddress = pool.tokens.map((token) => token.address)
+  const { lpToken: currency, tokens } = pool
+  const tokensAddress = tokens.map((token) => token.address)
   const tokensLogo = useCurrencyLogos(tokensAddress)
 
   const depositAmount = 0
@@ -55,9 +55,8 @@ export default function PoolShare({ pool }: { pool: LiquidityType }) {
         {tokensLogo?.map((logo, index) => (
           <ContentTable key={index}>
             <Label>
-              {/* <p>{pool.tokens[index].symbol}</p> */}
               <ImageWithFallback key={index} src={logo} alt={''} width={21} height={21} />
-              <p>{index === 0 ? 'DEUS' : 'vDEUS'}</p>
+              <p>{tokens[index].symbol}</p>
             </Label>
             <Value> {amountsOut[index] ? formatBalance(amountsOut[index]) : 0} </Value>
           </ContentTable>

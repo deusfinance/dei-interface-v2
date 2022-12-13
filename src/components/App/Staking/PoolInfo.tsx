@@ -71,10 +71,12 @@ export default function PoolInfo({ pool }: { pool: LiquidityType }) {
           <Value> N/A </Value>
         </ContentTable>
 
-        <ContentTable>
-          <Label> {pool.tokens[1].symbol} Reserve: </Label>
-          <Value> N/A </Value>
-        </ContentTable>
+        {pool?.tokens[1] && (
+          <ContentTable>
+            <Label> {pool.tokens[1].symbol} Reserve: </Label>
+            <Value> N/A </Value>
+          </ContentTable>
+        )}
 
         <ContentTable>
           <Label> Pool Address: </Label>

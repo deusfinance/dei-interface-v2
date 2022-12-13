@@ -8,6 +8,7 @@ import Down2 from '/public/static/images/pages/stake/down2.svg'
 import { useState } from 'react'
 import { ChevronDown } from 'components/Icons'
 import useWeb3React from 'hooks/useWeb3'
+import { LiquidityType } from 'constants/stakingPools'
 
 const Wrapper = styled(HStack)`
   justify-content: space-between;
@@ -123,9 +124,11 @@ const StyledChevron = styled(({ isOpen, ...props }) => <ChevronDown {...props} /
       transform: scaleY(-1);
     `};
 `
-const BalanceToken = () => {
+
+const BalanceToken = ({ pool }: { pool: LiquidityType }) => {
   const [isOpen, setOpen] = useState<boolean>(false)
   const { account } = useWeb3React()
+
   return (
     <Container>
       <div style={{ marginInline: 12 }}>
@@ -134,12 +137,12 @@ const BalanceToken = () => {
             <IconContainer>
               <Icon src={Vector} width={24} height={24} />
             </IconContainer>
-            <HeaderTextLabel>Your DEUS Balance:</HeaderTextLabel>
+            <HeaderTextLabel>Your {pool?.tokens[0]?.symbol} Balance:</HeaderTextLabel>
           </HStack>
           <HeaderTextValue>
             {account ? (
               <>
-                <p>100 DEUS </p>
+                <p>100 {pool?.tokens[0]?.symbol} </p>
                 <p>≈ $1,440</p>
               </>
             ) : (
@@ -152,12 +155,12 @@ const BalanceToken = () => {
             <IconContainer>
               <Icon src={Vector2} width={24} height={24} />
             </IconContainer>
-            <HeaderTextLabel>Your vDEUS Balance:</HeaderTextLabel>
+            <HeaderTextLabel>Your {pool?.tokens[1]?.symbol} Balance:</HeaderTextLabel>
           </HStack>
           <HeaderTextValue>
             {account ? (
               <>
-                <p>1.39 vDEUS</p>
+                <p>1.39 {pool?.tokens[1]?.symbol}</p>
                 <p>≈ $281</p>
               </>
             ) : (
