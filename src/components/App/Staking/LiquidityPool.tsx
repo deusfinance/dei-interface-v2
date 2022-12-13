@@ -18,6 +18,7 @@ import { DotFlashing } from 'components/Icons'
 import ActionSetter, { ActionTypes } from './ActionSetter'
 import InputBox from 'components/InputBox'
 import { LiquidityType } from 'constants/stakingPools'
+import { Divider, HStack } from './common/Layout'
 
 const Wrapper = styled.div`
   display: flex;
@@ -39,7 +40,7 @@ const Wrapper = styled.div`
 `
 
 const ToggleState = styled.div`
-  background: ${({ theme }) => theme.bg0};
+  background: ${({ theme }) => theme.bg1};
   margin: -21px -16px 21px -16px;
   border-top-right-radius: 12px;
   border-top-left-radius: 12px;
@@ -48,7 +49,90 @@ const ToggleState = styled.div`
 const DepositButton = styled(PrimaryButton)`
   border-radius: 15px;
 `
-
+const BetweenStack = styled(HStack)`
+  justify-content: space-between;
+`
+const WithdrawText = styled.p`
+  color: ${({ theme }) => theme.text1};
+  & :first-of-type {
+    font-size: 1rem;
+    font-weight: medium;
+  }
+  & :last-of-type {
+    font-size: 0.75rem;
+  }
+`
+const WithdrawPercentage = styled(HStack)`
+  column-gap: 7px;
+`
+const PercentButton = styled.button<{ isActive: boolean }>`
+  text-align: center;
+  min-width: 63px;
+  min-height: 36px;
+  background: ${({ isActive, theme }) => (isActive ? '-webkit-linear-gradient(90deg, #e0974c, #c93f6f);' : theme.bg2)};
+  padding: 1px;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  & > span {
+    border-radius: 8px;
+    background-color: ${({ isActive, theme }) => (isActive ? theme.bg0 : theme.bg5)};
+    min-width: 62px;
+    min-height: 35px;
+    display: flex;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+  }
+`
+const SelectedPercentBox = styled(HStack)`
+  height: 36px;
+  width: 82px;
+  background: ${({ theme }) => theme.bg2};
+  align-items: center;
+  border-radius: 8px;
+  justify-content: center;
+  & > span {
+    padding-inline: 12px;
+    border-radius: 8px;
+    background-color: ${({ theme }) => theme.bg5};
+    width: 81px;
+    height: 35px;
+    display: flex;
+    text-align: center;
+    align-items: center;
+    justify-content: space-between;
+  }
+`
+const PercentBox = () => {
+  const [selectedPercent, setPercent] = useState<string>('25')
+  const percentValue: string[] = ['25', '50', '75', '100']
+  return (
+    <div style={{ marginTop: 15 }}>
+      <BetweenStack>
+        <WithdrawPercentage>
+          {percentValue.map((value, index) => (
+            <PercentButton
+              isActive={percentValue[index] === selectedPercent}
+              onClick={() => setPercent(value)}
+              key={value}
+            >
+              <span>{value}%</span>
+            </PercentButton>
+          ))}
+        </WithdrawPercentage>
+        <SelectedPercentBox>
+          <span>
+            <p>{selectedPercent}</p>
+            <p>%</p>
+          </span>
+        </SelectedPercentBox>
+      </BetweenStack>
+    </div>
+  )
+}
 export default function LiquidityPool({ pool }: { pool: LiquidityType }) {
   const { chainId, account } = useWeb3React()
   const toggleWalletModal = useWalletModalToggle()
@@ -262,12 +346,15 @@ export default function LiquidityPool({ pool }: { pool: LiquidityType }) {
 
   const getAppComponent = (): JSX.Element => {
     const tokens = pool?.tokens
-
     if (selected == ActionTypes.REMOVE) {
       return (
         <>
-          <InputBox currency={lpCurrency} value={lpAmountIn} onChange={(value: string) => setLPAmountIn(value)} />
-
+          {/* <InputBox currency={lpCurrency} value={lpAmountIn} onChange={(value: string) => setLPAmountIn(value)} /> */}
+          <BetweenStack>
+            <WithdrawText>Whitdraw percentage</WithdrawText>
+            <WithdrawText>LP Staked: 488.335</WithdrawText>
+          </BetweenStack>
+          <PercentBox />
           <ArrowDown style={{ margin: '12px auto' }} />
 
           <InputBox currency={tokens[0]} value={amountIn} onChange={(value: string) => console.log(value)} disabled />
@@ -322,6 +409,7 @@ export default function LiquidityPool({ pool }: { pool: LiquidityType }) {
     <Wrapper>
       <ToggleState>
         <ActionSetter selected={selected} setSelected={setSelected} />
+        <Divider backgroundColor="#101116" />
       </ToggleState>
 
       {getAppComponent()}

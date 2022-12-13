@@ -14,7 +14,7 @@ const Item = styled.div<{ selected: boolean }>`
   text-align: center;
   padding: 12px;
   margin: 6px auto;
-  color: ${({ selected, theme }) => (selected ? theme.text1 : theme.text2)};
+  color: ${({ selected, theme }) => (selected ? theme.yellow4 : theme.text2)};
   width: 50%;
 
   &:hover {
@@ -26,7 +26,7 @@ const Line = styled.div`
   margin-top: 10px;
   width: 2px;
   height: 35px;
-  background: ${({ theme }) => theme.bg2};
+  background: ${({ theme }) => theme.bg0};
 `
 
 export enum ActionTypes {

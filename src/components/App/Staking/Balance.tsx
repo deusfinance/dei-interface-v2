@@ -40,7 +40,7 @@ const BalanceButton = styled.button`
   }
 `
 
-const StackingBalance = () => {
+const StakingBalance = () => {
   return (
     <Container>
       <>
@@ -56,4 +56,4 @@ const StackingBalance = () => {
     </Container>
   )
 }
-export default StackingBalance
+export default StakingBalance

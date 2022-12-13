@@ -13,6 +13,8 @@ import PoolShare from 'components/App/Staking/PoolShare'
 import AvailableLP from 'components/App/Staking/AvailableLP'
 import StakedLP from 'components/App/Staking/LPStaked'
 import Reading from 'components/App/Staking/PoolDetails'
+import BalanceToken from 'components/App/Staking/BalanceToken'
+import { VStack } from 'components/App/Staking/common/Layout'
 
 export const Container = styled.div`
   display: flex;
@@ -62,7 +64,12 @@ export default function StakingPage() {
       </Hero>
 
       <TopWrapper>
-        {pool?.tokens.length > 1 && <LiquidityPool pool={pool} />}
+        {pool?.tokens.length > 1 && (
+          <VStack>
+            <BalanceToken />
+            <LiquidityPool pool={pool} />
+          </VStack>
+        )}
         <div style={{ width: '100%' }}>
           <AvailableLP />
           <StakedLP />
