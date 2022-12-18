@@ -106,9 +106,62 @@ const SelectedPercentBox = styled(HStack)`
     justify-content: space-between;
   }
 `
+const Input = styled.input`
+  background-color: transparent;
+  width: 100%;
+  height: 100%;
+  display: inline-block;
+  color: ${({ theme }) => theme.text1};
+  border: none;
+  outline: none;
+`
+const WithdrawHeading = styled.p`
+  font-size: 1rem;
+  font-weight: medium;
+  color: ${({ theme }) => theme.text1};
+`
+const RadioContainer = styled(HStack)`
+  column-gap: 25px;
+  margin-top: 15px;
+`
+const RadioButton = styled.input`
+  margin-right: 10px !important;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -ms-appearance: none;
+  -o-appearance: none;
+  appearance: none;
+  &:after {
+    width: 14px;
+    height: 14px;
+    border-radius: 14px;
+    position: relative;
+    content: '';
+    display: inline-block;
+    visibility: visible;
+    outline: 1px solid red;
+    outline-color: ${({ theme }) => theme.text2};
+    outline-offset: 3px;
+  }
+  &:checked:after {
+    background-image: linear-gradient(90deg, #e0974c 0%, #c93f6f 100%);
+    content: '';
+    display: inline-block;
+  }
+`
 const PercentBox = () => {
   const [selectedPercent, setPercent] = useState<string>('25')
   const percentValue: string[] = ['25', '50', '75', '100']
+  const [inputValue, setInputValue] = useState<string>('')
+
+  useEffect(() => {
+    const isSelectedExist = percentValue.find((value) => value === inputValue)
+    if (isSelectedExist) {
+      setPercent(inputValue)
+    } else {
+      setPercent('')
+    }
+  }, [inputValue])
   return (
     <div style={{ marginTop: 15 }}>
       <BetweenStack>
@@ -116,7 +169,10 @@ const PercentBox = () => {
           {percentValue.map((value, index) => (
             <PercentButton
               isActive={percentValue[index] === selectedPercent}
-              onClick={() => setPercent(value)}
+              onClick={() => {
+                setPercent(value)
+                setInputValue(value)
+              }}
               key={value}
             >
               <span>{value}%</span>
@@ -125,11 +181,42 @@ const PercentBox = () => {
         </WithdrawPercentage>
         <SelectedPercentBox>
           <span>
-            <p>{selectedPercent}</p>
+            <Input type="number" onChange={(e) => setInputValue(e.target.value)} value={inputValue} min={0} max={100} />
             <p>%</p>
           </span>
         </SelectedPercentBox>
       </BetweenStack>
+    </div>
+  )
+}
+interface IOption {
+  value: number
+  label: 'Combo' | 'DEUS' | 'vDEUS'
+}
+const WithdrawCombo = () => {
+  const [selectedValue, setSelectedValue] = useState<number>()
+  const options: IOption[] = [
+    { label: 'Combo', value: 0 },
+    { label: 'DEUS', value: 1 },
+    { label: 'vDEUS', value: 2 },
+  ]
+  return (
+    <div style={{ marginTop: 24 }}>
+      <WithdrawHeading>Withdraw in</WithdrawHeading>
+      <RadioContainer>
+        {options.map((option) => (
+          <HStack key={option.value}>
+            <RadioButton
+              checked={option.value === selectedValue}
+              id={`option${option.value}`}
+              type="radio"
+              value={option.value}
+              onChange={(e) => setSelectedValue(+e.currentTarget.value)}
+            />
+            <label htmlFor={`option${option.value}`}>{option.label}</label>
+          </HStack>
+        ))}
+      </RadioContainer>
     </div>
   )
 }
@@ -355,6 +442,7 @@ export default function LiquidityPool({ pool, action }: { pool: LiquidityType; a
             <WithdrawText>LP Staked: 488.335</WithdrawText>
           </BetweenStack>
           <PercentBox />
+          <WithdrawCombo />
           <ArrowDown style={{ margin: '12px auto' }} />
 
           <InputBox currency={tokens[0]} value={amountIn} onChange={(value: string) => console.log(value)} disabled />
