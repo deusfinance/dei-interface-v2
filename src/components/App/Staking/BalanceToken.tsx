@@ -2,13 +2,14 @@ import ImageWithFallback from 'components/ImageWithFallback'
 import styled, { css } from 'styled-components'
 import Container from './common/Container'
 import { Divider, HStack } from './common/Layout'
-import Vector from '/public/static/images/pages/stake/Vector.svg'
-import Vector2 from '/public/static/images/pages/stake/Vector2.svg'
 import Down2 from '/public/static/images/pages/stake/down2.svg'
 import { useState } from 'react'
 import { ChevronDown } from 'components/Icons'
 import useWeb3React from 'hooks/useWeb3'
 import { LiquidityType } from 'constants/stakingPools'
+import { useCurrencyLogos } from 'hooks/useCurrencyLogo'
+import Link from 'next/link'
+import { ExternalLink } from 'components/Link'
 
 const Wrapper = styled(HStack)`
   justify-content: space-between;
@@ -129,13 +130,17 @@ const BalanceToken = ({ pool }: { pool: LiquidityType }) => {
   const [isOpen, setOpen] = useState<boolean>(false)
   const { account } = useWeb3React()
 
+  const { tokens } = pool
+  const tokensAddress = tokens.map((token) => token.address)
+  const tokensLogo = useCurrencyLogos(tokensAddress)
+
   return (
     <Container>
       <div style={{ marginInline: 12 }}>
         <BalanceHeader>
           <HStack>
             <IconContainer>
-              <Icon src={Vector} width={24} height={24} />
+              <Icon src={tokensLogo[0]} width={24} height={24} />
             </IconContainer>
             <HeaderTextLabel>Your {pool?.tokens[0]?.symbol} Balance:</HeaderTextLabel>
           </HStack>
@@ -153,7 +158,7 @@ const BalanceToken = ({ pool }: { pool: LiquidityType }) => {
         <BalanceHeader>
           <HStack>
             <IconContainer>
-              <Icon src={Vector2} width={24} height={24} />
+              <Icon src={tokensLogo[1]} width={24} height={24} />
             </IconContainer>
             <HeaderTextLabel>Your {pool?.tokens[1]?.symbol} Balance:</HeaderTextLabel>
           </HStack>
@@ -181,13 +186,13 @@ const BalanceToken = ({ pool }: { pool: LiquidityType }) => {
         <DropDownContent isOpen={isOpen}>
           <DropDownContentOption>
             <p>Buy DEUS:</p>
-            <a href="#">
+            <ExternalLink href="https://app.firebird.finance/swap?outputCurrency=0xDE5ed76E7c05eC5e4572CfC88d1ACEA165109E44&net=250">
               Buy on Firebird <ImageWithFallback alt="balance" width={8} height={8} src={Down2} />
-            </a>
+            </ExternalLink>
           </DropDownContentOption>
           <DropDownContentOption>
             <p>Buy vDEUS:</p>
-            <a href="#">Go to Swap Page</a>
+            <Link href="/swap">Go to Swap Page</Link>
           </DropDownContentOption>
         </DropDownContent>
       </div>
