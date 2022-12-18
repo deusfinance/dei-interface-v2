@@ -133,14 +133,14 @@ const PercentBox = () => {
     </div>
   )
 }
-export default function LiquidityPool({ pool }: { pool: LiquidityType }) {
+export default function LiquidityPool({ pool, action }: { pool: LiquidityType; action: ActionTypes }) {
   const { chainId, account } = useWeb3React()
   const toggleWalletModal = useWalletModalToggle()
   const isSupportedChainId = useSupportedChainId()
   const [amountIn, setAmountIn] = useState('')
   const [amountIn2, setAmountIn2] = useState('')
   const [lpAmountIn, setLPAmountIn] = useState('')
-  const [selected, setSelected] = useState<ActionTypes>(ActionTypes.ADD)
+  const [selected, setSelected] = useState<ActionTypes>(action)
   const isRemove = useMemo(() => selected == ActionTypes.REMOVE, [selected])
   const [slippage, setSlippage] = useState(0.5)
 

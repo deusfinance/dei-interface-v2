@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router'
 import styled from 'styled-components'
 import Container from './common/Container'
 
@@ -41,6 +42,9 @@ const BalanceButton = styled.button`
 `
 
 const StakingBalance = () => {
+  const router = useRouter()
+  const { pid } = router.query
+
   return (
     <Container>
       <>
@@ -49,8 +53,10 @@ const StakingBalance = () => {
           <p>389.00 LP</p>
         </BalanceContent>
         <BalanceContent>
-          <BalanceButton>Add liquidity</BalanceButton>
-          <BalanceButton>Remove liquidity</BalanceButton>
+          <BalanceButton onClick={() => router.push(`/stake/manage/${pid}?action=add`)}>Add liquidity</BalanceButton>
+          <BalanceButton onClick={() => router.push(`/stake/manage/${pid}?action=remove`)}>
+            Remove liquidity
+          </BalanceButton>
         </BalanceContent>
       </>
     </Container>
