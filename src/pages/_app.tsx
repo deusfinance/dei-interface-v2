@@ -14,7 +14,6 @@ import { useAnalyticsReporter } from '../components/analytics'
 
 import store from '../state'
 import { getLibrary } from '../utils/library'
-import { trpc } from '../utils/trpc'
 
 const Updaters = dynamic(() => import('../state/updaters'), { ssr: false })
 const Web3ProviderNetwork = dynamic(() => import('../components/Web3ProviderNetwork'), {
@@ -50,4 +49,4 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
   )
 }
 
-export default trpc.withTRPC(MyApp)
+export default MyApp

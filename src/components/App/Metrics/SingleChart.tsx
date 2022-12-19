@@ -166,13 +166,6 @@ export default function SingleChart({
   const [chartData, setChartData] = useState<ChartData[]>(tempData)
   const [currentTimeFrame, setCurrentTimeFrame] = useState('1M')
 
-  // const apiData = useMemo(() => {
-  //   const res = trpc.chartData.useQuery({ chainId: chainId, id: uniqueID, timeframe: currentTimeFrame })
-  //   return res.data
-  // }, [currentTimeFrame, uniqueID])
-
-  //console.log('api data', apiData)
-
   // const getRawData = useCallback(
   //   async (skip: number, timestamp: number) => {
   //     try {

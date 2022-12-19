@@ -10,7 +10,6 @@ import { RowCenter } from 'components/Row'
 import VeDeusStats from 'components/App/Metrics/VeDeusStats'
 import DeiStats from 'components/App/Metrics/DeiStats'
 import DeusStats from 'components/App/Metrics/DeusStats'
-import { trpc } from 'utils/trpc'
 
 const Wrapper = styled(RowCenter)`
   max-width: 1300px;
