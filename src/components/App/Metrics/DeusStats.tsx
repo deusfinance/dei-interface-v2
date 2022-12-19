@@ -59,7 +59,7 @@ export default function DeusStats() {
           primaryColor={theme.deusPrimaryColor}
           secondaryColor={theme.deusSecondaryColor}
           primaryID="DEUSMarketCap"
-          secondaryID="DEUSSupply"
+          secondaryID="deusSupply"
         />
       </ChartWrapper>
     </div>

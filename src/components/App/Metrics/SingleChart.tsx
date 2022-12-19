@@ -1,17 +1,14 @@
 import { formatUnits } from '@ethersproject/units'
-import { getDeusStatsApolloClient } from 'apollo/client/deusStats'
 import { getVeDeusStatsApolloClient } from 'apollo/client/veDeusStats'
-import { ChartData, DEUS_SUPPLY, VEDEUS_LOCKED_SUPPLY, VEDEUS_STATS, VEDEUS_SUPPLY } from 'apollo/queries'
+import { ChartData } from 'apollo/queries'
 import Dropdown from 'components/DropDown'
 import { FALLBACK_CHAIN_ID } from 'constants/chains'
-import { VEDEUS_TOKEN } from 'constants/tokens'
 import useWeb3React from 'hooks/useWeb3'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { isMobile } from 'react-device-detect'
 import { ResponsiveContainer, YAxis, AreaChart, Area, CartesianGrid, Tooltip } from 'recharts'
 import styled, { useTheme } from 'styled-components'
 import { formatAmount, toBN } from 'utils/numbers'
-import { trpc } from 'utils/trpc'
 
 const Wrapper = styled.div`
   display: flex;
@@ -176,83 +173,83 @@ export default function SingleChart({
 
   //console.log('api data', apiData)
 
-  const getRawData = useCallback(
-    async (skip: number, timestamp: number) => {
-      try {
-        // query subgraph and fetch all entities at once
-        const client = getVeDeusStatsApolloClient(chainId)
-        if (!client) return []
+  // const getRawData = useCallback(
+  //   async (skip: number, timestamp: number) => {
+  //     try {
+  //       // query subgraph and fetch all entities at once
+  //       const client = getVeDeusStatsApolloClient(chainId)
+  //       if (!client) return []
 
-        const { data } = await client.query({
-          query: VEDEUS_STATS,
-          variables: { skip, timestamp },
-          fetchPolicy: 'no-cache',
-        })
+  //       const { data } = await client.query({
+  //         query: VEDEUS_STATS,
+  //         variables: { skip, timestamp },
+  //         fetchPolicy: 'no-cache',
+  //       })
 
-        return data
-      } catch (error) {
-        console.log(`Unable to query data from The Graph Network`)
-        console.error(error)
-        return []
-      }
-    },
-    [chainId]
-  )
+  //       return data
+  //     } catch (error) {
+  //       console.log(`Unable to query data from The Graph Network`)
+  //       console.error(error)
+  //       return []
+  //     }
+  //   },
+  //   [chainId]
+  // )
 
-  const fetchData = useCallback(async () => {
-    const fetcher = async (skip: number, timestamp: number): Promise<ChartData[]> => {
-      const data = await getRawData(skip, timestamp)
+  // const fetchData = useCallback(async () => {
+  //   const fetcher = async (skip: number, timestamp: number): Promise<ChartData[]> => {
+  //     const data = await getRawData(skip, timestamp)
 
-      switch (uniqueID) {
-        case 'veDEUSSupply':
-          return data?.veDEUSSupplies as ChartData[]
-        case 'veDEUSTotalLocked':
-          return data?.totalLockeds as ChartData[]
-        default:
-          return [] as ChartData[]
-      }
-    }
+  //     switch (uniqueID) {
+  //       case 'veDEUSSupply':
+  //         return data?.veDEUSSupplies as ChartData[]
+  //       case 'veDEUSTotalLocked':
+  //         return data?.totalLockeds as ChartData[]
+  //       default:
+  //         return [] as ChartData[]
+  //     }
+  //   }
 
-    const data: ChartData[] = []
-    let skip = 0
-    let done = false
-    let lastTimestamp = 0
-    let timestamp = Math.floor(Date.now() / 1000)
+  //   const data: ChartData[] = []
+  //   let skip = 0
+  //   let done = false
+  //   let lastTimestamp = 0
+  //   let timestamp = Math.floor(Date.now() / 1000)
 
-    // if theres more than 5000, get the oldest one his timestamp and then requery with that timestamp
-    while (timestamp > Math.floor(Date.now() / 1000) - timeframeMap[currentTimeFrame]) {
-      while (!done) {
-        const result = await fetcher(skip, timestamp)
-        lastTimestamp = parseInt(result[result?.length - 1]?.timestamp)
-        data.unshift(...result.reverse())
-        if (result.length == 1000) {
-          skip = skip + 1000
-          if (skip == 5000) done = true
-        } else {
-          done = true
-        }
-      }
-      done = false
-      skip = 0
-      timestamp = lastTimestamp
-    }
+  //   // if theres more than 5000, get the oldest one his timestamp and then requery with that timestamp
+  //   while (timestamp > Math.floor(Date.now() / 1000) - timeframeMap[currentTimeFrame]) {
+  //     while (!done) {
+  //       const result = await fetcher(skip, timestamp)
+  //       lastTimestamp = parseInt(result[result?.length - 1]?.timestamp)
+  //       data.unshift(...result.reverse())
+  //       if (result.length == 1000) {
+  //         skip = skip + 1000
+  //         if (skip == 5000) done = true
+  //       } else {
+  //         done = true
+  //       }
+  //     }
+  //     done = false
+  //     skip = 0
+  //     timestamp = lastTimestamp
+  //   }
 
-    return data
-  }, [currentTimeFrame, getRawData, uniqueID])
+  //   return data
+  // }, [currentTimeFrame, getRawData, uniqueID])
 
-  useEffect(() => {
-    const getData = async () => {
-      const result = await fetchData()
-      setLoading(!result.length)
-      setChartData(
-        result.map((obj) => ({
-          ...obj,
-          value: toBN(formatUnits(obj.value, VEDEUS_TOKEN.decimals)).toFixed(0),
-        }))
-      )
-    }
-    getData()
-  }, [fetchData])
+  // useEffect(() => {
+  //   const getData = async () => {
+  //     const result = await fetchData()
+  //     setLoading(!result.length)
+  //     setChartData(
+  //       result.map((obj) => ({
+  //         ...obj,
+  //         value: toBN(formatUnits(obj.value, VEDEUS_TOKEN.decimals)).toFixed(0),
+  //       }))
+  //     )
+  //   }
+  //   getData()
+  // }, [fetchData])
 
   // group the filtered data based on respective seconds.
   const groupedData = (chartData: ChartData[], timeframe = '3M'): ChartData[] => {

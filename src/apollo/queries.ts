@@ -86,9 +86,9 @@ export const SOLIDLY_PAIRS = gql`
   }
 `
 
-export const VEDEUS_STATS = gql`
+export const ECOSYSTEM_STATS = gql`
   query getAllStats($skip: Int!, $timestamp: Int!) {
-    veDEUSSupplies(
+    hourlyDEISupplySnapshots(
       first: 1000
       skip: $skip
       where: { timestamp_lt: $timestamp }
@@ -96,10 +96,12 @@ export const VEDEUS_STATS = gql`
       orderDirection: desc
     ) {
       timestamp
-      value
+      deiSupply
+      collaterizationRatio
+      totalUSDCReserves
     }
 
-    totalLockeds(
+    dailyDEISupplySnapshots(
       first: 1000
       skip: $skip
       where: { timestamp_lt: $timestamp }
@@ -107,14 +109,12 @@ export const VEDEUS_STATS = gql`
       orderDirection: desc
     ) {
       timestamp
-      value
+      deiSupply
+      collaterizationRatio
+      totalUSDCReserves
     }
-  }
-`
 
-export const VEDEUS_SUPPLY = gql`
-  query getSupply($skip: Int!, $timestamp: Int!) {
-    veDEUSSupplies(
+    hourlyDEIRatioSnapshots(
       first: 1000
       skip: $skip
       where: { timestamp_lt: $timestamp }
@@ -122,14 +122,11 @@ export const VEDEUS_SUPPLY = gql`
       orderDirection: desc
     ) {
       timestamp
-      value
+      deiMintingRatio
+      deiRedeemRatio
     }
-  }
-`
 
-export const VEDEUS_LOCKED_SUPPLY = gql`
-  query getLockedSupply($skip: Int!, $timestamp: Int!) {
-    totalLockeds(
+    dailyDEIRatioSnapshots(
       first: 1000
       skip: $skip
       where: { timestamp_lt: $timestamp }
@@ -137,14 +134,11 @@ export const VEDEUS_LOCKED_SUPPLY = gql`
       orderDirection: desc
     ) {
       timestamp
-      value
+      deiMintingRatio
+      deiRedeemRatio
     }
-  }
-`
 
-export const DEI_REDEMPTION_RATIOS = gql`
-  query getDeiRedemptionRatio($skip: Int!, $timestamp: Int!) {
-    redeemRatios(
+    hourlyDEUSSupplySnapshots(
       first: 1000
       skip: $skip
       where: { timestamp_lt: $timestamp }
@@ -152,14 +146,10 @@ export const DEI_REDEMPTION_RATIOS = gql`
       orderDirection: desc
     ) {
       timestamp
-      value
+      deusSupply
     }
-  }
-`
 
-export const DEI_RESERVES_BALANCE = gql`
-  query getDeiReservesBalance($skip: Int!, $timestamp: Int!) {
-    deipollUSDCBalances(
+    dailyDEUSSupplySnapshots(
       first: 1000
       skip: $skip
       where: { timestamp_lt: $timestamp }
@@ -167,14 +157,14 @@ export const DEI_RESERVES_BALANCE = gql`
       orderDirection: desc
     ) {
       timestamp
-      value
+      deusSupply
     }
   }
 `
 
-export const DEI_SUPPLY = gql`
-  query getDeiSupply($skip: Int!, $timestamp: Int!) {
-    deisupplies(
+export const HOURLY_ECOSYSTEM_STATS = gql`
+  query getAllStats($skip: Int!, $timestamp: Int!) {
+    hourlyDEISupplySnapshots(
       first: 1000
       skip: $skip
       where: { timestamp_lt: $timestamp }
@@ -182,14 +172,39 @@ export const DEI_SUPPLY = gql`
       orderDirection: desc
     ) {
       timestamp
-      value
+      deiSupply
+      collaterizationRatio
+      totalUSDCReserves
+    }
+
+    hourlyDEIRatioSnapshots(
+      first: 1000
+      skip: $skip
+      where: { timestamp_lt: $timestamp }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      timestamp
+      deiMintingRatio
+      deiRedeemRatio
+    }
+
+    hourlyDEUSSupplySnapshots(
+      first: 1000
+      skip: $skip
+      where: { timestamp_lt: $timestamp }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      timestamp
+      deusSupply
     }
   }
 `
 
-export const DEUS_SUPPLY = gql`
-  query getDeusSupply($skip: Int!, $timestamp: Int!) {
-    deussupplies(
+export const DAILY_ECOSYSTEM_STATS = gql`
+  query getAllStats($skip: Int!, $timestamp: Int!) {
+    dailyDEISupplySnapshots(
       first: 1000
       skip: $skip
       where: { timestamp_lt: $timestamp }
@@ -197,7 +212,32 @@ export const DEUS_SUPPLY = gql`
       orderDirection: desc
     ) {
       timestamp
-      value
+      deiSupply
+      collaterizationRatio
+      totalUSDCReserves
+    }
+
+    dailyDEIRatioSnapshots(
+      first: 1000
+      skip: $skip
+      where: { timestamp_lt: $timestamp }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      timestamp
+      deiMintingRatio
+      deiRedeemRatio
+    }
+
+    dailyDEUSSupplySnapshots(
+      first: 1000
+      skip: $skip
+      where: { timestamp_lt: $timestamp }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      timestamp
+      deusSupply
     }
   }
 `

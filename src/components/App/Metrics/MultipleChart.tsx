@@ -1,16 +1,13 @@
-import { formatUnits } from '@ethersproject/units'
-import { getDeiStatsApolloClient } from 'apollo/client/deiStats'
-import { getDeusStatsApolloClient } from 'apollo/client/deusStats'
-import { ChartData, DEI_REDEMPTION_RATIOS, DEI_RESERVES_BALANCE, DEI_SUPPLY, DEUS_SUPPLY } from 'apollo/queries'
+import { getEcosystemStatsApolloClient } from 'apollo/client/ecosystemStats'
+import { ChartData, DAILY_ECOSYSTEM_STATS, ECOSYSTEM_STATS, HOURLY_ECOSYSTEM_STATS } from 'apollo/queries'
 import Dropdown from 'components/DropDown'
 import { FALLBACK_CHAIN_ID } from 'constants/chains'
-import { DEI_TOKEN, DEUS_TOKEN, USDC_TOKEN } from 'constants/tokens'
 import useWeb3React from 'hooks/useWeb3'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { isMobile } from 'react-device-detect'
 import { ResponsiveContainer, YAxis, AreaChart, Area, CartesianGrid, Tooltip } from 'recharts'
 import styled, { useTheme } from 'styled-components'
-import { formatAmount, toBN } from 'utils/numbers'
+import { formatAmount } from 'utils/numbers'
 
 const Wrapper = styled.div`
   display: flex;
@@ -245,6 +242,8 @@ export default function MultipleChart({
   const [chartData, setChartData] = useState<ChartData[]>(temp1Data)
   const [currentTimeFrame, setCurrentTimeFrame] = useState('1M')
   const [currentTab, setCurrentTab] = useState(primaryLabel)
+  const [lowest, setLowest] = useState(0)
+  const [highest, setHighest] = useState(2400)
 
   const currentTempData = useMemo(() => {
     return currentTab === primaryLabel ? temp1Data : temp2Data
@@ -254,89 +253,149 @@ export default function MultipleChart({
     return currentTab === primaryLabel ? primaryID : secondaryID
   }, [currentTab, primaryLabel, primaryID, secondaryID])
 
-  const fetchData = useCallback(async () => {
-    const fetcher = async (skip: number, timestamp: number): Promise<ChartData[]> => {
-      const DEFAULT_RETURN: ChartData[] = []
+  const getRawData = useCallback(
+    async (skip: number, timestamp: number) => {
       try {
-        if (!chainId) return DEFAULT_RETURN
+        // query subgraph and fetch all entities at once
+        const client = getEcosystemStatsApolloClient(chainId)
+        if (!client) return []
 
-        // query different subgraphs and respective schemas to fetch respective chart data
-        switch (currentID) {
-          case 'DEIRdemptionRatio': {
-            const client = getDeiStatsApolloClient(chainId)
-            if (!client) return DEFAULT_RETURN
+        if (
+          currentTimeFrame === '4H' ||
+          currentTimeFrame === '8H' ||
+          currentTimeFrame === '1D' ||
+          currentTimeFrame === '1W'
+        ) {
+          const { data } = await client.query({
+            query: HOURLY_ECOSYSTEM_STATS,
+            variables: { skip, timestamp },
+            fetchPolicy: 'no-cache',
+          })
 
-            const { data } = await client.query({
-              query: DEI_REDEMPTION_RATIOS,
-              variables: { skip, timestamp },
-              fetchPolicy: 'no-cache',
-            })
+          return data
+        } else {
+          const { data } = await client.query({
+            query: DAILY_ECOSYSTEM_STATS,
+            variables: { skip, timestamp },
+            fetchPolicy: 'no-cache',
+          })
 
-            const result: ChartData[] = data.redeemRatios as ChartData[]
-
-            return result.map((obj) => ({
-              ...obj,
-              value: toBN(formatUnits(obj.value, 6)).toFixed(2),
-            }))
-          }
-          case 'DEIReservesTotalValue': {
-            const client = getDeiStatsApolloClient(chainId)
-            if (!client) return DEFAULT_RETURN
-
-            const { data } = await client.query({
-              query: DEI_RESERVES_BALANCE,
-              variables: { skip, timestamp },
-              fetchPolicy: 'no-cache',
-            })
-
-            const result: ChartData[] = data.deipollUSDCBalances as ChartData[]
-
-            return result.map((obj) => ({
-              ...obj,
-              value: toBN(formatUnits(obj.value, USDC_TOKEN.decimals)).toFixed(0),
-            }))
-          }
-          case 'DEISupply': {
-            const client = getDeiStatsApolloClient(chainId)
-            if (!client) return DEFAULT_RETURN
-
-            const { data } = await client.query({
-              query: DEI_SUPPLY,
-              variables: { skip, timestamp },
-              fetchPolicy: 'no-cache',
-            })
-
-            const result: ChartData[] = data.deisupplies as ChartData[]
-
-            return result.map((obj) => ({
-              ...obj,
-              value: toBN(formatUnits(obj.value, DEI_TOKEN.decimals)).toFixed(0),
-            }))
-          }
-          case 'DEUSSupply': {
-            const client = getDeusStatsApolloClient(chainId)
-            if (!client) return DEFAULT_RETURN
-
-            const { data } = await client.query({
-              query: DEUS_SUPPLY,
-              variables: { skip, timestamp },
-              fetchPolicy: 'no-cache',
-            })
-
-            const result: ChartData[] = data.deussupplies as ChartData[]
-
-            return result.map((obj) => ({
-              ...obj,
-              value: toBN(formatUnits(obj.value, DEUS_TOKEN.decimals)).toFixed(0),
-            }))
-          }
-          default:
-            return []
+          return data
         }
       } catch (error) {
-        console.log(`Unable to ${currentID} data from The Graph Network`)
+        console.log(`Unable to query data from The Graph Network`)
         console.error(error)
         return []
+      }
+    },
+    [chainId, currentTimeFrame]
+  )
+
+  const fetchData = useCallback(async () => {
+    const fetcher = async (skip: number, timestamp: number): Promise<ChartData[]> => {
+      const data = await getRawData(skip, timestamp)
+
+      // fetch respective entity based on selected timeframe
+      switch (currentID) {
+        case 'deiMintingRatio':
+          if (
+            currentTimeFrame === '4H' ||
+            currentTimeFrame === '8H' ||
+            currentTimeFrame === '1D' ||
+            currentTimeFrame === '1W'
+          )
+            return data.hourlyDEIRatioSnapshots.map((obj: { deiMintingRatio: any; timestamp: any }) => ({
+              timestamp: obj.timestamp,
+              value: obj.deiMintingRatio,
+            })) as ChartData[]
+          else
+            return data.dailyDEIRatioSnapshots.map((obj: { deiMintingRatio: any; timestamp: any }) => ({
+              timestamp: obj.timestamp,
+              value: obj.deiMintingRatio,
+            })) as ChartData[]
+        case 'deiRedeemRatio':
+          if (
+            currentTimeFrame === '4H' ||
+            currentTimeFrame === '8H' ||
+            currentTimeFrame === '1D' ||
+            currentTimeFrame === '1W'
+          )
+            return data.hourlyDEIRatioSnapshots.map((obj: { deiRedeemRatio: any; timestamp: any }) => ({
+              timestamp: obj.timestamp,
+              value: obj.deiRedeemRatio,
+            })) as ChartData[]
+          else
+            return data.dailyDEIRatioSnapshots.map((obj: { deiRedeemRatio: any; timestamp: any }) => ({
+              timestamp: obj.timestamp,
+              value: obj.deiRedeemRatio,
+            })) as ChartData[]
+        case 'deiSupply':
+          if (
+            currentTimeFrame === '4H' ||
+            currentTimeFrame === '8H' ||
+            currentTimeFrame === '1D' ||
+            currentTimeFrame === '1W'
+          )
+            return data.hourlyDEISupplySnapshots.map((obj: { deiSupply: any; timestamp: any }) => ({
+              timestamp: obj.timestamp,
+              value: obj.deiSupply,
+            })) as ChartData[]
+          else
+            return data.dailyDEISupplySnapshots.map((obj: { deiSupply: any; timestamp: any }) => ({
+              timestamp: obj.timestamp,
+              value: obj.deiSupply,
+            })) as ChartData[]
+        case 'collaterizationRatio':
+          if (
+            currentTimeFrame === '4H' ||
+            currentTimeFrame === '8H' ||
+            currentTimeFrame === '1D' ||
+            currentTimeFrame === '1W'
+          )
+            return data.hourlyDEISupplySnapshots.map((obj: { collaterizationRatio: any; timestamp: any }) => ({
+              timestamp: obj.timestamp,
+              value: obj.collaterizationRatio,
+            })) as ChartData[]
+          else
+            return data.dailyDEISupplySnapshots.map((obj: { collaterizationRatio: any; timestamp: any }) => ({
+              timestamp: obj.timestamp,
+              value: obj.collaterizationRatio,
+            })) as ChartData[]
+        case 'totalUSDCReserves':
+          if (
+            currentTimeFrame === '4H' ||
+            currentTimeFrame === '8H' ||
+            currentTimeFrame === '1D' ||
+            currentTimeFrame === '1W'
+          )
+            return data.hourlyDEISupplySnapshots.map((obj: { totalUSDCReserves: any; timestamp: any }) => ({
+              timestamp: obj.timestamp,
+              value: obj.totalUSDCReserves,
+            })) as ChartData[]
+          else
+            return data.dailyDEISupplySnapshots.map((obj: { totalUSDCReserves: any; timestamp: any }) => ({
+              timestamp: obj.timestamp,
+              value: obj.totalUSDCReserves,
+            })) as ChartData[]
+        case 'deusSupply':
+          if (
+            currentTimeFrame === '4H' ||
+            currentTimeFrame === '8H' ||
+            currentTimeFrame === '1D' ||
+            currentTimeFrame === '1W'
+          )
+            return data.hourlyDEUSSupplySnapshots.map((obj: { deusSupply: any; timestamp: any }) => ({
+              timestamp: obj.timestamp,
+              value: obj.deusSupply,
+            })) as ChartData[]
+          else
+            return data.dailyDEUSSupplySnapshots.map((obj: { deusSupply: any; timestamp: any }) => ({
+              timestamp: obj.timestamp,
+              value: obj.deusSupply,
+            })) as ChartData[]
+        default:
+          console.error('Invalid timeframe selected. Defaulting to daily snapshot data.')
+          return [] as ChartData[]
       }
     }
 
@@ -365,7 +424,7 @@ export default function MultipleChart({
     }
 
     return data
-  }, [currentID, chainId, currentTimeFrame])
+  }, [currentTimeFrame, getRawData, currentID])
 
   useEffect(() => {
     const getData = async () => {
@@ -419,15 +478,17 @@ export default function MultipleChart({
   }, [chartData, currentTimeFrame])
 
   // lowest and highest values for the Y-axis
-  const [lowest = 20, highest = 2340] = useMemo(
-    () => [
-      Math.floor(Math.min(...filteredData.map((obj) => parseInt(obj.value))) / 10) * 10, // min is rounded to nearest 10
-      Math.ceil(Math.max(...filteredData.map((obj) => parseInt(obj.value))) / 10) * 10, // max is rounded to nearest 10
-    ],
-    [filteredData]
-  )
+  useMemo(() => {
+    if (currentID == 'deiMintingRatio') {
+      setLowest(0)
+      setHighest(100)
+    } else {
+      setLowest(Math.floor(Math.min(...filteredData.map((obj) => parseInt(obj.value))) / 100) * 100) // min is rounded to nearest 100
+      setHighest(Math.ceil(Math.max(...filteredData.map((obj) => parseInt(obj.value))) / 100) * 100) // max is rounded to nearest 100
+    }
+  }, [filteredData, currentID])
 
-  console.log('data', filteredData)
+  console.log('chart data', chartData)
 
   const CustomTooltip = ({ payload }: { payload: any }) => {
     if (payload && payload.length) {
@@ -465,6 +526,7 @@ export default function MultipleChart({
           <PrimaryLabel
             active={currentTab === primaryLabel}
             onClick={() => {
+              setLoading(true)
               setCurrentTab(primaryLabel)
               setChartData(temp1Data)
             }}
@@ -474,6 +536,7 @@ export default function MultipleChart({
           <SecondaryLabel
             active={currentTab === secondaryLabel}
             onClick={() => {
+              setLoading(true)
               setCurrentTab(secondaryLabel)
               setChartData(temp2Data)
             }}
