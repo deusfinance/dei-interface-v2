@@ -1,5 +1,5 @@
 import { getEcosystemStatsApolloClient } from 'apollo/client/ecosystemStats'
-import { ChartData, DAILY_ECOSYSTEM_STATS, ECOSYSTEM_STATS, HOURLY_ECOSYSTEM_STATS } from 'apollo/queries'
+import { ChartData, DAILY_ECOSYSTEM_STATS, HOURLY_ECOSYSTEM_STATS } from 'apollo/queries'
 import Dropdown from 'components/DropDown'
 import { FALLBACK_CHAIN_ID } from 'constants/chains'
 import useWeb3React from 'hooks/useWeb3'
