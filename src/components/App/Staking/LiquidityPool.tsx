@@ -16,9 +16,13 @@ import { tryParseAmount } from 'utils/parse'
 import { PrimaryButton } from 'components/Button'
 import { DotFlashing } from 'components/Icons'
 import ActionSetter, { ActionTypes } from './ActionSetter'
-import InputBox from 'components/InputBox'
 import { LiquidityType } from 'constants/stakingPools'
 import { Divider, HStack } from './common/Layout'
+import { LiquidityPool as LiquidityPoolList } from 'constants/stakingPools'
+import { useRouter } from 'next/router'
+import { Token } from '@sushiswap/core-sdk'
+import InputBox from './common/Input'
+import AddInputBox from 'components/InputBox'
 
 const Wrapper = styled.div`
   display: flex;
@@ -47,8 +51,30 @@ const ToggleState = styled.div`
 `
 
 const DepositButton = styled(PrimaryButton)`
-  border-radius: 15px;
+  padding: 0px;
+  border-radius: 12px;
+  background: -webkit-linear-gradient(90deg, #e0974c, #c93f6f);
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 1px;
+  & > span {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    border-radius: 12px;
+    width: calc(100% - 1px);
+    min-height: 62px;
+    background-color: ${({ theme }) => theme.bg0};
+    & > p {
+      background: -webkit-linear-gradient(90deg, #e0974c, #c93f6f);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
 `
+
 const BetweenStack = styled(HStack)`
   justify-content: space-between;
 `
@@ -106,9 +132,74 @@ const SelectedPercentBox = styled(HStack)`
     justify-content: space-between;
   }
 `
+const Input = styled.input`
+  background-color: transparent;
+  width: 100%;
+  height: 100%;
+  display: inline-block;
+  color: ${({ theme }) => theme.text1};
+  border: none;
+  outline: none;
+`
+const WithdrawHeading = styled.p`
+  font-size: 1rem;
+  font-weight: medium;
+  color: ${({ theme }) => theme.text1};
+`
+const RadioContainer = styled(HStack)`
+  column-gap: 25px;
+  margin-top: 15px;
+`
+const RadioButton = styled.input`
+  margin-right: 10px !important;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -ms-appearance: none;
+  -o-appearance: none;
+  appearance: none;
+  &:after {
+    width: 14px;
+    height: 14px;
+    border-radius: 14px;
+    position: relative;
+    content: '';
+    display: inline-block;
+    visibility: visible;
+    outline: 1px solid red;
+    outline-color: ${({ theme }) => theme.text2};
+    outline-offset: 3px;
+  }
+  &:checked:after {
+    background-image: linear-gradient(90deg, #e0974c 0%, #c93f6f 100%);
+    content: '';
+    display: inline-block;
+  }
+`
+const LPReceive = styled(HStack)`
+  width: 100%;
+  margin-top: 20px;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  & > p:first-of-type {
+    color: ${({ theme }) => theme.text1};
+  }
+  & > p:last-of-type {
+    color: ${({ theme }) => theme.text2};
+  }
+`
 const PercentBox = () => {
   const [selectedPercent, setPercent] = useState<string>('25')
   const percentValue: string[] = ['25', '50', '75', '100']
+  const [inputValue, setInputValue] = useState<string>('')
+
+  useEffect(() => {
+    const isSelectedExist = percentValue.find((value) => value === inputValue)
+    if (isSelectedExist) {
+      setPercent(inputValue)
+    } else {
+      setPercent('')
+    }
+  }, [inputValue])
   return (
     <div style={{ marginTop: 15 }}>
       <BetweenStack>
@@ -116,7 +207,10 @@ const PercentBox = () => {
           {percentValue.map((value, index) => (
             <PercentButton
               isActive={percentValue[index] === selectedPercent}
-              onClick={() => setPercent(value)}
+              onClick={() => {
+                setPercent(value)
+                setInputValue(value)
+              }}
               key={value}
             >
               <span>{value}%</span>
@@ -125,11 +219,49 @@ const PercentBox = () => {
         </WithdrawPercentage>
         <SelectedPercentBox>
           <span>
-            <p>{selectedPercent}</p>
+            <Input type="number" onChange={(e) => setInputValue(e.target.value)} value={inputValue} min={0} max={100} />
             <p>%</p>
           </span>
         </SelectedPercentBox>
       </BetweenStack>
+    </div>
+  )
+}
+interface IOption {
+  value: number
+  label: Token['name']
+}
+const WithdrawCombo = () => {
+  const router = useRouter()
+  const { pid } = router.query
+  const pool = LiquidityPoolList.find((pool) => pool.id === Number(pid)) || LiquidityPoolList[0]
+
+  const [selectedValue, setSelectedValue] = useState<number>()
+  const options: IOption[] = useMemo(
+    () =>
+      pool.tokens.map((token, index) => ({
+        label: token.name,
+        value: index,
+      })),
+    [pool.tokens]
+  )
+  return (
+    <div style={{ marginBlock: 24 }}>
+      <WithdrawHeading>Withdraw in</WithdrawHeading>
+      <RadioContainer>
+        {[{ label: 'Combo', value: options.length }, ...options].map((option) => (
+          <HStack key={option.value}>
+            <RadioButton
+              checked={option.value === selectedValue}
+              id={`option${option.value}`}
+              type="radio"
+              value={option.value}
+              onChange={(e) => setSelectedValue(+e.currentTarget.value)}
+            />
+            <label htmlFor={`option${option.value}`}>{option.label}</label>
+          </HStack>
+        ))}
+      </RadioContainer>
     </div>
   )
 }
@@ -286,32 +418,64 @@ export default function LiquidityPool({ pool, action }: { pool: LiquidityType; a
     if (awaitingApproveConfirmation) {
       return (
         <DepositButton active>
-          Awaiting Confirmation <DotFlashing />
+          <span>
+            <p>
+              Awaiting Confirmation <DotFlashing />
+            </p>
+          </span>
         </DepositButton>
       )
     }
     if (showApproveLoader || showApproveLoader2 || showApproveLoader3) {
       return (
         <DepositButton active>
-          Approving <DotFlashing />
+          <span>
+            <p>
+              Approving <DotFlashing />
+            </p>
+          </span>
         </DepositButton>
       )
     }
     if (showApprove && type === ActionTypes.ADD) {
-      return <DepositButton onClick={handleApprove}>Allow us to spend {token1Currency?.symbol}</DepositButton>
+      return (
+        <DepositButton onClick={handleApprove}>
+          <span>
+            <p>Allow us to spend {token1Currency?.symbol}</p>
+          </span>
+        </DepositButton>
+      )
     }
     if (showApprove2 && type === ActionTypes.ADD) {
-      return <DepositButton onClick={handleApprove2}>Allow us to spend {token0Currency?.symbol}</DepositButton>
+      return (
+        <DepositButton onClick={handleApprove2}>
+          <span>
+            <p>Allow us to spend {token0Currency?.symbol}</p>
+          </span>
+        </DepositButton>
+      )
     }
     if (showApprove3 && type === ActionTypes.REMOVE) {
-      return <DepositButton onClick={handleApprove3}>Allow us to spend {lpCurrency?.symbol}</DepositButton>
+      return (
+        <DepositButton onClick={handleApprove3}>
+          <span>
+            <p>Allow us to spend {lpCurrency?.symbol}</p>
+          </span>
+        </DepositButton>
+      )
     }
     return null
   }
 
   function getActionButton(type: string): JSX.Element | null {
     if (!chainId || !account || !type) {
-      return <DepositButton onClick={toggleWalletModal}>Connect Wallet</DepositButton>
+      return (
+        <DepositButton onClick={toggleWalletModal}>
+          <span>
+            <p>Connect Wallet</p>
+          </span>
+        </DepositButton>
+      )
     }
     if ((showApprove || showApprove2) && type === ActionTypes.ADD) {
       return null
@@ -320,26 +484,50 @@ export default function LiquidityPool({ pool, action }: { pool: LiquidityType; a
       return null
     }
     if (token0InsufficientBalance && type === ActionTypes.ADD) {
-      return <DepositButton disabled>Insufficient {token0Currency?.symbol} Balance</DepositButton>
+      return (
+        <DepositButton disabled>
+          <span>
+            <p>Insufficient {token0Currency?.symbol} Balance</p>
+          </span>
+        </DepositButton>
+      )
     }
     if (token1InsufficientBalance && type === ActionTypes.ADD) {
-      return <DepositButton disabled>Insufficient {token1Currency?.symbol} Balance</DepositButton>
+      return (
+        <DepositButton disabled>
+          <span>
+            <p>Insufficient {token1Currency?.symbol} Balance</p>
+          </span>
+        </DepositButton>
+      )
     }
     if (lpInsufficientBalance && type === ActionTypes.REMOVE) {
-      return <DepositButton disabled>Insufficient {lpCurrency?.symbol} Balance</DepositButton>
+      return (
+        <DepositButton disabled>
+          <span>
+            <p>Insufficient {lpCurrency?.symbol} Balance</p>
+          </span>
+        </DepositButton>
+      )
     }
     if (awaitingLiquidityConfirmation) {
       return (
         <DepositButton>
-          {type === ActionTypes.ADD ? 'Depositing ' : 'Withdrawing '}
-          {token0Currency?.symbol}/{token1Currency?.symbol}
-          <DotFlashing />
+          <span>
+            <p>
+              {type === ActionTypes.ADD ? 'Depositing ' : 'Withdrawing '}
+              {token0Currency?.symbol}/{token1Currency?.symbol}
+              <DotFlashing />
+            </p>
+          </span>
         </DepositButton>
       )
     }
     return (
       <DepositButton onClick={() => handleLiquidity()}>
-        {type === ActionTypes.ADD ? 'Deposit' : 'Withdraw'}
+        <span>
+          <p>{type === ActionTypes.ADD ? 'Deposit' : 'Withdraw'}</p>
+        </span>
       </DepositButton>
     )
   }
@@ -355,7 +543,7 @@ export default function LiquidityPool({ pool, action }: { pool: LiquidityType; a
             <WithdrawText>LP Staked: 488.335</WithdrawText>
           </BetweenStack>
           <PercentBox />
-          <ArrowDown style={{ margin: '12px auto' }} />
+          <WithdrawCombo />
 
           <InputBox currency={tokens[0]} value={amountIn} onChange={(value: string) => console.log(value)} disabled />
 
@@ -379,24 +567,18 @@ export default function LiquidityPool({ pool, action }: { pool: LiquidityType; a
     } else {
       return (
         <>
-          <InputBox currency={tokens[0]} value={amountIn} onChange={(value: string) => setAmountIn(value)} />
+          <AddInputBox currency={tokens[0]} value={amountIn} onChange={(value: string) => setAmountIn(value)} />
 
           {tokens[1] && (
             <>
               <div style={{ marginTop: '20px' }}></div>
-              <InputBox currency={tokens[1]} value={amountIn2} onChange={(value: string) => setAmountIn2(value)} />
+              <AddInputBox currency={tokens[1]} value={amountIn2} onChange={(value: string) => setAmountIn2(value)} />
             </>
           )}
-
-          <ArrowDown style={{ margin: '12px auto' }} />
-
-          <InputBox
-            currency={lpCurrency}
-            value={lpAmountIn}
-            onChange={(value: string) => console.log(value)}
-            disabled
-          />
-
+          <LPReceive>
+            <p>LP Receive:</p>
+            <p>0.00</p>
+          </LPReceive>
           <div style={{ marginTop: '20px' }}></div>
           {getApproveButton(ActionTypes.ADD)}
           {getActionButton(ActionTypes.ADD)}
