@@ -44,6 +44,7 @@ export enum StakingVersion {
 export type ProvideTokens = {
   title: string
   link: string
+  id: number
 }
 
 export type StakingType = {
@@ -91,10 +92,11 @@ export const LiquidityPool: LiquidityType[] = [
     tokens: [DEUS_TOKEN, VDEUS_TOKEN],
     provideLinks: [
       {
+        id: 0,
         title: 'Buy on Firebird',
         link: 'https://app.firebird.finance/swap?outputCurrency=0xDE5ed76E7c05eC5e4572CfC88d1ACEA165109E44&net=250',
       },
-      { title: 'Go to Swap Page', link: '/swap' },
+      { id: 1, title: 'Go to Swap Page', link: '/swap' },
     ],
     lpToken: DEUS_VDEUS_LP_TOKEN,
     contract: StablePool_DEUS_vDEUS[SupportedChainId.FANTOM],
