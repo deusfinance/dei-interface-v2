@@ -1,4 +1,5 @@
 import { InputField } from 'components/Input'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import Container from './common/Container'
 import { Divider, HStack } from './common/Layout'
@@ -109,7 +110,7 @@ const UnStakedButton = styled(BaseButton)`
 `
 const StakedLP = () => {
   const rewardAmount = 0.028
-
+  const [amount, setAmount] = useState<string>('')
   return (
     <Container>
       <>
@@ -135,10 +136,14 @@ const StakedLP = () => {
         </StakedLPReward>
         <Divider backgroundColor="#101116" />
         <UnStakedContainer>
-          <UnStakedInput placeholder="Enter amount" />
+          <UnStakedInput
+            value={amount}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => setAmount(event.target.value)}
+            placeholder="Enter amount"
+          />
           <UnStakedButton
             onClick={() => {
-              console.log('')
+              console.log(amount)
             }}
           >
             <span>

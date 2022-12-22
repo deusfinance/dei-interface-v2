@@ -2,6 +2,7 @@ import { PrimaryButton } from 'components/Button'
 import { InputField } from 'components/Input'
 import { LiquidityType } from 'constants/stakingPools'
 import useWeb3React from 'hooks/useWeb3'
+import React, { useState } from 'react'
 import { useCurrencyBalance } from 'state/wallet/hooks'
 import styled from 'styled-components'
 import Container from './common/Container'
@@ -53,6 +54,8 @@ const AvailableLP = ({ pool }: { pool: LiquidityType }) => {
   const lpCurrency = pool.lpToken
   const lpCurrencyBalance = useCurrencyBalance(account ?? undefined, lpCurrency)
 
+  const [amount, setAmount] = useState<string>('')
+
   return (
     <Container>
       <>
@@ -62,10 +65,16 @@ const AvailableLP = ({ pool }: { pool: LiquidityType }) => {
         </AvailableLPHeader>
         <Divider backgroundColor="#101116" />
         <AvailableLPContent>
-          <AmountInput placeholder="Enter amount" />
+          <AmountInput
+            value={amount}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+              setAmount(event.target.value)
+            }}
+            placeholder="Enter amount"
+          />
           <StakeButton
             onClick={() => {
-              console.log('')
+              console.log(amount)
             }}
           >
             Stake
