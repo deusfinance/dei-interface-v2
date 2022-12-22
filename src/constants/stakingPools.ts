@@ -41,6 +41,11 @@ export enum StakingVersion {
   NFT,
 }
 
+export type ProvideTokens = {
+  title: string
+  link: string
+}
+
 export type StakingType = {
   id: number
   name: string
@@ -56,6 +61,7 @@ export type StakingType = {
 export type LiquidityType = {
   id: number
   tokens: Token[]
+  provideLinks?: ProvideTokens[]
   lpToken: Token
   contract?: string
 }
@@ -64,23 +70,39 @@ export const LiquidityPool: LiquidityType[] = [
   {
     id: 0,
     tokens: [DEI_TOKEN, BDEI_TOKEN],
+    provideLinks: [
+      {
+        title: 'Buy on Firebird',
+        link: 'https://app.firebird.finance/swap?outputCurrency=0xDE1E704dae0B4051e80DAbB26ab6ad6c12262DA0&net=250',
+      },
+      { title: 'Go to Swap Page', link: '/swap' },
+    ],
     lpToken: DEI_BDEI_LP_TOKEN,
     contract: StablePool_DEI_bDEI[SupportedChainId.FANTOM],
   },
   {
     id: 1,
     tokens: [BDEI_TOKEN], // TODO: remove
+    // provideLinks: [],
     lpToken: BDEI_TOKEN,
   },
   {
     id: 2,
     tokens: [DEUS_TOKEN, VDEUS_TOKEN],
+    provideLinks: [
+      {
+        title: 'Buy on Firebird',
+        link: 'https://app.firebird.finance/swap?outputCurrency=0xDE5ed76E7c05eC5e4572CfC88d1ACEA165109E44&net=250',
+      },
+      { title: 'Go to Swap Page', link: '/swap' },
+    ],
     lpToken: DEUS_VDEUS_LP_TOKEN,
     contract: StablePool_DEUS_vDEUS[SupportedChainId.FANTOM],
   },
   {
     id: 3,
     tokens: [VDEUS_TOKEN], // TODO: remove
+    // provideLinks: [],
     lpToken: VDEUS_TOKEN,
   },
 ]

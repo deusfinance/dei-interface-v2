@@ -15,7 +15,6 @@ import StakedLP from 'components/App/Staking/LPStaked'
 import Reading from 'components/App/Staking/PoolDetails'
 import BalanceToken from 'components/App/Staking/BalanceToken'
 import { VStack } from 'components/App/Staking/common/Layout'
-import { ActionTypes } from 'components/App/Staking/ActionSetter'
 
 export const Container = styled.div`
   display: flex;
@@ -40,7 +39,7 @@ const TopWrapper = styled.div`
 
 export default function StakingPage() {
   const router = useRouter()
-  const { pid, action } = router.query
+  const { pid } = router.query
   const pidNumber = Number(pid)
   const pool = LiquidityPoolList.find((pool) => pool.id === pidNumber) || LiquidityPoolList[0]
 
@@ -68,11 +67,11 @@ export default function StakingPage() {
         {pool?.tokens.length > 1 && (
           <VStack>
             <BalanceToken pool={pool} />
-            <LiquidityPool action={String(action).toUpperCase() as ActionTypes} pool={pool} />
+            <LiquidityPool pool={pool} />
           </VStack>
         )}
         <div style={{ width: '100%' }}>
-          <AvailableLP />
+          <AvailableLP pool={pool} />
           <StakedLP />
           <PoolShare pool={pool} />
           <PoolInfo pool={pool} />

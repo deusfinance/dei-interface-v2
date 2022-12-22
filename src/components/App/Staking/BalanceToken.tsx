@@ -10,6 +10,7 @@ import { LiquidityType } from 'constants/stakingPools'
 import { useCurrencyLogos } from 'hooks/useCurrencyLogo'
 import Link from 'next/link'
 import { ExternalLink } from 'components/Link'
+import { useCurrencyBalance } from 'state/wallet/hooks'
 
 const Wrapper = styled(HStack)`
   justify-content: space-between;
@@ -36,8 +37,8 @@ const Icon = styled(ImageWithFallback)`
   width: 12px;
   height: 12px;
 `
-const HeaderTextLabel = styled.p`
-  background: -webkit-linear-gradient(left, #0badf4 0%, #30efe4 93.4%);
+const HeaderTextLabel = styled.p<{ isDeus: boolean }>`
+  background: ${({ isDeus, theme }) => (isDeus ? theme.deusColor : theme.deiColor)};
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-size: 0.875rem;
@@ -134,6 +135,9 @@ const BalanceToken = ({ pool }: { pool: LiquidityType }) => {
   const tokensAddress = tokens.map((token) => token.address)
   const tokensLogo = useCurrencyLogos(tokensAddress)
 
+  const token0CurrencyBalance = useCurrencyBalance(account ?? undefined, tokens[0])?.toSignificant(6)
+  const token1CurrencyBalance = useCurrencyBalance(account ?? undefined, tokens[1])?.toSignificant(6)
+
   return (
     <Container>
       <div style={{ marginInline: 12 }}>
@@ -142,13 +146,17 @@ const BalanceToken = ({ pool }: { pool: LiquidityType }) => {
             <IconContainer>
               <Icon src={tokensLogo[0]} width={24} height={24} />
             </IconContainer>
-            <HeaderTextLabel>Your {pool?.tokens[0]?.symbol} Balance:</HeaderTextLabel>
+            <HeaderTextLabel isDeus={pool?.tokens[0]?.symbol === 'DEUS'}>
+              Your {pool?.tokens[0]?.symbol} Balance:
+            </HeaderTextLabel>
           </HStack>
           <HeaderTextValue>
             {account ? (
               <>
-                <p>100 {pool?.tokens[0]?.symbol} </p>
-                <p>≈ $1,440</p>
+                <p>
+                  {token0CurrencyBalance} {pool?.tokens[0]?.symbol}{' '}
+                </p>
+                <p>≈ $??</p>
               </>
             ) : (
               <p>wallet not connected</p>
@@ -160,13 +168,17 @@ const BalanceToken = ({ pool }: { pool: LiquidityType }) => {
             <IconContainer>
               <Icon src={tokensLogo[1]} width={24} height={24} />
             </IconContainer>
-            <HeaderTextLabel>Your {pool?.tokens[1]?.symbol} Balance:</HeaderTextLabel>
+            <HeaderTextLabel isDeus={pool?.tokens[0]?.symbol === 'DEUS'}>
+              Your {pool?.tokens[1]?.symbol} Balance:
+            </HeaderTextLabel>
           </HStack>
           <HeaderTextValue>
             {account ? (
               <>
-                <p>1.39 {pool?.tokens[1]?.symbol}</p>
-                <p>≈ $281</p>
+                <p>
+                  {token1CurrencyBalance} {pool?.tokens[1]?.symbol}
+                </p>
+                <p>≈ $??</p>
               </>
             ) : (
               <p>wallet not connected</p>
@@ -185,13 +197,14 @@ const BalanceToken = ({ pool }: { pool: LiquidityType }) => {
         </DropDownContainer>
         <DropDownContent isOpen={isOpen}>
           <DropDownContentOption>
-            <p>Buy DEUS:</p>
+            {/* FIXME: complete here */}
+            <p>Buy {pool?.tokens[0]?.symbol}:</p>
             <ExternalLink href="https://app.firebird.finance/swap?outputCurrency=0xDE5ed76E7c05eC5e4572CfC88d1ACEA165109E44&net=250">
               Buy on Firebird <ImageWithFallback alt="balance" width={8} height={8} src={Down2} />
             </ExternalLink>
           </DropDownContentOption>
           <DropDownContentOption>
-            <p>Buy vDEUS:</p>
+            <p>Buy {pool?.tokens[1]?.symbol}:</p>
             <Link href="/swap">Go to Swap Page</Link>
           </DropDownContentOption>
         </DropDownContent>

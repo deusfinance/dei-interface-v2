@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react'
 import styled from 'styled-components'
-import { ArrowDown } from 'react-feather'
 
 import { useCurrencyBalance } from 'state/wallet/hooks'
 import { useWalletModalToggle } from 'state/application/hooks'
@@ -23,6 +22,7 @@ import { useRouter } from 'next/router'
 import { Token } from '@sushiswap/core-sdk'
 import InputBox from './common/Input'
 import AddInputBox from 'components/InputBox'
+import { maxAmountSpend } from 'utils/currency'
 
 const Wrapper = styled.div`
   display: flex;
@@ -187,10 +187,15 @@ const LPReceive = styled(HStack)`
     color: ${({ theme }) => theme.text2};
   }
 `
-const PercentBox = () => {
-  const [selectedPercent, setPercent] = useState<string>('25')
+const PercentBox = ({
+  selectedPercent,
+  setPercent,
+}: {
+  selectedPercent: string
+  setPercent: (value: string) => void
+}) => {
   const percentValue: string[] = ['25', '50', '75', '100']
-  const [inputValue, setInputValue] = useState<string>('')
+  const [inputValue, setInputValue] = useState<string>('25')
 
   useEffect(() => {
     const isSelectedExist = percentValue.find((value) => value === inputValue)
@@ -200,6 +205,7 @@ const PercentBox = () => {
       setPercent('')
     }
   }, [inputValue])
+
   return (
     <div style={{ marginTop: 15 }}>
       <BetweenStack>
@@ -231,12 +237,17 @@ interface IOption {
   value: number
   label: Token['name']
 }
-const WithdrawCombo = () => {
+const WithdrawCombo = ({
+  selectedValue,
+  setSelectedValue,
+}: {
+  selectedValue: number
+  setSelectedValue: (value: number) => void
+}) => {
   const router = useRouter()
   const { pid } = router.query
   const pool = LiquidityPoolList.find((pool) => pool.id === Number(pid)) || LiquidityPoolList[0]
 
-  const [selectedValue, setSelectedValue] = useState<number>()
   const options: IOption[] = useMemo(
     () =>
       pool.tokens.map((token, index) => ({
@@ -245,6 +256,7 @@ const WithdrawCombo = () => {
       })),
     [pool.tokens]
   )
+
   return (
     <div style={{ marginBlock: 24 }}>
       <WithdrawHeading>Withdraw in</WithdrawHeading>
@@ -265,16 +277,19 @@ const WithdrawCombo = () => {
     </div>
   )
 }
-export default function LiquidityPool({ pool, action }: { pool: LiquidityType; action: ActionTypes }) {
+
+export default function LiquidityPool({ pool }: { pool: LiquidityType }) {
   const { chainId, account } = useWeb3React()
   const toggleWalletModal = useWalletModalToggle()
   const isSupportedChainId = useSupportedChainId()
   const [amountIn, setAmountIn] = useState('')
   const [amountIn2, setAmountIn2] = useState('')
   const [lpAmountIn, setLPAmountIn] = useState('')
-  const [selected, setSelected] = useState<ActionTypes>(action)
+  const [selected, setSelected] = useState<ActionTypes>(ActionTypes.ADD)
   const isRemove = useMemo(() => selected == ActionTypes.REMOVE, [selected])
   const [slippage, setSlippage] = useState(0.5)
+  const [selectedPercent, setPercent] = useState<string>('25')
+  const [selectedValue, setSelectedValue] = useState<number>(0)
 
   const stakingPool = pool
   const token0Currency = stakingPool.tokens[0]
@@ -309,6 +324,12 @@ export default function LiquidityPool({ pool, action }: { pool: LiquidityType; a
       setLPAmountIn('')
     }
   }, [selected])
+
+  useEffect(() => {
+    if (selected === ActionTypes.REMOVE) {
+      setLPAmountIn(((Number(maxAmountSpend(lpCurrencyBalance)?.toExact()) * Number(selectedPercent)) / 100).toString())
+    }
+  }, [lpCurrencyBalance, selected, selectedPercent])
 
   const token0Amount = useMemo(() => {
     return tryParseAmount(amountIn, token0Currency || undefined)
@@ -533,25 +554,29 @@ export default function LiquidityPool({ pool, action }: { pool: LiquidityType; a
   }
 
   const getAppComponent = (): JSX.Element => {
-    const tokens = pool?.tokens
     if (selected == ActionTypes.REMOVE) {
       return (
         <>
           {/* <InputBox currency={lpCurrency} value={lpAmountIn} onChange={(value: string) => setLPAmountIn(value)} /> */}
           <BetweenStack>
-            <WithdrawText>Whitdraw percentage</WithdrawText>
-            <WithdrawText>LP Staked: 488.335</WithdrawText>
+            <WithdrawText>Withdraw percentage</WithdrawText>
+            <WithdrawText>LP Staked: {lpCurrencyBalance?.toSignificant(6)}</WithdrawText>
           </BetweenStack>
-          <PercentBox />
-          <WithdrawCombo />
+          <PercentBox selectedPercent={selectedPercent} setPercent={setPercent} />
+          <WithdrawCombo selectedValue={selectedValue} setSelectedValue={setSelectedValue} />
 
-          <InputBox currency={tokens[0]} value={amountIn} onChange={(value: string) => console.log(value)} disabled />
+          <InputBox
+            currency={token0Currency}
+            value={amountIn}
+            onChange={(value: string) => console.log(value)}
+            disabled
+          />
 
-          {tokens[1] && (
+          {token1Currency && (
             <>
               <div style={{ marginTop: '20px' }}></div>
               <InputBox
-                currency={tokens[1]}
+                currency={token1Currency}
                 value={amountIn2}
                 onChange={(value: string) => console.log(value)}
                 disabled
@@ -567,17 +592,21 @@ export default function LiquidityPool({ pool, action }: { pool: LiquidityType; a
     } else {
       return (
         <>
-          <AddInputBox currency={tokens[0]} value={amountIn} onChange={(value: string) => setAmountIn(value)} />
+          <AddInputBox currency={token0Currency} value={amountIn} onChange={(value: string) => setAmountIn(value)} />
 
-          {tokens[1] && (
+          {token1Currency && (
             <>
               <div style={{ marginTop: '20px' }}></div>
-              <AddInputBox currency={tokens[1]} value={amountIn2} onChange={(value: string) => setAmountIn2(value)} />
+              <AddInputBox
+                currency={token1Currency}
+                value={amountIn2}
+                onChange={(value: string) => setAmountIn2(value)}
+              />
             </>
           )}
           <LPReceive>
             <p>LP Receive:</p>
-            <p>0.00</p>
+            <p>{Number(amountOut2)?.toFixed(6)}</p>
           </LPReceive>
           <div style={{ marginTop: '20px' }}></div>
           {getApproveButton(ActionTypes.ADD)}

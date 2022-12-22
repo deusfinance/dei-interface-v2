@@ -1,5 +1,8 @@
 import { PrimaryButton } from 'components/Button'
 import { InputField } from 'components/Input'
+import { LiquidityType } from 'constants/stakingPools'
+import useWeb3React from 'hooks/useWeb3'
+import { useCurrencyBalance } from 'state/wallet/hooks'
 import styled from 'styled-components'
 import Container from './common/Container'
 import { Divider, HStack } from './common/Layout'
@@ -44,13 +47,18 @@ const StakeButton = styled(PrimaryButton)`
   border-radius: 8px;
 `
 
-const AvailableLP = () => {
+const AvailableLP = ({ pool }: { pool: LiquidityType }) => {
+  const { account } = useWeb3React()
+
+  const lpCurrency = pool.lpToken
+  const lpCurrencyBalance = useCurrencyBalance(account ?? undefined, lpCurrency)
+
   return (
     <Container>
       <>
         <AvailableLPHeader>
           <p>LP Available:</p>
-          <p>0.00</p>
+          <p>{lpCurrencyBalance?.toSignificant(6)}</p>
         </AvailableLPHeader>
         <Divider backgroundColor="#101116" />
         <AvailableLPContent>

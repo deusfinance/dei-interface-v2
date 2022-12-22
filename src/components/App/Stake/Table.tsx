@@ -232,7 +232,7 @@ function TableRow({ staking, index, isMobile }: { staking: StakingType; index: n
   const router = useRouter()
 
   const handleClick = useCallback(() => {
-    router.push(`/stake/${id}`)
+    router.push(`/stake/manage/${id}`)
   }, [id, router])
 
   // const veDEUSContract = useVeDeusContract()
