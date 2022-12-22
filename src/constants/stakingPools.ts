@@ -42,9 +42,9 @@ export enum StakingVersion {
 }
 
 export type ProvideTokens = {
+  id: number
   title: string
   link: string
-  id: number
 }
 
 export type StakingType = {
@@ -73,10 +73,11 @@ export const LiquidityPool: LiquidityType[] = [
     tokens: [DEI_TOKEN, BDEI_TOKEN],
     provideLinks: [
       {
+        id: 0,
         title: 'Buy on Firebird',
         link: 'https://app.firebird.finance/swap?outputCurrency=0xDE1E704dae0B4051e80DAbB26ab6ad6c12262DA0&net=250',
       },
-      { title: 'Go to Swap Page', link: '/swap' },
+      { id: 1, title: 'Go to Swap Page', link: '/swap' },
     ],
     lpToken: DEI_BDEI_LP_TOKEN,
     contract: StablePool_DEI_bDEI[SupportedChainId.FANTOM],

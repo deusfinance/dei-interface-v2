@@ -11,7 +11,9 @@ import { useVDeusMultiRewarderERC20Contract } from './useContract'
 // import { StablePoolType } from 'constants/sPools'
 // import { usePoolBalances } from './useStablePoolInfo'
 import { LiquidityPool, StakingType, StakingVersion } from 'constants/stakingPools'
-// import { StakingType } from 'constants/stakings'
+import { Token } from '@sushiswap/core-sdk'
+import BigNumber from 'bignumber.js'
+import { DEUS_TOKEN, VDEUS_TOKEN } from 'constants/tokens'
 
 //TODO: should remove all and put it in /constants
 const pids = [0, 1]
@@ -59,16 +61,16 @@ export function useGlobalMasterChefData(stakingPool: StakingType): {
   }
 }
 
-//TODO: depositAmount should consider decimals of token
 export function useUserInfo(stakingPool: StakingType): {
-  depositAmount: number
+  depositAmount: string
   rewardsAmount: number
   totalDepositedAmount: number
+  rewardToken: Token
 } {
   const contract = useMasterChefContract(stakingPool)
   const { account } = useWeb3React()
   const { pid, version } = stakingPool
-  const lpToken = LiquidityPool.find((p) => p.id === stakingPool.id)?.lpToken || LiquidityPool[0].lpToken
+  const token = LiquidityPool.find((pool) => pool.id === pool.id)?.lpToken || LiquidityPool[0]?.lpToken
 
   const additionalCall =
     version === StakingVersion.V2
@@ -91,14 +93,11 @@ export function useUserInfo(stakingPool: StakingType): {
           methodName: 'pendingTokens',
           callInputs: [pid.toString(), account],
         },
-        // {
-        //   methodName: 'totalDepositedAmount',
-        //   callInputs: [pid.toString()],
-        // },
         ...additionalCall,
       ]
 
-  const ERC20Contract = useERC20Contract(lpToken.address)
+  const [userInfo, pendingTokens, totalDepositedAmount] = useSingleContractMultipleMethods(contract, calls)
+
   const balanceCall = [
     {
       methodName: 'balanceOf',
@@ -106,35 +105,32 @@ export function useUserInfo(stakingPool: StakingType): {
     },
   ]
 
-  const [userInfo, pendingTokens, totalDepositedAmount] = useSingleContractMultipleMethods(contract, calls)
+  const ERC20Contract = useERC20Contract(token.address)
   const [tokenBalance] = useSingleContractMultipleMethods(ERC20Contract, balanceCall)
 
-  const { depositedValue, reward, totalDepositedAmountValue } = useMemo(() => {
+  const { depositedValue, reward, totalDepositedAmountValue, rewardToken } = useMemo(() => {
     return {
-      depositedValue: userInfo?.result ? toBN(formatUnits(userInfo.result[0].toString(), 18)).toNumber() : 0,
-      reward: pendingTokens?.result ? toBN(formatUnits(pendingTokens.result[0], 18)).toNumber() : 0,
+      depositedValue: userInfo?.result
+        ? toBN(formatUnits(userInfo.result[0].toString(), token.decimals)).toFixed(token.decimals, BigNumber.ROUND_DOWN)
+        : '0',
+      reward: pendingTokens?.result ? toBN(formatUnits(pendingTokens.result[0], 18)).toNumber() : 0, //vDEUS reward
       totalDepositedAmountValue:
         version === StakingVersion.V1
           ? tokenBalance?.result
             ? toBN(formatUnits(tokenBalance.result[0], 18)).toNumber()
             : 0
           : totalDepositedAmount?.result
-          ? toBN(formatUnits(totalDepositedAmount.result[0], lpToken.decimals)).toNumber()
+          ? toBN(formatUnits(totalDepositedAmount.result[0], token.decimals)).toNumber()
           : 0,
+      rewardToken: version === StakingVersion.V1 ? DEUS_TOKEN : VDEUS_TOKEN,
     }
-  }, [
-    userInfo?.result,
-    pendingTokens?.result,
-    version,
-    tokenBalance?.result,
-    totalDepositedAmount?.result,
-    lpToken.decimals,
-  ])
+  }, [token, userInfo, pendingTokens, totalDepositedAmount, version, tokenBalance])
 
   return {
     depositAmount: depositedValue,
     rewardsAmount: reward,
     totalDepositedAmount: totalDepositedAmountValue,
+    rewardToken,
   }
 }
 

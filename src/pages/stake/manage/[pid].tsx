@@ -15,6 +15,8 @@ import StakedLP from 'components/App/Staking/LPStaked'
 import Reading from 'components/App/Staking/PoolDetails'
 import BalanceToken from 'components/App/Staking/BalanceToken'
 import { VStack } from 'components/App/Staking/common/Layout'
+import { useMemo } from 'react'
+import StatsHeader from 'components/StatsHeader'
 
 export const Container = styled.div`
   display: flex;
@@ -43,24 +45,24 @@ export default function StakingPage() {
   const pidNumber = Number(pid)
   const pool = LiquidityPoolList.find((pool) => pool.id === pidNumber) || LiquidityPoolList[0]
 
-  // const items = useMemo(
-  //   () => [
-  //     { name: 'APR', value: '4%' },
-  //     { name: 'TVL', value: '$4.58m' },
-  //     { name: 'Total Staked', value: `3,120.00 ${pool?.lpToken?.symbol}` },
-  //   ],
-  //   [pool?.lpToken?.symbol]
-  // )
+  const items = useMemo(
+    () => [
+      { name: 'APR', value: '??%' },
+      { name: 'TVL', value: '$??' },
+      { name: 'Total Staked', value: `?? ${pool?.lpToken?.symbol}` },
+    ],
+    [pool?.lpToken?.symbol]
+  )
 
-  // function onSelect(pid: number) {
-  //   router.push(`/stake/${pid}`)
-  // }
+  function onSelect(pid: number) {
+    router.push(`/stake/manage/${pid}`)
+  }
 
   return (
     <Container>
       <Hero>
         <ImageWithFallback src={STAKE_ICON} width={185} height={133} alt={`Logo`} />
-        {/* <StatsHeader items={items} pid={pidNumber} onSelectDropDown={onSelect} /> */}
+        <StatsHeader items={items} pid={pidNumber} onSelectDropDown={onSelect} />
       </Hero>
 
       <TopWrapper>
@@ -72,7 +74,7 @@ export default function StakingPage() {
         )}
         <div style={{ width: '100%' }}>
           <AvailableLP pool={pool} />
-          <StakedLP />
+          <StakedLP pid={pidNumber} />
           <PoolShare pool={pool} />
           <PoolInfo pool={pool} />
           <Reading />

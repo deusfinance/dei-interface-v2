@@ -130,7 +130,7 @@ interface ICustomLink {
   children: React.ReactChild
 }
 const CustomLink = ({ href, children }: ICustomLink) => {
-  const isExternal: boolean = href.startsWith('/')
+  const isExternal = !href.startsWith('/')
   if (isExternal) {
     return <ExternalLink href={href}>{children}</ExternalLink>
   }

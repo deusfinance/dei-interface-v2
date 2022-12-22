@@ -1,6 +1,15 @@
 import { InputField } from 'components/Input'
-import React, { useState } from 'react'
+import { Stakings } from 'constants/stakingPools'
+import { useMasterChefContract } from 'hooks/useContract'
+import { useUserInfo } from 'hooks/useStakingInfo'
+import { useSupportedChainId } from 'hooks/useSupportedChainId'
+import useWeb3React from 'hooks/useWeb3'
+import React, { useCallback, useState } from 'react'
+import toast from 'react-hot-toast'
+import { useTransactionAdder } from 'state/transactions/hooks'
 import styled from 'styled-components'
+import { toBN } from 'utils/numbers'
+import { DefaultHandlerError } from 'utils/parseError'
 import Container from './common/Container'
 import { Divider, HStack } from './common/Layout'
 
@@ -13,6 +22,7 @@ const StakedLPHeader = styled(Wrapper)`
   border-top-right-radius: 12px;
   border-top-left-radius: 12px;
   background-color: ${({ theme }) => theme.bg1};
+  cursor: pointer;
   & > p {
     color:${({ theme }) => theme.text1}
     font-size: 0.875rem;
@@ -22,6 +32,7 @@ const StakedLPHeader = styled(Wrapper)`
 const StakedLPReward = styled(Wrapper)<{ disabled?: boolean }>`
   background-color: ${({ theme }) => theme.bg1};
   opacity: ${({ disabled }) => (disabled ? 0.7 : 1)};
+  pointer-events: ${({ disabled }) => (disabled ? 'none' : 'default')};
   p {
     &:first-of-type {
       color: ${({ theme }) => theme.text2};
@@ -89,7 +100,7 @@ const UnStakedContainer = styled(Wrapper)`
 
 const UnStakedInput = styled(InputField)`
   background-color: transparent;
-  color: ${({ theme }) => theme.text2};
+  color: ${({ theme }) => theme.text1};
   font-size: 1rem;
   font-weight: medium;
 `
@@ -108,27 +119,77 @@ const UnStakedButton = styled(BaseButton)`
     }
   }
 `
-const StakedLP = () => {
-  const rewardAmount = 0.028
-  const [amount, setAmount] = useState<string>('')
+const StakedLP = ({ pid }: { pid: number }) => {
+  const [amountIn, setAmountIn] = useState<string>('')
+
+  const { account } = useWeb3React()
+  const isSupportedChainId = useSupportedChainId()
+  const addTransaction = useTransactionAdder()
+
+  const [awaitingWithdrawConfirmation, setAwaitingWithdrawConfirmation] = useState(false)
+  const [awaitingClaimConfirmation, setAwaitClaimConfirmation] = useState(false)
+
+  const stakingPool = Stakings.find((pool) => pool.id === pid) || Stakings[0]
+  const masterChefContract = useMasterChefContract(stakingPool)
+
+  // const lpCurrency = pool.lpToken
+  // const lpCurrencyBalance = useCurrencyBalance(account ?? undefined, lpCurrency)
+
+  const { rewardsAmount, depositAmount, totalDepositedAmount, rewardToken } = useUserInfo(stakingPool)
+
+  const onWithdraw = useCallback(async () => {
+    try {
+      if (!masterChefContract || !account || !isSupportedChainId || !amountIn) return
+      setAwaitingWithdrawConfirmation(true)
+      const response = await masterChefContract.withdraw(
+        stakingPool?.pid,
+        toBN(amountIn).times(1e18).toFixed(),
+        account
+      )
+      addTransaction(response, { summary: `Withdraw ${amountIn}`, vest: { hash: response.hash } })
+      setAwaitingWithdrawConfirmation(false)
+      setAmountIn('')
+      // setPendingTxHash(response.hash)
+    } catch (err) {
+      console.log(err)
+      toast.error(DefaultHandlerError(err))
+      setAwaitingWithdrawConfirmation(false)
+      // setPendingTxHash('')
+    }
+  }, [masterChefContract, account, isSupportedChainId, amountIn, stakingPool?.pid, addTransaction])
+
+  const onClaimReward = useCallback(async () => {
+    try {
+      if (!masterChefContract || !account || !isSupportedChainId) return
+      setAwaitClaimConfirmation(true)
+      const response = await masterChefContract.harvest(stakingPool?.pid, account)
+      addTransaction(response, { summary: `Claim Rewards`, vest: { hash: response.hash } })
+      setAwaitClaimConfirmation(false)
+      // setPendingTxHash(response.hash)
+    } catch (err) {
+      console.log(err)
+      toast.error(DefaultHandlerError(err))
+      setAwaitClaimConfirmation(false)
+      // setPendingTxHash('')
+    }
+  }, [masterChefContract, account, isSupportedChainId, stakingPool?.pid, addTransaction])
+
   return (
     <Container>
       <>
-        <StakedLPHeader>
+        <StakedLPHeader onClick={() => setAmountIn(depositAmount)}>
           <p>LP Staked:</p>
-          <p>488.335</p>
+          <p>{Number(depositAmount).toFixed(6)}</p>
         </StakedLPHeader>
         <Divider backgroundColor="#101116" />
-        <StakedLPReward disabled={!rewardAmount}>
+        <StakedLPReward disabled={!rewardsAmount}>
           <HStack>
             <p>Reward: </p>
-            <p>{rewardAmount} DEUS</p>
+            <p>
+              {Number(rewardsAmount).toFixed(2)} {rewardToken.symbol}
+            </p>
           </HStack>
-          <StakedLPRewardButton
-            onClick={() => {
-              console.log('')
-            }}
-          >
+          <StakedLPRewardButton onClick={() => onClaimReward()}>
             <span>
               <p>Claim</p>
             </span>
@@ -137,15 +198,11 @@ const StakedLP = () => {
         <Divider backgroundColor="#101116" />
         <UnStakedContainer>
           <UnStakedInput
-            value={amount}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => setAmount(event.target.value)}
+            value={amountIn}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => setAmountIn(event.target.value)}
             placeholder="Enter amount"
           />
-          <UnStakedButton
-            onClick={() => {
-              console.log(amount)
-            }}
-          >
+          <UnStakedButton onClick={() => onWithdraw()}>
             <span>
               <p>Unstake</p>
             </span>

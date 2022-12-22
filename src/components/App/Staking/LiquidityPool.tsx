@@ -22,6 +22,7 @@ import { useRouter } from 'next/router'
 import { Token } from '@sushiswap/core-sdk'
 import InputBox from './common/Input'
 import AddInputBox from 'components/InputBox'
+import { maxAmountSpend } from 'utils/currency'
 
 const Wrapper = styled.div`
   display: flex;
@@ -341,11 +342,11 @@ export default function LiquidityPool({ pool }: { pool: LiquidityType }) {
     }
   }, [selected])
 
-  // useEffect(() => {
-  //   if (selected === ActionTypes.REMOVE) {
-  //     setLPAmountIn(((Number(maxAmountSpend(lpCurrencyBalance)?.toExact()) * Number(selectedPercent)) / 100).toString())
-  //   }
-  // }, [lpCurrencyBalance, selected, selectedPercent])
+  useEffect(() => {
+    if (selected === ActionTypes.REMOVE) {
+      setLPAmountIn(((Number(maxAmountSpend(lpCurrencyBalance)?.toExact()) * Number(selectedPercent)) / 100).toString())
+    }
+  }, [lpCurrencyBalance, selected, selectedPercent])
 
   const token0Amount = useMemo(() => {
     return tryParseAmount(amountIn, token0Currency || undefined)
@@ -576,7 +577,7 @@ export default function LiquidityPool({ pool }: { pool: LiquidityType }) {
           {/* <InputBox currency={lpCurrency} value={lpAmountIn} onChange={(value: string) => setLPAmountIn(value)} /> */}
           <BetweenStack>
             <WithdrawText>Withdraw percentage</WithdrawText>
-            <WithdrawText>LP Staked: {lpCurrencyBalance?.toSignificant(6)}</WithdrawText>
+            <WithdrawText>LP Balance: {lpCurrencyBalance?.toSignificant(6)}</WithdrawText>
           </BetweenStack>
           <PercentBox selectedPercent={selectedPercent} setPercent={setPercent} />
           <WithdrawCombo selectedValue={selectedValue} setSelectedValue={setSelectedValue} />

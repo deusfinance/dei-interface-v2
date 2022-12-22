@@ -1,10 +1,17 @@
 import { PrimaryButton } from 'components/Button'
 import { InputField } from 'components/Input'
-import { LiquidityType } from 'constants/stakingPools'
+import { LiquidityType, Stakings } from 'constants/stakingPools'
+import { useMasterChefContract } from 'hooks/useContract'
+import { useSupportedChainId } from 'hooks/useSupportedChainId'
 import useWeb3React from 'hooks/useWeb3'
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
+import toast from 'react-hot-toast'
+import { useTransactionAdder } from 'state/transactions/hooks'
 import { useCurrencyBalance } from 'state/wallet/hooks'
 import styled from 'styled-components'
+import { maxAmountSpend } from 'utils/currency'
+import { toBN } from 'utils/numbers'
+import { DefaultHandlerError } from 'utils/parseError'
 import Container from './common/Container'
 import { Divider, HStack } from './common/Layout'
 
@@ -18,6 +25,7 @@ const AvailableLPHeader = styled(Wrapper)`
   border-top-right-radius: 12px;
   border-top-left-radius: 12px;
   background-color: ${({ theme }) => theme.bg1};
+  cursor: pointer;
   & > p {
     font-size: 0.875rem;
     font-weight: medium;
@@ -35,7 +43,7 @@ const AvailableLPContent = styled(Wrapper)`
 `
 const AmountInput = styled(InputField)`
   background-color: transparent;
-  color: ${({ theme }) => theme.text2};
+  color: ${({ theme }) => theme.text1};
   font-size: 1rem;
   font-weight: medium;
 `
@@ -50,35 +58,52 @@ const StakeButton = styled(PrimaryButton)`
 
 const AvailableLP = ({ pool }: { pool: LiquidityType }) => {
   const { account } = useWeb3React()
+  const isSupportedChainId = useSupportedChainId()
+  const addTransaction = useTransactionAdder()
 
   const lpCurrency = pool.lpToken
   const lpCurrencyBalance = useCurrencyBalance(account ?? undefined, lpCurrency)
 
-  const [amount, setAmount] = useState<string>('')
+  const [amountIn, setAmountIn] = useState<string>('')
+  const [awaitingDepositConfirmation, setAwaitingDepositConfirmation] = useState(false)
+
+  const stakingPool = Stakings.find((p) => p.id === pool.id) || Stakings[0]
+  const masterChefContract = useMasterChefContract(stakingPool)
+
+  const onDeposit = useCallback(async () => {
+    try {
+      if (!masterChefContract || !account || !isSupportedChainId || !amountIn) return
+      setAwaitingDepositConfirmation(true)
+      const response = await masterChefContract.deposit(stakingPool?.pid, toBN(amountIn).times(1e18).toFixed(), account)
+      addTransaction(response, { summary: `Deposit`, vest: { hash: response.hash } })
+      setAwaitingDepositConfirmation(false)
+      setAmountIn('')
+      // setPendingTxHash(response.hash)
+    } catch (err) {
+      console.log(err)
+      toast.error(DefaultHandlerError(err))
+      setAwaitingDepositConfirmation(false)
+      // setPendingTxHash('')
+    }
+  }, [masterChefContract, account, isSupportedChainId, amountIn, stakingPool?.pid, addTransaction])
 
   return (
     <Container>
       <>
-        <AvailableLPHeader>
+        <AvailableLPHeader onClick={() => setAmountIn(maxAmountSpend(lpCurrencyBalance)?.toExact() || '')}>
           <p>LP Available:</p>
           <p>{lpCurrencyBalance?.toSignificant(6)}</p>
         </AvailableLPHeader>
         <Divider backgroundColor="#101116" />
         <AvailableLPContent>
           <AmountInput
-            value={amount}
+            value={amountIn}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-              setAmount(event.target.value)
+              setAmountIn(event.target.value)
             }}
             placeholder="Enter amount"
           />
-          <StakeButton
-            onClick={() => {
-              console.log(amount)
-            }}
-          >
-            Stake
-          </StakeButton>
+          <StakeButton onClick={() => onDeposit()}>Stake</StakeButton>
         </AvailableLPContent>
       </>
     </Container>
