@@ -2,8 +2,7 @@ import ImageWithFallback from 'components/ImageWithFallback'
 import styled, { css } from 'styled-components'
 import Container from './common/Container'
 import { Divider, HStack } from './common/Layout'
-import Down2 from '/public/static/images/pages/stake/down2.svg'
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { ChevronDown } from 'components/Icons'
 import useWeb3React from 'hooks/useWeb3'
 import { LiquidityType } from 'constants/stakingPools'
@@ -126,7 +125,17 @@ const StyledChevron = styled(({ isOpen, ...props }) => <ChevronDown {...props} /
       transform: scaleY(-1);
     `};
 `
-
+interface ICustomLink {
+  href: string
+  children: React.ReactChild
+}
+const CustomLink = ({ href, children }: ICustomLink) => {
+  const isExternal: boolean = href.startsWith('/')
+  if (isExternal) {
+    return <ExternalLink href={href}>{children}</ExternalLink>
+  }
+  return <Link href={href}>{children}</Link>
+}
 const BalanceToken = ({ pool }: { pool: LiquidityType }) => {
   const [isOpen, setOpen] = useState<boolean>(false)
   const { account } = useWeb3React()
@@ -186,28 +195,27 @@ const BalanceToken = ({ pool }: { pool: LiquidityType }) => {
           </HeaderTextValue>
         </BalanceHeader>
         <Divider backgroundColor="transparent" />
-        <DropDownContainer
-          onClick={() => {
-            setOpen((prev) => !prev)
-          }}
-          isOpen={isOpen}
-        >
-          <p>Buy Tokens</p>
-          <StyledChevron isOpen={isOpen} />
-        </DropDownContainer>
-        <DropDownContent isOpen={isOpen}>
-          <DropDownContentOption>
-            {/* FIXME: complete here */}
-            <p>Buy {pool?.tokens[0]?.symbol}:</p>
-            <ExternalLink href="https://app.firebird.finance/swap?outputCurrency=0xDE5ed76E7c05eC5e4572CfC88d1ACEA165109E44&net=250">
-              Buy on Firebird <ImageWithFallback alt="balance" width={8} height={8} src={Down2} />
-            </ExternalLink>
-          </DropDownContentOption>
-          <DropDownContentOption>
-            <p>Buy {pool?.tokens[1]?.symbol}:</p>
-            <Link href="/swap">Go to Swap Page</Link>
-          </DropDownContentOption>
-        </DropDownContent>
+        {pool.provideLinks?.length !== 0 && (
+          <>
+            <DropDownContainer
+              onClick={() => {
+                setOpen((prev) => !prev)
+              }}
+              isOpen={isOpen}
+            >
+              <p>Buy Tokens</p>
+              <StyledChevron isOpen={isOpen} />
+            </DropDownContainer>
+            <DropDownContent isOpen={isOpen}>
+              {pool?.provideLinks?.map((link, index) => (
+                <DropDownContentOption key={link.id}>
+                  <p>Buy {pool?.tokens[index]?.symbol}:</p>
+                  <CustomLink href={link.link}>{link.title}</CustomLink>
+                </DropDownContentOption>
+              ))}
+            </DropDownContent>
+          </>
+        )}
       </div>
     </Container>
   )

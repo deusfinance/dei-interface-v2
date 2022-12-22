@@ -22,7 +22,6 @@ import { useRouter } from 'next/router'
 import { Token } from '@sushiswap/core-sdk'
 import InputBox from './common/Input'
 import AddInputBox from 'components/InputBox'
-import { maxAmountSpend } from 'utils/currency'
 
 const Wrapper = styled.div`
   display: flex;
@@ -150,13 +149,14 @@ const RadioContainer = styled(HStack)`
   column-gap: 25px;
   margin-top: 15px;
 `
-const RadioButton = styled.input`
+const RadioButton = styled.input<{ isDisabled: boolean }>`
   margin-right: 10px !important;
   -webkit-appearance: none;
   -moz-appearance: none;
   -ms-appearance: none;
   -o-appearance: none;
   appearance: none;
+  opacity: ${({ isDisabled }) => (isDisabled ? 0.4 : 1)};
   &:after {
     width: 14px;
     height: 14px;
@@ -225,7 +225,19 @@ const PercentBox = ({
         </WithdrawPercentage>
         <SelectedPercentBox>
           <span>
-            <Input type="number" onChange={(e) => setInputValue(e.target.value)} value={inputValue} min={0} max={100} />
+            <Input
+              type="number"
+              onChange={(e) => {
+                if (+e.target.value >= 0 && +e.target.value <= 100) {
+                  setInputValue(e.target.value)
+                } else if (e.target.value === '') {
+                  setInputValue('')
+                }
+              }}
+              value={inputValue}
+              min="0"
+              max="100"
+            />
             <p>%</p>
           </span>
         </SelectedPercentBox>
@@ -252,7 +264,7 @@ const WithdrawCombo = ({
     () =>
       pool.tokens.map((token, index) => ({
         label: token.name,
-        value: index,
+        value: index + 1,
       })),
     [pool.tokens]
   )
@@ -261,16 +273,20 @@ const WithdrawCombo = ({
     <div style={{ marginBlock: 24 }}>
       <WithdrawHeading>Withdraw in</WithdrawHeading>
       <RadioContainer>
-        {[{ label: 'Combo', value: options.length }, ...options].map((option) => (
+        {[{ label: 'Combo', value: 0 }, ...options].map((option) => (
           <HStack key={option.value}>
             <RadioButton
+              isDisabled={option.value !== 0}
+              disabled={option.value !== 0}
               checked={option.value === selectedValue}
               id={`option${option.value}`}
               type="radio"
               value={option.value}
               onChange={(e) => setSelectedValue(+e.currentTarget.value)}
             />
-            <label htmlFor={`option${option.value}`}>{option.label}</label>
+            <label style={{ opacity: option.value !== 0 ? 0.4 : 1 }} htmlFor={`option${option.value}`}>
+              {option.label}
+            </label>
           </HStack>
         ))}
       </RadioContainer>
@@ -325,11 +341,11 @@ export default function LiquidityPool({ pool }: { pool: LiquidityType }) {
     }
   }, [selected])
 
-  useEffect(() => {
-    if (selected === ActionTypes.REMOVE) {
-      setLPAmountIn(((Number(maxAmountSpend(lpCurrencyBalance)?.toExact()) * Number(selectedPercent)) / 100).toString())
-    }
-  }, [lpCurrencyBalance, selected, selectedPercent])
+  // useEffect(() => {
+  //   if (selected === ActionTypes.REMOVE) {
+  //     setLPAmountIn(((Number(maxAmountSpend(lpCurrencyBalance)?.toExact()) * Number(selectedPercent)) / 100).toString())
+  //   }
+  // }, [lpCurrencyBalance, selected, selectedPercent])
 
   const token0Amount = useMemo(() => {
     return tryParseAmount(amountIn, token0Currency || undefined)
