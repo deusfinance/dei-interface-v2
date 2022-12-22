@@ -10,11 +10,12 @@ import { maxAmountSpend } from 'utils/currency'
 
 import ImageWithFallback from 'components/ImageWithFallback'
 import { NumericalInput } from 'components/Input'
-import { Row, RowBetween, RowCenter, RowEnd } from 'components/Row'
+import { Row, RowCenter, RowEnd } from 'components/Row'
 import { ChevronDown as ChevronDownIcon } from 'components/Icons'
 import { HStack } from './Layout'
 
 export const Wrapper = styled(Row)`
+  width: 410.488px;
   background: ${({ theme }) => theme.bg2};
   border-radius: 12px;
   color: ${({ theme }) => theme.text2};
@@ -22,22 +23,21 @@ export const Wrapper = styled(Row)`
   height: 80px;
   border: 1px solid #444444;
   border-color: ${({ theme }) => theme.border1};
-
+  display: flex;
   ${({ theme }) => theme.mediaWidth.upToSmall`
     height: 65px;
   `}
 `
 
 const NumericalWrapper = styled.div`
-  width: auto;
   font-size: 24px;
   position: relative;
-  flex: 1;
   ${({ theme }) => theme.mediaWidth.upToSmall`
     font-size: 14px;
     right: 0;
   `}
   &> input {
+    width: 70%;
     ::placeholder {
       color: ${({ theme }) => theme.text1};
     }
@@ -58,9 +58,6 @@ export const CurrencySymbol = styled.div<{ active?: any }>`
   margin-left: 5px;
   color: ${({ theme }) => theme.text1};
   cursor: ${({ active }) => active && 'pointer'};
-  width: 100%;
-  flex: 1;
-
   ${({ theme }) => theme.mediaWidth.upToSmall`
     font-size: 12px;
     margin-left: 6px;
@@ -80,8 +77,7 @@ export const RightWrapper = styled(HStack)`
 
 export const LogoWrapper = styled(RowCenter)<{ active?: any }>`
   height: 100%;
-  /* padding-left: 10px; */
-  width: 80px;
+  width: 66.387px;
   cursor: ${({ active }) => active && 'pointer'};
 `
 
@@ -160,14 +156,12 @@ export default function InputBox({
             disabled={disabled}
           />
         </NumericalWrapper>
-        <RowBetween>
-          <CurrencySymbol
-            onClick={onTokenSelect ? () => onTokenSelect() : undefined}
-            active={onTokenSelect ? true : false}
-          >
-            {currency?.symbol}
-          </CurrencySymbol>
-        </RowBetween>
+        <CurrencySymbol
+          onClick={onTokenSelect ? () => onTokenSelect() : undefined}
+          active={onTokenSelect ? true : false}
+        >
+          {currency?.symbol}
+        </CurrencySymbol>
       </RightWrapper>
     </Wrapper>
   )
