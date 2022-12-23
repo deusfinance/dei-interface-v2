@@ -7,7 +7,7 @@ import ImageWithFallback from 'components/ImageWithFallback'
 import STAKE_ICON from '/public/static/images/pages/stake/ic_stake.svg'
 import { LiquidityPool, Stakings } from 'constants/stakingPools'
 import StatsHeader from 'components/StatsHeader'
-import StakingPool from 'components/App/Staking/StakingPool'
+// import StakingPool from 'components/App/Staking/StakingPool'
 import StakingAmount from 'components/App/Staking/Amount'
 import StakingBalance from 'components/App/Staking/Balance'
 import StakingDetails from 'components/App/Staking/PoolDetails'
@@ -61,7 +61,7 @@ export default function StakingPage() {
 
       <TopWrapper>
         <StakingAmount />
-        <StakingPool pool={pool} />
+        {/* <StakingPool pool={pool} /> */}
         <StakingBalance />
         <StakingDetails />
       </TopWrapper>

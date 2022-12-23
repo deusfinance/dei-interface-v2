@@ -257,3 +257,7 @@ export function useGetApy(stakingPool: StakingType): number {
 export function useV2GetApy(stakingPool: StakingType): number {
   return stakingPool.pid === 0 ? 25 : 33
 }
+
+export function useNFTGetApy(stakingPool: StakingType): number {
+  return stakingPool.pid === 0 ? 10 : stakingPool.pid === 1 ? 20 : 40
+}

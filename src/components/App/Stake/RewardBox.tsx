@@ -34,7 +34,7 @@ export default function RewardBox({ tokens }: { tokens: Token[] }) {
   const tokensAddress = tokens.map((token) => token.address)
   const logos = useCurrencyLogos(tokensAddress)
 
-  const rewardAmount = Math.random() < 0.5 ? 2.4 : 0
+  const rewardAmount = 0
 
   return (
     <TokenCell>

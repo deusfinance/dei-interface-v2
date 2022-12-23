@@ -343,7 +343,7 @@ export default function LiquidityPool({ pool }: { pool: LiquidityType }) {
   }, [selected])
 
   useEffect(() => {
-    if (selected === ActionTypes.REMOVE) {
+    if (selected === ActionTypes.REMOVE && lpCurrencyBalance) {
       setLPAmountIn(((Number(maxAmountSpend(lpCurrencyBalance)?.toExact()) * Number(selectedPercent)) / 100).toString())
     }
   }, [lpCurrencyBalance, selected, selectedPercent])

@@ -126,7 +126,8 @@ export default function StakingPool({ pool }: { pool: StakingType }) {
 
   const stakingPool = pool
   const pid = stakingPool?.pid
-  const currency = stakingPool?.lpToken
+  // this is wrong
+  const currency = stakingPool?.rewardTokens[0]
 
   const [amountIn, setAmountIn] = useState('')
   const currencyBalance = useCurrencyBalance(account ?? undefined, currency)

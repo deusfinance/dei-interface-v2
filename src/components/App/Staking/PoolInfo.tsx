@@ -29,6 +29,7 @@ export default function PoolInfo({ pool }: { pool: LiquidityType }) {
   const poolBalances = usePoolBalances(pool).reduce((a, b) => a + b, 0)
   const stakingPool = Stakings.find((p) => p.id === pool.id) || Stakings[0]
   const active = stakingPool?.active
+  const apr = stakingPool.aprHook(stakingPool)
 
   return (
     <Container>
@@ -38,12 +39,11 @@ export default function PoolInfo({ pool }: { pool: LiquidityType }) {
             {stakingPool.name}
             <Circle disabled={!active}></Circle>
           </p>
-          <p> 0.00% of Pool </p>
         </TableHeader>
 
         <ContentTable>
           <Label>APR:</Label>
-          <Value> N/A </Value>
+          <Value> {apr.toFixed(0)}% </Value>
         </ContentTable>
 
         <ContentTable>
@@ -78,25 +78,27 @@ export default function PoolInfo({ pool }: { pool: LiquidityType }) {
           </ContentTable>
         )}
 
-        <ContentTable>
-          <Label> Pool Address: </Label>
-          <Value>
-            <p style={{ textDecoration: 'underline' }}>
-              {pool?.contract && <Copy toCopy={pool?.contract} text={truncateAddress(pool?.contract)} />}
-            </p>
-          </Value>
-        </ContentTable>
+        {pool?.contract && (
+          <ContentTable>
+            <Label> Pool Address: </Label>
+            <Value>
+              <p style={{ textDecoration: 'underline' }}>
+                {<Copy toCopy={pool?.contract} text={truncateAddress(pool?.contract)} />}
+              </p>
+            </Value>
+          </ContentTable>
+        )}
 
-        <ContentTable>
-          <Label> LP Token Address: </Label>
-          <Value>
-            <p style={{ textDecoration: 'underline' }}>
-              {pool?.lpToken.address && (
-                <Copy toCopy={pool?.lpToken.address} text={truncateAddress(pool?.lpToken.address)} />
-              )}
-            </p>
-          </Value>
-        </ContentTable>
+        {pool?.lpToken.address && (
+          <ContentTable>
+            <Label> LP Token Address: </Label>
+            <Value>
+              <p style={{ textDecoration: 'underline' }}>
+                {<Copy toCopy={pool?.lpToken.address} text={truncateAddress(pool?.lpToken.address)} />}
+              </p>
+            </Value>
+          </ContentTable>
+        )}
       </Wrapper>
     </Container>
   )
