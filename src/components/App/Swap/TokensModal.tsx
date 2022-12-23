@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 
 import { Modal, ModalHeader } from 'components/Modal'
-import TokenBox from 'components/App/StableCoin/TokenBox'
+import TokenBox from 'components/App/Swap/TokenBox'
 import Column from 'components/Column'
 import { Currency, Token } from '@sushiswap/core-sdk'
 

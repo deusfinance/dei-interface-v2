@@ -69,7 +69,7 @@ export default function TokenBox({
   currency: Currency
   index: number
   toggleModal: (action: boolean) => void
-  setToken: (index: number) => void
+  setToken: (currency: Currency) => void
   disabled?: boolean
 }) {
   const { account } = useWeb3React()
@@ -92,7 +92,7 @@ export default function TokenBox({
       disabled={disabled}
       onClick={() => {
         toggleModal(false)
-        if (!disabled) setToken(index)
+        if (!disabled) setToken(currency)
       }}
     >
       <div>
