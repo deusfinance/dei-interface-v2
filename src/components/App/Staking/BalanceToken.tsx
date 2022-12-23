@@ -10,6 +10,7 @@ import { useCurrencyLogos } from 'hooks/useCurrencyLogo'
 import Link from 'next/link'
 import { ExternalLink } from 'components/Link'
 import { useCurrencyBalance } from 'state/wallet/hooks'
+import { useDeiPrice, useDeusPrice } from 'hooks/useCoingeckoPrice'
 
 const Wrapper = styled(HStack)`
   justify-content: space-between;
@@ -144,8 +145,18 @@ const BalanceToken = ({ pool }: { pool: LiquidityType }) => {
   const tokensAddress = tokens.map((token) => token.address)
   const tokensLogo = useCurrencyLogos(tokensAddress)
 
-  const token0CurrencyBalance = useCurrencyBalance(account ?? undefined, tokens[0])?.toSignificant(6)
-  const token1CurrencyBalance = useCurrencyBalance(account ?? undefined, tokens[1])?.toSignificant(6)
+  const deusPrice = useDeusPrice()
+  const deiPrice = useDeiPrice()
+
+  const getTokenValue = (symbol: string | undefined, amount: string | undefined): string => {
+    if (!amount || !symbol) return '-'
+    if (symbol === 'DEI') return (Number(amount) * Number(deiPrice)).toFixed(2).toString()
+    else if (symbol === 'DEUS') return (Number(amount) * Number(deusPrice)).toFixed(2).toString()
+    else return Number(amount).toFixed(2).toString()
+  }
+
+  const token0CurrencyBalance = useCurrencyBalance(account ?? undefined, tokens[0])?.toSignificant(3)
+  const token1CurrencyBalance = useCurrencyBalance(account ?? undefined, tokens[1])?.toSignificant(3)
 
   return (
     <Container>
@@ -165,7 +176,7 @@ const BalanceToken = ({ pool }: { pool: LiquidityType }) => {
                 <p>
                   {token0CurrencyBalance} {pool?.tokens[0]?.symbol}{' '}
                 </p>
-                <p>≈ $??</p>
+                <p>≈ ${getTokenValue(pool?.tokens[0]?.symbol, token0CurrencyBalance)}</p>
               </>
             ) : (
               <p>wallet not connected</p>
@@ -187,7 +198,7 @@ const BalanceToken = ({ pool }: { pool: LiquidityType }) => {
                 <p>
                   {token1CurrencyBalance} {pool?.tokens[1]?.symbol}
                 </p>
-                <p>≈ $??</p>
+                <p>≈ ${getTokenValue(pool?.tokens[1]?.symbol, token1CurrencyBalance)}</p>
               </>
             ) : (
               <p>wallet not connected</p>
