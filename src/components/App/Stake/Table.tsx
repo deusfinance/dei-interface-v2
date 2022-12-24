@@ -28,6 +28,10 @@ import { LiquidityPool, StakingType } from 'constants/stakingPools'
 import TokenBox from 'components/App/Stake/TokenBox'
 import RewardBox from 'components/App/Stake/RewardBox'
 import { useRouter } from 'next/router'
+import { ExternalLink } from 'components/Link'
+import { HStack } from '../Staking/common/Layout'
+import Spooky from '/public/static/images/pages/stake/spooky.svg'
+import Beethoven from '/public/static/images/pages/stake/beethoven.svg'
 
 const Wrapper = styled.div`
   display: flex;
@@ -335,6 +339,38 @@ function TableRow({ staking, index, isMobile }: { staking: StakingType; index: n
   //   return null
   // }
 
+  const CustomButton = styled(ExternalLink).attrs({ as: PrimaryButtonWide })`
+    width: 100%;
+  `
+  enum BUTTON_TYPE {
+    BEETHOVEN = 'BEETHOVEN',
+    SPOOKY_SWAP = 'SPOOKY_SWAP',
+  }
+  const links: { [x: string]: string } = {
+    beethoven: '',
+    spookySwap: '',
+  }
+  const titles = {
+    beethoven: 'beethoven-',
+    spookySwap: 'SpookySwap',
+  }
+  const CustomButtonWrapper = ({ type }: { type: BUTTON_TYPE }) => {
+    return (
+      <CustomButton transparentBG href={type === BUTTON_TYPE.BEETHOVEN ? links.beethoven : links.spookySwap}>
+        <ButtonText>
+          Farm on
+          <HStack style={{ marginLeft: '1ch', alignItems: 'flex-end' }}>
+            <Image
+              width={type === BUTTON_TYPE.BEETHOVEN ? 102 : 110}
+              height={type === BUTTON_TYPE.BEETHOVEN ? 16 : 19}
+              src={type === BUTTON_TYPE.BEETHOVEN ? Beethoven : Spooky}
+              alt={type === BUTTON_TYPE.BEETHOVEN ? titles.beethoven : titles.spookySwap}
+            />
+          </HStack>
+        </ButtonText>
+      </CustomButton>
+    )
+  }
   function getTableRow() {
     return (
       <>
