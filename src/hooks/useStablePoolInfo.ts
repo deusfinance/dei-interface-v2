@@ -30,6 +30,36 @@ export function usePoolBalances(pool: LiquidityType): number[] {
   }, [results, pool])
 }
 
+export function usePoolInfo(pool: LiquidityType): { virtualPrice: number; protocolFee: number } {
+  const contract = useStablePoolContract(pool)
+
+  const calls = [
+    {
+      methodName: 'getVirtualPrice',
+      callInputs: [],
+    },
+    {
+      methodName: 'protocolFeeShareBPS',
+      callInputs: [],
+    },
+  ]
+
+  const [virtualPrice, protocolFee] = useSingleContractMultipleMethods(contract, calls)
+
+  const { virtualPriceValue, protocolFeeValue } = useMemo(
+    () => ({
+      virtualPriceValue: virtualPrice?.result ? toBN(virtualPrice.result[0].toString()).div(1e18).toNumber() : 0,
+      protocolFeeValue: protocolFee?.result ? toBN(protocolFee.result[0].toString()).div(1e18).toNumber() : 0,
+    }),
+    [virtualPrice, protocolFee]
+  )
+
+  return {
+    virtualPrice: virtualPriceValue,
+    protocolFee: protocolFeeValue,
+  }
+}
+
 export function useAddLiquidity(pool: LiquidityType, amountIns: string[]): number {
   const contract = useStablePoolContract(pool)
 
