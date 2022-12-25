@@ -29,10 +29,12 @@ import TokenBox from 'components/App/Stake/TokenBox'
 import RewardBox from 'components/App/Stake/RewardBox'
 import { useRouter } from 'next/router'
 import { ExternalLink } from 'components/Link'
-import { HStack } from '../Staking/common/Layout'
+import { Divider, HStack, VStack } from '../Staking/common/Layout'
 import Spooky from '/public/static/images/pages/stake/spooky.svg'
 import Beethoven from '/public/static/images/pages/stake/beethoven.svg'
+import ExternalIcon from '/public/static/images/pages/stake/down.svg'
 
+import { Token } from '@sushiswap/core-sdk'
 const Wrapper = styled.div`
   display: flex;
   flex-flow: column nowrap;
@@ -102,7 +104,9 @@ const Value = styled.div`
 `
 
 const ZebraStripesRow = styled(Row)<{ isEven?: boolean }>`
-  background: ${({ isEven, theme }) => (isEven ? theme.bg2 : theme.bg1)};
+  @media (min-width: 768px) {
+    background: ${({ isEven, theme }) => (isEven ? theme.bg2 : theme.bg1)};
+  }
 `
 
 const ButtonText = styled.span<{ gradientText?: boolean }>`
@@ -112,7 +116,7 @@ const ButtonText = styled.span<{ gradientText?: boolean }>`
   font-size: 15px;
   white-space: nowrap;
   color: ${({ theme }) => theme.text1};
-
+  align-items: center;
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     font-size: 14px;
   `}
@@ -186,7 +190,10 @@ export default function Table({ isMobile, stakings }: { isMobile?: boolean; stak
         <tbody>
           {paginatedItems.length > 0 &&
             paginatedItems.map((stakingPool: StakingType, index) => (
-              <TableRow key={index} index={index} staking={stakingPool} isMobile={isMobile} />
+              <>
+                <Divider backgroundColor="#101116" />
+                <TableRow key={index} index={index} staking={stakingPool} isMobile={isMobile} />
+              </>
             ))}
         </tbody>
         {paginatedItems.length === 0 && (
@@ -224,20 +231,188 @@ export default function Table({ isMobile, stakings }: { isMobile?: boolean; stak
     </Wrapper>
   )
 }
+const CustomButton = styled(PrimaryButtonWide).attrs({ as: ExternalLink })`
+  width: 100%;
+`
+enum BUTTON_TYPE {
+  BEETHOVEN = 'BEETHOVEN',
+  SPOOKY_SWAP = 'SPOOKY_SWAP',
+  MINI = 'MINI',
+}
+const links: { [x: string]: string } = {
+  beethoven: 'https://google.com',
+  spookySwap: 'https://google.com',
+  mini: 'https://google.com',
+}
+const titles = {
+  beethoven: 'beethoven-',
+  spookySwap: 'SpookySwap',
+  mini: 'Manage',
+}
+const CustomButtonWrapper = ({ type }: { type: BUTTON_TYPE }) => {
+  return (
+    <CustomButton
+      transparentBG
+      href={
+        type === BUTTON_TYPE.BEETHOVEN ? links.beethoven : type === BUTTON_TYPE.MINI ? links.mini : links.spookySwap
+      }
+    >
+      <ButtonText>
+        {type === BUTTON_TYPE.MINI ? titles.mini : 'Farm on'}
+        <HStack style={{ marginLeft: '1ch', alignItems: 'flex-end' }}>
+          <Image
+            width={type === BUTTON_TYPE.BEETHOVEN ? 102 : type === BUTTON_TYPE.MINI ? 8 : 110}
+            height={type === BUTTON_TYPE.BEETHOVEN ? 16 : type === BUTTON_TYPE.MINI ? 8 : 19}
+            src={type === BUTTON_TYPE.BEETHOVEN ? Beethoven : type === BUTTON_TYPE.MINI ? ExternalIcon : Spooky}
+            alt={
+              type === BUTTON_TYPE.BEETHOVEN
+                ? titles.beethoven
+                : type === BUTTON_TYPE.MINI
+                ? titles.mini
+                : titles.spookySwap
+            }
+          />
+        </HStack>
+      </ButtonText>
+    </CustomButton>
+  )
+}
+const SpaceBetween = styled(HStack)`
+  justify-content: space-between;
+`
+const TableRowLargeContainer = styled.div`
+  width: 100%;
+  display: table;
+  @media (max-width: 768px) {
+    display: none;
+  }
+`
+const MiniStakeHeaderContainer = styled(SpaceBetween)``
+const MiniStakeContainer = styled.div`
+  margin-block: 2px;
+  background: ${({ theme }) => theme.bg1};
+  @media (min-width: 769px) {
+    display: none;
+  }
+  padding: 16px 12px;
+`
+const MiniStakeContentContainer = styled(VStack)`
+  margin-top: 16px;
+`
+const MiniTopBorderWrap = styled(TopBorderWrap)`
+  min-width: 109px;
+  margin: 0px;
+  & > * {
+    min-width: 109px;
+    max-height: 32px;
+  }
+`
+interface ITableRowContent {
+  tokens: Token[]
+  name: StakingType['name']
+  active: StakingType['active']
+  rewardTokens: StakingType['rewardTokens']
+  handleClick: () => void
+}
+const TableRowMiniContent = ({ tokens, name, active, rewardTokens, handleClick }: ITableRowContent) => {
+  return (
+    <MiniStakeContainer>
+      <MiniStakeHeaderContainer>
+        <TokenBox tokens={tokens} title={name} active={active} />
+        <div>
+          <MiniTopBorderWrap>
+            <TopBorder>
+              <CustomButtonWrapper type={BUTTON_TYPE.MINI} />
+            </TopBorder>
+          </MiniTopBorderWrap>
+        </div>
+      </MiniStakeHeaderContainer>
+      <MiniStakeContentContainer>
+        <SpaceBetween>
+          <Name>TVL</Name>
+          <Value>$4.58m</Value>
+        </SpaceBetween>
+        <SpaceBetween>
+          <Name>APR</Name>
+          <Value>4%</Value>
+        </SpaceBetween>
+        <SpaceBetween>
+          <Name>Reward Tokens</Name>
+          <RewardBox tokens={rewardTokens} />
+        </SpaceBetween>
+      </MiniStakeContentContainer>
+    </MiniStakeContainer>
+  )
+}
+const TableRowLargeContent = ({ tokens, name, active, rewardTokens, handleClick }: ITableRowContent) => {
+  return (
+    <>
+      <Cell width={'25%'}>
+        <TokenBox tokens={tokens} title={name} active={active} />
+      </Cell>
 
+      <Cell width={'10%'}>
+        <Name>APR</Name>
+        <Value>4%</Value>
+      </Cell>
+
+      <Cell width={'18%'}>
+        <Name>TVL</Name>
+        <Value>$4.58m</Value>
+      </Cell>
+
+      <Cell style={{ textAlign: 'start' }}>
+        <Name>Reward Tokens</Name>
+        <RewardBox tokens={rewardTokens} />
+      </Cell>
+
+      <Cell width={'20%'} style={{ padding: '5px 10px' }}>
+        <TopBorderWrap onClick={active ? handleClick : undefined}>
+          <TopBorder>
+            <PrimaryButtonWide transparentBG>
+              <ButtonText gradientText={!active}>{active ? 'Manage' : 'Withdraw'}</ButtonText>
+            </PrimaryButtonWide>
+          </TopBorder>
+        </TopBorderWrap>
+      </Cell>
+    </>
+  )
+}
+const TableRowContent = ({ staking }: { staking: StakingType }) => {
+  const { id, rewardTokens, active, name } = staking
+  const tokens = LiquidityPool.find((p) => p.id === staking.id)?.tokens || LiquidityPool[0].tokens
+
+  const router = useRouter()
+  const handleClick = useCallback(() => {
+    router.push(`/stake/manage/${id}`)
+  }, [id, router])
+  return (
+    <>
+      <TableRowLargeContainer>
+        <TableRowLargeContent
+          active={active}
+          handleClick={handleClick}
+          name={name}
+          rewardTokens={rewardTokens}
+          tokens={tokens}
+        />
+      </TableRowLargeContainer>
+      <TableRowMiniContent
+        active={active}
+        handleClick={handleClick}
+        name={name}
+        rewardTokens={rewardTokens}
+        tokens={tokens}
+      />
+    </>
+  )
+}
 function TableRow({ staking, index, isMobile }: { staking: StakingType; index: number; isMobile?: boolean }) {
   const [awaitingConfirmation, setAwaitingConfirmation] = useState(false)
   const [ClaimAwaitingConfirmation, setClaimAwaitingConfirmation] = useState(false)
   const [pendingTxHash, setPendingTxHash] = useState('')
 
   const { id, rewardTokens, active, name } = staking
-  const tokens = LiquidityPool.find((p) => p.id === staking.id)?.tokens || LiquidityPool[0].tokens
-
-  const router = useRouter()
-
-  const handleClick = useCallback(() => {
-    router.push(`/stake/manage/${id}`)
-  }, [id, router])
 
   // const veDEUSContract = useVeDeusContract()
   // const addTransaction = useTransactionAdder()
@@ -339,73 +514,6 @@ function TableRow({ staking, index, isMobile }: { staking: StakingType; index: n
   //   return null
   // }
 
-  const CustomButton = styled(ExternalLink).attrs({ as: PrimaryButtonWide })`
-    width: 100%;
-  `
-  enum BUTTON_TYPE {
-    BEETHOVEN = 'BEETHOVEN',
-    SPOOKY_SWAP = 'SPOOKY_SWAP',
-  }
-  const links: { [x: string]: string } = {
-    beethoven: '',
-    spookySwap: '',
-  }
-  const titles = {
-    beethoven: 'beethoven-',
-    spookySwap: 'SpookySwap',
-  }
-  const CustomButtonWrapper = ({ type }: { type: BUTTON_TYPE }) => {
-    return (
-      <CustomButton transparentBG href={type === BUTTON_TYPE.BEETHOVEN ? links.beethoven : links.spookySwap}>
-        <ButtonText>
-          Farm on
-          <HStack style={{ marginLeft: '1ch', alignItems: 'flex-end' }}>
-            <Image
-              width={type === BUTTON_TYPE.BEETHOVEN ? 102 : 110}
-              height={type === BUTTON_TYPE.BEETHOVEN ? 16 : 19}
-              src={type === BUTTON_TYPE.BEETHOVEN ? Beethoven : Spooky}
-              alt={type === BUTTON_TYPE.BEETHOVEN ? titles.beethoven : titles.spookySwap}
-            />
-          </HStack>
-        </ButtonText>
-      </CustomButton>
-    )
-  }
-  function getTableRow() {
-    return (
-      <>
-        <Cell width={'25%'}>
-          <TokenBox tokens={tokens} title={name} active={active} />
-        </Cell>
-
-        <Cell width={'10%'}>
-          <Name>APR</Name>
-          <Value>4%</Value>
-        </Cell>
-
-        <Cell width={'18%'}>
-          <Name>TVL</Name>
-          <Value>$4.58m</Value>
-        </Cell>
-
-        <Cell style={{ textAlign: 'start' }}>
-          <Name>Reward Tokens</Name>
-          <RewardBox tokens={rewardTokens} />
-        </Cell>
-
-        <Cell width={'20%'} style={{ padding: '5px 10px' }}>
-          <TopBorderWrap onClick={active ? handleClick : undefined}>
-            <TopBorder>
-              <PrimaryButtonWide transparentBG>
-                <ButtonText gradientText={!active}>{active ? 'Manage' : 'Withdraw'}</ButtonText>
-              </PrimaryButtonWide>
-            </TopBorder>
-          </TopBorderWrap>
-        </Cell>
-      </>
-    )
-  }
-
   // function getTableRowMobile() {
   //   return (
   //     <MobileWrapper>
@@ -441,5 +549,9 @@ function TableRow({ staking, index, isMobile }: { staking: StakingType; index: n
   //   )
   // }
 
-  return <ZebraStripesRow isEven={index % 2 === 0}>{isMobile ? getTableRow() : getTableRow()}</ZebraStripesRow>
+  return (
+    <ZebraStripesRow isEven={index % 2 === 0}>
+      <TableRowContent staking={staking} />
+    </ZebraStripesRow>
+  )
 }

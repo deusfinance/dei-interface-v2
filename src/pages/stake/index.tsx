@@ -64,8 +64,11 @@ const FirstRowWrapper = styled.div`
   display: flex;
   flex-flow: row nowrap;
   justify-content: space-between;
-  width: 100%;
   gap: 10px;
+  width: 100%;
+  @media (max-width: 768px) {
+    width: 50%;
+  }
 `
 
 export default function Stake() {

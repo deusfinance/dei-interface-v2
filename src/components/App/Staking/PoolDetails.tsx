@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import styled from 'styled-components'
 import Container from './common/Container'
+import { ExternalLink } from 'components/Link'
 
 const ReadingContent = styled.div`
   background-image: url('/static/images/pages/stake/staking-background.png');
@@ -35,10 +36,10 @@ export const PoolDetails = () => {
       <ReadingContent>
         <ReadingHeader>
           <p>DEUS-vDEUS Staking</p>
-          <a href="#">
+          <ExternalLink href="https://google.com">
             <p>Read more</p>
             <Icon width="8px" height="8px" src="/static/images/pages/stake/down.svg" />
-          </a>
+          </ExternalLink>
         </ReadingHeader>
         <p style={{ marginTop: 6 }}>. . . </p>
       </ReadingContent>
