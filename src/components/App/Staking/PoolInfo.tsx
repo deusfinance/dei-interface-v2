@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 
 import { usePoolBalances } from 'hooks/useStablePoolInfo'
@@ -25,11 +25,21 @@ const Circle = styled.div<{ disabled: boolean }>`
   height: 10px;
 `
 
+const PoolBalance = React.memo(({ pool }: { pool: LiquidityType }) => {
+  const poolBalances = usePoolBalances(pool)?.reduce((a, b) => a + b, 0)
+
+  return (
+    <ContentTable>
+      <Label> Total Locked: </Label>
+      <Value> {formatDollarAmount(poolBalances)} </Value>
+    </ContentTable>
+  )
+})
+PoolBalance.displayName = 'PoolBalance'
 export default function PoolInfo({ pool }: { pool: LiquidityType }) {
-  const [stakingPool] = useState(() => Stakings.find((p) => p.id === pool.id) || Stakings[0])
+  const stakingPool = Stakings.find((p) => p.id === pool.id) || Stakings[0]
   const active = stakingPool?.active
   const apr = stakingPool.aprHook(stakingPool)
-  const poolBalances = usePoolBalances(pool).reduce((a, b) => a + b, 0)
 
   return (
     <Container>
@@ -45,12 +55,7 @@ export default function PoolInfo({ pool }: { pool: LiquidityType }) {
           <Label>APR:</Label>
           <Value> {apr.toFixed(0)}% </Value>
         </ContentTable>
-
-        <ContentTable>
-          <Label> Total Locked: </Label>
-          <Value> {formatDollarAmount(poolBalances)} </Value>
-        </ContentTable>
-
+        <PoolBalance pool={pool} />
         <ContentTable>
           <Label> Fee: </Label>
           <Value> N/A </Value>
