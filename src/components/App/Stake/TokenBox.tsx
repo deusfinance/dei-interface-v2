@@ -18,6 +18,10 @@ const TokenCell = styled.div`
       margin-right: 8px;
     }
   }
+  @media (max-width: 768px) {
+    flex-basis: initial;
+    margin-left: 0px;
+  }
 `
 
 const TokensWrap = styled.div`
