@@ -104,9 +104,10 @@ const Value = styled.div`
 `
 
 const ZebraStripesRow = styled(Row)<{ isEven?: boolean }>`
-  @media (min-width: 768px) {
-    background: ${({ isEven, theme }) => (isEven ? theme.bg2 : theme.bg1)};
-  }
+  background: ${({ isEven, theme }) => (isEven ? theme.bg2 : theme.bg1)};
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    background:none;
+  `};
 `
 
 const ButtonText = styled.span<{ gradientText?: boolean }>`
@@ -231,8 +232,17 @@ export default function Table({ isMobile, stakings }: { isMobile?: boolean; stak
     </Wrapper>
   )
 }
-const CustomButton = styled(PrimaryButtonWide).attrs({ as: ExternalLink })`
+
+const CustomButton = styled(ExternalLink)`
   width: 100%;
+  height: 34px;
+  span {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 `
 enum BUTTON_TYPE {
   BEETHOVEN = 'BEETHOVEN',
@@ -242,7 +252,6 @@ enum BUTTON_TYPE {
 const links: { [x: string]: string } = {
   beethoven: 'https://google.com',
   spookySwap: 'https://google.com',
-  mini: 'https://google.com',
 }
 const titles = {
   beethoven: 'beethoven-',
@@ -251,12 +260,7 @@ const titles = {
 }
 const CustomButtonWrapper = ({ type }: { type: BUTTON_TYPE }) => {
   return (
-    <CustomButton
-      transparentBG
-      href={
-        type === BUTTON_TYPE.BEETHOVEN ? links.beethoven : type === BUTTON_TYPE.MINI ? links.mini : links.spookySwap
-      }
-    >
+    <CustomButton transparentBG href={type === BUTTON_TYPE.BEETHOVEN ? links.beethoven : links.spookySwap}>
       <ButtonText>
         {type === BUTTON_TYPE.MINI ? titles.mini : 'Farm on'}
         <HStack style={{ marginLeft: '1ch', alignItems: 'flex-end' }}>
@@ -283,18 +287,19 @@ const SpaceBetween = styled(HStack)`
 const TableRowLargeContainer = styled.div`
   width: 100%;
   display: table;
-  @media (max-width: 768px) {
-    display: none;
-  }
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    display:none;
+  `};
 `
 const MiniStakeHeaderContainer = styled(SpaceBetween)``
 const MiniStakeContainer = styled.div`
   margin-block: 2px;
   background: ${({ theme }) => theme.bg1};
-  @media (min-width: 769px) {
-    display: none;
-  }
+  display: none;
   padding: 16px 12px;
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+  display:block;
+  `};
 `
 const MiniStakeContentContainer = styled(VStack)`
   margin-top: 16px;
@@ -315,14 +320,18 @@ interface ITableRowContent {
   handleClick: () => void
 }
 const TableRowMiniContent = ({ tokens, name, active, rewardTokens, handleClick }: ITableRowContent) => {
+
   return (
     <MiniStakeContainer>
       <MiniStakeHeaderContainer>
         <TokenBox tokens={tokens} title={name} active={active} />
         <div>
           <MiniTopBorderWrap>
-            <TopBorder>
-              <CustomButtonWrapper type={BUTTON_TYPE.MINI} />
+            <TopBorder onClick={active ? handleClick : undefined}>
+              {/* <CustomButtonWrapper type={BUTTON_TYPE.MINI} /> */}
+              <PrimaryButtonWide transparentBG>
+                <ButtonText gradientText={!active}>{active ? 'Manage' : 'Withdraw'}</ButtonText>
+              </PrimaryButtonWide>
             </TopBorder>
           </MiniTopBorderWrap>
         </div>
