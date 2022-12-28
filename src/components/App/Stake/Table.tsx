@@ -23,7 +23,7 @@ import LOADING_LOCK_MOBILE from '/public/static/images/pages/veDEUS/loadingLockM
 // import { formatAmount } from 'utils/numbers'
 // import { DefaultHandlerError } from 'utils/parseError'
 import useWeb3React from 'hooks/useWeb3'
-import { LiquidityPool, StakingType } from 'constants/stakingPools'
+import { LiquidityPool, StakingType, StakingVersion } from 'constants/stakingPools'
 
 import TokenBox from 'components/App/Stake/TokenBox'
 import RewardBox from 'components/App/Stake/RewardBox'
@@ -35,6 +35,10 @@ import Beethoven from '/public/static/images/pages/stake/beethoven.svg'
 import ExternalIcon from '/public/static/images/pages/stake/down.svg'
 
 import { Token } from '@sushiswap/core-sdk'
+import { useDeiPrice, useDeusPrice } from 'hooks/useCoingeckoPrice'
+import { usePoolBalances } from 'hooks/useStablePoolInfo'
+import { formatDollarAmount } from 'utils/numbers'
+
 const Wrapper = styled.div`
   display: flex;
   flex-flow: column nowrap;
@@ -244,6 +248,7 @@ const CustomButton = styled(ExternalLink)`
     justify-content: center;
   }
 `
+
 enum BUTTON_TYPE {
   BEETHOVEN = 'BEETHOVEN',
   SPOOKY_SWAP = 'SPOOKY_SWAP',
@@ -318,8 +323,11 @@ interface ITableRowContent {
   active: StakingType['active']
   rewardTokens: StakingType['rewardTokens']
   handleClick: () => void
+  apr: number
+  tvl: number
 }
-const TableRowMiniContent = ({ tokens, name, active, rewardTokens, handleClick }: ITableRowContent) => {
+
+const TableRowMiniContent = ({ tokens, name, active, rewardTokens, handleClick, apr, tvl }: ITableRowContent) => {
   return (
     <MiniStakeContainer>
       <MiniStakeHeaderContainer>
@@ -338,11 +346,11 @@ const TableRowMiniContent = ({ tokens, name, active, rewardTokens, handleClick }
       <MiniStakeContentContainer>
         <SpaceBetween>
           <Name>TVL</Name>
-          <Value>$4.58m</Value>
+          <Value>{formatDollarAmount(tvl)}</Value>
         </SpaceBetween>
         <SpaceBetween>
           <Name>APR</Name>
-          <Value>4%</Value>
+          <Value> {apr.toFixed(0)}% </Value>
         </SpaceBetween>
         <SpaceBetween>
           <Name>Reward Tokens</Name>
@@ -352,7 +360,8 @@ const TableRowMiniContent = ({ tokens, name, active, rewardTokens, handleClick }
     </MiniStakeContainer>
   )
 }
-const TableRowLargeContent = ({ tokens, name, active, rewardTokens, handleClick }: ITableRowContent) => {
+
+const TableRowLargeContent = ({ tokens, name, active, rewardTokens, handleClick, apr, tvl }: ITableRowContent) => {
   return (
     <>
       <Cell width={'25%'}>
@@ -361,12 +370,12 @@ const TableRowLargeContent = ({ tokens, name, active, rewardTokens, handleClick 
 
       <Cell width={'10%'}>
         <Name>APR</Name>
-        <Value>4%</Value>
+        <Value> {apr.toFixed(0)}% </Value>
       </Cell>
 
       <Cell width={'18%'}>
         <Name>TVL</Name>
-        <Value>$4.58m</Value>
+        <Value>{formatDollarAmount(tvl)}</Value>
       </Cell>
 
       <Cell style={{ textAlign: 'start' }}>
@@ -386,9 +395,23 @@ const TableRowLargeContent = ({ tokens, name, active, rewardTokens, handleClick 
     </>
   )
 }
+
 const TableRowContent = ({ staking }: { staking: StakingType }) => {
   const { id, rewardTokens, active, name } = staking
-  const tokens = LiquidityPool.find((p) => p.id === staking.id)?.tokens || LiquidityPool[0].tokens
+  const liquidityPool = LiquidityPool.find((p) => p.id === staking.id) || LiquidityPool[0]
+  const tokens = liquidityPool?.tokens
+
+  const apr = staking.version === StakingVersion.EXTERNAL ? 0 : staking?.aprHook(staking)
+
+  const deusPrice = useDeusPrice()
+  const deiPrice = useDeiPrice()
+
+  const poolBalances = usePoolBalances(liquidityPool)
+
+  // FIXME: check this for single stakings
+  const totalLockedValue = useMemo(() => {
+    return poolBalances[1] * 2 * Number(staking.name === 'DEI-bDEI' ? deiPrice : deusPrice)
+  }, [deiPrice, deusPrice, poolBalances, staking.name])
 
   const router = useRouter()
   const handleClick = useCallback(() => {
@@ -403,6 +426,8 @@ const TableRowContent = ({ staking }: { staking: StakingType }) => {
           name={name}
           rewardTokens={rewardTokens}
           tokens={tokens}
+          apr={apr}
+          tvl={totalLockedValue}
         />
       </TableRowLargeContainer>
       <TableRowMiniContent
@@ -411,16 +436,19 @@ const TableRowContent = ({ staking }: { staking: StakingType }) => {
         name={name}
         rewardTokens={rewardTokens}
         tokens={tokens}
+        apr={apr}
+        tvl={totalLockedValue}
       />
     </>
   )
 }
-function TableRow({ staking, index, isMobile }: { staking: StakingType; index: number; isMobile?: boolean }) {
-  const [awaitingConfirmation, setAwaitingConfirmation] = useState(false)
-  const [ClaimAwaitingConfirmation, setClaimAwaitingConfirmation] = useState(false)
-  const [pendingTxHash, setPendingTxHash] = useState('')
 
-  const { id, rewardTokens, active, name } = staking
+function TableRow({ staking, index, isMobile }: { staking: StakingType; index: number; isMobile?: boolean }) {
+  // const [awaitingConfirmation, setAwaitingConfirmation] = useState(false)
+  // const [ClaimAwaitingConfirmation, setClaimAwaitingConfirmation] = useState(false)
+  // const [pendingTxHash, setPendingTxHash] = useState('')
+
+  // const { id, rewardTokens, active, name } = staking
 
   // const veDEUSContract = useVeDeusContract()
   // const addTransaction = useTransactionAdder()

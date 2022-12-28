@@ -41,7 +41,7 @@ export enum StakingVersion {
   V1,
   V2,
   NFT,
-  External,
+  EXTERNAL,
 }
 
 export type ProvideTokens = {
@@ -234,7 +234,7 @@ export const ExternalStakings: ExternalStakingType[] = [
     rewardTokens: [DEUS_TOKEN],
     provideLink: 'https://beets.fi/pool/0x4e415957aa4fd703ad701e43ee5335d1d7891d8300020000000000000000053b',
     active: true,
-    version: StakingVersion.External,
+    version: StakingVersion.EXTERNAL,
   },
   {
     id: 8,
@@ -243,7 +243,7 @@ export const ExternalStakings: ExternalStakingType[] = [
     provideLink:
       'https://spooky.fi/#/add/0xDE1E704dae0B4051e80DAbB26ab6ad6c12262DA0/0x04068DA6C83AFCFA0e13ba15A6696662335D5B75',
     active: true,
-    version: StakingVersion.External,
+    version: StakingVersion.EXTERNAL,
   },
   {
     id: 9,
@@ -251,6 +251,6 @@ export const ExternalStakings: ExternalStakingType[] = [
     rewardTokens: [DEUS_TOKEN],
     provideLink: 'https://spooky.fi/#/add/0xDE5ed76E7c05eC5e4572CfC88d1ACEA165109E44/FTM',
     active: true,
-    version: StakingVersion.External,
+    version: StakingVersion.EXTERNAL,
   },
 ]
