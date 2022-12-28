@@ -23,12 +23,12 @@ export const Container = styled.div`
   margin: 0 auto;
 `
 
-const TopWrapper = styled.div`
-  display: flex;
-  align-items: flex-start;
+const TopWrapper = styled.div<{ isMultipleColumns: boolean }>`
+  display: ${({ isMultipleColumns }) => (isMultipleColumns ? 'grid' : 'flex')};
+  grid-template-columns: 480px 480px;
   margin: auto;
-
   ${({ theme }) => theme.mediaWidth.upToMedium`
+   display: flex;
     min-width: 460px;
     flex-direction: column;
   `}
@@ -54,7 +54,7 @@ export default function StakingPage() {
         <StatsHeader pid={pidNumber} onSelectDropDown={onSelect} />
       </Hero>
 
-      <TopWrapper>
+      <TopWrapper isMultipleColumns={pool?.tokens.length > 1}>
         {pool?.tokens.length > 1 && (
           <VStack style={{ width: '100%' }}>
             <BalanceToken pool={pool} />
