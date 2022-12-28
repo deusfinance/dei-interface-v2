@@ -6,7 +6,6 @@ import Hero from 'components/Hero'
 import ImageWithFallback from 'components/ImageWithFallback'
 import STAKE_ICON from '/public/static/images/pages/stake/ic_stake.svg'
 import { LiquidityPool as LiquidityPoolList } from 'constants/stakingPools'
-// import StatsHeader from 'components/StatsHeader'
 import LiquidityPool from 'components/App/Staking/LiquidityPool'
 import PoolInfo from 'components/App/Staking/PoolInfo'
 import PoolShare from 'components/App/Staking/PoolShare'
@@ -15,7 +14,6 @@ import StakedLP from 'components/App/Staking/LPStaked'
 import Reading from 'components/App/Staking/PoolDetails'
 import BalanceToken from 'components/App/Staking/BalanceToken'
 import { VStack } from 'components/App/Staking/common/Layout'
-import { useMemo } from 'react'
 import StatsHeader from 'components/StatsHeader'
 
 export const Container = styled.div`
@@ -45,15 +43,6 @@ export default function StakingPage() {
   const pidNumber = Number(pid)
   const pool = LiquidityPoolList.find((pool) => pool.id === pidNumber) || LiquidityPoolList[0]
 
-  const items = useMemo(
-    () => [
-      { name: 'APR', value: '??%' },
-      { name: 'TVL', value: '$??' },
-      { name: 'Total Staked', value: `?? ${pool?.lpToken?.symbol}` },
-    ],
-    [pool?.lpToken?.symbol]
-  )
-
   function onSelect(pid: number) {
     router.push(`/stake/manage/${pid}`)
   }
@@ -62,7 +51,7 @@ export default function StakingPage() {
     <Container>
       <Hero>
         <ImageWithFallback src={STAKE_ICON} width={185} height={133} alt={`Logo`} />
-        <StatsHeader items={items} pid={pidNumber} onSelectDropDown={onSelect} />
+        <StatsHeader pid={pidNumber} onSelectDropDown={onSelect} />
       </Hero>
 
       <TopWrapper>

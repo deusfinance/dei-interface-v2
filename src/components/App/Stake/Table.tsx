@@ -320,7 +320,6 @@ interface ITableRowContent {
   handleClick: () => void
 }
 const TableRowMiniContent = ({ tokens, name, active, rewardTokens, handleClick }: ITableRowContent) => {
-
   return (
     <MiniStakeContainer>
       <MiniStakeHeaderContainer>

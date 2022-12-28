@@ -11,6 +11,7 @@ import Link from 'next/link'
 import { ExternalLink } from 'components/Link'
 import { useCurrencyBalance } from 'state/wallet/hooks'
 import { useDeiPrice, useDeusPrice } from 'hooks/useCoingeckoPrice'
+import { usePoolBalances } from 'hooks/useStablePoolInfo'
 
 const Wrapper = styled(HStack)`
   justify-content: space-between;
@@ -148,11 +149,17 @@ const BalanceToken = ({ pool }: { pool: LiquidityType }) => {
   const deusPrice = useDeusPrice()
   const deiPrice = useDeiPrice()
 
+  const poolBalances = usePoolBalances(pool)
+  const secondTokenPrice = (
+    (poolBalances[1] * Number(pool.lpToken.symbol === 'DB-LP' ? deiPrice : deusPrice)) /
+    poolBalances[0]
+  ).toFixed(2)
+
   const getTokenValue = (symbol: string | undefined, amount: string | undefined): string => {
     if (!amount || !symbol) return '-'
     if (symbol === 'DEI') return (Number(amount) * Number(deiPrice)).toFixed(2).toString()
     else if (symbol === 'DEUS') return (Number(amount) * Number(deusPrice)).toFixed(2).toString()
-    else return Number(amount).toFixed(2).toString()
+    else return (Number(amount) * Number(secondTokenPrice)).toFixed(2).toString()
   }
 
   const token0CurrencyBalance = useCurrencyBalance(account ?? undefined, tokens[0])?.toSignificant(3)

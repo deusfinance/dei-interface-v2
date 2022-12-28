@@ -202,7 +202,7 @@ export default function StatsHeader({
   pid,
   onSelectDropDown,
 }: {
-  items: { name: string; value: string | number; link?: string }[]
+  items?: { name: string; value: string | number; link?: string }[]
   hasBox?: boolean
   pid?: number
   onSelectDropDown?: (index: number) => void
@@ -217,7 +217,7 @@ export default function StatsHeader({
   return (
     <Wrapper>
       {onSelectDropDown && (
-        <ItemBox2 rightBorder>
+        <ItemBox2 rightBorder={!!items}>
           <Dropdown2
             options={dropDownOptions}
             defaultValue={pid}
@@ -228,18 +228,19 @@ export default function StatsHeader({
         </ItemBox2>
       )}
 
-      {items.map((item, index) => (
-        <Item key={index} rightBorder={index < items.length - 1 || hasBox}>
-          <Name>{item.name}</Name>
-          {!item.link ? (
-            <Value>{item.value}</Value>
-          ) : (
-            <ExternalLink href={ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/address/' + item.link}>
-              <ValueLink>{item.value}</ValueLink>
-            </ExternalLink>
-          )}
-        </Item>
-      ))}
+      {items &&
+        items.map((item, index) => (
+          <Item key={index} rightBorder={index < items.length - 1 || hasBox}>
+            <Name>{item.name}</Name>
+            {!item.link ? (
+              <Value>{item.value}</Value>
+            ) : (
+              <ExternalLink href={ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/address/' + item.link}>
+                <ValueLink>{item.value}</ValueLink>
+              </ExternalLink>
+            )}
+          </Item>
+        ))}
       {hasBox && (
         <ItemBox data-for="id" data-tip={'Rewards are accruing in the background'}>
           <CustomTooltip id="id" />

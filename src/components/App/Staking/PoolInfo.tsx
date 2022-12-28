@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import styled from 'styled-components'
 
 import { usePoolBalances, usePoolInfo } from 'hooks/useStablePoolInfo'
@@ -8,7 +8,7 @@ import Copy from 'components/Copy'
 import { truncateAddress } from 'utils/address'
 import Container from './common/Container'
 import { ContentTable, Label, TableHeader, Value, VStack } from './common/Layout'
-import { useDeusPrice } from 'hooks/useCoingeckoPrice'
+import { useDeiPrice, useDeusPrice } from 'hooks/useCoingeckoPrice'
 
 const Wrapper = styled(VStack)`
   padding: 12px;
@@ -30,7 +30,7 @@ const PoolBalance = React.memo(({ pool, totalLocked }: { pool: LiquidityType; to
   return (
     <ContentTable>
       <Label> Total Locked: </Label>
-      <Value> {formatDollarAmount(totalLocked)} </Value>
+      <Value> {formatAmount(totalLocked)} </Value>
     </ContentTable>
   )
 })
@@ -42,12 +42,15 @@ export default function PoolInfo({ pool }: { pool: LiquidityType }) {
   const apr = stakingPool.aprHook(stakingPool)
 
   const deusPrice = useDeusPrice()
+  const deiPrice = useDeiPrice()
 
   const poolBalances = usePoolBalances(pool)
   const totalLocked = poolBalances?.reduce((a, b) => a + b, 0)
-  const totalLockedValue = totalLocked * Number(deusPrice) * 2
-
   const poolInfo = usePoolInfo(pool)
+
+  const totalLockedValue = useMemo(() => {
+    return poolBalances[1] * 2 * Number(stakingPool.name === 'DEI-bDEI' ? deiPrice : deusPrice)
+  }, [deiPrice, deusPrice, poolBalances, stakingPool.name])
 
   return (
     <Container>
@@ -63,6 +66,7 @@ export default function PoolInfo({ pool }: { pool: LiquidityType }) {
           <Label>APR:</Label>
           <Value> {apr.toFixed(0)}% </Value>
         </ContentTable>
+
         <PoolBalance pool={pool} totalLocked={totalLocked} />
         <ContentTable>
           <Label> Fee: </Label>
@@ -81,13 +85,13 @@ export default function PoolInfo({ pool }: { pool: LiquidityType }) {
 
         <ContentTable>
           <Label> {pool.tokens[0].symbol} Reserve: </Label>
-          <Value> {formatDollarAmount(poolBalances[1])} </Value>
+          <Value> {formatAmount(poolBalances[1])} </Value>
         </ContentTable>
 
         {pool?.tokens[1] && (
           <ContentTable>
             <Label> {pool.tokens[1].symbol} Reserve: </Label>
-            <Value> {formatDollarAmount(poolBalances[0])} </Value>
+            <Value> {formatAmount(poolBalances[0])} </Value>
           </ContentTable>
         )}
 
