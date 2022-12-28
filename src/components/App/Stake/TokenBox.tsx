@@ -89,7 +89,7 @@ export default function TokenBox({ tokens, title, active }: { tokens: Token[]; t
         })}
       </MultipleImageWrapper>
       <TokensWrap>
-        <span>{title}</span>
+        <span style={{ textAlign: 'left' }}>{title}</span>
         {active && chainId ? (
           <div>
             <span style={{ color: theme.blue2 }}>{ChainInfo[chainId].label}</span>
