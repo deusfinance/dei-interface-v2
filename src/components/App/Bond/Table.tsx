@@ -15,7 +15,7 @@ import LOADING_BOND_MOBILE from '/public/static/images/pages/bond/loadingBondMob
 import nft_data from 'constants/files/nft_data.json'
 import { BDEI_TOKEN } from 'constants/tokens'
 import { DeiBonderV3, DeiBondRedeemNFT } from 'constants/addresses'
-import { formatAmount, formatBalance, toBN } from 'utils/numbers'
+import { formatBalance, toBN } from 'utils/numbers'
 import { getRemainingTime } from 'utils/time'
 
 import useWeb3React from 'hooks/useWeb3'
@@ -414,10 +414,10 @@ function TableRow({ nft, index, isMobile }: { nft: BondNFT; index: number; isMob
           </RowCenter>
         </Cell>
 
-        <Cell>
+        {/* <Cell>
           <Name>Bond Value</Name>
           <Value>{formatBalance(parseFloat(deiAmount ? deiAmount.toString() : ''), 8)} bDEI</Value>
-        </Cell>
+        </Cell> */}
 
         <Cell>
           <Name>Claimable Amount</Name>
@@ -450,9 +450,14 @@ function TableRow({ nft, index, isMobile }: { nft: BondNFT; index: number; isMob
           </RowCenter>
         </FirstRow>
 
-        <MobileCell>
+        {/* <MobileCell>
           <Name>Bond Value</Name>
           <Value>{formatAmount(parseFloat(deiAmount ? deiAmount.toString() : ''), 8)} bDEI</Value>
+        </MobileCell> */}
+
+        <MobileCell>
+          <Name>Claimable Amount</Name>
+          <Value>{formatBalance(claimableAmount, 8)} DEI</Value>
         </MobileCell>
 
         {/* <MobileCell>
