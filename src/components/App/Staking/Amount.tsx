@@ -1,23 +1,6 @@
 import styled from 'styled-components'
+import Container from './common/Container'
 
-const Container = styled.div`
-  display: flex;
-  flex-flow: column nowrap;
-  overflow: visible;
-  margin: 0 auto;
-  margin-top: 12px;
-  display: block;
-  width: 100%;
-`
-
-const Wrapper = styled(Container)`
-  margin-top: 12px;
-  justify-content: center;
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    width: 340px;
-  `}
-  overflow: hidden;
-`
 const BoxContent = styled.p`
   display: flex;
   justify-content: space-between;
@@ -73,7 +56,7 @@ const ClaimRewardButton = styled.button`
 const Amount = () => {
   return (
     <Container>
-      <Wrapper>
+      <>
         <BoxContent>
           <ContentValue>Your Staked Amount</ContentValue>
           <ContentValue isGray>0.00 vDEUS</ContentValue>
@@ -93,7 +76,7 @@ const Amount = () => {
             </span>
           </ClaimRewardButton>
         </BoxContent>
-      </Wrapper>
+      </>
     </Container>
   )
 }

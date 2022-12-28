@@ -239,7 +239,7 @@ export default function Table({ isMobile, stakings }: { isMobile?: boolean; stak
 
 const CustomButton = styled(ExternalLink)`
   width: 100%;
-  height: 34px;
+  padding: 14px 12px;
   span {
     width: 100%;
     height: 100%;
@@ -247,6 +247,9 @@ const CustomButton = styled(ExternalLink)`
     align-items: center;
     justify-content: center;
   }
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    height:34px;
+  `}
 `
 
 enum BUTTON_TYPE {
@@ -254,18 +257,15 @@ enum BUTTON_TYPE {
   SPOOKY_SWAP = 'SPOOKY_SWAP',
   MINI = 'MINI',
 }
-const links: { [x: string]: string } = {
-  beethoven: 'https://google.com',
-  spookySwap: 'https://google.com',
-}
+
 const titles = {
   beethoven: 'beethoven-',
   spookySwap: 'SpookySwap',
   mini: 'Manage',
 }
-const CustomButtonWrapper = ({ type }: { type: BUTTON_TYPE }) => {
+const CustomButtonWrapper = ({ type, href, isActive }: { type: BUTTON_TYPE; href: string; isActive: boolean }) => {
   return (
-    <CustomButton transparentBG href={type === BUTTON_TYPE.BEETHOVEN ? links.beethoven : links.spookySwap}>
+    <CustomButton transparentBG href={isActive && href}>
       <ButtonText>
         {type === BUTTON_TYPE.MINI ? titles.mini : 'Farm on'}
         <HStack style={{ marginLeft: '1ch', alignItems: 'flex-end' }}>
@@ -325,20 +325,35 @@ interface ITableRowContent {
   handleClick: () => void
   apr: number
   tvl: number
+  provideLink?: string
+  version: StakingVersion
 }
 
-const TableRowMiniContent = ({ tokens, name, active, rewardTokens, handleClick, apr, tvl }: ITableRowContent) => {
+const TableRowMiniContent = ({
+  tokens,
+  name,
+  active,
+  rewardTokens,
+  handleClick,
+  apr,
+  tvl,
+  provideLink,
+  version,
+}: ITableRowContent) => {
   return (
     <MiniStakeContainer>
       <MiniStakeHeaderContainer>
         <TokenBox tokens={tokens} title={name} active={active} />
         <div>
           <MiniTopBorderWrap>
-            <TopBorder onClick={active ? handleClick : undefined}>
-              {/* <CustomButtonWrapper type={BUTTON_TYPE.MINI} /> */}
-              <PrimaryButtonWide transparentBG>
-                <ButtonText gradientText={!active}>{active ? 'Manage' : 'Withdraw'}</ButtonText>
-              </PrimaryButtonWide>
+            <TopBorder {...(version !== StakingVersion.EXTERNAL && { onClick: active ? handleClick : undefined })}>
+              {version === StakingVersion.EXTERNAL && provideLink ? (
+                <CustomButtonWrapper isActive={active} href={provideLink} type={BUTTON_TYPE.MINI} />
+              ) : (
+                <PrimaryButtonWide transparentBG>
+                  <ButtonText gradientText={!active}>{active ? 'Manage' : 'Withdraw'}</ButtonText>
+                </PrimaryButtonWide>
+              )}
             </TopBorder>
           </MiniTopBorderWrap>
         </div>
@@ -361,7 +376,17 @@ const TableRowMiniContent = ({ tokens, name, active, rewardTokens, handleClick, 
   )
 }
 
-const TableRowLargeContent = ({ tokens, name, active, rewardTokens, handleClick, apr, tvl }: ITableRowContent) => {
+const TableRowLargeContent = ({
+  tokens,
+  name,
+  active,
+  rewardTokens,
+  handleClick,
+  apr,
+  tvl,
+  provideLink,
+  version,
+}: ITableRowContent) => {
   return (
     <>
       <Cell width={'25%'}>
@@ -384,11 +409,19 @@ const TableRowLargeContent = ({ tokens, name, active, rewardTokens, handleClick,
       </Cell>
 
       <Cell width={'20%'} style={{ padding: '5px 10px' }}>
-        <TopBorderWrap onClick={active ? handleClick : undefined}>
+        <TopBorderWrap {...(version !== StakingVersion.EXTERNAL && { onClick: active ? handleClick : undefined })}>
           <TopBorder>
-            <PrimaryButtonWide transparentBG>
-              <ButtonText gradientText={!active}>{active ? 'Manage' : 'Withdraw'}</ButtonText>
-            </PrimaryButtonWide>
+            {version === StakingVersion.EXTERNAL && provideLink ? (
+              <CustomButtonWrapper
+                isActive={active}
+                href={provideLink}
+                type={provideLink.includes('spooky') ? BUTTON_TYPE.SPOOKY_SWAP : BUTTON_TYPE.BEETHOVEN}
+              />
+            ) : (
+              <PrimaryButtonWide transparentBG>
+                <ButtonText gradientText={!active}>{active ? 'Manage' : 'Withdraw'}</ButtonText>
+              </PrimaryButtonWide>
+            )}
           </TopBorder>
         </TopBorderWrap>
       </Cell>
@@ -397,7 +430,7 @@ const TableRowLargeContent = ({ tokens, name, active, rewardTokens, handleClick,
 }
 
 const TableRowContent = ({ staking }: { staking: StakingType }) => {
-  const { id, rewardTokens, active, name } = staking
+  const { id, rewardTokens, active, name, provideLink = undefined, version } = staking
   const liquidityPool = LiquidityPool.find((p) => p.id === staking.id) || LiquidityPool[0]
   const tokens = liquidityPool?.tokens
 
@@ -428,6 +461,8 @@ const TableRowContent = ({ staking }: { staking: StakingType }) => {
           tokens={tokens}
           apr={apr}
           tvl={totalLockedValue}
+          provideLink={provideLink}
+          version={version}
         />
       </TableRowLargeContainer>
       <TableRowMiniContent
@@ -438,6 +473,8 @@ const TableRowContent = ({ staking }: { staking: StakingType }) => {
         tokens={tokens}
         apr={apr}
         tvl={totalLockedValue}
+        provideLink={provideLink}
+        version={version}
       />
     </>
   )

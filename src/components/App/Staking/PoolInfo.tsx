@@ -3,7 +3,7 @@ import styled from 'styled-components'
 
 import { usePoolBalances, usePoolInfo } from 'hooks/useStablePoolInfo'
 import { formatAmount, formatDollarAmount } from 'utils/numbers'
-import { LiquidityType, Stakings } from 'constants/stakingPools'
+import { LiquidityType, StakingType, Stakings } from 'constants/stakingPools'
 import Copy from 'components/Copy'
 import { truncateAddress } from 'utils/address'
 import Container from './common/Container'
@@ -36,11 +36,19 @@ const PoolBalance = React.memo(({ pool, totalLocked }: { pool: LiquidityType; to
 })
 PoolBalance.displayName = 'PoolBalance'
 
+export const APR = React.memo(({ stakingPool }: { stakingPool: StakingType }) => {
+  const apr = stakingPool.aprHook(stakingPool)
+  return (
+    <ContentTable>
+      <Label>APR:</Label>
+      <Value> {apr.toFixed(0)}% </Value>
+    </ContentTable>
+  )
+})
+APR.displayName = 'APR'
 export default function PoolInfo({ pool }: { pool: LiquidityType }) {
   const stakingPool = Stakings.find((p) => p.id === pool.id) || Stakings[0]
   const active = stakingPool?.active
-  const apr = stakingPool.aprHook(stakingPool)
-
   const deusPrice = useDeusPrice()
   const deiPrice = useDeiPrice()
 
@@ -62,12 +70,7 @@ export default function PoolInfo({ pool }: { pool: LiquidityType }) {
             <Circle disabled={!active}></Circle>
           </p>
         </TableHeader>
-
-        <ContentTable>
-          <Label>APR:</Label>
-          <Value> {apr.toFixed(0)}% </Value>
-        </ContentTable>
-
+        <APR stakingPool={stakingPool} />
         <PoolBalance pool={pool} totalLocked={totalLocked} />
         <ContentTable>
           <Label> Fee: </Label>

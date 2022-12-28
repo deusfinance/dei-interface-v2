@@ -167,7 +167,7 @@ const BalanceToken = ({ pool }: { pool: LiquidityType }) => {
 
   return (
     <Container>
-      <div style={{ marginInline: 12 }}>
+      <div>
         <BalanceHeader>
           <HStack>
             <IconContainer>
