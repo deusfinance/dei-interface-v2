@@ -66,9 +66,9 @@ const FirstRowWrapper = styled.div`
   justify-content: space-between;
   gap: 10px;
   width: 100%;
-  @media (max-width: 768px) {
+  ${({ theme }) => theme.mediaWidth.upToSmall`
     width: 50%;
-  }
+  `};
 `
 
 export default function Stake() {
