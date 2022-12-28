@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import { isMobile } from 'react-device-detect'
 
@@ -7,11 +7,11 @@ import ImageWithFallback from 'components/ImageWithFallback'
 import STAKE_ICON from '/public/static/images/pages/stake/ic_stake.svg'
 import { RowBetween } from 'components/Row'
 // import TokenBox from 'components/App/Stake/TokenBox'
-import { Stakings } from 'constants/stakingPools'
 // import InfoCell from 'components/App/Stake/InfoCell'
 // import RewardBox from 'components/App/Stake/RewardBox'
 import { useSearch, SearchField } from 'components/App/Stake/Search'
 import Table from 'components/App/Stake/Table'
+import { ExternalStakings, Stakings, StakingType } from 'constants/stakingPools'
 
 export const Container = styled.div`
   display: flex;
@@ -72,13 +72,8 @@ const FirstRowWrapper = styled.div`
 `
 
 export default function Stake() {
-  // FIXME: This should be implemented for staking
-  const { snapshot, searchProps } = useSearch()
-  const snapshotList = useMemo(() => {
-    return snapshot.options.map((obj) => {
-      return obj.value
-    })
-  }, [snapshot])
+  const { snapshot, searchProps } = useSearch(Stakings, ExternalStakings)
+  const result = snapshot.options.map((stakings) => stakings)
 
   function getUpperRow() {
     if (isMobile) {
@@ -108,7 +103,7 @@ export default function Stake() {
 
       <Wrapper>
         {getUpperRow()}
-        <Table isMobile={isMobile} stakings={Stakings} />
+        <Table isMobile={isMobile} stakings={result as unknown as StakingType[]} />
       </Wrapper>
     </Container>
   )

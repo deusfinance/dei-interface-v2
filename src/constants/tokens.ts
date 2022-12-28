@@ -162,3 +162,11 @@ export const Tokens: { [key: string]: TokenMap } = {
   //   [SupportedChainId.BSC]: new Token(56, '0x', 18, 'BNB', 'BNB'),
   // },
 }
+
+export const WFTM_TOKEN = new Token(
+  SupportedChainId.FANTOM,
+  WRAPPED_NATIVE[SupportedChainId.FANTOM],
+  18,
+  'WFTM',
+  'Wrapped Fantom'
+)

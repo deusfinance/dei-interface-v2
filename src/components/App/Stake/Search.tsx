@@ -2,16 +2,16 @@ import React, { useMemo } from 'react'
 import Fuse from 'fuse.js'
 import { useSelect, SelectSearchOption } from 'react-select-search'
 
-import { useOwnerVeDeusNFTs } from 'hooks/useOwnerNfts'
+import { ExternalStakingType, StakingType } from 'constants/stakingPools'
 
 import { Search as SearchIcon } from 'components/Icons'
 import { InputWrapper, InputField } from 'components/Input'
 
 function fuzzySearch(options: SelectSearchOption[]): any {
   const config = {
-    keys: ['name', 'value', 'nftId'],
+    keys: ['name', 'value'],
     isCaseSensitive: false,
-    threshold: 0.15,
+    threshold: 0.2,
   }
 
   const fuse = new Fuse(options, config)
@@ -20,24 +20,15 @@ function fuzzySearch(options: SelectSearchOption[]): any {
     if (!query) {
       return options
     }
-
     return fuse.search(query)
   }
 }
 
-export function useSearch() {
-  const nftIds = useOwnerVeDeusNFTs().results
-  const nftIdsList = useMemo(() => {
-    return [
-      ...nftIds.map((id) => {
-        return { nftId: id }
-      }),
-    ]
-  }, [nftIds])
-
-  const list: SelectSearchOption[] = useMemo(() => {
-    return nftIdsList.map((o) => ({ ...o, name: 'veDEUS #' + o.nftId.toString(), value: o.nftId }))
-  }, [nftIdsList])
+export function useSearch(Stakings: StakingType[], ExternalStakings: ExternalStakingType[]) {
+  const list = useMemo(() => {
+    const allStakings = Stakings.concat(ExternalStakings as unknown as StakingType)
+    return allStakings.map((pool) => ({ ...pool, value: pool.name }))
+  }, [ExternalStakings, Stakings])
 
   const [snapshot, searchProps, optionProps] = useSelect({
     options: list,

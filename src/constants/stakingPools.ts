@@ -5,7 +5,9 @@ import {
   DEI_TOKEN,
   DEUS_TOKEN,
   DEUS_VDEUS_LP_TOKEN,
+  USDC_TOKEN,
   VDEUS_TOKEN,
+  WFTM_TOKEN,
 } from 'constants/tokens'
 import { useGetApy, useNFTGetApy, useV2GetApy } from 'hooks/useStakingInfo'
 import { MasterChefV2, MasterChefV3, StablePool_DEI_bDEI, StablePool_DEUS_vDEUS, vDeusMasterChefV2 } from './addresses'
@@ -39,6 +41,7 @@ export enum StakingVersion {
   V1,
   V2,
   NFT,
+  External,
 }
 
 export type ProvideTokens = {
@@ -55,6 +58,15 @@ export type StakingType = {
   aprHook: (h: StakingType) => number
   masterChef: string
   pid: number
+  active: boolean
+  version: StakingVersion
+}
+
+export type ExternalStakingType = {
+  id: number
+  name: string
+  rewardTokens: Token[]
+  provideLink: string
   active: boolean
   version: StakingVersion
 }
@@ -120,6 +132,21 @@ export const LiquidityPool: LiquidityType[] = [
     id: 6,
     tokens: [VDEUS_TOKEN],
     lpToken: lpToken_1Year,
+  },
+  {
+    id: 7,
+    tokens: [USDC_TOKEN, DEI_TOKEN],
+    lpToken: DEI_TOKEN,
+  },
+  {
+    id: 8,
+    tokens: [USDC_TOKEN, DEI_TOKEN],
+    lpToken: DEI_TOKEN,
+  },
+  {
+    id: 9,
+    tokens: [WFTM_TOKEN, DEUS_TOKEN],
+    lpToken: DEI_TOKEN,
   },
 ]
 
@@ -197,5 +224,33 @@ export const Stakings: StakingType[] = [
     pid: 2,
     active: true,
     version: StakingVersion.NFT,
+  },
+]
+
+export const ExternalStakings: ExternalStakingType[] = [
+  {
+    id: 7,
+    name: 'Another DEI, another dollar',
+    rewardTokens: [DEUS_TOKEN],
+    provideLink: 'https://beets.fi/pool/0x4e415957aa4fd703ad701e43ee5335d1d7891d8300020000000000000000053b',
+    active: true,
+    version: StakingVersion.External,
+  },
+  {
+    id: 8,
+    name: 'USDC-DEI',
+    rewardTokens: [DEUS_TOKEN],
+    provideLink:
+      'https://spooky.fi/#/add/0xDE1E704dae0B4051e80DAbB26ab6ad6c12262DA0/0x04068DA6C83AFCFA0e13ba15A6696662335D5B75',
+    active: true,
+    version: StakingVersion.External,
+  },
+  {
+    id: 9,
+    name: 'FTM-DEUS',
+    rewardTokens: [DEUS_TOKEN],
+    provideLink: 'https://spooky.fi/#/add/0xDE5ed76E7c05eC5e4572CfC88d1ACEA165109E44/FTM',
+    active: true,
+    version: StakingVersion.External,
   },
 ]
