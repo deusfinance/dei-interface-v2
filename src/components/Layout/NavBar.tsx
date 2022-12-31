@@ -29,7 +29,7 @@ const Wrapper = styled.div`
 
 const DefaultWrapper = styled(Wrapper)`
   display: flex;
-  flex-flow: row nowrap;
+  flex-flow: column nowrap;
   font-family: 'Inter';
   font-size: 16px;
   line-height: 19px;
@@ -51,7 +51,7 @@ const MobileWrapper = styled(Wrapper)`
 
 const Routes = styled.div`
   display: flex;
-  flex-flow: row nowrap;
+  flex-flow: column nowrap;
   justify-content: center;
   gap: 4px;
 
@@ -117,7 +117,7 @@ const SimpleLinkWrapper = styled.div`
 
 const Items = styled.div`
   display: flex;
-  flex-flow: row nowrap;
+  flex-flow: column nowrap;
   justify-content: flex-end;
   gap: 8px;
   ${({ theme }) => theme.mediaWidth.upToSmall`
