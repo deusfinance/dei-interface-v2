@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { isMobileOnly as isMobile } from 'react-device-detect'
 
-import routes from 'constants/files/routes.json'
+// import routes from 'constants/files/routes.json'
 import MULTICHAIN from '/public/static/images/pages/dashboard/ic_multichain.svg'
 import DEUSFINANCE from '/public/static/images/pages/dashboard/ic_deus_finance.svg'
 import ImageWithFallback from 'components/ImageWithFallback'
@@ -17,11 +17,10 @@ import Web3Status from 'components/Web3Status'
 import RiskNotification from 'components/InfoHeader'
 import Menu from './Menu'
 import NavLogo2 from './NavLogo2'
-import { Row as RowWrapper, RowCenter, RowEnd, RowStart } from 'components/Row'
+import { Row as RowWrapper, RowEnd, RowStart } from 'components/Row'
 import Footer from 'components/Disclaimer'
 
 import {
-  NavToggle as NavToggleIcon,
   IconWrapper,
   Dashboard as DashboardIcon,
   VeDeus as VeDeusIcon,
