@@ -365,7 +365,7 @@ const TableRowMiniContent = ({
         </SpaceBetween>
         <SpaceBetween>
           <Name>APR</Name>
-          <Value> {apr.toFixed(0)}% </Value>
+          <Value> {apr !== -1 ? apr.toFixed(0) + '%' : 'N/A'} </Value>
         </SpaceBetween>
         <SpaceBetween>
           <Name>Reward Tokens</Name>
@@ -395,7 +395,7 @@ const TableRowLargeContent = ({
 
       <Cell width={'10%'}>
         <Name>APR</Name>
-        <Value> {apr.toFixed(0)}% </Value>
+        <Value> {apr !== -1 ? apr.toFixed(0) + '%' : 'N/A'} </Value>
       </Cell>
 
       <Cell width={'18%'}>
@@ -434,14 +434,13 @@ const TableRowContent = ({ staking }: { staking: StakingType }) => {
   const liquidityPool = LiquidityPool.find((p) => p.id === staking.id) || LiquidityPool[0]
   const tokens = liquidityPool?.tokens
 
-  const apr = staking.version === StakingVersion.EXTERNAL ? 0 : staking?.aprHook(staking)
+  const apr = staking.version === StakingVersion.EXTERNAL ? -1 : staking?.aprHook(staking)
 
   const deusPrice = useDeusPrice()
   const deiPrice = useDeiPrice()
 
   const poolBalances = usePoolBalances(liquidityPool)
 
-  // FIXME: check this for single stakings
   const totalLockedValue = useMemo(() => {
     return poolBalances[1] * 2 * Number(staking.name === 'DEI-bDEI' ? deiPrice : deusPrice)
   }, [deiPrice, deusPrice, poolBalances, staking.name])
