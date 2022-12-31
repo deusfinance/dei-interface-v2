@@ -6,6 +6,7 @@ import { useInjectedAddress } from 'hooks/useInjectedAddress'
 // import NavBar from './NavBar'
 import NavBar2 from './NavBar2'
 import Warning from './Warning'
+import Web3Navbar from './Web3Navbar'
 
 const Wrapper = styled.div`
   display: flex;
@@ -18,7 +19,8 @@ const Content = styled.div`
   min-height: calc(970px - 55px - 67px);
   overflow: scroll;
   padding-bottom: 50px;
-
+  width: 100%;
+  background: ${({ theme }) => theme.bg0};
   ${({ theme }) => theme.mediaWidth.upToSmall`
     padding-bottom: 30px;
     height:100%;
@@ -36,10 +38,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <Wrapper>
       {/* <NavBar /> */}
       <NavBar2 />
-      <div>
+      <div style={{ width: '100%' }}>
         {hasInjected && (
           <Warning message={`❌ You are in "READ-ONLY" mode. Please do not confirm any transactions! ❌ `} />
         )}
+        <Web3Navbar />
         <Content>{children}</Content>
         {/* <Footer /> */}
       </div>

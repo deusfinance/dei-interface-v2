@@ -190,6 +190,7 @@ function colors(themeName: SupportedThemes): Colors {
 
       deusColor: 'linear-gradient(90deg, #0badf4 0%, #30efe4 93.4%)',
       deiColor: 'linear-gradient(90deg, #E0974C 0%, #C93F6F 100%);',
+      deiLegacyColor: '#966131',
       cLqdrColor: '#06EBC8',
     },
   }

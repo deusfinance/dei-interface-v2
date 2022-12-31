@@ -66,6 +66,7 @@ export interface Colors {
 
   deusColor: Color
   deiColor: Color
+  deiLegacyColor: Color
   cLqdrColor: Color
 }
 
