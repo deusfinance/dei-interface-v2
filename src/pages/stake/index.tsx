@@ -58,7 +58,7 @@ const UpperRow = styled(RowBetween)`
   margin: 0 auto;
 
   & > * {
-    margin: 10px 10px;
+    margin: 8px 8px;
   }
 `
 
@@ -76,7 +76,7 @@ const FirstRowWrapper = styled.div`
 export default function Stake() {
   const { snapshot, searchProps } = useSearch(Stakings, ExternalStakings)
   const result = snapshot.options.map((stakings) => stakings)
-  useWeb3NavbarOption({ network: true, wallet: true, apr: true })
+  useWeb3NavbarOption({ network: true, wallet: true })
 
   function getUpperRow() {
     if (isMobile) {

@@ -2,9 +2,6 @@
 import { useRouter } from 'next/router'
 import styled from 'styled-components'
 
-import Hero from 'components/Hero'
-import ImageWithFallback from 'components/ImageWithFallback'
-import STAKE_ICON from '/public/static/images/pages/stake/ic_stake.svg'
 import { LiquidityPool as LiquidityPoolList } from 'constants/stakingPools'
 import LiquidityPool from 'components/App/Staking/LiquidityPool'
 import PoolInfo from 'components/App/Staking/PoolInfo'
@@ -14,7 +11,7 @@ import StakedLP from 'components/App/Staking/LPStaked'
 import Reading from 'components/App/Staking/PoolDetails'
 import BalanceToken from 'components/App/Staking/BalanceToken'
 import { VStack } from 'components/App/Staking/common/Layout'
-import StatsHeader from 'components/StatsHeader'
+import { useWeb3NavbarOption } from 'state/web3navbar/hooks'
 
 export const Container = styled.div`
   display: flex;
@@ -42,18 +39,10 @@ export default function StakingPage() {
   const { pid } = router.query
   const pidNumber = Number(pid)
   const pool = LiquidityPoolList.find((pool) => pool.id === pidNumber) || LiquidityPoolList[0]
-
-  function onSelect(pid: number) {
-    router.push(`/stake/manage/${pid}`)
-  }
+  useWeb3NavbarOption({ network: true, wallet: true, stake: true })
 
   return (
-    <Container>
-      <Hero>
-        <ImageWithFallback src={STAKE_ICON} width={185} height={133} alt={`Logo`} />
-        <StatsHeader pid={pidNumber} onSelectDropDown={onSelect} />
-      </Hero>
-
+    <Container style={{ marginTop: '16px' }}>
       <TopWrapper isMultipleColumns={pool?.tokens.length > 1}>
         {pool?.tokens.length > 1 && (
           <VStack style={{ width: '100%' }}>
