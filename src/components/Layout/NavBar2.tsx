@@ -383,34 +383,33 @@ export default function NavBar() {
                   <MintIcon size={20} />
                 </IconWrapper>
                 <Link href="/mint" passHref>
-                  <NavLink active={router.route.includes('/mint')}>Mint</NavLink>
+                  <NavLink active={router.route.includes('/mint')}>Mint Dei</NavLink>
                 </Link>
               </SimpleLinkWrapper>
               <SimpleLinkWrapper className="sidebar-link__route" active={router.route.includes('/redemption')}>
                 <IconWrapper>
                   <RedeemIcon size={20} />
                 </IconWrapper>
-
                 <Link href="/redemption" passHref>
-                  <NavLink active={router.route.includes('/redemption')}>Redeem</NavLink>
+                  <NavLink active={router.route.includes('/redemption')}>Redeem Dei</NavLink>
                 </Link>
               </SimpleLinkWrapper>
-              <SimpleLinkWrapper className="sidebar-link__route" active={router.route.includes('/bond')}>
+              <SimpleLinkWrapper className="sidebar-link__route" active={router.route.includes('/stake')}>
                 <IconWrapper>
                   <DeiBondsIcon size={20} />
                 </IconWrapper>
-                <Link href="/bond" passHref>
-                  <NavLink active={router.route.includes('/bond')}>Stake</NavLink>
+                <Link href="/stake" passHref>
+                  <NavLink active={router.route.includes('/stake')}>Pools</NavLink>
                 </Link>
               </SimpleLinkWrapper>
-              <SimpleLinkWrapper className="sidebar-link__route" active={router.route.includes('/vest')}>
+              {/* <SimpleLinkWrapper className="sidebar-link__route" active={router.route.includes('/vest')}>
                 <IconWrapper>
                   <VeDeusIcon size={20} />
                 </IconWrapper>
                 <Link href="/vest" passHref>
                   <NavLink active={router.route.includes('/vest')}>veDEUS</NavLink>
                 </Link>
-              </SimpleLinkWrapper>
+              </SimpleLinkWrapper> */}
               <SimpleLinkWrapper className="sidebar-link__route last" active={router.route.includes('/swap')}>
                 <IconWrapper>
                   <SwapIcon width={20} color={'#EBEBEC'} />
@@ -434,6 +433,18 @@ export default function NavBar() {
 
               <Separator />
 
+              <SimpleLinkWrapper className="last" active={router.route.includes('/clqdr')}>
+                <IconWrapper>
+                  <VeDeusIcon size={20} />
+                </IconWrapper>
+                <Link href="/clqdr" passHref>
+                  <NavLink active={router.route.includes('/clqdr')}>xDEUS</NavLink>
+                </Link>
+                <ArrowUpRight />
+                <Logo>
+                  <ImageWithFallback src={DEUSFINANCE} width={92} height={14} alt={`deus_finance_logo`} />
+                </Logo>
+              </SimpleLinkWrapper>
               <SimpleLinkWrapper active={router.route.includes('/clqdr')}>
                 <IconWrapper>
                   <BridgeIcon size={20} />
@@ -444,18 +455,6 @@ export default function NavBar() {
                 <ArrowUpRight />
                 <Logo>
                   <ImageWithFallback src={MULTICHAIN} width={88} height={13} alt={`multichain_logo`} />
-                </Logo>
-              </SimpleLinkWrapper>
-              <SimpleLinkWrapper className="last" active={router.route.includes('/clqdr')}>
-                <IconWrapper>
-                  <VeDeusIcon size={20} />
-                </IconWrapper>
-                <Link href="/clqdr" passHref>
-                  <NavLink active={router.route.includes('/clqdr')}>veDEUS</NavLink>
-                </Link>
-                <ArrowUpRight />
-                <Logo>
-                  <ImageWithFallback src={DEUSFINANCE} width={92} height={14} alt={`deus_financ_logo`} />
                 </Logo>
               </SimpleLinkWrapper>
             </Routes>

@@ -1,6 +1,6 @@
 import { RowEnd } from 'components/Row'
 import { useEffect } from 'react'
-import { useAppSelector } from 'state'
+// import { useAppSelector } from 'state'
 import { useGetWeb3NavbarOption } from 'state/web3navbar/hooks'
 import { TNAVBAR_OPTIONS } from 'state/web3navbar/types'
 import styled from 'styled-components'
