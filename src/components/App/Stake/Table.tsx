@@ -69,7 +69,7 @@ const FirstRow = styled.div`
   margin: 0 5px;
 `
 
-const Cell = styled.td<{ justify?: boolean }>`
+export const Cell = styled.td<{ justify?: boolean }>`
   align-items: center;
   text-align: center;
   vertical-align: middle;
@@ -108,7 +108,7 @@ const Value = styled.div`
 `
 
 const ZebraStripesRow = styled(Row)<{ isEven?: boolean }>`
-  background: ${({ isEven, theme }) => (isEven ? theme.bg2 : theme.bg1)};
+  background: ${({ theme }) => theme.bg1};
   ${({ theme }) => theme.mediaWidth.upToSmall`
     background:none;
   `};
