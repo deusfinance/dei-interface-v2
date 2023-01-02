@@ -10,6 +10,7 @@ import Menu from './Menu'
 import Web3Status from '../Web3Status/index'
 import Web3Network from 'components/Web3Network'
 import { HStack } from 'components/App/Staking/common/Layout'
+import RewardCoin from 'components/ClaimReward'
 
 const Wrapper = styled(RowBetween)<{ rtl: boolean }>`
   height: 60px;
@@ -62,7 +63,7 @@ type TComponentKey = {
 }
 const componentKey: TComponentKey = {
   left: ['stake', 'apr', 'tvl'],
-  right: ['wallet', 'network', 'reward'],
+  right: ['reward', 'network', 'wallet'],
 }
 
 const Web3Navbar = () => {
@@ -124,13 +125,13 @@ const Web3Navbar = () => {
         <ComponentWrapper>
           {components.right.map((componentName) => {
             if (componentName === componentKey['right'][0]) {
-              return <Web3Network />
+              return <RewardCoin coinName="Deus" hour={0} minute={17} second={0} />
             }
             if (componentName === componentKey['right'][1]) {
-              return <Web3Status />
+              return <Web3Network />
             }
             if (componentName === componentKey['right'][2]) {
-              return null
+              return <Web3Status />
             }
           })}
           <MenuWrapper>
