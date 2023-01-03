@@ -101,7 +101,7 @@ export const LiquidityPool: LiquidityType[] = [
   },
   {
     id: 2,
-    tokens: [DEUS_TOKEN, VDEUS_TOKEN],
+    tokens: [VDEUS_TOKEN, DEUS_TOKEN],
     provideLinks: [
       {
         id: 0,
