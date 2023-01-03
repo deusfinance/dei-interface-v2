@@ -176,7 +176,7 @@ export const Stakings: StakingType[] = [
   {
     id: 2,
     name: 'DEUS-vDEUS',
-    rewardTokens: [VDEUS_TOKEN],
+    rewardTokens: [VDEUS_TOKEN, DEUS_TOKEN],
     provideLink: '/vdeus/new',
     aprHook: useV2GetApy,
     masterChef: MasterChefV3[SupportedChainId.FANTOM],
