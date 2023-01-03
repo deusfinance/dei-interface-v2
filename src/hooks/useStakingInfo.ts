@@ -13,7 +13,6 @@ import { useVDeusMultiRewarderERC20Contract } from './useContract'
 import { LiquidityPool, StakingType, StakingVersion } from 'constants/stakingPools'
 import { Token } from '@sushiswap/core-sdk'
 import BigNumber from 'bignumber.js'
-import { DEUS_TOKEN, VDEUS_TOKEN } from 'constants/tokens'
 
 //TODO: should remove all and put it in /constants
 const pids = [0, 1]
@@ -63,14 +62,16 @@ export function useGlobalMasterChefData(stakingPool: StakingType): {
 
 export function useUserInfo(stakingPool: StakingType): {
   depositAmount: string
-  rewardsAmount: number
+  rewardAmounts: number[]
   totalDepositedAmount: number
-  rewardToken: Token
+  rewardTokens: Token[]
 } {
   const contract = useMasterChefContract(stakingPool)
   const { account } = useWeb3React()
-  const { pid, version } = stakingPool
+  const { id: stakingPoolId, pid, version, rewardTokens } = stakingPool
   const token = LiquidityPool.find((pool) => pool.id === pool.id)?.lpToken || LiquidityPool[0]?.lpToken
+  const rewards: number[] = []
+  const deusReward = useGetDeusReward() // use this deus reward for only vdeus-deus pool
 
   const additionalCall =
     version === StakingVersion.V2
@@ -108,7 +109,7 @@ export function useUserInfo(stakingPool: StakingType): {
   const ERC20Contract = useERC20Contract(token.address)
   const [tokenBalance] = useSingleContractMultipleMethods(ERC20Contract, balanceCall)
 
-  const { depositedValue, reward, totalDepositedAmountValue, rewardToken } = useMemo(() => {
+  const { depositedValue, reward, totalDepositedAmountValue } = useMemo(() => {
     return {
       depositedValue: userInfo?.result
         ? toBN(formatUnits(userInfo.result[0].toString(), token.decimals)).toFixed(token.decimals, BigNumber.ROUND_DOWN)
@@ -122,15 +123,21 @@ export function useUserInfo(stakingPool: StakingType): {
           : totalDepositedAmount?.result
           ? toBN(formatUnits(totalDepositedAmount.result[0], token.decimals)).toNumber()
           : 0,
-      rewardToken: version === StakingVersion.V1 ? DEUS_TOKEN : VDEUS_TOKEN,
     }
   }, [token, userInfo, pendingTokens, totalDepositedAmount, version, tokenBalance])
 
+  // for pools that only have 1 reward token
+  rewards.push(reward)
+
+  // for vdeus-deus pools that has deus reward tokens too
+  if (stakingPoolId == 2) {
+    rewards.push(deusReward)
+  }
   return {
     depositAmount: depositedValue,
-    rewardsAmount: reward,
+    rewardAmounts: rewards,
     totalDepositedAmount: totalDepositedAmountValue,
-    rewardToken,
+    rewardTokens,
   }
 }
 
