@@ -89,13 +89,13 @@ export default function PoolInfo({ pool }: { pool: LiquidityType }) {
 
         <ContentTable>
           <Label> {pool.tokens[0].symbol} Reserve: </Label>
-          <Value> {formatAmount(poolBalances[1])} </Value>
+          <Value> {formatAmount(poolBalances[0])} </Value>
         </ContentTable>
 
         {pool?.tokens[1] && (
           <ContentTable>
             <Label> {pool.tokens[1].symbol} Reserve: </Label>
-            <Value> {formatAmount(poolBalances[0])} </Value>
+            <Value> {formatAmount(poolBalances[1])} </Value>
           </ContentTable>
         )}
 
