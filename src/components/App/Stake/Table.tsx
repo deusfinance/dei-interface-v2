@@ -418,7 +418,7 @@ const TableRowLargeContent = ({
                 type={provideLink.includes('spooky') ? BUTTON_TYPE.SPOOKY_SWAP : BUTTON_TYPE.BEETHOVEN}
               />
             ) : (
-              <PrimaryButtonWide transparentBG>
+              <PrimaryButtonWide style={{ backgroundColor: '#101116' }} transparentBG>
                 <ButtonText gradientText={!active}>{active ? 'Manage' : 'Withdraw'}</ButtonText>
               </PrimaryButtonWide>
             )}

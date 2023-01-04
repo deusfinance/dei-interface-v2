@@ -6,8 +6,7 @@ const INITIAL_STATE: Partial<TNAVBAR_OPTIONS> = {}
 
 export default createReducer(INITIAL_STATE, (builder) =>
   builder.addCase(updateNavbarOption, (state, { payload: { payload } }) => {
-    console.log({ payload })
-
     state = { ...payload }
+    return state
   })
 )

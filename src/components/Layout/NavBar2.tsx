@@ -47,6 +47,9 @@ const Wrapper = styled.div`
   ${({ theme }) => theme.mediaWidth.upToSmall`
     padding: 0px 1.25rem;
   `};
+  ${({ theme }) => theme.mediaWidth.upToLarge`
+    display:none;
+  `};
 `
 
 const DefaultWrapper = styled(Wrapper)`
@@ -345,20 +348,19 @@ export default function NavBar() {
 
   function getDefaultContent() {
     return (
-      <>
-        <Wrapper>
-          <Column>
-            <DefaultWrapper>
-              <NavLogo2 />
+      <Wrapper>
+        <Column>
+          <DefaultWrapper>
+            <NavLogo2 />
 
-              {/* <Items>
+            {/* <Items>
             <Web3Network />
             <Web3Status />
             <Menu />
           </Items> */}
-            </DefaultWrapper>
-            <Routes>
-              {/* {routes.map((item, i) => {
+          </DefaultWrapper>
+          <Routes>
+            {/* {routes.map((item, i) => {
             return (
               <SimpleLinkWrapper key={i} active={router.route.includes(item.path)}>
                 <IconWrapper>
@@ -370,39 +372,39 @@ export default function NavBar() {
               </SimpleLinkWrapper>
             )
           })} */}
-              <SimpleLinkWrapper className="sidebar-link__route" active={router.route.includes('/dashboard')}>
-                <IconWrapper>
-                  <DashboardIcon size={20} />
-                </IconWrapper>
-                <Link href="/dashboard" passHref>
-                  <NavLink active={router.route.includes('/dashboard')}>Dashboard</NavLink>
-                </Link>
-              </SimpleLinkWrapper>
-              <SimpleLinkWrapper className="sidebar-link__route" active={router.route.includes('/mint')}>
-                <IconWrapper>
-                  <MintIcon size={20} />
-                </IconWrapper>
-                <Link href="/mint" passHref>
-                  <NavLink active={router.route.includes('/mint')}>Mint Dei</NavLink>
-                </Link>
-              </SimpleLinkWrapper>
-              <SimpleLinkWrapper className="sidebar-link__route" active={router.route.includes('/redemption')}>
-                <IconWrapper>
-                  <RedeemIcon size={20} />
-                </IconWrapper>
-                <Link href="/redemption" passHref>
-                  <NavLink active={router.route.includes('/redemption')}>Redeem Dei</NavLink>
-                </Link>
-              </SimpleLinkWrapper>
-              <SimpleLinkWrapper className="sidebar-link__route" active={router.route.includes('/stake')}>
-                <IconWrapper>
-                  <DeiBondsIcon size={20} />
-                </IconWrapper>
-                <Link href="/stake" passHref>
-                  <NavLink active={router.route.includes('/stake')}>Pools</NavLink>
-                </Link>
-              </SimpleLinkWrapper>
-              {/* <SimpleLinkWrapper className="sidebar-link__route" active={router.route.includes('/vest')}>
+            <SimpleLinkWrapper className="sidebar-link__route" active={router.route.includes('/dashboard')}>
+              <IconWrapper>
+                <DashboardIcon size={20} />
+              </IconWrapper>
+              <Link href="/dashboard" passHref>
+                <NavLink active={router.route.includes('/dashboard')}>Dashboard</NavLink>
+              </Link>
+            </SimpleLinkWrapper>
+            <SimpleLinkWrapper className="sidebar-link__route" active={router.route.includes('/mint')}>
+              <IconWrapper>
+                <MintIcon size={20} />
+              </IconWrapper>
+              <Link href="/mint" passHref>
+                <NavLink active={router.route.includes('/mint')}>Mint Dei</NavLink>
+              </Link>
+            </SimpleLinkWrapper>
+            <SimpleLinkWrapper className="sidebar-link__route" active={router.route.includes('/redemption')}>
+              <IconWrapper>
+                <RedeemIcon size={20} />
+              </IconWrapper>
+              <Link href="/redemption" passHref>
+                <NavLink active={router.route.includes('/redemption')}>Redeem Dei</NavLink>
+              </Link>
+            </SimpleLinkWrapper>
+            <SimpleLinkWrapper className="sidebar-link__route" active={router.route.includes('/stake')}>
+              <IconWrapper>
+                <DeiBondsIcon size={20} />
+              </IconWrapper>
+              <Link href="/stake" passHref>
+                <NavLink active={router.route.includes('/stake')}>Pools</NavLink>
+              </Link>
+            </SimpleLinkWrapper>
+            {/* <SimpleLinkWrapper className="sidebar-link__route" active={router.route.includes('/vest')}>
                 <IconWrapper>
                   <VeDeusIcon size={20} />
                 </IconWrapper>
@@ -410,15 +412,15 @@ export default function NavBar() {
                   <NavLink active={router.route.includes('/vest')}>veDEUS</NavLink>
                 </Link>
               </SimpleLinkWrapper> */}
-              <SimpleLinkWrapper className="sidebar-link__route last" active={router.route.includes('/swap')}>
-                <IconWrapper>
-                  <SwapIcon width={20} color={'#EBEBEC'} />
-                </IconWrapper>
-                <Link href="/swap" passHref>
-                  <NavLink active={router.route.includes('/swap')}>Swap</NavLink>
-                </Link>
-              </SimpleLinkWrapper>
-              {/* <SimpleLinkWrapper active={router.route.includes('/clqdr')}>
+            <SimpleLinkWrapper className="sidebar-link__route last" active={router.route.includes('/swap')}>
+              <IconWrapper>
+                <SwapIcon width={20} color={'#EBEBEC'} />
+              </IconWrapper>
+              <Link href="/swap" passHref>
+                <NavLink active={router.route.includes('/swap')}>Swap</NavLink>
+              </Link>
+            </SimpleLinkWrapper>
+            {/* <SimpleLinkWrapper active={router.route.includes('/clqdr')}>
             <Link href="/clqdr" passHref>
               <NavLink active={router.route.includes('/clqdr')}>cLQDR</NavLink>
             </Link>
@@ -431,89 +433,86 @@ export default function NavBar() {
             </Link>
           </SimpleLinkWrapper> */}
 
-              <Separator />
-
-              <SimpleLinkWrapper className="last" active={router.route.includes('/clqdr')}>
-                <IconWrapper>
-                  <VeDeusIcon size={20} />
-                </IconWrapper>
-                <Link href="/clqdr" passHref>
-                  <NavLink active={router.route.includes('/clqdr')}>xDEUS</NavLink>
-                </Link>
-                <ArrowUpRight />
-                <Logo>
-                  <ImageWithFallback src={DEUSFINANCE} width={92} height={14} alt={`deus_finance_logo`} />
-                </Logo>
-              </SimpleLinkWrapper>
-              <SimpleLinkWrapper active={router.route.includes('/clqdr')}>
-                <IconWrapper>
-                  <BridgeIcon size={20} />
-                </IconWrapper>
-                <Link href="/clqdr" passHref>
-                  <NavLink active={router.route.includes('/clqdr')}>Bridge</NavLink>
-                </Link>
-                <ArrowUpRight />
-                <Logo>
-                  <ImageWithFallback src={MULTICHAIN} width={88} height={13} alt={`multichain_logo`} />
-                </Logo>
-              </SimpleLinkWrapper>
-            </Routes>
             <Separator />
-            <PricesWrap>
-              <Token>
-                DEI Price
-                <Price>
-                  <DeiPriceWrap>${DeiPrice}</DeiPriceWrap>
-                </Price>
-              </Token>
-              <Token>
-                DEUS Price
-                <Price>
-                  <DeusPriceWrap>${DeusPrice}</DeusPriceWrap>
-                </Price>
-              </Token>
-              <Token>
-                Legacy DEI Price:
-                <Price>
-                  <LegacyDeiPriceWrap>${DeusPrice}</LegacyDeiPriceWrap>
-                </Price>
-              </Token>
-            </PricesWrap>
-            <Separator />
-          </Column>
 
-          <Column>
-            <Data>
-              <p>Bug Bounty</p>
-
-              <Link href={'https://docs.deus.finance/contracts/disclaimer'} passHref>
-                <a style={{ textDecoration: 'none', color: '#8F939C' }} rel="noreferrer" target="_blank">
-                  <DataItems>
-                    Docs
-                    <ArrowUpRight />
-                  </DataItems>
-                </a>
+            <SimpleLinkWrapper className="last" active={router.route.includes('/clqdr')}>
+              <IconWrapper>
+                <VeDeusIcon size={20} />
+              </IconWrapper>
+              <Link href="/clqdr" passHref>
+                <NavLink active={router.route.includes('/clqdr')}>xDEUS</NavLink>
               </Link>
-              <Link href={'https://docs.deus.finance/contracts/disclaimer'} passHref>
-                <a style={{ textDecoration: 'none', color: '#8F939C' }} rel="noreferrer" target="_blank">
-                  <DataItems>
-                    Terms
-                    <ArrowUpRight />
-                  </DataItems>
-                </a>
+              <ArrowUpRight />
+              <Logo>
+                <ImageWithFallback src={DEUSFINANCE} width={92} height={14} alt={`deus_finance_logo`} />
+              </Logo>
+            </SimpleLinkWrapper>
+            <SimpleLinkWrapper active={router.route.includes('/clqdr')}>
+              <IconWrapper>
+                <BridgeIcon size={20} />
+              </IconWrapper>
+              <Link href="/clqdr" passHref>
+                <NavLink active={router.route.includes('/clqdr')}>Bridge</NavLink>
               </Link>
-            </Data>
+              <ArrowUpRight />
+              <Logo>
+                <ImageWithFallback src={MULTICHAIN} width={88} height={13} alt={`multichain_logo`} />
+              </Logo>
+            </SimpleLinkWrapper>
+          </Routes>
+          <Separator />
+          <PricesWrap>
+            <Token>
+              DEI Price
+              <Price>
+                <DeiPriceWrap>${DeiPrice}</DeiPriceWrap>
+              </Price>
+            </Token>
+            <Token>
+              DEUS Price
+              <Price>
+                <DeusPriceWrap>${DeusPrice}</DeusPriceWrap>
+              </Price>
+            </Token>
+            <Token>
+              Legacy DEI Price:
+              <Price>
+                <LegacyDeiPriceWrap>${DeusPrice}</LegacyDeiPriceWrap>
+              </Price>
+            </Token>
+          </PricesWrap>
+          <Separator />
+        </Column>
 
-            <Separator />
+        <Column>
+          <Data>
+            <p>Bug Bounty</p>
 
-            <Footer />
-          </Column>
+            <Link href={'https://docs.deus.finance/contracts/disclaimer'} passHref>
+              <a style={{ textDecoration: 'none', color: '#8F939C' }} rel="noreferrer" target="_blank">
+                <DataItems>
+                  Docs
+                  <ArrowUpRight />
+                </DataItems>
+              </a>
+            </Link>
+            <Link href={'https://docs.deus.finance/contracts/disclaimer'} passHref>
+              <a style={{ textDecoration: 'none', color: '#8F939C' }} rel="noreferrer" target="_blank">
+                <DataItems>
+                  Terms
+                  <ArrowUpRight />
+                </DataItems>
+              </a>
+            </Link>
+          </Data>
 
-          {showTopBanner && (
-            <RiskNotification onClose={setShowBanner} bg={'gray'} hasInfoIcon={true} text={bannerText} />
-          )}
-        </Wrapper>
-      </>
+          <Separator />
+
+          <Footer />
+        </Column>
+
+        {showTopBanner && <RiskNotification onClose={setShowBanner} bg={'gray'} hasInfoIcon={true} text={bannerText} />}
+      </Wrapper>
     )
   }
 

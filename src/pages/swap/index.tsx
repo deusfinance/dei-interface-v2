@@ -1,8 +1,5 @@
 import React, { useState, useMemo, useCallback } from 'react'
 import styled from 'styled-components'
-import Image from 'next/image'
-
-import CLQDR_LOGO from '/public/static/images/pages/swap/tableauBackground.svg'
 // import CLQDR_ICON from '/public/static/images/pages/swap/tableauBackground.svg'
 
 import { Swap as SwapIcon } from 'components/Icons'
@@ -21,9 +18,7 @@ import { useCalcSharesFromAmount, useFetchFirebirdData } from 'hooks/useClqdrPag
 import useDebounce from 'hooks/useDebounce'
 
 import { DotFlashing } from 'components/Icons'
-import Hero from 'components/Hero'
 import InputBox from 'components/InputBox'
-import StatsHeader from 'components/StatsHeader'
 import DefaultReviewModal from 'components/App/CLqdr/DefaultReviewModal'
 import {
   BottomWrapper,
@@ -39,12 +34,39 @@ import AdvancedOptions from 'components/ReviewModal/AdvancedOptions'
 import { useUserSlippageTolerance, useSetUserSlippageTolerance } from 'state/user/hooks'
 import TokensModal from 'components/App/Swap/TokensModal'
 import { Currency, Token } from '@sushiswap/core-sdk'
-import LimitedSwap from 'components/App/Swap/LimitedSwap'
+import { useWeb3NavbarOption } from 'state/web3navbar/hooks'
+import Question from '/public/static/images/pages/swap/Union.svg'
+import ImageWithFallback from 'components/ImageWithFallback'
+import { RowCenter } from 'components/Row'
+import { ToolTip } from 'components/ToolTip'
 
 const Wrapper = styled(MainWrapper)`
-  margin-top: 16px;
+  margin-top: 68px;
 `
-
+const InputContainer = styled.div`
+  width: 100%;
+  margin-top: 2px;
+  & > div:first-of-type {
+    background-color: ${({ theme }) => theme.bg1};
+  }
+`
+const TableauContainer = styled(RowCenter)`
+  align-items: center;
+  width: 100%;
+  background-color: ${({ theme }) => theme.bg1};
+  & > div:first-of-type {
+    background-color: ${({ theme }) => theme.bg1};
+    display: inline-block;
+    width: 60px;
+    span {
+      margin-right: 4px !important;
+      display: inline-block;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: ${({ theme }) => theme.text1};
+    }
+  }
+`
 export default function Swap() {
   const { chainId, account } = useWeb3React()
   const isSupportedChainId = useSupportedChainId()
@@ -161,7 +183,8 @@ export default function Swap() {
           if (amount !== '0' && amount !== '' && amount !== '0.') toggleReviewModal(true)
         }}
       >
-        Mint {outputCurrency?.symbol}
+        {/* Mint {outputCurrency?.symbol} */}
+        Swap
       </MainButton>
     )
   }
@@ -189,56 +212,64 @@ export default function Swap() {
     setInputCurrency(outputCurrency)
     setOutputCurrency(currency)
   }
+  useWeb3NavbarOption({ reward: true, wallet: true, network: true })
+
   return (
     <>
       <Container>
-        <Hero>
-          <Image src={CLQDR_LOGO} height={'90px'} alt="Logo" />
-          <StatsHeader items={items} />
-        </Hero>
-
-        <LimitedSwap />
         <Wrapper>
-          <Tableau title={'Swap'} />
-
-          <InputWrapper>
-            <InputBox
-              currency={inputCurrency}
-              value={amount}
-              onChange={setAmount}
-              onTokenSelect={() => {
-                toggleTokensModal(true)
-                setField('input')
-              }}
+          <TableauContainer>
+            <Tableau title={'Swap'} />
+            <ToolTip id="id" />
+            <ImageWithFallback
+              data-for="id"
+              data-tip={slippageInfo}
+              alt="question"
+              src={Question}
+              width={16}
+              height={16}
             />
+          </TableauContainer>
+          <InputContainer>
+            <InputWrapper>
+              <InputBox
+                currency={inputCurrency}
+                value={amount}
+                onChange={setAmount}
+                onTokenSelect={() => {
+                  toggleTokensModal(true)
+                  setField('input')
+                }}
+              />
 
-            <SwapIcon onClick={handleClick} />
+              <SwapIcon onClick={handleClick} />
 
-            <InputBox
-              currency={outputCurrency}
-              value={formattedAmountOut == '0' ? '' : formattedAmountOut}
-              onChange={() => console.log('')}
-              onTokenSelect={() => {
-                toggleTokensModal(true)
-                setField('output')
-              }}
-              disabled
-            />
-            <div style={{ marginTop: '30px' }}></div>
-            {getApproveButton()}
-            {getActionButton()}
-          </InputWrapper>
+              <InputBox
+                currency={outputCurrency}
+                value={formattedAmountOut == '0' ? '' : formattedAmountOut}
+                onChange={() => console.log('')}
+                onTokenSelect={() => {
+                  toggleTokensModal(true)
+                  setField('output')
+                }}
+                disabled
+              />
+              <div style={{ marginTop: '30px' }}></div>
+              {getApproveButton()}
+              {getActionButton()}
+            </InputWrapper>
 
-          <BottomWrapper>
-            <AdvancedOptions
-              amount={useUserSlippageTolerance().toString()}
-              setAmount={useSetUserSlippageTolerance()}
-              title="Slippage"
-              defaultAmounts={['0.1', '0.5', '1.0']}
-              unit={'%'}
-              toolTipData={slippageInfo}
-            />
-          </BottomWrapper>
+            <BottomWrapper style={{ marginTop: '2px' }}>
+              <AdvancedOptions
+                amount={useUserSlippageTolerance().toString()}
+                setAmount={useSetUserSlippageTolerance()}
+                title="Slippage"
+                defaultAmounts={['0.1', '0.5', '1.0']}
+                unit={'%'}
+                toolTipData={slippageInfo}
+              />
+            </BottomWrapper>
+          </InputContainer>
         </Wrapper>
       </Container>
 
