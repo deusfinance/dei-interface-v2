@@ -77,6 +77,7 @@ export type LiquidityType = {
   provideLinks?: ProvideTokens[]
   lpToken: Token
   contract?: string
+  priceToken?: Token
 }
 
 export const LiquidityPool: LiquidityType[] = [
@@ -93,6 +94,7 @@ export const LiquidityPool: LiquidityType[] = [
     ],
     lpToken: DEI_BDEI_LP_TOKEN,
     contract: StablePool_DEI_bDEI[SupportedChainId.FANTOM],
+    priceToken: DEI_TOKEN,
   },
   {
     id: 1,
@@ -112,6 +114,7 @@ export const LiquidityPool: LiquidityType[] = [
     ],
     lpToken: DEUS_VDEUS_LP_TOKEN,
     contract: StablePool_DEUS_vDEUS[SupportedChainId.FANTOM],
+    priceToken: DEUS_TOKEN,
   },
   {
     id: 3,

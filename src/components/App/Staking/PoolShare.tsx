@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { useCurrencyBalance } from 'state/wallet/hooks'
 import useWeb3React from 'hooks/useWeb3'
 import { useCurrencyLogos } from 'hooks/useCurrencyLogo'
-import { useRemoveLiquidity } from 'hooks/useStablePoolInfo'
+import { usePoolInfo, useRemoveLiquidity } from 'hooks/useStablePoolInfo'
 
 import { formatBalance, formatDollarAmount } from 'utils/numbers'
 
@@ -13,6 +13,7 @@ import { LiquidityType, Stakings } from 'constants/stakingPools'
 import { ContentTable, Label, TableHeader, Value, VStack } from './common/Layout'
 import Container from './common/Container'
 import { useUserInfo } from 'hooks/useStakingInfo'
+import { useCustomCoingeckoPrice } from 'hooks/useCoingeckoPrice'
 
 const Wrapper = styled(VStack)`
   padding: 12px;
@@ -28,9 +29,13 @@ export default function PoolShare({ pool }: { pool: LiquidityType }) {
   const tokensLogo = useCurrencyLogos(tokensAddress)
 
   const currencyBalance = useCurrencyBalance(account ?? undefined, currency)?.toSignificant()
-  const virtualPrice = 1
+  const poolInfo = usePoolInfo(pool)
+  const virtualPrice = poolInfo?.virtualPrice || 1
+  const tokenPrice = useCustomCoingeckoPrice(pool.priceToken?.symbol ?? 'DEUS', '1')
   const stakingPool = Stakings.find((p) => p.id === pool.id) || Stakings[0]
   const { depositAmount, totalDepositedAmount } = useUserInfo(stakingPool)
+
+  console.log('token prce', tokenPrice)
 
   const shares = Number(depositAmount) + Number(currencyBalance)
   const amountsOut = useRemoveLiquidity(pool, depositAmount ? depositAmount.toString() : '0')
@@ -44,9 +49,13 @@ export default function PoolShare({ pool }: { pool: LiquidityType }) {
         </TableHeader>
         <ContentTable>
           <Label>
-            <p>Balance:</p>
+            <p>Value:</p>
           </Label>
-          <Value>{formatDollarAmount((Number(depositAmount) + Number(currencyBalance)) * virtualPrice)}</Value>
+          <Value>
+            {formatDollarAmount(
+              (Number(depositAmount) + Number(currencyBalance)) * virtualPrice * parseFloat(tokenPrice)
+            )}
+          </Value>
         </ContentTable>
         {pool?.tokens.length > 1 ? (
           <ContentTable>
