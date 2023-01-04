@@ -31,11 +31,9 @@ export default function PoolShare({ pool }: { pool: LiquidityType }) {
   const currencyBalance = useCurrencyBalance(account ?? undefined, currency)?.toSignificant()
   const poolInfo = usePoolInfo(pool)
   const virtualPrice = poolInfo?.virtualPrice || 1
-  const tokenPrice = useCustomCoingeckoPrice(pool.priceToken?.symbol ?? 'DEUS', '1')
+  const tokenPrice = useCustomCoingeckoPrice(pool.priceToken?.symbol ?? 'DEUS')
   const stakingPool = Stakings.find((p) => p.id === pool.id) || Stakings[0]
   const { depositAmount, totalDepositedAmount } = useUserInfo(stakingPool)
-
-  console.log('token prce', tokenPrice)
 
   const shares = Number(depositAmount) + Number(currencyBalance)
   const amountsOut = useRemoveLiquidity(pool, depositAmount ? depositAmount.toString() : '0')
