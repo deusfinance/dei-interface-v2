@@ -79,9 +79,7 @@ export default function PoolInfo({ pool }: { pool: LiquidityType }) {
 
         <ContentTable>
           <Label> Virtual Price: </Label>
-          <Value>
-            {formatAmount(poolInfo?.virtualPrice)} {pool.tokens[1].symbol}
-          </Value>
+          <Value>{formatAmount(poolInfo?.virtualPrice)}</Value>
         </ContentTable>
 
         <ContentTable>

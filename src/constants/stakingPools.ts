@@ -54,6 +54,7 @@ export type StakingType = {
   id: number
   name: string
   rewardTokens: Token[]
+  token?: Token
   provideLink?: string
   aprHook: (h: StakingType) => number
   masterChef: string
@@ -158,6 +159,7 @@ export const Stakings: StakingType[] = [
     id: 0,
     name: 'DEI-bDEI',
     rewardTokens: [DEUS_TOKEN],
+    token: DEI_BDEI_LP_TOKEN,
     provideLink: '/deibonds',
     aprHook: useGetApy,
     masterChef: MasterChefV2[SupportedChainId.FANTOM],
@@ -180,6 +182,7 @@ export const Stakings: StakingType[] = [
     id: 2,
     name: 'DEUS-vDEUS',
     rewardTokens: [VDEUS_TOKEN, DEUS_TOKEN],
+    token: DEUS_VDEUS_LP_TOKEN,
     provideLink: '/vdeus/new',
     aprHook: useV2GetApy,
     masterChef: MasterChefV3[SupportedChainId.FANTOM],
@@ -201,7 +204,7 @@ export const Stakings: StakingType[] = [
   {
     id: 4,
     name: 'vDEUS (3 Months)',
-    rewardTokens: [DEUS_TOKEN, VDEUS_TOKEN],
+    rewardTokens: [VDEUS_TOKEN, DEUS_TOKEN],
     aprHook: useNFTGetApy,
     masterChef: vDeusMasterChefV2[SupportedChainId.FANTOM],
     pid: 0,
@@ -211,7 +214,7 @@ export const Stakings: StakingType[] = [
   {
     id: 5,
     name: 'vDEUS (6 Months)',
-    rewardTokens: [DEUS_TOKEN, VDEUS_TOKEN],
+    rewardTokens: [VDEUS_TOKEN, DEUS_TOKEN],
     aprHook: useNFTGetApy,
     masterChef: vDeusMasterChefV2[SupportedChainId.FANTOM],
     pid: 1,
@@ -221,7 +224,7 @@ export const Stakings: StakingType[] = [
   {
     id: 6,
     name: 'vDEUS (1 Year)',
-    rewardTokens: [DEUS_TOKEN, VDEUS_TOKEN],
+    rewardTokens: [VDEUS_TOKEN, DEUS_TOKEN],
     aprHook: useNFTGetApy,
     masterChef: vDeusMasterChefV2[SupportedChainId.FANTOM],
     pid: 2,
