@@ -1,16 +1,10 @@
 import React, { useMemo, useState } from 'react'
 import styled from 'styled-components'
-import Image from 'next/image'
-
-import BG_DASHBOARD from '/public/static/images/pages/dashboard/bg.svg'
-
 import { useDeiPrice, useDeusPrice } from 'hooks/useCoingeckoPrice'
 import { useDeiStats } from 'hooks/useDeiStats'
 import { useVestedAPY } from 'hooks/useVested'
-
 import { formatAmount, formatDollarAmount } from 'utils/numbers'
 import { getMaximumDate } from 'utils/vest'
-
 import { Modal, ModalHeader } from 'components/Modal'
 import { RowBetween } from 'components/Row'
 import StatsItem from './StatsItem'
@@ -30,11 +24,11 @@ import { ChainInfo } from 'constants/chainInfo'
 import { Loader } from 'components/Icons'
 
 const Wrapper = styled(RowBetween)`
-  background: ${({ theme }) => theme.bg0};
+  background: ${({ theme }) => theme.bg1};
   align-items: stretch;
   border-radius: 12px;
   padding: 38px 36px;
-  padding-left: 14px;
+  padding-right: 24px;
   margin-bottom: 80px;
   position: relative;
 
@@ -83,21 +77,12 @@ const Info = styled(RowBetween)`
   }
   ${({ theme }) => theme.mediaWidth.upToMedium`
     margin:unset;
-      & > * {
-      &:nth-child(3n) {
-        border-right: 1px solid ${({ theme }) => theme.border1};
-      }
-      &:nth-child(2n) {
-        border-right: none;
-      }
-    }
   `};
 `
 
 const Title = styled.span`
   font-family: 'Inter';
   font-size: 20px;
-  margin-left: 22px;
   background: ${({ theme }) => theme.specialBG1};
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -366,9 +351,6 @@ export default function Stats() {
         <ChartWrapper>
           <Chart />
         </ChartWrapper>
-        <BackgroundImageWrapper>
-          <Image src={BG_DASHBOARD} alt="swap bg" layout="fill" objectFit="cover" />
-        </BackgroundImageWrapper>
       </Wrapper>
       <Modal
         width="500px"

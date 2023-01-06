@@ -1,10 +1,6 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react'
 import styled from 'styled-components'
 import { ArrowDown, Plus } from 'react-feather'
-import Image from 'next/image'
-
-import MINT_IMG from '/public/static/images/pages/mint/TableauBackground.svg'
-import DEI_LOGO from '/public/static/images/pages/mint/DEI_Logo.svg'
 
 import { SupportedChainId } from 'constants/chains'
 import { DEUS_TOKEN } from 'constants/tokens'
@@ -23,9 +19,7 @@ import useUpdateCallback from 'hooks/useOracleCallback'
 import { useGetCollateralRatios } from 'hooks/useRedemptionPage'
 
 import { DotFlashing } from 'components/Icons'
-import Hero from 'components/Hero'
 import InputBox from 'components/InputBox'
-import StatsHeader from 'components/StatsHeader'
 import DefaultReviewModal from 'components/ReviewModal/DefaultReviewModal'
 import {
   BottomWrapper,
@@ -41,7 +35,12 @@ import Tableau from 'components/App/StableCoin/Tableau'
 import TokensModal from 'components/App/StableCoin/TokensModal'
 import usePoolStats from 'components/App/StableCoin/PoolStats'
 import WarningModal from 'components/ReviewModal/Warning'
+import { RowCenter } from 'components/Row'
+import { useWeb3NavbarOption } from 'state/web3navbar/hooks'
 
+const MainContainer = styled(Container)`
+  margin-top: 68px;
+`
 const PlusIcon = styled(Plus)`
   z-index: 1000;
   padding: 3px;
@@ -78,8 +77,49 @@ const ComboInputBox = styled.div`
     }
   `}
 `
+const TableauContainer = styled(RowCenter)`
+  align-items: center;
+  width: 100%;
+  background-color: ${({ theme }) => theme.bg1};
+  & > div {
+    background-color: ${({ theme }) => theme.bg1};
+  }
+  margin-bottom: 2px;
+`
 
+const InputContainer = styled.div`
+  width: 100%;
+  margin-top: 2px;
+  & > div:first-of-type {
+    padding: 22px 16px 24px;
+    background-color: ${({ theme }) => theme.bg1};
+  }
+`
+
+const ArrowContainer = styled(RowCenter)`
+  border: 1px solid ${({ theme }) => theme.text2};
+  width: fit-content;
+  padding: 3px 12px;
+  border-radius: 4px;
+  & > p {
+    font-size: 15px;
+    font-weight: 600;
+    color: ${({ theme }) => theme.text2};
+    margin-right: 24px;
+  }
+  & > svg {
+    color: ${({ theme }) => theme.text2};
+  }
+`
+const BottomContainer = styled(BottomWrapper)`
+  margin-top: 2px;
+  padding: 20px 16px;
+  & > * {
+    font-weight: 500;
+  }
+`
 export default function Mint() {
+  useWeb3NavbarOption({ reward: true, wallet: true, network: true })
   const { chainId, account } = useWeb3React()
   const isSupportedChainId = useSupportedChainId()
   const mintingFee = useMintingFee()
@@ -299,18 +339,39 @@ export default function Mint() {
 
   return (
     <>
-      <Container>
-        <Hero>
-          <Image src={DEI_LOGO} height={'90px'} alt="Logo" />
-          <StatsHeader items={items} />
-        </Hero>
-
+      <MainContainer>
         <Wrapper>
-          <Tableau title={'Mint DEI'} imgSrc={MINT_IMG} />
+          <TableauContainer>
+            <Tableau title={'Mint'} />
+          </TableauContainer>
+          <InputContainer>
+            <InputWrapper>
+              {inputToken.length > 1 ? (
+                <ComboInputBox>
+                  <InputBox
+                    currency={token1Currency}
+                    value={amountIn1}
+                    onChange={(value: string) => onUserInput1(value)}
+                    disabled={expiredPrice}
+                    // onTokenSelect={() => {
+                    //   toggleTokensModal(true)
+                    //   setInputTokenIndex(inputTokenIndex)
+                    // }}
+                  />
+                  <PlusIcon size={'24px'} />
+                  <InputBox
+                    currency={token2Currency}
+                    value={amountIn2}
+                    onChange={(value: string) => onUserInput2(value)}
+                    disabled={expiredPrice}
 
-          <InputWrapper>
-            {inputToken.length > 1 ? (
-              <ComboInputBox>
+                    // onTokenSelect={() => {
+                    //   toggleTokensModal(true)
+                    //   setInputTokenIndex(inputTokenIndex)
+                    // }}
+                  />
+                </ComboInputBox>
+              ) : (
                 <InputBox
                   currency={token1Currency}
                   value={amountIn1}
@@ -321,49 +382,28 @@ export default function Mint() {
                   //   setInputTokenIndex(inputTokenIndex)
                   // }}
                 />
-                <PlusIcon size={'24px'} />
-                <InputBox
-                  currency={token2Currency}
-                  value={amountIn2}
-                  onChange={(value: string) => onUserInput2(value)}
-                  disabled={expiredPrice}
-
-                  // onTokenSelect={() => {
-                  //   toggleTokensModal(true)
-                  //   setInputTokenIndex(inputTokenIndex)
-                  // }}
-                />
-              </ComboInputBox>
-            ) : (
+              )}
+              <ArrowContainer>
+                <p>Mint DEI</p>
+                <ArrowDown />
+              </ArrowContainer>
               <InputBox
-                currency={token1Currency}
-                value={amountIn1}
-                onChange={(value: string) => onUserInput1(value)}
+                currency={outputTokenCurrency}
+                value={amountOut}
+                onChange={(value: string) => onUserOutput(value)}
                 disabled={expiredPrice}
-                // onTokenSelect={() => {
-                //   toggleTokensModal(true)
-                //   setInputTokenIndex(inputTokenIndex)
-                // }}
               />
-            )}
+              <div style={{ marginTop: '30px' }}></div>
+              {getApproveButton()}
+              {getActionButton()}
+            </InputWrapper>
+          </InputContainer>
 
-            <ArrowDown />
-            <InputBox
-              currency={outputTokenCurrency}
-              value={amountOut}
-              onChange={(value: string) => onUserOutput(value)}
-              disabled={expiredPrice}
-            />
-            <div style={{ marginTop: '30px' }}></div>
-            {getApproveButton()}
-            {getActionButton()}
-          </InputWrapper>
-
-          <BottomWrapper>
-            <InfoItem name={'Minting Fee'} value={mintingFee == 0 ? 'Zero' : `${mintingFee}%`} />
-            <InfoItem name={'Mint Ratio'} value={Number(mintCollateralRatio).toString() + '%'} />
-            <InfoItem name={'Redeem Ratio'} value={Number(redeemCollateralRatio).toString() + '%'} />
-          </BottomWrapper>
+          <BottomContainer>
+            <InfoItem name={'Minting Fee:'} value={mintingFee == 0 ? 'Zero' : `${mintingFee}%`} />
+            <InfoItem name={'Mint Ratio:'} value={Number(mintCollateralRatio).toString() + '%'} />
+            <InfoItem name={'Redeem Ratio:'} value={Number(redeemCollateralRatio).toString() + '%'} />
+          </BottomContainer>
         </Wrapper>
         <TokensModal
           isOpen={isOpenTokensModal}
@@ -371,7 +411,7 @@ export default function Mint() {
           selectedTokenIndex={inputTokenIndex}
           setToken={setInputTokenIndex}
         />
-      </Container>
+      </MainContainer>
 
       <WarningModal
         isOpen={isOpenWarningModal}

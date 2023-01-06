@@ -1,7 +1,5 @@
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
-import Image from 'next/image'
-
 import MINT_LOGO from '/public/static/images/pages/dashboard/ic_mint_gray.svg'
 import MINT_HOVER_LOGO from '/public/static/images/pages/dashboard/ic_mint_hover.svg'
 import REDEEM_LOGO from '/public/static/images/pages/dashboard/ic_redeem_gray.svg'
@@ -12,16 +10,9 @@ import ANALYTICS_LOGO from '/public/static/images/pages/dashboard/ic_analytics_g
 import ANALYTICS_HOVER_LOGO from '/public/static/images/pages/dashboard/ic_analytics_hover.svg'
 import VEDEUS_LOGO from '/public/static/images/pages/dashboard/ic_vedeus_gray.svg'
 import VEDEUS_HOVER_LOGO from '/public/static/images/pages/dashboard/ic_vedeus_hover.svg'
-// import VDEUS_LOGO from '/public/static/images/pages/dashboard/ic_vdeus_gray.svg'
-// import VDEUS_HOVER_LOGO from '/public/static/images/pages/dashboard/ic_vdeus_hover.svg'
-import DEI_LOGO from '/public/static/images/pages/dashboard/DEI_Dashboard.png'
-
 import { useDeiStats } from 'hooks/useDeiStats'
 import useWeb3React from 'hooks/useWeb3'
 import { formatAmount, formatDollarAmount } from 'utils/numbers'
-
-import Hero from 'components/Hero'
-import StatsHeader from 'components/StatsHeader'
 import { Container } from 'components/App/StableCoin'
 import { RowBetween, RowCenter } from 'components/Row'
 import { Card } from 'components/App/Dashboard/card'
@@ -29,6 +20,9 @@ import { SocialCard } from 'components/App/Dashboard/SocialCard'
 import Stats from 'components/App/Dashboard/Stats'
 import DeiBondStats from 'components/App/Dashboard/DeiBondStats'
 import { useDeiPrice } from 'hooks/useCoingeckoPrice'
+import MigrationNav from 'components/App/Dashboard/MigrationNav'
+import Account from 'components/App/Dashboard/Account'
+import { useWeb3NavbarOption } from 'state/web3navbar/hooks'
 
 const Wrapper = styled(RowCenter)`
   max-width: 1300px;
@@ -66,6 +60,8 @@ const CardWrapper = styled(RowBetween)`
 
 export default function Dashboard() {
   const { account } = useWeb3React()
+  useWeb3NavbarOption({ network: true, wallet: true, reward: true })
+
   const { totalSupply, totalUSDCReserves, collateralRatio } = useDeiStats()
   const deiPrice = useDeiPrice()
 
@@ -81,11 +77,9 @@ export default function Dashboard() {
 
   return (
     <Container>
-      <Hero>
-        <Image src={DEI_LOGO} height={'105px'} width={'120px'} alt="DEI logo" />
-        <StatsHeader items={items} />
-      </Hero>
       <Wrapper>
+        <MigrationNav />
+        <Account />
         {account && <DeiBondStats />}
         <CardWrapper>
           <Card href="/mint" title={'Mint DEI'} subTitle="Mint DEI" MainIcon={MINT_LOGO} HoverIcon={MINT_HOVER_LOGO} />

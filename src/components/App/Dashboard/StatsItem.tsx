@@ -4,15 +4,43 @@ import styled from 'styled-components'
 
 const Item = styled.div`
   display: inline-block;
-  padding: 0 24px;
-  border-right: 1px solid ${({ theme }) => theme.border1};
   white-space: nowrap;
   width: 33%;
   min-width: 130px;
-
+  path {
+    fill: ${({ theme }) => theme.text2};
+  }
+  position: relative;
+  &:after {
+    content: '';
+    position: absolute;
+    display: flex;
+    height: 100%;
+    width: 1px;
+    border-right: 1px solid ${({ theme }) => theme.border1};
+    right: 24px;
+    top: 0;
+  }
+  &:nth-child(3n):after {
+    content: '';
+    border-right: none;
+  }
   ${({ theme }) => theme.mediaWidth.upToMedium`
     padding:0 12px;
     width: 50%;
+    &:nth-child(3n):after {
+      content: '';
+    position: absolute;
+    display: flex;
+    height: 100%;
+    width: 1px;
+    border-right: 1px solid ${({ theme }) => theme.border1};
+    right: 24px;
+    top: 0;
+    }
+    &:nth-child(2n):after {
+        border-right: none;
+      }
   `};
 `
 
