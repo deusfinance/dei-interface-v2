@@ -15,11 +15,9 @@ import Reading from 'components/App/Staking/PoolDetails'
 import BalanceToken from 'components/App/Staking/BalanceToken'
 import { VStack } from 'components/App/Staking/common/Layout'
 import StatsHeader from 'components/StatsHeader'
-import { useMemo } from 'react'
-import { useCustomCoingeckoPrice, useDeiPrice, useDeusPrice } from 'hooks/useCoingeckoPrice'
+import { useCustomCoingeckoPrice } from 'hooks/useCoingeckoPrice'
 import { usePoolBalances } from 'hooks/useStablePoolInfo'
 import { formatDollarAmount } from 'utils/numbers'
-import { useGetDeusApy } from 'hooks/useStakingInfo'
 
 export const Container = styled.div`
   display: flex;
@@ -48,13 +46,22 @@ export default function StakingPage() {
   const pidNumber = Number(pid)
   const pool = LiquidityPoolList.find((pool) => pool.id === pidNumber) || LiquidityPoolList[0]
   const stakingPool = Stakings.find((p) => p.id === pool.id) || Stakings[0]
-  const primaryApy = stakingPool.aprHook(stakingPool)
-  const secondaryApy = useGetDeusApy(pool, stakingPool)
-  const totalApy = primaryApy + secondaryApy
-  const { rewardTokens } = stakingPool
   const poolBalances = usePoolBalances(pool)
   // FIXME: check this for single stakings
   const totalLockedValue = poolBalances[1] * 2 * Number(useCustomCoingeckoPrice(pool.priceToken?.symbol ?? 'DEI'))
+
+  // generate total APR if pools have secondary APRs
+  const primaryApy = stakingPool.aprHook(stakingPool).toFixed(0)
+  const secondaryApy = stakingPool.hasSecondaryApy ? stakingPool.secondaryAprHook(pool, stakingPool).toFixed(0) : ''
+  const totalApy = parseInt(primaryApy) + parseInt(secondaryApy)
+
+  // generate respective tooltip info if pools have more than 1 reward tokens
+  const primaryTooltipInfo = primaryApy + '% ' + stakingPool.rewardTokens[0].symbol
+  const secondaryTooltipInfo = stakingPool.hasSecondaryApy
+    ? ' + ' + secondaryApy + '% ' + stakingPool.rewardTokens[1].symbol
+    : ''
+
+  const toolTipInfo = primaryTooltipInfo + secondaryTooltipInfo
 
   function onSelect(pid: number) {
     router.push(`/stake/manage/${pid}`)
@@ -63,9 +70,9 @@ export default function StakingPage() {
   const items = [
     {
       name: 'APR',
-      value: totalApy.toFixed(0) + '%',
+      value: totalApy + '%',
       hasTooltip: true,
-      toolTipInfo: primaryApy.toFixed(0) + '% vDEUS + ' + secondaryApy.toFixed(0) + '% DEUS',
+      toolTipInfo,
     },
     { name: 'TVL', value: formatDollarAmount(totalLockedValue) },
   ]

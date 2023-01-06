@@ -9,7 +9,7 @@ import {
   VDEUS_TOKEN,
   WFTM_TOKEN,
 } from 'constants/tokens'
-import { useGetApy, useNFTGetApy, useV2GetApy } from 'hooks/useStakingInfo'
+import { useGetApy, useGetDeusApy, useNFTGetApy, useV2GetApy } from 'hooks/useStakingInfo'
 import { MasterChefV2, MasterChefV3, StablePool_DEI_bDEI, StablePool_DEUS_vDEUS, vDeusMasterChefV2 } from './addresses'
 import { SupportedChainId } from './chains'
 
@@ -57,9 +57,11 @@ export type StakingType = {
   token?: Token
   provideLink?: string
   aprHook: (h: StakingType) => number
+  secondaryAprHook: (liqPool?: any, stakingPool?: any) => number
   masterChef: string
   pid: number
   active: boolean
+  hasSecondaryApy?: boolean
   version: StakingVersion
 }
 
@@ -162,6 +164,7 @@ export const Stakings: StakingType[] = [
     token: DEI_BDEI_LP_TOKEN,
     provideLink: '/deibonds',
     aprHook: useGetApy,
+    secondaryAprHook: () => 0,
     masterChef: MasterChefV2[SupportedChainId.FANTOM],
     pid: 1,
     active: true,
@@ -173,6 +176,7 @@ export const Stakings: StakingType[] = [
     rewardTokens: [DEUS_TOKEN],
     provideLink: '/deibonds',
     aprHook: useGetApy,
+    secondaryAprHook: () => 0,
     masterChef: MasterChefV2[SupportedChainId.FANTOM],
     pid: 0,
     active: true,
@@ -185,9 +189,11 @@ export const Stakings: StakingType[] = [
     token: DEUS_VDEUS_LP_TOKEN,
     provideLink: '/vdeus/new',
     aprHook: useV2GetApy,
+    secondaryAprHook: useGetDeusApy,
     masterChef: MasterChefV3[SupportedChainId.FANTOM],
     pid: 2,
     active: true,
+    hasSecondaryApy: true,
     version: StakingVersion.V2,
   },
   {
@@ -196,6 +202,7 @@ export const Stakings: StakingType[] = [
     rewardTokens: [DEUS_TOKEN],
     provideLink: '/vdeus/new',
     aprHook: useV2GetApy,
+    secondaryAprHook: () => 0,
     masterChef: MasterChefV3[SupportedChainId.FANTOM],
     pid: 0,
     active: true,
@@ -206,6 +213,7 @@ export const Stakings: StakingType[] = [
     name: 'vDEUS (3 Months)',
     rewardTokens: [VDEUS_TOKEN, DEUS_TOKEN],
     aprHook: useNFTGetApy,
+    secondaryAprHook: () => 0,
     masterChef: vDeusMasterChefV2[SupportedChainId.FANTOM],
     pid: 0,
     active: true,
@@ -216,6 +224,7 @@ export const Stakings: StakingType[] = [
     name: 'vDEUS (6 Months)',
     rewardTokens: [VDEUS_TOKEN, DEUS_TOKEN],
     aprHook: useNFTGetApy,
+    secondaryAprHook: () => 0,
     masterChef: vDeusMasterChefV2[SupportedChainId.FANTOM],
     pid: 1,
     active: true,
@@ -226,6 +235,7 @@ export const Stakings: StakingType[] = [
     name: 'vDEUS (1 Year)',
     rewardTokens: [VDEUS_TOKEN, DEUS_TOKEN],
     aprHook: useNFTGetApy,
+    secondaryAprHook: () => 0,
     masterChef: vDeusMasterChefV2[SupportedChainId.FANTOM],
     pid: 2,
     active: true,
