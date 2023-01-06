@@ -109,12 +109,12 @@ export const LiquidityPool: LiquidityType[] = [
     id: 2,
     tokens: [VDEUS_TOKEN, DEUS_TOKEN],
     provideLinks: [
+      { id: 0, title: 'Go to Swap Page', link: '/swap' },
       {
-        id: 0,
+        id: 1,
         title: 'Buy on Firebird',
         link: 'https://app.firebird.finance/swap?outputCurrency=0xDE5ed76E7c05eC5e4572CfC88d1ACEA165109E44&net=250',
       },
-      { id: 1, title: 'Go to Swap Page', link: '/swap' },
     ],
     lpToken: DEUS_VDEUS_LP_TOKEN,
     contract: StablePool_DEUS_vDEUS[SupportedChainId.FANTOM],
