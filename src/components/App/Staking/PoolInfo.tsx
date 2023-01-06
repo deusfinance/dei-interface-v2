@@ -36,15 +36,20 @@ const PoolBalance = React.memo(({ pool, totalLocked }: { pool: LiquidityType; to
 })
 PoolBalance.displayName = 'PoolBalance'
 
-export const APR = React.memo(({ stakingPool }: { stakingPool: StakingType }) => {
-  const apr = stakingPool.aprHook(stakingPool)
-  return (
-    <ContentTable>
-      <Label>APR:</Label>
-      <Value> {apr.toFixed(0)}% </Value>
-    </ContentTable>
-  )
-})
+export const APR = React.memo(
+  ({ stakingPool, liquidityPool }: { stakingPool: StakingType; liquidityPool: LiquidityType }) => {
+    // generate total APR if pools have secondary APRs
+    const primaryApy = stakingPool.aprHook(stakingPool)
+    const secondaryApy = stakingPool.hasSecondaryApy ? stakingPool.secondaryAprHook(liquidityPool, stakingPool) : 0
+    const apr = primaryApy + secondaryApy
+    return (
+      <ContentTable>
+        <Label>APR:</Label>
+        <Value> {apr.toFixed(0)}% </Value>
+      </ContentTable>
+    )
+  }
+)
 APR.displayName = 'APR'
 export default function PoolInfo({ pool }: { pool: LiquidityType }) {
   const stakingPool = Stakings.find((p) => p.id === pool.id) || Stakings[0]
@@ -70,7 +75,7 @@ export default function PoolInfo({ pool }: { pool: LiquidityType }) {
             <Circle disabled={!active}></Circle>
           </p>
         </TableHeader>
-        <APR stakingPool={stakingPool} />
+        <APR stakingPool={stakingPool} liquidityPool={pool} />
         <PoolBalance pool={pool} totalLocked={totalLocked} />
         <ContentTable>
           <Label> Fee: </Label>

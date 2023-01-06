@@ -51,14 +51,14 @@ export default function StakingPage() {
   const totalLockedValue = poolBalances[1] * 2 * Number(useCustomCoingeckoPrice(pool.priceToken?.symbol ?? 'DEI'))
 
   // generate total APR if pools have secondary APRs
-  const primaryApy = stakingPool.aprHook(stakingPool).toFixed(0)
-  const secondaryApy = stakingPool.hasSecondaryApy ? stakingPool.secondaryAprHook(pool, stakingPool).toFixed(0) : ''
-  const totalApy = parseInt(primaryApy) + parseInt(secondaryApy)
+  const primaryApy = stakingPool.aprHook(stakingPool)
+  const secondaryApy = stakingPool.hasSecondaryApy ? stakingPool.secondaryAprHook(pool, stakingPool) : 0
+  const totalApy = primaryApy + secondaryApy
 
   // generate respective tooltip info if pools have more than 1 reward tokens
-  const primaryTooltipInfo = primaryApy + '% ' + stakingPool.rewardTokens[0].symbol
+  const primaryTooltipInfo = primaryApy.toFixed(0) + '% ' + stakingPool.rewardTokens[0].symbol
   const secondaryTooltipInfo = stakingPool.hasSecondaryApy
-    ? ' + ' + secondaryApy + '% ' + stakingPool.rewardTokens[1].symbol
+    ? ' + ' + secondaryApy.toFixed(0) + '% ' + stakingPool.rewardTokens[1].symbol
     : ''
 
   const toolTipInfo = primaryTooltipInfo + secondaryTooltipInfo
@@ -70,7 +70,7 @@ export default function StakingPage() {
   const items = [
     {
       name: 'APR',
-      value: totalApy + '%',
+      value: totalApy.toFixed(0) + '%',
       hasTooltip: true,
       toolTipInfo,
     },
