@@ -1,15 +1,10 @@
 import { useRouter } from 'next/router'
 import styled from 'styled-components'
-
-import Hero from 'components/Hero'
-import ImageWithFallback from 'components/ImageWithFallback'
-import STAKE_ICON from '/public/static/images/pages/stake/ic_stake.svg'
 import { LiquidityPool, Stakings } from 'constants/stakingPools'
-import StatsHeader from 'components/StatsHeader'
-// import StakingPool from 'components/App/Staking/StakingPool'
 import StakingAmount from 'components/App/Staking/Amount'
 import StakingBalance from 'components/App/Staking/Balance'
 import StakingDetails from 'components/App/Staking/PoolDetails'
+import { useWeb3NavbarOption } from 'state/web3navbar/hooks'
 import StakingPool from 'components/App/Staking/StakingPool'
 import { useCustomCoingeckoPrice } from 'hooks/useCoingeckoPrice'
 import { usePoolBalances } from 'hooks/useStablePoolInfo'
@@ -36,6 +31,7 @@ const TopWrapper = styled.div`
 `
 
 export default function StakingPage() {
+  useWeb3NavbarOption({ network: true, wallet: true })
   const router = useRouter()
   const { pid } = router.query
   const pidNumber = Number(pid)
@@ -60,10 +56,6 @@ export default function StakingPage() {
 
   const toolTipInfo = primaryTooltipInfo + secondaryTooltipInfo
 
-  function onSelect(pid: number) {
-    router.push(`/stake/${pid}`)
-  }
-
   const items = [
     {
       name: 'APR',
@@ -74,13 +66,9 @@ export default function StakingPage() {
     { name: 'TVL', value: formatDollarAmount(totalLockedValue) },
   ]
 
+
   return (
     <Container>
-      <Hero>
-        <ImageWithFallback src={STAKE_ICON} width={185} height={133} alt={`Logo`} />
-        <StatsHeader items={items} pid={pidNumber} onSelectDropDown={onSelect} />
-      </Hero>
-
       <TopWrapper>
         <StakingAmount />
         <StakingPool pool={stakingPool} />
