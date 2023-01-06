@@ -7,7 +7,8 @@ import useIsWindowVisible from 'hooks/useIsWindowVisible'
 import useDebounce from 'hooks/useDebounce'
 import { SupportedChainId } from 'constants/chains'
 
-import { updateBlockNumber, updateBlockTimestamp, updateChainId } from './actions'
+import { updateAverageBlockTime, updateBlockNumber, updateBlockTimestamp, updateChainId } from './actions'
+import { toBN } from 'utils/numbers'
 
 export default function Updater(): null {
   const { library, chainId } = useWeb3React()
@@ -24,6 +25,9 @@ export default function Updater(): null {
     blockNumber: null,
     blockTimestamp: null,
   })
+
+  const [blockTimestampBefore, setBlockTimestampBefore] = useState<number | null>(null)
+  const BlockLength = 20_000
 
   const blockCallback = useCallback(
     (block: Block) => {
@@ -66,6 +70,20 @@ export default function Updater(): null {
     }
   }, [dispatch, chainId, library, windowVisible, blockCallback, onBlock])
 
+  //getting blockTimeStamp at - 20_000th
+  useEffect(() => {
+    if (!library || !chainId || !windowVisible) return undefined
+
+    if (state.blockNumber && state.blockNumber > 0) {
+      library
+        .getBlock(state.blockNumber - 20_000)
+        .then((block) => {
+          setBlockTimestampBefore(block.timestamp)
+        })
+        .catch((error) => console.error(`Failed to get block for chainId: ${chainId}`, error))
+    }
+  }, [dispatch, chainId, library, windowVisible, state.blockNumber])
+
   const debouncedState = useDebounce(state, 100)
 
   useEffect(() => {
@@ -77,6 +95,16 @@ export default function Updater(): null {
     if (!debouncedState.chainId || !debouncedState.blockTimestamp || !windowVisible) return
     dispatch(updateBlockTimestamp({ chainId: debouncedState.chainId, blockTimestamp: debouncedState.blockTimestamp }))
   }, [windowVisible, dispatch, debouncedState.blockTimestamp, debouncedState.chainId])
+
+  useEffect(() => {
+    if (!debouncedState.chainId || !debouncedState.blockTimestamp || !windowVisible || !blockTimestampBefore) return
+    dispatch(
+      updateAverageBlockTime({
+        chainId: debouncedState.chainId,
+        averageBlockTime: toBN(debouncedState.blockTimestamp).minus(blockTimestampBefore).div(BlockLength).toNumber(),
+      })
+    )
+  }, [windowVisible, dispatch, debouncedState.blockTimestamp, debouncedState.chainId, blockTimestampBefore])
 
   useEffect(() => {
     dispatch(

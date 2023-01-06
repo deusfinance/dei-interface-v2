@@ -36,15 +36,20 @@ const PoolBalance = React.memo(({ pool, totalLocked }: { pool: LiquidityType; to
 })
 PoolBalance.displayName = 'PoolBalance'
 
-export const APR = React.memo(({ stakingPool }: { stakingPool: StakingType }) => {
-  const apr = stakingPool.aprHook(stakingPool)
-  return (
-    <ContentTable>
-      <Label>APR:</Label>
-      <Value> {apr.toFixed(0)}% </Value>
-    </ContentTable>
-  )
-})
+export const APR = React.memo(
+  ({ stakingPool, liquidityPool }: { stakingPool: StakingType; liquidityPool: LiquidityType }) => {
+    // generate total APR if pools have secondary APRs
+    const primaryApy = stakingPool.aprHook(stakingPool)
+    const secondaryApy = stakingPool.hasSecondaryApy ? stakingPool.secondaryAprHook(liquidityPool, stakingPool) : 0
+    const apr = primaryApy + secondaryApy
+    return (
+      <ContentTable>
+        <Label>APR:</Label>
+        <Value> {apr.toFixed(0)}% </Value>
+      </ContentTable>
+    )
+  }
+)
 APR.displayName = 'APR'
 
 export default function PoolInfo({ pool }: { pool: LiquidityType }) {
@@ -70,7 +75,7 @@ export default function PoolInfo({ pool }: { pool: LiquidityType }) {
             <Circle disabled={!active}></Circle>
           </p>
         </TableHeader>
-        <APR stakingPool={stakingPool} />
+        <APR stakingPool={stakingPool} liquidityPool={pool} />
         <PoolBalance pool={pool} totalLocked={totalLocked} />
         <ContentTable>
           <Label> Fee: </Label>
@@ -79,7 +84,7 @@ export default function PoolInfo({ pool }: { pool: LiquidityType }) {
 
         <ContentTable>
           <Label> Virtual Price: </Label>
-          <Value> {formatDollarAmount(poolInfo?.virtualPrice)} </Value>
+          <Value>{formatAmount(poolInfo?.virtualPrice)}</Value>
         </ContentTable>
 
         <ContentTable>
@@ -89,13 +94,13 @@ export default function PoolInfo({ pool }: { pool: LiquidityType }) {
 
         <ContentTable>
           <Label> {pool.tokens[0].symbol} Reserve: </Label>
-          <Value> {formatAmount(poolBalances[1])} </Value>
+          <Value> {formatAmount(poolBalances[0])} </Value>
         </ContentTable>
 
         {pool?.tokens[1] && (
           <ContentTable>
             <Label> {pool.tokens[1].symbol} Reserve: </Label>
-            <Value> {formatAmount(poolBalances[0])} </Value>
+            <Value> {formatAmount(poolBalances[1])} </Value>
           </ContentTable>
         )}
 
