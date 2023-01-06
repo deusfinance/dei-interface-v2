@@ -21,6 +21,7 @@ const Wrapper = styled.div`
   margin: 1px 2px 0px 2px;
   display: flex;
   justify-content: center;
+  flex-direction: column;
   /* position: absolute; */
   /* bottom: 0px; */
 
@@ -52,15 +53,14 @@ const ItemBox = styled.div`
 
 const Name = styled.div`
   font-family: 'Inter';
-  font-size: 12px;
+  font-size: 16px;
   color: ${({ theme }) => theme.text1};
   white-space: nowrap;
 `
 
 const Value = styled.div`
   font-weight: 500;
-  font-size: 14px;
-  margin-top: 10px;
+  font-size: 24px;
   background: ${({ theme }) => theme.deiColor};
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -75,12 +75,20 @@ const ValueLink = styled(Value)`
   }
 `
 
+const ValueBox = styled.div`
+  display: flex;
+  flex-direction: row;
+  margin-top: 10px;
+`
+
 const CustomTooltip = styled(ToolTip)`
   max-width: 380px !important;
+  font-size: 0.8rem !important;
 `
 
 const InfoIcon = styled(Info)`
   color: ${({ theme }) => theme.yellow4};
+  margin: auto 8px;
 `
 
 const AprWrapper = styled.a`
@@ -202,7 +210,13 @@ export default function StatsHeader({
   pid,
   onSelectDropDown,
 }: {
-  items?: { name: string; value: string | number; link?: string }[]
+  items?: {
+    name: string
+    value: string | number
+    link?: string
+    hasTooltip?: boolean
+    toolTipInfo?: string
+  }[]
   hasBox?: boolean
   pid?: number
   onSelectDropDown?: (index: number) => void
@@ -227,20 +241,29 @@ export default function StatsHeader({
           />
         </ItemBox2>
       )}
-
-      {items &&
-        items.map((item, index) => (
-          <Item key={index} rightBorder={index < items.length - 1 || hasBox}>
-            <Name>{item.name}</Name>
-            {!item.link ? (
-              <Value>{item.value}</Value>
-            ) : (
-              <ExternalLink href={ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/address/' + item.link}>
-                <ValueLink>{item.value}</ValueLink>
-              </ExternalLink>
-            )}
-          </Item>
-        ))}
+      <div>
+        {items &&
+          items.map((item, index) => (
+            <Item key={index} rightBorder={index < items.length - 1 || hasBox}>
+              <Name>{item.name}</Name>
+              {!item.link ? (
+                <ValueBox data-for="id" data-tip={item.hasTooltip ? item.toolTipInfo : null}>
+                  <Value>{item.value}</Value>
+                  {item.hasTooltip ? (
+                    <>
+                      <InfoIcon size={24} />
+                      <CustomTooltip id="id" />
+                    </>
+                  ) : null}
+                </ValueBox>
+              ) : (
+                <ExternalLink href={ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/address/' + item.link}>
+                  <ValueLink>{item.value}</ValueLink>
+                </ExternalLink>
+              )}
+            </Item>
+          ))}
+      </div>
       {hasBox && (
         <ItemBox data-for="id" data-tip={'Rewards are accruing in the background'}>
           <CustomTooltip id="id" />

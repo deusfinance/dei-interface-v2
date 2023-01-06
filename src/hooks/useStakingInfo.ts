@@ -10,10 +10,11 @@ import { SupportedChainId } from 'constants/chains'
 import { useVDeusMultiRewarderERC20Contract } from './useContract'
 // import { StablePoolType } from 'constants/sPools'
 // import { usePoolBalances } from './useStablePoolInfo'
-import { LiquidityPool, StakingType, StakingVersion } from 'constants/stakingPools'
+import { LiquidityPool, LiquidityType, StakingType, StakingVersion } from 'constants/stakingPools'
 import { Token } from '@sushiswap/core-sdk'
 import BigNumber from 'bignumber.js'
-import { DEUS_TOKEN, VDEUS_TOKEN } from 'constants/tokens'
+import { usePoolBalances } from './useStablePoolInfo'
+import { useAverageBlockTime } from 'state/application/hooks'
 
 //TODO: should remove all and put it in /constants
 const pids = [0, 1]
@@ -28,10 +29,11 @@ export function useGlobalMasterChefData(stakingPool: StakingType): {
   poolLength: number
 } {
   const contract = useMasterChefContract(stakingPool)
+  const { version } = stakingPool
 
   const calls = [
     {
-      methodName: 'tokenPerBlock',
+      methodName: version === StakingVersion.V2 ? 'tokenPerSecond' : 'tokenPerBlock',
       callInputs: [],
     },
     {
@@ -63,14 +65,16 @@ export function useGlobalMasterChefData(stakingPool: StakingType): {
 
 export function useUserInfo(stakingPool: StakingType): {
   depositAmount: string
-  rewardsAmount: number
+  rewardAmounts: number[]
   totalDepositedAmount: number
-  rewardToken: Token
+  rewardTokens: Token[]
 } {
   const contract = useMasterChefContract(stakingPool)
   const { account } = useWeb3React()
-  const { pid, version } = stakingPool
+  const { id: stakingPoolId, pid, version, rewardTokens } = stakingPool
   const token = LiquidityPool.find((pool) => pool.id === pool.id)?.lpToken || LiquidityPool[0]?.lpToken
+  const rewards: number[] = []
+  const deusReward = useGetDeusReward() // use this deus reward for only vdeus-deus pool
 
   const additionalCall =
     version === StakingVersion.V2
@@ -108,7 +112,7 @@ export function useUserInfo(stakingPool: StakingType): {
   const ERC20Contract = useERC20Contract(token.address)
   const [tokenBalance] = useSingleContractMultipleMethods(ERC20Contract, balanceCall)
 
-  const { depositedValue, reward, totalDepositedAmountValue, rewardToken } = useMemo(() => {
+  const { depositedValue, reward, totalDepositedAmountValue } = useMemo(() => {
     return {
       depositedValue: userInfo?.result
         ? toBN(formatUnits(userInfo.result[0].toString(), token.decimals)).toFixed(token.decimals, BigNumber.ROUND_DOWN)
@@ -122,15 +126,21 @@ export function useUserInfo(stakingPool: StakingType): {
           : totalDepositedAmount?.result
           ? toBN(formatUnits(totalDepositedAmount.result[0], token.decimals)).toNumber()
           : 0,
-      rewardToken: version === StakingVersion.V1 ? DEUS_TOKEN : VDEUS_TOKEN,
     }
   }, [token, userInfo, pendingTokens, totalDepositedAmount, version, tokenBalance])
 
+  // for pools that only have 1 reward token
+  rewards.push(reward)
+
+  // for vdeus-deus pools that has deus reward tokens too
+  if (stakingPoolId == 2) {
+    rewards.push(deusReward)
+  }
   return {
     depositAmount: depositedValue,
-    rewardsAmount: reward,
+    rewardAmounts: rewards,
     totalDepositedAmount: totalDepositedAmountValue,
-    rewardToken,
+    rewardTokens,
   }
 }
 
@@ -207,12 +217,23 @@ export function usePoolInfo(stakingPool: StakingType): {
 } {
   const contract = useMasterChefContract(stakingPool)
   const tokenAddress = stakingTokens[stakingPool.pid]
+  const { token, version, pid } = stakingPool
   const ERC20Contract = useERC20Contract(tokenAddress)
+  const additionalCall =
+    version === StakingVersion.V2
+      ? [
+          {
+            methodName: 'totalDepositedAmount',
+            callInputs: [pid.toString()],
+          },
+        ]
+      : []
   const calls = [
     {
       methodName: 'poolInfo',
       callInputs: [stakingPool.pid.toString()],
     },
+    ...additionalCall,
   ]
 
   const balanceCall = [
@@ -222,16 +243,24 @@ export function usePoolInfo(stakingPool: StakingType): {
     },
   ]
 
-  const [poolInfo] = useSingleContractMultipleMethods(contract, calls)
+  const [poolInfo, totalDepositedAmount] = useSingleContractMultipleMethods(contract, calls)
   const [tokenBalance] = useSingleContractMultipleMethods(ERC20Contract, balanceCall)
+
   const { accTokensPerShare, lastRewardBlock, allocPoint, totalDeposited } = useMemo(() => {
     return {
       accTokensPerShare: poolInfo?.result ? toBN(poolInfo.result[0].toString()).toNumber() : 0,
       lastRewardBlock: poolInfo?.result ? toBN(poolInfo.result[1].toString()).toNumber() : 0,
       allocPoint: poolInfo?.result ? toBN(poolInfo.result[2].toString()).toNumber() : 0,
-      totalDeposited: tokenBalance?.result ? toBN(formatUnits(tokenBalance.result[0], 18)).toNumber() : 0,
+      totalDeposited:
+        version === StakingVersion.V1
+          ? tokenBalance?.result
+            ? toBN(formatUnits(tokenBalance.result[0], 18)).toNumber()
+            : 0
+          : totalDepositedAmount?.result
+          ? toBN(formatUnits(totalDepositedAmount.result[0], token?.decimals ?? 18)).toNumber()
+          : 0,
     }
-  }, [poolInfo, tokenBalance])
+  }, [token, poolInfo, version, tokenBalance, totalDepositedAmount])
 
   return {
     accTokensPerShare,
@@ -254,8 +283,59 @@ export function useGetApy(stakingPool: StakingType): number {
   )
 }
 
+// export function useV2GetApy(stakingPool: StakingType): number {
+//   return stakingPool.pid === 0 ? 25 : 33
+// }
+
+//get vdeus staking rewards
 export function useV2GetApy(stakingPool: StakingType): number {
-  return stakingPool.pid === 0 ? 25 : 33
+  const { tokenPerBlock: tokenPerSecond, totalAllocPoint } = useGlobalMasterChefData(stakingPool)
+  const { totalDeposited, allocPoint } = usePoolInfo(stakingPool)
+  if (totalDeposited === 0) return 0
+
+  return (tokenPerSecond * (allocPoint / totalAllocPoint) * 365 * 24 * 60 * 60 * 100) / totalDeposited
+}
+
+//get deus reward apy for deus-vdeus lp pool
+export function useGetDeusApy(pool: LiquidityType, stakingPool: StakingType): number {
+  const contract = useVDeusMultiRewarderERC20Contract()
+
+  const calls = [
+    {
+      methodName: 'retrieveTokenPerBlock',
+      callInputs: [stakingPool.pid, 0],
+    },
+  ]
+  const avgBlockTime = useAverageBlockTime()
+
+  const [retrieveTokenPerBlock] = useSingleContractMultipleMethods(contract, calls)
+  const balances = usePoolBalances(pool)
+  const vdeusBalance = balances[0]
+  const deusBalance = balances[1]
+
+  const { depositAmount, totalDepositedAmount } = useUserInfo(stakingPool)
+
+  const retrieveTokenPerBlockValue = useMemo(() => {
+    return retrieveTokenPerBlock?.result && avgBlockTime
+      ? toBN(formatUnits(retrieveTokenPerBlock.result[0], 18)).div(avgBlockTime).toNumber()
+      : 0
+  }, [retrieveTokenPerBlock, avgBlockTime])
+
+  // const totalDeposited = toBN(deusBalance).times(2).times(deusPrice).toNumber()
+
+  const ratio = Number(depositAmount) / totalDepositedAmount
+  const totalBalance = vdeusBalance + deusBalance
+  const myShare = ratio * totalBalance
+  const retrieveTokenPerYearValue = retrieveTokenPerBlockValue * 365 * 24 * 60 * 60
+  const myAprShare = ratio * retrieveTokenPerYearValue
+
+  //console.log({ avgBlockTime, ratio, totalBalance, myShare, retrieveTokenPerYearValue, myAprShare })
+
+  if (!myShare || myShare === 0) return (retrieveTokenPerYearValue / totalBalance) * 100
+  return (myAprShare / myShare) * 100
+
+  // if (totalDeposited === 0) return 0
+  // return (retrieveTokenPerBlockValue * parseFloat(deusPrice) * 365 * 24 * 60 * 60 * 100) / totalDeposited
 }
 
 export function useNFTGetApy(stakingPool: StakingType): number {

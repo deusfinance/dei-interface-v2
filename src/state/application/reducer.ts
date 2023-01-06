@@ -8,6 +8,7 @@ import {
   updateBlockNumber,
   updateBlockTimestamp,
   updateChainId,
+  updateAverageBlockTime,
 } from './actions'
 
 export enum ApplicationModal {
@@ -37,6 +38,7 @@ export type PopupList = Array<Popup>
 export interface ApplicationState {
   readonly blockNumber: { readonly [chainId: number]: number }
   readonly blockTimestamp: { readonly [chainId: number]: number }
+  readonly averageBlockTime: { readonly [chainId: number]: number }
   readonly chainConnectivityWarning: boolean
   readonly chainId: number | null
   readonly popupList: PopupList
@@ -46,6 +48,7 @@ export interface ApplicationState {
 const initialState: ApplicationState = {
   blockNumber: {},
   blockTimestamp: {},
+  averageBlockTime: {},
   chainConnectivityWarning: false,
   chainId: null,
   openModal: null,
@@ -68,6 +71,14 @@ export default createReducer(initialState, (builder) =>
         state.blockTimestamp[chainId] = blockTimestamp
       } else {
         state.blockTimestamp[chainId] = Math.max(blockTimestamp, state.blockTimestamp[chainId])
+      }
+    })
+    .addCase(updateAverageBlockTime, (state, action) => {
+      const { chainId, averageBlockTime } = action.payload
+      if (typeof state.averageBlockTime[chainId] !== 'number') {
+        state.averageBlockTime[chainId] = averageBlockTime
+      } else {
+        state.averageBlockTime[chainId] = Math.max(averageBlockTime, state.averageBlockTime[chainId])
       }
     })
     .addCase(updateChainId, (state, { payload }) => {

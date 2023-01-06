@@ -1,4 +1,3 @@
-import { useMemo } from 'react'
 import { useRouter } from 'next/router'
 import styled from 'styled-components'
 import { LiquidityPool, Stakings } from 'constants/stakingPools'
@@ -6,6 +5,10 @@ import StakingAmount from 'components/App/Staking/Amount'
 import StakingBalance from 'components/App/Staking/Balance'
 import StakingDetails from 'components/App/Staking/PoolDetails'
 import { useWeb3NavbarOption } from 'state/web3navbar/hooks'
+import StakingPool from 'components/App/Staking/StakingPool'
+import { useCustomCoingeckoPrice } from 'hooks/useCoingeckoPrice'
+import { usePoolBalances } from 'hooks/useStablePoolInfo'
+import { formatDollarAmount } from 'utils/numbers'
 
 export const Container = styled.div`
   display: flex;
@@ -32,23 +35,43 @@ export default function StakingPage() {
   const router = useRouter()
   const { pid } = router.query
   const pidNumber = Number(pid)
-  const pool = Stakings.find((pool) => pool.id === pidNumber) || Stakings[0]
-  const liquidityPool = LiquidityPool.find((p) => p.id === pool.id) || LiquidityPool[0]
+  const stakingPool = Stakings.find((pool) => pool.id === pidNumber) || Stakings[0]
+  const liquidityPool = LiquidityPool.find((p) => p.id === stakingPool.id) || LiquidityPool[0]
 
-  const items = useMemo(
-    () => [
-      { name: 'APR', value: '4%' },
-      { name: 'TVL', value: '$4.58m' },
-      { name: 'Total Staked', value: `3,120.00 ${liquidityPool?.lpToken?.symbol}` },
-    ],
-    [liquidityPool?.lpToken?.symbol]
-  )
+  const poolBalances = usePoolBalances(liquidityPool)
+  // FIXME: check this for single stakings
+  const totalLockedValue =
+    poolBalances[1] * 2 * Number(useCustomCoingeckoPrice(liquidityPool.priceToken?.symbol ?? 'DEI'))
+
+  // generate total APR if pools have secondary APRs
+  const primaryApy = stakingPool.aprHook(stakingPool)
+  const secondaryApy = stakingPool.hasSecondaryApy ? stakingPool.secondaryAprHook(liquidityPool, stakingPool) : 0
+  const totalApy = primaryApy + secondaryApy
+
+  // generate respective tooltip info if pools have more than 1 reward tokens
+  const primaryTooltipInfo = primaryApy.toFixed(0) + '% ' + stakingPool.rewardTokens[0].symbol
+  const secondaryTooltipInfo = stakingPool.hasSecondaryApy
+    ? ' + ' + secondaryApy.toFixed(0) + '% ' + stakingPool.rewardTokens[1].symbol
+    : ''
+
+  const toolTipInfo = primaryTooltipInfo + secondaryTooltipInfo
+
+  const items = [
+    {
+      name: 'APR',
+      value: totalApy.toFixed(0) + '%',
+      hasTooltip: true,
+      toolTipInfo,
+    },
+    { name: 'TVL', value: formatDollarAmount(totalLockedValue) },
+  ]
+
 
   return (
     <Container>
       <TopWrapper>
         <StakingAmount />
-        {/* <StakingPool pool={pool} /> */}
+        <StakingPool pool={stakingPool} />
         <StakingBalance />
         <StakingDetails />
       </TopWrapper>

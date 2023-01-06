@@ -11,6 +11,9 @@ export const updateChainId = createAction<{ chainId: number }>('application/upda
 export const setChainConnectivityWarning = createAction<{ chainConnectivityWarning: boolean }>(
   'application/setChainConnectivityWarning'
 )
+export const updateAverageBlockTime = createAction<{ chainId: number; averageBlockTime: number }>(
+  'application/updateAverageBlockTime'
+) //PerSeconds
 export const setOpenModal = createAction<ApplicationModal | null>('application/setOpenModal')
 export const addPopup = createAction<{
   key?: string

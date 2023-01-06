@@ -434,7 +434,12 @@ const TableRowContent = ({ staking }: { staking: StakingType }) => {
   const liquidityPool = LiquidityPool.find((p) => p.id === staking.id) || LiquidityPool[0]
   const tokens = liquidityPool?.tokens
 
-  const apr = staking.version === StakingVersion.EXTERNAL ? -1 : staking?.aprHook(staking)
+  //const apr = staking.version === StakingVersion.EXTERNAL ? 0 : staking?.aprHook(staking)
+
+  // generate total APR if pools have secondary APRs
+  const primaryApy = staking.version === StakingVersion.EXTERNAL ? 0 : staking?.aprHook(staking)
+  const secondaryApy = staking.hasSecondaryApy ? staking.secondaryAprHook(liquidityPool, staking) : 0
+  const apr = primaryApy + secondaryApy
 
   const deusPrice = useDeusPrice()
   const deiPrice = useDeiPrice()

@@ -2,6 +2,8 @@ import React, { useState, useMemo, useCallback } from 'react'
 import styled from 'styled-components'
 import { toast } from 'react-hot-toast'
 
+import { StakingType } from 'constants/stakingPools'
+
 import { useWalletModalToggle } from 'state/application/hooks'
 import { useTransactionAdder } from 'state/transactions/hooks'
 import useWeb3React from 'hooks/useWeb3'
@@ -20,7 +22,6 @@ import { tryParseAmount } from 'utils/parse'
 import { useCurrencyBalance } from 'state/wallet/hooks'
 import ActionSetter, { ActionTypes } from './ActionSetter2'
 import InputBox from 'components/InputBox'
-import { StakingType } from 'constants/stakingPools'
 
 const Container = styled.div`
   display: block;
@@ -138,7 +139,7 @@ export default function StakingPool({ pool }: { pool: StakingType }) {
   // const [pendingTxHash, setPendingTxHash] = useState('')
   //   const showTransactionPending = useIsTransactionPending(pendingTxHash)
 
-  const { rewardsAmount, depositAmount } = useUserInfo(stakingPool)
+  const { rewardAmounts, depositAmount } = useUserInfo(stakingPool)
   // const deusReward = useGetDeusReward()
 
   const currencyAmount = useMemo(() => {
@@ -284,7 +285,7 @@ export default function StakingPool({ pool }: { pool: StakingType }) {
         </ClaimButtonWrapper>
       )
     }
-    if (rewardsAmount < 0) {
+    if (rewardAmounts[0] < 0) {
       return (
         <ClaimButtonWrapper>
           <ClaimButton disabled={true}>
@@ -324,7 +325,7 @@ export default function StakingPool({ pool }: { pool: StakingType }) {
           {stakingPool?.rewardTokens.map((token, index) => {
             return (
               <RewardData key={index}>
-                <span>{rewardsAmount && rewardsAmount?.toFixed(3)}</span>
+                <span>{rewardAmounts[0] && rewardAmounts[0]?.toFixed(3)}</span>
                 <Row style={{ marginLeft: '10px' }}>
                   <span>{token.symbol}</span>
                 </Row>

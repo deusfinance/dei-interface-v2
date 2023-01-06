@@ -11,7 +11,7 @@ import styled from 'styled-components'
 import { toBN } from 'utils/numbers'
 import { DefaultHandlerError } from 'utils/parseError'
 import Container from './common/Container'
-import { Divider, HStack } from './common/Layout'
+import { Divider, HStack, VStack } from './common/Layout'
 
 const Wrapper = styled(HStack)`
   justify-content: space-between;
@@ -34,12 +34,11 @@ const StakedLPReward = styled(Wrapper)<{ disabled?: boolean }>`
   opacity: ${({ disabled }) => (disabled ? 0.7 : 1)};
   pointer-events: ${({ disabled }) => (disabled ? 'none' : 'default')};
   p {
-    &:first-of-type {
-      color: ${({ theme }) => theme.text2};
+    &.text {
       margin-right: 4px;
       color: #8f939c;
     }
-    &:not(p:first-of-type) {
+    &:not(p.text) {
       background: -webkit-linear-gradient(left, #0badf4 0%, #30efe4 93.4%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -135,7 +134,7 @@ const StakedLP = ({ pid }: { pid: number }) => {
   // const lpCurrency = pool.lpToken
   // const lpCurrencyBalance = useCurrencyBalance(account ?? undefined, lpCurrency)
 
-  const { rewardsAmount, depositAmount, totalDepositedAmount, rewardToken } = useUserInfo(stakingPool)
+  const { rewardAmounts, depositAmount, totalDepositedAmount, rewardTokens } = useUserInfo(stakingPool)
 
   const onWithdraw = useCallback(async () => {
     try {
@@ -182,13 +181,26 @@ const StakedLP = ({ pid }: { pid: number }) => {
           <p>{Number(depositAmount).toFixed(6)}</p>
         </StakedLPHeader>
         <Divider backgroundColor="#101116" />
-        <StakedLPReward disabled={!rewardsAmount}>
-          <HStack>
-            <p>Reward: </p>
-            <p>
-              {Number(rewardsAmount).toFixed(2)} {rewardToken.symbol}
-            </p>
-          </HStack>
+        <StakedLPReward disabled={!rewardAmounts[0]}>
+          {rewardTokens.length > 1 ? (
+            <HStack>
+              <p className="text">Rewards: </p>
+              <VStack>
+                {rewardTokens?.map((token, index) => (
+                  <p key={index}>
+                    {Number(rewardAmounts[index]).toFixed(2)} {rewardTokens[index].symbol}
+                  </p>
+                ))}
+              </VStack>
+            </HStack>
+          ) : (
+            <HStack>
+              <p className="text">Reward: </p>
+              <p>
+                {Number(rewardAmounts[0]).toFixed(2)} {rewardTokens[0].symbol}
+              </p>
+            </HStack>
+          )}
           <StakedLPRewardButton onClick={() => onClaimReward()}>
             <span>
               <p>Claim</p>
