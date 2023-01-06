@@ -2,16 +2,18 @@ import React from 'react'
 import styled from 'styled-components'
 import { isMobile } from 'react-device-detect'
 
-import Hero from 'components/Hero'
-import ImageWithFallback from 'components/ImageWithFallback'
-import STAKE_ICON from '/public/static/images/pages/stake/ic_stake.svg'
-import { RowBetween } from 'components/Row'
+// import Hero from 'components/Hero'
+// import ImageWithFallback from 'components/ImageWithFallback'
+// import STAKE_ICON from '/public/static/images/pages/stake/ic_stake.svg'
+import { Row, RowBetween } from 'components/Row'
 // import TokenBox from 'components/App/Stake/TokenBox'
 // import InfoCell from 'components/App/Stake/InfoCell'
 // import RewardBox from 'components/App/Stake/RewardBox'
 import { useSearch, SearchField } from 'components/App/Stake/Search'
-import Table from 'components/App/Stake/Table'
+import Table, { Cell } from 'components/App/Stake/Table'
 import { ExternalStakings, Stakings, StakingType } from 'constants/stakingPools'
+import { useWeb3NavbarOption } from 'state/web3navbar/hooks'
+// import { TNAVBAR_OPTIONS } from 'state/web3navbar/types'
 
 export const Container = styled.div`
   display: flex;
@@ -47,7 +49,7 @@ const Wrapper = styled(Container)`
 `
 
 const UpperRow = styled(RowBetween)`
-  background: ${({ theme }) => theme.bg0};
+  background: ${({ theme }) => theme.bg1};
   border-top-right-radius: 12px;
   border-top-left-radius: 12px;
   flex-wrap: wrap;
@@ -56,7 +58,7 @@ const UpperRow = styled(RowBetween)`
   margin: 0 auto;
 
   & > * {
-    margin: 10px 10px;
+    margin: 8px 8px;
   }
 `
 
@@ -74,6 +76,7 @@ const FirstRowWrapper = styled.div`
 export default function Stake() {
   const { snapshot, searchProps } = useSearch(Stakings, ExternalStakings)
   const result = snapshot.options.map((stakings) => stakings)
+  useWeb3NavbarOption({ network: true, wallet: true })
 
   function getUpperRow() {
     if (isMobile) {
@@ -87,9 +90,18 @@ export default function Stake() {
     } else {
       return (
         <UpperRow>
-          <div>
-            <SearchField searchProps={searchProps} />
-          </div>
+          <Row>
+            <Cell style={{ height: 'fit-content' }} width="25%">
+              <SearchField searchProps={searchProps} />
+            </Cell>
+            <Cell style={{ height: 'fit-content', color: '#FFBA93', fontWeight: 'medium' }} width="10%">
+              APR
+            </Cell>
+            <Cell style={{ height: 'fit-content', color: '#6F7380' }} width="18%">
+              TVL
+            </Cell>
+            <Cell style={{ height: 'fit-content', textAlign: 'left', color: '#6F7380' }}>Reward Tokens</Cell>
+          </Row>
         </UpperRow>
       )
     }
@@ -97,10 +109,6 @@ export default function Stake() {
 
   return (
     <Container>
-      <Hero>
-        <ImageWithFallback src={STAKE_ICON} width={224} height={133} alt={`Logo`} />
-      </Hero>
-
       <Wrapper>
         {getUpperRow()}
         <Table isMobile={isMobile} stakings={result as unknown as StakingType[]} />

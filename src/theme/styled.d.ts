@@ -22,6 +22,7 @@ export interface Colors {
   bg3: Color
   bg4: Color
   bg5: Color
+  bg6: Color
 
   // borders
   border1: Color
@@ -65,6 +66,7 @@ export interface Colors {
 
   deusColor: Color
   deiColor: Color
+  deiLegacyColor: Color
   cLqdrColor: Color
 }
 

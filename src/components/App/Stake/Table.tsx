@@ -69,7 +69,7 @@ const FirstRow = styled.div`
   margin: 0 5px;
 `
 
-const Cell = styled.td<{ justify?: boolean }>`
+export const Cell = styled.td<{ justify?: boolean }>`
   align-items: center;
   text-align: center;
   vertical-align: middle;
@@ -108,7 +108,7 @@ const Value = styled.div`
 `
 
 const ZebraStripesRow = styled(Row)<{ isEven?: boolean }>`
-  background: ${({ isEven, theme }) => (isEven ? theme.bg2 : theme.bg1)};
+  background: ${({ theme }) => theme.bg1};
   ${({ theme }) => theme.mediaWidth.upToSmall`
     background:none;
   `};
@@ -365,7 +365,7 @@ const TableRowMiniContent = ({
         </SpaceBetween>
         <SpaceBetween>
           <Name>APR</Name>
-          <Value> {apr.toFixed(0)}% </Value>
+          <Value> {apr !== -1 ? apr.toFixed(0) + '%' : 'N/A'} </Value>
         </SpaceBetween>
         <SpaceBetween>
           <Name>Reward Tokens</Name>
@@ -395,7 +395,7 @@ const TableRowLargeContent = ({
 
       <Cell width={'10%'}>
         <Name>APR</Name>
-        <Value> {apr.toFixed(0)}% </Value>
+        <Value> {apr !== -1 ? apr.toFixed(0) + '%' : 'N/A'} </Value>
       </Cell>
 
       <Cell width={'18%'}>
@@ -418,7 +418,7 @@ const TableRowLargeContent = ({
                 type={provideLink.includes('spooky') ? BUTTON_TYPE.SPOOKY_SWAP : BUTTON_TYPE.BEETHOVEN}
               />
             ) : (
-              <PrimaryButtonWide transparentBG>
+              <PrimaryButtonWide style={{ backgroundColor: '#101116' }} transparentBG>
                 <ButtonText gradientText={!active}>{active ? 'Manage' : 'Withdraw'}</ButtonText>
               </PrimaryButtonWide>
             )}
@@ -446,7 +446,6 @@ const TableRowContent = ({ staking }: { staking: StakingType }) => {
 
   const poolBalances = usePoolBalances(liquidityPool)
 
-  // FIXME: check this for single stakings
   const totalLockedValue = useMemo(() => {
     return poolBalances[1] * 2 * Number(staking.name === 'DEI-bDEI' ? deiPrice : deusPrice)
   }, [deiPrice, deusPrice, poolBalances, staking.name])

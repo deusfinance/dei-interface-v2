@@ -51,6 +51,7 @@ export const APR = React.memo(
   }
 )
 APR.displayName = 'APR'
+
 export default function PoolInfo({ pool }: { pool: LiquidityType }) {
   const stakingPool = Stakings.find((p) => p.id === pool.id) || Stakings[0]
   const active = stakingPool?.active
@@ -61,7 +62,6 @@ export default function PoolInfo({ pool }: { pool: LiquidityType }) {
   const totalLocked = poolBalances?.reduce((a, b) => a + b, 0)
   const poolInfo = usePoolInfo(pool)
 
-  // FIXME: check this for single stakings
   const totalLockedValue = useMemo(() => {
     return poolBalances[1] * 2 * Number(stakingPool.name === 'DEI-bDEI' ? deiPrice : deusPrice)
   }, [deiPrice, deusPrice, poolBalances, stakingPool.name])

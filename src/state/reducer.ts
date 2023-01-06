@@ -7,6 +7,7 @@ import dei from './dei/reducer'
 import user from './user/reducer'
 import dashboard from './dashboard/reducer'
 import mint from './mint/reducer'
+import navbarOption from './web3navbar/reducer'
 
 const reducer = combineReducers({
   dashboard,
@@ -16,6 +17,7 @@ const reducer = combineReducers({
   transactions,
   user,
   mint,
+  navbarOption,
 })
 
 export default reducer

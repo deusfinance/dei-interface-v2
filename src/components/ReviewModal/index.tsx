@@ -12,11 +12,11 @@ export const DefaultOptionButtonWrapper = styled.div<{ active?: boolean }>`
   background: ${({ theme, active }) => (active ? theme.deiColor : 'transparent')};
   margin: 0px 8px;
   cursor: ${({ active }) => active && 'pointer'};
-
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     width:40px;
     margin: 0px 4px;
-  `}
+    `}
+  ${({ active, theme }) => !active && ` border: 2px solid ${theme.border1};padding:0px;`}
 `
 
 export const DefaultOptionButton = styled(OptionButton)`
@@ -40,7 +40,7 @@ export const CustomOptionWrapper = styled.div<{ active?: boolean }>`
   width: 71px;
   height: 28px;
   display: inline-flex;
-  padding: 2px;
+  /* padding: 2px; */
   background: ${({ theme }) => theme.deiColor};
   border-radius: 4px;
   background: ${({ theme, active }) => (active ? theme.deiColor : 'transparent')};
@@ -53,6 +53,11 @@ export const CustomOptionWrapper = styled.div<{ active?: boolean }>`
 
 export const CustomOption = styled(DefaultOptionButton)`
   justify-content: flex-end;
+  border: 2px solid ${({ theme }) => theme.border1};
+
+  &:hover {
+    border: 2px solid ${({ theme }) => theme.border1};
+  }
 `
 
 export const InputAmount = styled.input.attrs({ type: 'number' })<{ active?: boolean }>`

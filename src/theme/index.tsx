@@ -77,6 +77,7 @@ function colors(themeName: SupportedThemes): Colors {
       bg3: '#E9E9F3',
       bg4: '#232323',
       bg5: '#181818',
+      bg6: '#8F939C',
 
       // borders
       border1: '#B8B8BE',
@@ -122,6 +123,7 @@ function colors(themeName: SupportedThemes): Colors {
       warning: '#FF8F00',
       deusColor: 'linear-gradient(90deg, #0badf4 0%, #30efe4 93.4%)',
       deiColor: 'linear-gradient(90deg, #E0974C 0%, #C93F6F 100%)',
+      deiLegacyColor: '#966131',
       cLqdrColor: '#06EBC8',
     },
     [SupportedThemes.DARK]: {
@@ -144,6 +146,7 @@ function colors(themeName: SupportedThemes): Colors {
       bg3: '#1B1D24',
       bg4: '#23252C',
       bg5: '#181818', //TEST
+      bg6: '#8F939C',
 
       // borders
       border1: '#23252C',
@@ -188,6 +191,7 @@ function colors(themeName: SupportedThemes): Colors {
 
       deusColor: 'linear-gradient(90deg, #0badf4 0%, #30efe4 93.4%)',
       deiColor: 'linear-gradient(90deg, #E0974C 0%, #C93F6F 100%);',
+      deiLegacyColor: '#966131',
       cLqdrColor: '#06EBC8',
     },
   }
