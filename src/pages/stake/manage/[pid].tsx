@@ -76,24 +76,19 @@ export default function StakingPage() {
 
   useWeb3NavbarOption({ network: true, wallet: true, stake: true })
 
-  const items = [
-    {
-      name: 'APR',
-      value: totalApy.toFixed(0) + '%',
-      hasTooltip: true,
-      toolTipInfo,
-    },
-    { name: 'TVL', value: formatDollarAmount(totalLockedValue) },
-    { name: priceToken + ' Price', value: formatDollarAmount(parseFloat(price)) },
-  ]
+  // const items = [
+  //   {
+  //     name: 'APR',
+  //     value: totalApy.toFixed(0) + '%',
+  //     hasTooltip: true,
+  //     toolTipInfo,
+  //   },
+  //   { name: 'TVL', value: formatDollarAmount(totalLockedValue) },
+  //   { name: priceToken + ' Price', value: formatDollarAmount(parseFloat(price)) },
+  // ]
 
   return (
     <Container>
-      <Hero>
-        <ImageWithFallback src={STAKE_ICON} width={185} height={133} alt={`Logo`} />
-        <StatsHeader pid={pidNumber} onSelectDropDown={onSelect} items={items} />
-      </Hero>
-
       <TopWrapper isMultipleColumns={liquidityPool?.tokens.length > 1}>
         {liquidityPool?.tokens.length > 1 && (
           <VStack style={{ width: '100%' }}>
