@@ -479,7 +479,7 @@ export default function LiquidityPool({ pool }: { pool: LiquidityType }) {
       return (
         <DepositButton onClick={handleApprove}>
           <span>
-            <p>Allow us to spend {token1Currency?.symbol}</p>
+            <p>Allow us to spend {token0Currency?.symbol}</p>
           </span>
         </DepositButton>
       )
@@ -488,7 +488,7 @@ export default function LiquidityPool({ pool }: { pool: LiquidityType }) {
       return (
         <DepositButton onClick={handleApprove2}>
           <span>
-            <p>Allow us to spend {token0Currency?.symbol}</p>
+            <p>Allow us to spend {token1Currency?.symbol}</p>
           </span>
         </DepositButton>
       )
