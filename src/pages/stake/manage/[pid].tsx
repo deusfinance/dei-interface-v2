@@ -2,11 +2,9 @@
 import { useRouter } from 'next/router'
 import styled from 'styled-components'
 
-import STAKE_ICON from '/public/static/images/pages/stake/ic_stake.svg'
 import { LiquidityPool as LiquidityPoolList, Stakings } from 'constants/stakingPools'
 
 import { useWeb3NavbarOption } from 'state/web3navbar/hooks'
-import { formatDollarAmount } from 'utils/numbers'
 
 import { useCustomCoingeckoPrice } from 'hooks/useCoingeckoPrice'
 import { usePoolBalances } from 'hooks/useStablePoolInfo'
@@ -18,9 +16,6 @@ import AvailableLP from 'components/App/Staking/AvailableLP'
 import StakedLP from 'components/App/Staking/LPStaked'
 import BalanceToken from 'components/App/Staking/BalanceToken'
 import { VStack } from 'components/App/Staking/common/Layout'
-import StatsHeader from 'components/StatsHeader'
-import Hero from 'components/Hero'
-import ImageWithFallback from 'components/ImageWithFallback'
 
 export const Container = styled.div`
   display: flex;
