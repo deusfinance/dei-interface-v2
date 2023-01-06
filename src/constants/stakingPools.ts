@@ -103,6 +103,7 @@ export const LiquidityPool: LiquidityType[] = [
     id: 1,
     tokens: [BDEI_TOKEN], // TODO: remove
     lpToken: BDEI_TOKEN,
+    priceToken: DEI_TOKEN,
   },
   {
     id: 2,
@@ -123,36 +124,43 @@ export const LiquidityPool: LiquidityType[] = [
     id: 3,
     tokens: [VDEUS_TOKEN], // TODO: remove
     lpToken: VDEUS_TOKEN,
+    priceToken: DEUS_TOKEN,
   },
   {
     id: 4,
     tokens: [VDEUS_TOKEN],
     lpToken: lpToken_3Months,
+    priceToken: DEUS_TOKEN,
   },
   {
     id: 5,
     tokens: [VDEUS_TOKEN],
     lpToken: lpToken_6Months,
+    priceToken: DEUS_TOKEN,
   },
   {
     id: 6,
     tokens: [VDEUS_TOKEN],
     lpToken: lpToken_1Year,
+    priceToken: DEUS_TOKEN,
   },
   {
     id: 7,
     tokens: [USDC_TOKEN, DEI_TOKEN],
     lpToken: DEI_TOKEN,
+    priceToken: DEUS_TOKEN,
   },
   {
     id: 8,
     tokens: [USDC_TOKEN, DEI_TOKEN],
     lpToken: DEI_TOKEN,
+    priceToken: DEUS_TOKEN,
   },
   {
     id: 9,
     tokens: [WFTM_TOKEN, DEUS_TOKEN],
     lpToken: DEI_TOKEN,
+    priceToken: DEUS_TOKEN,
   },
 ]
 
