@@ -2,10 +2,14 @@
 import { useRouter } from 'next/router'
 import styled from 'styled-components'
 
-import Hero from 'components/Hero'
-import ImageWithFallback from 'components/ImageWithFallback'
 import STAKE_ICON from '/public/static/images/pages/stake/ic_stake.svg'
 import { LiquidityPool as LiquidityPoolList, Stakings } from 'constants/stakingPools'
+
+import { formatDollarAmount } from 'utils/numbers'
+
+import { useCustomCoingeckoPrice } from 'hooks/useCoingeckoPrice'
+import { usePoolBalances } from 'hooks/useStablePoolInfo'
+
 import LiquidityPool from 'components/App/Staking/LiquidityPool'
 import PoolInfo from 'components/App/Staking/PoolInfo'
 import PoolShare from 'components/App/Staking/PoolShare'
@@ -15,9 +19,8 @@ import Reading from 'components/App/Staking/PoolDetails'
 import BalanceToken from 'components/App/Staking/BalanceToken'
 import { VStack } from 'components/App/Staking/common/Layout'
 import StatsHeader from 'components/StatsHeader'
-import { useCustomCoingeckoPrice } from 'hooks/useCoingeckoPrice'
-import { usePoolBalances } from 'hooks/useStablePoolInfo'
-import { formatDollarAmount } from 'utils/numbers'
+import Hero from 'components/Hero'
+import ImageWithFallback from 'components/ImageWithFallback'
 
 export const Container = styled.div`
   display: flex;
@@ -44,15 +47,19 @@ export default function StakingPage() {
   const router = useRouter()
   const { pid } = router.query
   const pidNumber = Number(pid)
-  const pool = LiquidityPoolList.find((pool) => pool.id === pidNumber) || LiquidityPoolList[0]
-  const stakingPool = Stakings.find((p) => p.id === pool.id) || Stakings[0]
-  const poolBalances = usePoolBalances(pool)
+  const liquidityPool = LiquidityPoolList.find((pool) => pool.id === pidNumber) || LiquidityPoolList[0]
+  const stakingPool = Stakings.find((p) => p.id === liquidityPool.id) || Stakings[0]
+  const poolBalances = usePoolBalances(liquidityPool)
+
+  const priceToken = liquidityPool.priceToken?.symbol ?? ''
+  const price = useCustomCoingeckoPrice(priceToken) ?? '0'
   // FIXME: check this for single stakings
-  const totalLockedValue = poolBalances[1] * 2 * Number(useCustomCoingeckoPrice(pool.priceToken?.symbol ?? 'DEI'))
+  const totalLockedValue =
+    poolBalances[1] * 2 * Number(useCustomCoingeckoPrice(liquidityPool.priceToken?.symbol ?? 'DEI'))
 
   // generate total APR if pools have secondary APRs
   const primaryApy = stakingPool.aprHook(stakingPool)
-  const secondaryApy = stakingPool.hasSecondaryApy ? stakingPool.secondaryAprHook(pool, stakingPool) : 0
+  const secondaryApy = stakingPool.hasSecondaryApy ? stakingPool.secondaryAprHook(liquidityPool, stakingPool) : 0
   const totalApy = primaryApy + secondaryApy
 
   // generate respective tooltip info if pools have more than 1 reward tokens
@@ -75,6 +82,7 @@ export default function StakingPage() {
       toolTipInfo,
     },
     { name: 'TVL', value: formatDollarAmount(totalLockedValue) },
+    { name: priceToken + ' Price', value: formatDollarAmount(parseFloat(price)) },
   ]
 
   return (
@@ -84,19 +92,19 @@ export default function StakingPage() {
         <StatsHeader pid={pidNumber} onSelectDropDown={onSelect} items={items} />
       </Hero>
 
-      <TopWrapper isMultipleColumns={pool?.tokens.length > 1}>
-        {pool?.tokens.length > 1 && (
+      <TopWrapper isMultipleColumns={liquidityPool?.tokens.length > 1}>
+        {liquidityPool?.tokens.length > 1 && (
           <VStack style={{ width: '100%' }}>
-            <BalanceToken pool={pool} />
-            <LiquidityPool pool={pool} />
+            <BalanceToken pool={liquidityPool} />
+            <LiquidityPool pool={liquidityPool} />
           </VStack>
         )}
         <div style={{ width: '100%' }}>
-          <AvailableLP pool={pool} />
+          <AvailableLP pool={liquidityPool} />
           <StakedLP pid={pidNumber} />
-          <PoolShare pool={pool} />
-          <PoolInfo pool={pool} />
-          <Reading />
+          <PoolShare pool={liquidityPool} />
+          <PoolInfo pool={liquidityPool} />
+          {/* <Reading /> */}
         </div>
       </TopWrapper>
     </Container>
