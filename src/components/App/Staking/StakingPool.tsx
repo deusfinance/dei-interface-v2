@@ -2,6 +2,8 @@ import React, { useState, useMemo, useCallback } from 'react'
 import styled from 'styled-components'
 import { toast } from 'react-hot-toast'
 
+import { StakingType } from 'constants/stakingPools'
+
 import { useWalletModalToggle } from 'state/application/hooks'
 import { useTransactionAdder } from 'state/transactions/hooks'
 import useWeb3React from 'hooks/useWeb3'
@@ -20,7 +22,6 @@ import { tryParseAmount } from 'utils/parse'
 import { useCurrencyBalance } from 'state/wallet/hooks'
 import ActionSetter, { ActionTypes } from './ActionSetter2'
 import InputBox from 'components/InputBox'
-import { StakingType } from 'constants/stakingPools'
 
 const Container = styled.div`
   display: block;
