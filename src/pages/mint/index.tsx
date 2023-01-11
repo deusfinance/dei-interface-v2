@@ -41,6 +41,8 @@ import Tableau from 'components/App/StableCoin/Tableau'
 import TokensModal from 'components/App/StableCoin/TokensModal'
 import usePoolStats from 'components/App/StableCoin/PoolStats'
 import WarningModal from 'components/ReviewModal/Warning'
+import { ExternalLink } from 'components/Link'
+import ExternalLinkIcon from '/public/static/images/pages/mint/down.svg'
 
 const PlusIcon = styled(Plus)`
   z-index: 1000;
@@ -295,14 +297,24 @@ export default function Mint() {
     )
   }
 
-  const items = usePoolStats()
+  const readMoreLink = 'https://docs.deus.finance/usddei/how-to-mint-usddei'
+  const readMoreItem: { name: string; value: JSX.Element; link?: string } = {
+    name: '',
+    value: (
+      <ExternalLink style={{ color: '#6F7380' }} href={readMoreLink}>
+        Read more <Image alt="external-link" src={ExternalLinkIcon} width={8} height={8} />
+      </ExternalLink>
+    ),
+    link: readMoreLink,
+  }
+  const items = [...usePoolStats(), readMoreItem]
 
   return (
     <>
       <Container>
         <Hero>
           <Image src={DEI_LOGO} height={'90px'} alt="Logo" />
-          <StatsHeader items={items} />
+          <StatsHeader isAddress={false} items={items} />
         </Hero>
 
         <Wrapper>

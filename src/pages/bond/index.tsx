@@ -15,6 +15,8 @@ import StatsHeader from 'components/StatsHeader'
 import { Container } from 'components/App/StableCoin'
 import RemainingDEI from 'components/App/Bond/RemainingDEI'
 import { useSearch, SearchField, Table } from 'components/App/Bond'
+import { ExternalLink } from 'components/Link'
+import ExternalLinkIcon from '/public/static/images/pages/bond/down.svg'
 
 const Wrapper = styled(Container)<{
   mt?: string
@@ -78,8 +80,29 @@ const FirstRowWrapper = styled.div`
   display: flex;
   flex-flow: row nowrap;
   justify-content: space-between;
+  align-items: center;
   width: 100%;
   gap: 10px;
+  & > div {
+    width: auto;
+  }
+  a {
+    margin-right: 10px;
+    color: ${({ theme }) => theme.text2};
+    &:hover {
+      text-decoration: underline;
+      color: ${({ theme }) => theme.text2};
+    }
+  }
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    a {
+    font-size:12px;
+    &>span{
+      width:6px !important;
+height:6px !important;
+    }
+  }
+  `}
 `
 
 const UpperRowMobile = styled(UpperRow)<{ hasSecondRow?: boolean }>`
@@ -100,9 +123,12 @@ export default function Bond() {
   function getUpperRow() {
     return (
       <UpperRow>
-        <div>
+        <FirstRowWrapper>
           <SearchField searchProps={searchProps} />
-        </div>
+          <ExternalLink href="https://docs.deus.finance/usddei/usddei-bonds">
+            Read more <Image alt="external-link" src={ExternalLinkIcon} width={8} height={8} />
+          </ExternalLink>
+        </FirstRowWrapper>
       </UpperRow>
     )
   }
@@ -112,6 +138,9 @@ export default function Bond() {
       <UpperRowMobile hasSecondRow={!!snapshotList.length}>
         <FirstRowWrapper>
           <SearchField searchProps={searchProps} />
+          <ExternalLink href="https://docs.deus.finance/usddei/usddei-bonds">
+            Read more <Image alt="external-link" src={ExternalLinkIcon} width={8} height={8} />
+          </ExternalLink>
         </FirstRowWrapper>
       </UpperRowMobile>
     )

@@ -28,6 +28,8 @@ import {
 import { SupportedChainId } from 'constants/chains'
 import { ChainInfo } from 'constants/chainInfo'
 import { Loader } from 'components/Icons'
+import { ExternalLink } from 'components/Link'
+import ExternalLinkIcon from '/public/static/images/pages/dashboard/down.svg'
 
 const Wrapper = styled(RowBetween)`
   background: ${({ theme }) => theme.bg0};
@@ -94,6 +96,22 @@ const Info = styled(RowBetween)`
   `};
 `
 
+const DeiTitleContainer = styled(RowBetween)`
+  & > a {
+    color: ${({ theme }) => theme.text2};
+    margin-right: 20px;
+    &:hover {
+      color: ${({ theme }) => theme.text2};
+      text-decoration: underline;
+    }
+  }
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+   & > a {
+    margin-right: 0px;
+  }
+  `};
+`
+
 const Title = styled.span`
   font-family: 'Inter';
   font-size: 20px;
@@ -101,7 +119,6 @@ const Title = styled.span`
   background: ${({ theme }) => theme.specialBG1};
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-
   ${({ theme }) => theme.mediaWidth.upToMedium`
     margin-left:11px;
   `};
@@ -179,6 +196,9 @@ const ModalItemValue = styled.div`
     margin-left: 5px;
     color: ${({ theme }) => theme.text1};
   }
+`
+const Icon = styled(Image)`
+  margin-left: 4px;
 `
 
 export default function Stats() {
@@ -305,7 +325,12 @@ export default function Stats() {
       <Wrapper>
         <AllStats>
           <StatsWrapper>
-            <Title>DEI Stats</Title>
+            <DeiTitleContainer>
+              <Title>DEI Stats</Title>
+              <ExternalLink href="https://docs.deus.finance/usddei/dei-stablecoin-overview">
+                Read more <Icon src={ExternalLinkIcon} width={8} height={8} />
+              </ExternalLink>
+            </DeiTitleContainer>
             <Info>
               <StatsItem
                 name="DEI Price"
