@@ -39,6 +39,9 @@ import { useDeiPrice, useDeusPrice } from 'hooks/useCoingeckoPrice'
 import { usePoolBalances } from 'hooks/useStablePoolInfo'
 import { formatDollarAmount } from 'utils/numbers'
 import { SupportedChainId } from 'constants/chains'
+import { useBDeiStats } from 'hooks/useBDeiStats'
+import { useUserInfo } from 'hooks/useStakingInfo'
+import { useVDeusStats } from 'hooks/useVDeusStats'
 
 const Wrapper = styled.div`
   display: flex;
@@ -448,17 +451,18 @@ const TableRowLargeContent = ({
   )
 }
 
-const TableRowContent = ({ staking }: { staking: StakingType }) => {
+const TableRowContent = ({ stakingPool }: { stakingPool: StakingType }) => {
   const { chainId, account } = useWeb3React()
-  const { id, rewardTokens, active, name, provideLink = undefined, version } = staking
-  const liquidityPool = LiquidityPool.find((p) => p.id === staking.id) || LiquidityPool[0]
+  const { id, rewardTokens, active, name, provideLink = undefined, version } = stakingPool
+  const liquidityPool = LiquidityPool.find((p) => p.id === stakingPool.id) || LiquidityPool[0]
   const tokens = liquidityPool?.tokens
 
   //const apr = staking.version === StakingVersion.EXTERNAL ? 0 : staking?.aprHook(staking)
 
   // generate total APR if pools have secondary APRs
-  const primaryApy = staking.version === StakingVersion.EXTERNAL ? 0 : staking?.aprHook(staking)
-  const secondaryApy = staking.hasSecondaryApy ? staking.secondaryAprHook(liquidityPool, staking) : 0
+  const primaryApy = stakingPool.version === StakingVersion.EXTERNAL ? 0 : stakingPool?.aprHook(stakingPool)
+  const secondaryApy =
+    stakingPool.version === StakingVersion.EXTERNAL ? 0 : stakingPool.secondaryAprHook(liquidityPool, stakingPool)
   const apr = primaryApy + secondaryApy
 
   const deusPrice = useDeusPrice()
@@ -467,13 +471,28 @@ const TableRowContent = ({ staking }: { staking: StakingType }) => {
   const poolBalances = usePoolBalances(liquidityPool)
 
   const totalLockedValue = useMemo(() => {
-    return poolBalances[1] * 2 * Number(staking.name === 'DEI-bDEI' ? deiPrice : deusPrice)
-  }, [deiPrice, deusPrice, poolBalances, staking.name])
+    return poolBalances[1] * 2 * Number(stakingPool.name === 'DEI-bDEI' ? deiPrice : deusPrice)
+  }, [deiPrice, deusPrice, poolBalances, stakingPool])
 
   const supportedChainId: boolean = useMemo(() => {
     if (!chainId || !account) return false
     return chainId === SupportedChainId.FANTOM
   }, [chainId, account])
+
+  const { totalDepositedAmount } = useUserInfo(stakingPool)
+
+  const isSingleStakingPool = useMemo(() => {
+    return stakingPool.isSingleStaking
+  }, [stakingPool])
+
+  const { swapRatio: xDeusRatio } = useVDeusStats()
+  const { swapRatio: bDeiRatio } = useBDeiStats()
+
+  const totalDepositedValue = useMemo(() => {
+    return stakingPool.id === 0
+      ? totalDepositedAmount * bDeiRatio * parseFloat(deiPrice)
+      : totalDepositedAmount * xDeusRatio * parseFloat(deusPrice)
+  }, [bDeiRatio, deiPrice, deusPrice, stakingPool, totalDepositedAmount, xDeusRatio])
 
   const router = useRouter()
   const handleClick = useCallback(() => {
@@ -489,7 +508,7 @@ const TableRowContent = ({ staking }: { staking: StakingType }) => {
           rewardTokens={rewardTokens}
           tokens={tokens}
           apr={apr}
-          tvl={totalLockedValue}
+          tvl={isSingleStakingPool ? totalDepositedValue : totalLockedValue}
           provideLink={provideLink}
           version={version}
           chainIdError={!supportedChainId}
@@ -502,7 +521,7 @@ const TableRowContent = ({ staking }: { staking: StakingType }) => {
         rewardTokens={rewardTokens}
         tokens={tokens}
         apr={apr}
-        tvl={totalLockedValue}
+        tvl={isSingleStakingPool ? totalDepositedValue : totalLockedValue}
         provideLink={provideLink}
         version={version}
         chainIdError={!supportedChainId}
@@ -655,7 +674,7 @@ function TableRow({ staking, index, isMobile }: { staking: StakingType; index: n
 
   return (
     <ZebraStripesRow isEven={index % 2 === 0}>
-      <TableRowContent staking={staking} />
+      <TableRowContent stakingPool={staking} />
     </ZebraStripesRow>
   )
 }

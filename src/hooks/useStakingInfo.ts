@@ -86,19 +86,20 @@ export function useUserInfo(stakingPool: StakingType): {
         ]
       : []
 
-  const calls = !account
-    ? []
-    : [
-        {
-          methodName: 'userInfo',
-          callInputs: [pid.toString(), account],
-        },
-        {
-          methodName: 'pendingTokens',
-          callInputs: [pid.toString(), account],
-        },
-        ...additionalCall,
-      ]
+  const calls =
+    !account || version === StakingVersion.EXTERNAL
+      ? []
+      : [
+          {
+            methodName: 'userInfo',
+            callInputs: [pid.toString(), account],
+          },
+          {
+            methodName: 'pendingTokens',
+            callInputs: [pid.toString(), account],
+          },
+          ...additionalCall,
+        ]
 
   const [userInfo, pendingTokens, totalDepositedAmount] = useSingleContractMultipleMethods(contract, calls)
 
@@ -330,6 +331,8 @@ export function useGetDeusApy(pool: LiquidityType, stakingPool: StakingType): nu
   const myAprShare = ratio * retrieveTokenPerYearValue
 
   //console.log({ avgBlockTime, ratio, totalBalance, myShare, retrieveTokenPerYearValue, myAprShare })
+
+  if (stakingPool.id != 2) return 0
 
   if (!myShare || myShare === 0) return (retrieveTokenPerYearValue / totalBalance) * 100
   return (myAprShare / myShare) * 100
