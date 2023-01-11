@@ -47,7 +47,7 @@ export const SUPPORTED_CHAIN_IDS: SupportedChainId[] = Object.values(SupportedCh
   (id) => typeof id === 'number'
 ) as SupportedChainId[]
 
-export const SolidlyChains = [SupportedChainId.FANTOM]
+export const SolidlyChains = [SupportedChainId.FANTOM, SupportedChainId.ARBITRUM]
 
 export const FALLBACK_CHAIN_ID = SupportedChainId.FANTOM
 

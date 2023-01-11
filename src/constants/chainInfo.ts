@@ -188,7 +188,7 @@ export const ChainInfo: { [chainId: number]: Info } = {
     chainId: '0xA4B1',
     chainName: 'Arbitrum',
     label: 'Arbitrum',
-    logoUrl: require('/public/static/images/fallback/not_found.png'),
+    logoUrl: require('/public/static/images/networks/arbitrum.svg'),
     nativeCurrency: {
       name: 'Ethereum',
       symbol: 'ETH',

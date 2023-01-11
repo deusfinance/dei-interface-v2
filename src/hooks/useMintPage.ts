@@ -14,7 +14,7 @@ import { useMintState } from 'state/mint/reducer'
 import { useMintingFee } from 'state/dei/hooks'
 
 import { useDeusPrice } from 'hooks/useCoingeckoPrice'
-import { useCollateralPoolContract, useOracleContract } from 'hooks/useContract'
+import { useArbitrumCollateralPoolContract, useCollateralPoolContract, useOracleContract } from 'hooks/useContract'
 
 export function useMintPage(
   TokenIn1: Token | null,
@@ -266,4 +266,20 @@ export function useGetDeusPrice(): string {
           .toFixed(0)
 
   return deusPrice
+}
+
+export function useArbitrumMintPaused(): boolean {
+  const contract = useArbitrumCollateralPoolContract()
+
+  const call = useMemo(
+    () => [
+      {
+        methodName: 'paused',
+        callInputs: [],
+      },
+    ],
+    []
+  )
+  const [res] = useSingleContractMultipleMethods(contract, call)
+  return !res || !res.result ? false : res.result[0]
 }
