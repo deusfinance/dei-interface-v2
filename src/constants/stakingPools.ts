@@ -63,6 +63,7 @@ export type StakingType = {
   active: boolean
   hasSecondaryApy?: boolean
   version: StakingVersion
+  isSingleStaking: boolean
 }
 
 export type ExternalStakingType = {
@@ -177,6 +178,7 @@ export const Stakings: StakingType[] = [
     pid: 1,
     active: true,
     version: StakingVersion.V1,
+    isSingleStaking: false,
   },
   {
     id: 1,
@@ -189,6 +191,7 @@ export const Stakings: StakingType[] = [
     pid: 0,
     active: true,
     version: StakingVersion.V1,
+    isSingleStaking: true,
   },
   {
     id: 2,
@@ -203,6 +206,7 @@ export const Stakings: StakingType[] = [
     active: true,
     hasSecondaryApy: true,
     version: StakingVersion.V2,
+    isSingleStaking: false,
   },
   {
     id: 3,
@@ -215,6 +219,7 @@ export const Stakings: StakingType[] = [
     pid: 0,
     active: true,
     version: StakingVersion.V2,
+    isSingleStaking: true,
   },
   {
     id: 4,
@@ -226,6 +231,7 @@ export const Stakings: StakingType[] = [
     pid: 0,
     active: true,
     version: StakingVersion.NFT,
+    isSingleStaking: false,
   },
   {
     id: 5,
@@ -237,6 +243,7 @@ export const Stakings: StakingType[] = [
     pid: 1,
     active: true,
     version: StakingVersion.NFT,
+    isSingleStaking: false,
   },
   {
     id: 6,
@@ -248,6 +255,7 @@ export const Stakings: StakingType[] = [
     pid: 2,
     active: true,
     version: StakingVersion.NFT,
+    isSingleStaking: false,
   },
 ]
 

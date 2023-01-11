@@ -16,6 +16,10 @@ import AvailableLP from 'components/App/Staking/AvailableLP'
 import StakedLP from 'components/App/Staking/LPStaked'
 import BalanceToken from 'components/App/Staking/BalanceToken'
 import { VStack } from 'components/App/Staking/common/Layout'
+import { useUserInfo } from 'hooks/useStakingInfo'
+import { useBDeiStats } from 'hooks/useBDeiStats'
+import { useVDeusStats } from 'hooks/useVDeusStats'
+import { useMemo } from 'react'
 
 export const Container = styled.div`
   display: flex;
@@ -27,6 +31,7 @@ export const Container = styled.div`
 const TopWrapper = styled.div<{ isMultipleColumns: boolean }>`
   display: ${({ isMultipleColumns }) => (isMultipleColumns ? 'grid' : 'flex')};
   grid-template-columns: 480px 480px;
+  min-width: 480px;
   margin: auto;
   ${({ theme }) => theme.mediaWidth.upToMedium`
    display: flex;
@@ -63,6 +68,20 @@ export default function StakingPage() {
     ? ' + ' + secondaryApy.toFixed(0) + '% ' + stakingPool.rewardTokens[1].symbol
     : ''
 
+  const { totalDepositedAmount } = useUserInfo(stakingPool)
+
+  const isSingleStakingPool = useMemo(() => {
+    return stakingPool.isSingleStaking
+  }, [stakingPool])
+
+  const { swapRatio: xDeusRatio } = useVDeusStats()
+  const { swapRatio: bDeiRatio } = useBDeiStats()
+
+  const totalDepositedValue = useMemo(() => {
+    return stakingPool.id === 0
+      ? totalDepositedAmount * bDeiRatio * parseFloat(price)
+      : totalDepositedAmount * xDeusRatio * parseFloat(price)
+  }, [bDeiRatio, price, stakingPool, totalDepositedAmount, xDeusRatio])
   const toolTipInfo = primaryTooltipInfo + secondaryTooltipInfo
 
   function onSelect(pid: number) {
@@ -78,26 +97,26 @@ export default function StakingPage() {
   //     hasTooltip: true,
   //     toolTipInfo,
   //   },
-  //   { name: 'TVL', value: formatDollarAmount(totalLockedValue) },
+  //   { name: 'TVL', value: formatDollarAmount(isSingleStakingPool ? totalDepositedValue : totalLockedValue) },
   //   { name: priceToken + ' Price', value: formatDollarAmount(parseFloat(price)) },
   // ]
 
   return (
     <Container>
-      <TopWrapper isMultipleColumns={liquidityPool?.tokens.length > 1}>
-        {liquidityPool?.tokens.length > 1 && (
+      <TopWrapper isMultipleColumns={!isSingleStakingPool}>
+        {!isSingleStakingPool && (
           <VStack style={{ width: '100%' }}>
             <BalanceToken pool={liquidityPool} />
             <LiquidityPool pool={liquidityPool} />
           </VStack>
         )}
-        <div style={{ width: '100%' }}>
+        <VStack style={{ width: '100%' }}>
           <AvailableLP pool={liquidityPool} />
           <StakedLP pid={pidNumber} />
           <PoolShare pool={liquidityPool} />
           <PoolInfo pool={liquidityPool} />
           {/* <Reading /> */}
-        </div>
+        </VStack>
       </TopWrapper>
     </Container>
   )

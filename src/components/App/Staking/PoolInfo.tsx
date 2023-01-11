@@ -9,6 +9,9 @@ import { truncateAddress } from 'utils/address'
 import Container from './common/Container'
 import { ContentTable, Label, TableHeader, Value, VStack } from './common/Layout'
 import { useDeiPrice, useDeusPrice } from 'hooks/useCoingeckoPrice'
+import { useUserInfo } from 'hooks/useStakingInfo'
+import { useBDeiStats } from 'hooks/useBDeiStats'
+import { useVDeusStats } from 'hooks/useVDeusStats'
 
 const Wrapper = styled(VStack)`
   padding: 12px;
@@ -26,7 +29,7 @@ const Circle = styled.div<{ disabled: boolean }>`
   height: 10px;
 `
 
-const PoolBalance = React.memo(({ pool, totalLocked }: { pool: LiquidityType; totalLocked: number }) => {
+const PoolBalance = React.memo(({ totalLocked }: { totalLocked: number }) => {
   return (
     <ContentTable>
       <Label> Total Locked: </Label>
@@ -62,6 +65,21 @@ export default function PoolInfo({ pool }: { pool: LiquidityType }) {
   const totalLocked = poolBalances?.reduce((a, b) => a + b, 0)
   const poolInfo = usePoolInfo(pool)
 
+  const { totalDepositedAmount } = useUserInfo(stakingPool)
+
+  const isSingleStakingPool = useMemo(() => {
+    return stakingPool.isSingleStaking
+  }, [stakingPool])
+
+  const { swapRatio: xDeusRatio } = useVDeusStats()
+  const { swapRatio: bDeiRatio } = useBDeiStats()
+
+  const totalDepositedValue = useMemo(() => {
+    return stakingPool.id === 0
+      ? totalDepositedAmount * bDeiRatio * parseFloat(deiPrice)
+      : totalDepositedAmount * xDeusRatio * parseFloat(deusPrice)
+  }, [bDeiRatio, deiPrice, deusPrice, stakingPool, totalDepositedAmount, xDeusRatio])
+
   const totalLockedValue = useMemo(() => {
     return poolBalances[1] * 2 * Number(stakingPool.name === 'DEI-bDEI' ? deiPrice : deusPrice)
   }, [deiPrice, deusPrice, poolBalances, stakingPool.name])
@@ -76,25 +94,29 @@ export default function PoolInfo({ pool }: { pool: LiquidityType }) {
           </p>
         </TableHeader>
         <APR stakingPool={stakingPool} liquidityPool={pool} />
-        <PoolBalance pool={pool} totalLocked={totalLocked} />
+        <PoolBalance totalLocked={isSingleStakingPool ? totalDepositedAmount : totalLocked} />
         <ContentTable>
           <Label> Fee: </Label>
           <Value> {formatAmount(poolInfo?.protocolFee)} </Value>
         </ContentTable>
 
-        <ContentTable>
-          <Label> Virtual Price: </Label>
-          <Value>{formatAmount(poolInfo?.virtualPrice)}</Value>
-        </ContentTable>
+        {!isSingleStakingPool ? (
+          <ContentTable>
+            <Label> Virtual Price: </Label>
+            <Value>{formatAmount(poolInfo?.virtualPrice)}</Value>
+          </ContentTable>
+        ) : null}
 
         <ContentTable>
           <Label> Total Reserve Value: </Label>
-          <Value> {formatDollarAmount(totalLockedValue)} </Value>
+          <Value>
+            {isSingleStakingPool ? formatAmount(totalDepositedValue) : formatDollarAmount(totalLockedValue)}
+          </Value>
         </ContentTable>
 
         <ContentTable>
           <Label> {pool.tokens[0].symbol} Reserve: </Label>
-          <Value> {formatAmount(poolBalances[0])} </Value>
+          <Value> {isSingleStakingPool ? formatAmount(totalDepositedAmount) : formatAmount(poolBalances[0])} </Value>
         </ContentTable>
 
         {pool?.tokens[1] && (
@@ -117,7 +139,7 @@ export default function PoolInfo({ pool }: { pool: LiquidityType }) {
 
         {pool?.lpToken.address && (
           <ContentTable>
-            <Label> LP Token Address: </Label>
+            <Label>{pool?.lpToken.symbol} Token Address: </Label>
             <Value>
               <p style={{ textDecoration: 'underline' }}>
                 {<Copy toCopy={pool?.lpToken.address} text={truncateAddress(pool?.lpToken.address)} />}
