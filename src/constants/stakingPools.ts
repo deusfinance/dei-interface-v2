@@ -183,7 +183,7 @@ export const Stakings: StakingType[] = [
     id: 1,
     name: 'bDEI',
     rewardTokens: [DEUS_TOKEN],
-    token: DEI_TOKEN,
+    token: BDEI_TOKEN,
     aprHook: useGetApy,
     secondaryAprHook: () => 0,
     masterChef: MasterChefV2[SupportedChainId.FANTOM],
@@ -230,7 +230,7 @@ export const Stakings: StakingType[] = [
     pid: 0,
     active: true,
     version: StakingVersion.NFT,
-    isSingleStaking: false,
+    isSingleStaking: true,
   },
   {
     id: 5,
@@ -243,7 +243,7 @@ export const Stakings: StakingType[] = [
     pid: 1,
     active: true,
     version: StakingVersion.NFT,
-    isSingleStaking: false,
+    isSingleStaking: true,
   },
   {
     id: 6,
@@ -256,7 +256,7 @@ export const Stakings: StakingType[] = [
     pid: 2,
     active: true,
     version: StakingVersion.NFT,
-    isSingleStaking: false,
+    isSingleStaking: true,
   },
 ]
 
