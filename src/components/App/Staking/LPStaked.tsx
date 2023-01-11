@@ -177,7 +177,7 @@ const StakedLP = ({ pid }: { pid: number }) => {
     <Container>
       <>
         <StakedLPHeader onClick={() => setAmountIn(depositAmount)}>
-          <p>LP Staked:</p>
+          <p>{stakingPool.token?.symbol} Staked:</p>
           <p>{Number(depositAmount).toFixed(6)}</p>
         </StakedLPHeader>
         <Divider backgroundColor="#101116" />

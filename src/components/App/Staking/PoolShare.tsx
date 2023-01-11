@@ -58,7 +58,7 @@ export default function PoolShare({ pool }: { pool: LiquidityType }) {
         {pool?.tokens.length > 1 ? (
           <ContentTable>
             <Label>
-              <p>LP Amount:</p>
+              <p>{stakingPool.token?.symbol} Amount:</p>
             </Label>
             <Value>{formatBalance(Number(depositAmount) + Number(currencyBalance))}</Value>
           </ContentTable>
