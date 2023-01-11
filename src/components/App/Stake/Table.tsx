@@ -38,6 +38,7 @@ import { Token } from '@sushiswap/core-sdk'
 import { useDeiPrice, useDeusPrice } from 'hooks/useCoingeckoPrice'
 import { usePoolBalances } from 'hooks/useStablePoolInfo'
 import { formatDollarAmount } from 'utils/numbers'
+import { SupportedChainId } from 'constants/chains'
 
 const Wrapper = styled.div`
   display: flex;
@@ -136,7 +137,7 @@ const ButtonText = styled.span<{ gradientText?: boolean }>`
 `
 
 const TopBorderWrap = styled.div<{ active?: boolean }>`
-  background: ${({ theme }) => theme.primary2};
+  background: ${({ theme, active }) => (active ? theme.primary2 : theme.white)};
   padding: 2px;
   border-radius: 12px;
   margin-right: 4px;
@@ -327,6 +328,7 @@ interface ITableRowContent {
   tvl: number
   provideLink?: string
   version: StakingVersion
+  chainIdError: boolean
 }
 
 const TableRowMiniContent = ({
@@ -339,15 +341,24 @@ const TableRowMiniContent = ({
   tvl,
   provideLink,
   version,
+  chainIdError,
 }: ITableRowContent) => {
   return (
     <MiniStakeContainer>
       <MiniStakeHeaderContainer>
         <TokenBox tokens={tokens} title={name} active={active} />
         <div>
-          <MiniTopBorderWrap>
-            <TopBorder {...(version !== StakingVersion.EXTERNAL && { onClick: active ? handleClick : undefined })}>
-              {version === StakingVersion.EXTERNAL && provideLink ? (
+          <MiniTopBorderWrap active={!chainIdError}>
+            <TopBorder
+              {...(version !== StakingVersion.EXTERNAL && {
+                onClick: active && !chainIdError ? handleClick : undefined,
+              })}
+            >
+              {chainIdError ? (
+                <PrimaryButtonWide transparentBG disabled>
+                  <ButtonText gradientText={chainIdError}>Switch to Fantom</ButtonText>
+                </PrimaryButtonWide>
+              ) : version === StakingVersion.EXTERNAL && provideLink ? (
                 <CustomButtonWrapper isActive={active} href={provideLink} type={BUTTON_TYPE.MINI} />
               ) : (
                 <PrimaryButtonWide transparentBG>
@@ -386,6 +397,7 @@ const TableRowLargeContent = ({
   tvl,
   provideLink,
   version,
+  chainIdError,
 }: ITableRowContent) => {
   return (
     <>
@@ -409,9 +421,16 @@ const TableRowLargeContent = ({
       </Cell>
 
       <Cell width={'20%'} style={{ padding: '5px 10px' }}>
-        <TopBorderWrap {...(version !== StakingVersion.EXTERNAL && { onClick: active ? handleClick : undefined })}>
+        <TopBorderWrap
+          active={!chainIdError}
+          {...(version !== StakingVersion.EXTERNAL && { onClick: active && !chainIdError ? handleClick : undefined })}
+        >
           <TopBorder>
-            {version === StakingVersion.EXTERNAL && provideLink ? (
+            {chainIdError ? (
+              <PrimaryButtonWide transparentBG disabled>
+                <ButtonText gradientText={chainIdError}>Switch to Fantom</ButtonText>
+              </PrimaryButtonWide>
+            ) : version === StakingVersion.EXTERNAL && provideLink ? (
               <CustomButtonWrapper
                 isActive={active}
                 href={provideLink}
@@ -430,6 +449,7 @@ const TableRowLargeContent = ({
 }
 
 const TableRowContent = ({ staking }: { staking: StakingType }) => {
+  const { chainId, account } = useWeb3React()
   const { id, rewardTokens, active, name, provideLink = undefined, version } = staking
   const liquidityPool = LiquidityPool.find((p) => p.id === staking.id) || LiquidityPool[0]
   const tokens = liquidityPool?.tokens
@@ -450,6 +470,11 @@ const TableRowContent = ({ staking }: { staking: StakingType }) => {
     return poolBalances[1] * 2 * Number(staking.name === 'DEI-bDEI' ? deiPrice : deusPrice)
   }, [deiPrice, deusPrice, poolBalances, staking.name])
 
+  const supportedChainId: boolean = useMemo(() => {
+    if (!chainId || !account) return false
+    return chainId === SupportedChainId.FANTOM
+  }, [chainId, account])
+
   const router = useRouter()
   const handleClick = useCallback(() => {
     router.push(`/stake/manage/${id}`)
@@ -467,6 +492,7 @@ const TableRowContent = ({ staking }: { staking: StakingType }) => {
           tvl={totalLockedValue}
           provideLink={provideLink}
           version={version}
+          chainIdError={!supportedChainId}
         />
       </TableRowLargeContainer>
       <TableRowMiniContent
@@ -479,6 +505,7 @@ const TableRowContent = ({ staking }: { staking: StakingType }) => {
         tvl={totalLockedValue}
         provideLink={provideLink}
         version={version}
+        chainIdError={!supportedChainId}
       />
     </>
   )
