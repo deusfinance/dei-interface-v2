@@ -92,9 +92,11 @@ const TextContent = styled.p`
 export default function StatsHeader({
   items,
   hasBox,
+  isAddress = true,
 }: {
-  items: { name: string; value: string | number; link?: string }[]
+  items: { name: string; value: string | number | JSX.Element; link?: string }[]
   hasBox?: boolean
+  isAddress?: boolean
 }) {
   return (
     <Wrapper>
@@ -104,7 +106,11 @@ export default function StatsHeader({
           {!item.link ? (
             <Value>{item.value}</Value>
           ) : (
-            <ExternalLink href={ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/address/' + item.link}>
+            <ExternalLink
+              href={
+                isAddress ? ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/address/' + item.link : item.link
+              }
+            >
               <ValueLink>{item.value}</ValueLink>
             </ExternalLink>
           )}

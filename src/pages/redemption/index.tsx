@@ -42,6 +42,8 @@ import Tableau from 'components/App/StableCoin/Tableau'
 import Claim from 'components/App/Redemption/Claim'
 import usePoolStats from 'components/App/StableCoin/PoolStats'
 import WarningModal from 'components/ReviewModal/Warning'
+import { ExternalLink } from 'components/Link'
+import ExternalLinkIcon from '/public/static/images/pages/common/down.svg'
 
 const MainWrap = styled.div`
   display: flex;
@@ -187,7 +189,18 @@ export default function Redemption() {
       </MainButton>
     )
   }
-  const items = usePoolStats()
+  const readMoreLink = 'https://docs.deus.finance/usddei/redeeming-usddei'
+  const readMoreItem: { name: string; value: JSX.Element; link?: string } = {
+    name: '',
+    value: (
+      <ExternalLink style={{ color: '#6F7380' }} href={readMoreLink}>
+        Read more <Image alt="external-link" src={ExternalLinkIcon} width={8} height={8} />
+      </ExternalLink>
+    ),
+    link: readMoreLink,
+  }
+  const items = [...usePoolStats(), readMoreItem]
+  console.log({ items })
 
   const collateralCollectionDelay = useCollateralCollectionDelay()
   const deusCollectionDelay = useDeusCollectionDelay()
@@ -207,7 +220,7 @@ export default function Redemption() {
       <Container>
         <Hero>
           <Image src={DEUS_LOGO} height={'90px'} alt="Logo" />
-          <StatsHeader items={items} />
+          <StatsHeader isAddress={false} items={items} />
         </Hero>
         <MainWrap>
           <Wrapper>
