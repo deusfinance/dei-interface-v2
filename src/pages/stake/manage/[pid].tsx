@@ -6,7 +6,7 @@ import { LiquidityPool as LiquidityPoolList, Stakings } from 'constants/stakingP
 
 import { useWeb3NavbarOption } from 'state/web3navbar/hooks'
 
-import { useCustomCoingeckoPrice } from 'hooks/useCoingeckoPrice'
+import { useCustomCoingeckoPrice, useDeiPrice, useDeusPrice } from 'hooks/useCoingeckoPrice'
 import { usePoolBalances } from 'hooks/useStablePoolInfo'
 
 import LiquidityPool from 'components/App/Staking/LiquidityPool'
@@ -52,8 +52,10 @@ export default function StakingPage() {
   const poolBalances = usePoolBalances(liquidityPool)
 
   const priceToken = liquidityPool.priceToken?.symbol ?? ''
-  const price = useCustomCoingeckoPrice(priceToken) ?? '0'
-  // FIXME: check this for single stakings
+  //const price = useCustomCoingeckoPrice(priceToken) ?? '0'
+  const deusPrice = useDeusPrice()
+  const deiPrice = useDeiPrice()
+
   const totalLockedValue =
     poolBalances[1] * 2 * Number(useCustomCoingeckoPrice(liquidityPool.priceToken?.symbol ?? 'DEI'))
 
@@ -78,10 +80,13 @@ export default function StakingPage() {
   const { swapRatio: bDeiRatio } = useBDeiStats()
 
   const totalDepositedValue = useMemo(() => {
-    return stakingPool.id === 0
-      ? totalDepositedAmount * bDeiRatio * parseFloat(price)
-      : totalDepositedAmount * xDeusRatio * parseFloat(price)
-  }, [bDeiRatio, price, stakingPool, totalDepositedAmount, xDeusRatio])
+    return stakingPool.id === 1
+      ? totalDepositedAmount * bDeiRatio * parseFloat(deiPrice)
+      : stakingPool.id === 3
+      ? totalDepositedAmount * xDeusRatio * parseFloat(deusPrice)
+      : 0
+  }, [bDeiRatio, deiPrice, deusPrice, stakingPool, totalDepositedAmount, xDeusRatio])
+
   const toolTipInfo = primaryTooltipInfo + secondaryTooltipInfo
 
   function onSelect(pid: number) {

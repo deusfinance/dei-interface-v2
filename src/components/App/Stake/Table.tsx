@@ -489,9 +489,11 @@ const TableRowContent = ({ stakingPool }: { stakingPool: StakingType }) => {
   const { swapRatio: bDeiRatio } = useBDeiStats()
 
   const totalDepositedValue = useMemo(() => {
-    return stakingPool.id === 0
+    return stakingPool.id === 1
       ? totalDepositedAmount * bDeiRatio * parseFloat(deiPrice)
-      : totalDepositedAmount * xDeusRatio * parseFloat(deusPrice)
+      : stakingPool.id === 3
+      ? totalDepositedAmount * xDeusRatio * parseFloat(deusPrice)
+      : 0
   }, [bDeiRatio, deiPrice, deusPrice, stakingPool, totalDepositedAmount, xDeusRatio])
 
   const router = useRouter()
