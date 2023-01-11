@@ -98,7 +98,7 @@ export default function TokenBox({ tokens, title, active }: { tokens: Token[]; t
             <span style={{ color: theme.green1 }}>Live</span>
           </div>
         ) : (
-          <span style={{ color: theme.red1 }}>Inactive</span>
+          <span style={{ color: theme.red1 }}>{!active ? 'Inactive' : 'Wrong Network'}</span>
         )}
       </TokensWrap>
     </TokenCell>

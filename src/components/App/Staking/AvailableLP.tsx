@@ -94,9 +94,9 @@ const AvailableLP = ({ pool }: { pool: LiquidityType }) => {
   const [approvalState, approveCallback] = useApproveCallback(lpCurrency ?? undefined, spender)
 
   const [showApprove, showApproveLoader] = useMemo(() => {
-    const show = lpCurrency && approvalState !== ApprovalState.APPROVED
+    const show = lpCurrency && approvalState !== ApprovalState.APPROVED && amountIn
     return [show, show && approvalState === ApprovalState.PENDING]
-  }, [lpCurrency, approvalState])
+  }, [lpCurrency, approvalState, amountIn])
 
   const handleApprove = async () => {
     setAwaitingApproveConfirmation(true)

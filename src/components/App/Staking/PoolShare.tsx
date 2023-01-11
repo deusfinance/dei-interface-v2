@@ -36,7 +36,7 @@ export default function PoolShare({ pool }: { pool: LiquidityType }) {
   const { depositAmount, totalDepositedAmount } = useUserInfo(stakingPool)
 
   const shares = Number(depositAmount) + Number(currencyBalance)
-  const amountsOut = useRemoveLiquidity(pool, depositAmount ? depositAmount.toString() : '0')
+  const amountsOut = useRemoveLiquidity(pool, shares ? shares.toString() : '0')
 
   return (
     <Container>

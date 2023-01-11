@@ -38,10 +38,12 @@ import { Token } from '@sushiswap/core-sdk'
 import { useDeiPrice, useDeusPrice } from 'hooks/useCoingeckoPrice'
 import { usePoolBalances } from 'hooks/useStablePoolInfo'
 import { formatDollarAmount } from 'utils/numbers'
-import { SupportedChainId } from 'constants/chains'
+import { FALLBACK_CHAIN_ID, SupportedChainId } from 'constants/chains'
 import { useBDeiStats } from 'hooks/useBDeiStats'
 import { useUserInfo } from 'hooks/useStakingInfo'
 import { useVDeusStats } from 'hooks/useVDeusStats'
+import useRpcChangerCallback from 'hooks/useRpcChangerCallback'
+import { useWalletModalToggle } from 'state/application/hooks'
 
 const Wrapper = styled.div`
   display: flex;
@@ -332,6 +334,9 @@ interface ITableRowContent {
   provideLink?: string
   version: StakingVersion
   chainIdError: boolean
+  rpcChangerCallback: (chainId: any) => void
+  account: string | null | undefined
+  toggleWalletModal: () => void
 }
 
 const TableRowMiniContent = ({
@@ -345,6 +350,9 @@ const TableRowMiniContent = ({
   provideLink,
   version,
   chainIdError,
+  rpcChangerCallback,
+  account,
+  toggleWalletModal,
 }: ITableRowContent) => {
   return (
     <MiniStakeContainer>
@@ -357,8 +365,12 @@ const TableRowMiniContent = ({
                 onClick: active && !chainIdError ? handleClick : undefined,
               })}
             >
-              {chainIdError ? (
-                <PrimaryButtonWide transparentBG disabled>
+              {!account ? (
+                <PrimaryButtonWide transparentBG onClick={toggleWalletModal}>
+                  <ButtonText gradientText={chainIdError}>Connect Wallet</ButtonText>
+                </PrimaryButtonWide>
+              ) : chainIdError ? (
+                <PrimaryButtonWide transparentBG onClick={() => rpcChangerCallback(FALLBACK_CHAIN_ID)}>
                   <ButtonText gradientText={chainIdError}>Switch to Fantom</ButtonText>
                 </PrimaryButtonWide>
               ) : version === StakingVersion.EXTERNAL && provideLink ? (
@@ -401,6 +413,9 @@ const TableRowLargeContent = ({
   provideLink,
   version,
   chainIdError,
+  rpcChangerCallback,
+  account,
+  toggleWalletModal,
 }: ITableRowContent) => {
   return (
     <>
@@ -429,8 +444,12 @@ const TableRowLargeContent = ({
           {...(version !== StakingVersion.EXTERNAL && { onClick: active && !chainIdError ? handleClick : undefined })}
         >
           <TopBorder>
-            {chainIdError ? (
-              <PrimaryButtonWide transparentBG disabled>
+            {!account ? (
+              <PrimaryButtonWide transparentBG onClick={toggleWalletModal}>
+                <ButtonText gradientText={chainIdError}>Connect Wallet</ButtonText>
+              </PrimaryButtonWide>
+            ) : chainIdError ? (
+              <PrimaryButtonWide transparentBG onClick={() => rpcChangerCallback(FALLBACK_CHAIN_ID)}>
                 <ButtonText gradientText={chainIdError}>Switch to Fantom</ButtonText>
               </PrimaryButtonWide>
             ) : version === StakingVersion.EXTERNAL && provideLink ? (
@@ -453,6 +472,8 @@ const TableRowLargeContent = ({
 
 const TableRowContent = ({ stakingPool }: { stakingPool: StakingType }) => {
   const { chainId, account } = useWeb3React()
+  const rpcChangerCallback = useRpcChangerCallback()
+  const toggleWalletModal = useWalletModalToggle()
   const { id, rewardTokens, active, name, provideLink = undefined, version } = stakingPool
   const liquidityPool = LiquidityPool.find((p) => p.id === stakingPool.id) || LiquidityPool[0]
   const tokens = liquidityPool?.tokens
@@ -514,6 +535,9 @@ const TableRowContent = ({ stakingPool }: { stakingPool: StakingType }) => {
           provideLink={provideLink}
           version={version}
           chainIdError={!supportedChainId}
+          rpcChangerCallback={rpcChangerCallback}
+          account={account}
+          toggleWalletModal={toggleWalletModal}
         />
       </TableRowLargeContainer>
       <TableRowMiniContent
@@ -527,6 +551,9 @@ const TableRowContent = ({ stakingPool }: { stakingPool: StakingType }) => {
         provideLink={provideLink}
         version={version}
         chainIdError={!supportedChainId}
+        rpcChangerCallback={rpcChangerCallback}
+        account={account}
+        toggleWalletModal={toggleWalletModal}
       />
     </>
   )
