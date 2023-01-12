@@ -129,6 +129,15 @@ export default function Menu() {
             </Row>
           </Link>
 
+          <Link href="/arbitrum/mint" passHref>
+            <Row active={router.route === '/arbitrum/mint'}>
+              <div>Arbitrum Mint</div>
+              <IconWrapper>
+                <MintIcon size={20} />
+              </IconWrapper>
+            </Row>
+          </Link>
+
           <Link href="/redemption" passHref>
             <Row active={router.route === '/redemption'}>
               <div>Redeem</div>
@@ -191,6 +200,11 @@ export default function Menu() {
           <ExternalLink href="https://github.com/deusfinance">
             <Row onClick={() => toggle()}>
               <div>Github</div>
+            </Row>
+          </ExternalLink>
+          <ExternalLink href="https://docs.deus.finance">
+            <Row onClick={() => toggle()}>
+              <div>GitBook</div>
             </Row>
           </ExternalLink>
           <Separator />

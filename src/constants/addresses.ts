@@ -25,6 +25,7 @@ export const DEI_ADDRESS: AddressMap = {
     SupportedChainId.MAINNET,
     SupportedChainId.POLYGON,
     SupportedChainId.FANTOM,
+    SupportedChainId.ARBITRUM,
   ]),
 }
 
@@ -89,6 +90,7 @@ export const USDCReserves3: AddressMap = {
 
 export const Multicall2: AddressMap = {
   [SupportedChainId.FANTOM]: '0x22D4cF72C45F8198CfbF4B568dBdB5A85e8DC0B5',
+  [SupportedChainId.ARBITRUM]: '0x7F55Ad3F5659aC8Eb07E545ab04a9Ca5863f7E12',
 }
 
 export const BaseV1Factory: AddressMap = {
@@ -137,6 +139,7 @@ export const MintProxy: AddressMap = {
 
 export const CollateralPool: AddressMap = {
   [SupportedChainId.FANTOM]: '0x6E0098A8c651F7A6A9510B270CD02c858C344D94',
+  [SupportedChainId.ARBITRUM]: '0x24c99A5f82DB4d4B3Ed30A09ccc4A57F451Ea7Bd',
 }
 
 export const Collateral: AddressMap = {
