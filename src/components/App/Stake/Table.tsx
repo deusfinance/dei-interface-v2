@@ -474,6 +474,8 @@ const TableRowContent = ({ stakingPool }: { stakingPool: StakingType }) => {
   const { chainId, account } = useWeb3React()
   const rpcChangerCallback = useRpcChangerCallback()
   const toggleWalletModal = useWalletModalToggle()
+  const deusPrice = useDeusPrice()
+  const deiPrice = useDeiPrice()
   const { id, rewardTokens, active, name, provideLink = undefined, version } = stakingPool
   const liquidityPool = LiquidityPool.find((p) => p.id === stakingPool.id) || LiquidityPool[0]
   const tokens = liquidityPool?.tokens
@@ -481,13 +483,10 @@ const TableRowContent = ({ stakingPool }: { stakingPool: StakingType }) => {
   //const apr = staking.version === StakingVersion.EXTERNAL ? 0 : staking?.aprHook(staking)
 
   // generate total APR if pools have secondary APRs
-  const primaryApy = stakingPool.version === StakingVersion.EXTERNAL ? 0 : stakingPool?.aprHook(stakingPool)
+  const primaryApy = stakingPool.version === StakingVersion.EXTERNAL ? 0 : stakingPool?.aprHook(stakingPool, deusPrice)
   const secondaryApy =
     stakingPool.version === StakingVersion.EXTERNAL ? 0 : stakingPool.secondaryAprHook(liquidityPool, stakingPool)
   const apr = primaryApy + secondaryApy
-
-  const deusPrice = useDeusPrice()
-  const deiPrice = useDeiPrice()
 
   const poolBalances = usePoolBalances(liquidityPool)
 
