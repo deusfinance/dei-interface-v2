@@ -86,21 +86,22 @@ export function useUserInfo(stakingPool: StakingType): {
         ]
       : []
 
-  const calls = !account
-    ? []
-    : [
-        {
-          methodName: 'userInfo',
-          callInputs: [pid.toString(), account],
-        },
-        {
-          methodName: 'pendingTokens',
-          callInputs: [pid.toString(), account],
-        },
-        ...additionalCall,
-      ]
+  const calls =
+    !account || version === StakingVersion.EXTERNAL
+      ? []
+      : [
+          {
+            methodName: 'userInfo',
+            callInputs: [pid.toString(), account],
+          },
+          {
+            methodName: 'pendingTokens',
+            callInputs: [pid.toString(), account],
+          },
+        ]
 
-  const [userInfo, pendingTokens, totalDepositedAmount] = useSingleContractMultipleMethods(contract, calls)
+  const [userInfo, pendingTokens] = useSingleContractMultipleMethods(contract, calls)
+  const [totalDepositedAmount] = useSingleContractMultipleMethods(contract, additionalCall)
 
   const balanceCall = [
     {
@@ -270,12 +271,12 @@ export function usePoolInfo(stakingPool: StakingType): {
   }
 }
 
-export function useGetApy(stakingPool: StakingType): number {
+export function useGetApy(stakingPool: StakingType, deusPrice: string): number {
   const { tokenPerBlock, totalAllocPoint } = useGlobalMasterChefData(stakingPool)
   const { totalDeposited, allocPoint } = usePoolInfo(stakingPool)
   // console.log(tokenPerBlock, totalDeposited)
   // const deiPrice = useDeiPrice()
-  const deusPrice = useDeusPrice()
+  // const deusPrice = useDeusPrice()
   // console.log({ allocPoint, totalAllocPoint, pid })
   if (totalDeposited === 0) return 0
   return (
@@ -288,7 +289,7 @@ export function useGetApy(stakingPool: StakingType): number {
 // }
 
 //get vdeus staking rewards
-export function useV2GetApy(stakingPool: StakingType): number {
+export function useV2GetApy(stakingPool: StakingType, deusPrice?: string): number {
   const { tokenPerBlock: tokenPerSecond, totalAllocPoint } = useGlobalMasterChefData(stakingPool)
   const { totalDeposited, allocPoint } = usePoolInfo(stakingPool)
   if (totalDeposited === 0) return 0
@@ -330,6 +331,8 @@ export function useGetDeusApy(pool: LiquidityType, stakingPool: StakingType): nu
   const myAprShare = ratio * retrieveTokenPerYearValue
 
   //console.log({ avgBlockTime, ratio, totalBalance, myShare, retrieveTokenPerYearValue, myAprShare })
+
+  if (stakingPool.id != 2) return 0
 
   if (!myShare || myShare === 0) return (retrieveTokenPerYearValue / totalBalance) * 100
   return (myAprShare / myShare) * 100

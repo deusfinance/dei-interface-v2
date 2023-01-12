@@ -5,6 +5,7 @@ import useWeb3React from 'hooks/useWeb3'
 import { isMobile } from 'react-device-detect'
 import styled, { useTheme } from 'styled-components'
 import { ChainInfo } from 'constants/chainInfo'
+import { SupportedChainId } from 'constants/chains'
 
 const TokenCell = styled.div`
   display: flex;
@@ -90,14 +91,14 @@ export default function TokenBox({ tokens, title, active }: { tokens: Token[]; t
       </MultipleImageWrapper>
       <TokensWrap>
         <span style={{ textAlign: 'left' }}>{title}</span>
-        {active && chainId ? (
+        {active && chainId === SupportedChainId.FANTOM ? (
           <div>
             <span style={{ color: theme.blue2 }}>{ChainInfo[chainId].label}</span>
             <span> | </span>
             <span style={{ color: theme.green1 }}>Live</span>
           </div>
         ) : (
-          <span style={{ color: theme.red1 }}>Closed.</span>
+          <span style={{ color: theme.red1 }}>{!active ? 'Inactive' : 'Wrong Network'}</span>
         )}
       </TokensWrap>
     </TokenCell>

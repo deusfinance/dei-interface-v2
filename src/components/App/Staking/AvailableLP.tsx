@@ -35,7 +35,6 @@ const AvailableLPHeader = styled(Wrapper)`
   background-color: ${({ theme }) => theme.bg1};
   cursor: pointer;
   & > p {
-    font-size: 0.875rem;
     font-weight: medium;
     &:last-of-type {
       color: ${({ theme }) => theme.text2};
@@ -95,9 +94,9 @@ const AvailableLP = ({ pool }: { pool: LiquidityType }) => {
   const [approvalState, approveCallback] = useApproveCallback(lpCurrency ?? undefined, spender)
 
   const [showApprove, showApproveLoader] = useMemo(() => {
-    const show = lpCurrency && approvalState !== ApprovalState.APPROVED
+    const show = lpCurrency && approvalState !== ApprovalState.APPROVED && amountIn
     return [show, show && approvalState === ApprovalState.PENDING]
-  }, [lpCurrency, approvalState])
+  }, [lpCurrency, approvalState, amountIn])
 
   const handleApprove = async () => {
     setAwaitingApproveConfirmation(true)
@@ -165,7 +164,7 @@ const AvailableLP = ({ pool }: { pool: LiquidityType }) => {
     <Container>
       <>
         <AvailableLPHeader onClick={() => setAmountIn(maxAmountSpend(lpCurrencyBalance)?.toExact() || '')}>
-          <p>LP Available:</p>
+          <p>{stakingPool.token?.symbol} Available:</p>
           <p>{lpCurrencyBalance?.toSignificant(6)}</p>
         </AvailableLPHeader>
         <Divider backgroundColor="#101116" />

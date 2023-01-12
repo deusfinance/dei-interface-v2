@@ -30,7 +30,7 @@ export function usePoolBalances(pool: LiquidityType): number[] {
   }, [results, pool])
 }
 
-export function usePoolInfo(pool: LiquidityType): { virtualPrice: number; protocolFee: number } {
+export function usePoolInfo(pool: LiquidityType): { virtualPrice: number; protocolFee: number; swapFee: number } {
   const contract = useStablePoolContract(pool)
 
   const calls = [
@@ -42,21 +42,27 @@ export function usePoolInfo(pool: LiquidityType): { virtualPrice: number; protoc
       methodName: 'protocolFeeShareBPS',
       callInputs: [],
     },
+    {
+      methodName: 'swapStorage',
+      callInputs: [],
+    },
   ]
 
-  const [virtualPrice, protocolFee] = useSingleContractMultipleMethods(contract, calls)
+  const [virtualPrice, protocolFee, swapStorageRaw] = useSingleContractMultipleMethods(contract, calls)
 
-  const { virtualPriceValue, protocolFeeValue } = useMemo(
+  const { virtualPriceValue, protocolFeeValue, swapFee } = useMemo(
     () => ({
       virtualPriceValue: virtualPrice?.result ? toBN(virtualPrice.result[0].toString()).div(1e18).toNumber() : 0,
       protocolFeeValue: protocolFee?.result ? toBN(protocolFee.result[0].toString()).div(1e18).toNumber() : 0,
+      swapFee: swapStorageRaw?.result ? toBN(swapStorageRaw.result.swapFee?.toString()).div(1e8).toNumber() : 0,
     }),
-    [virtualPrice, protocolFee]
+    [virtualPrice, protocolFee, swapStorageRaw]
   )
 
   return {
     virtualPrice: virtualPriceValue,
     protocolFee: protocolFeeValue,
+    swapFee,
   }
 }
 

@@ -3,12 +3,15 @@ import styled from 'styled-components'
 
 import { usePoolBalances, usePoolInfo } from 'hooks/useStablePoolInfo'
 import { formatAmount, formatDollarAmount } from 'utils/numbers'
-import { LiquidityType, StakingType, Stakings } from 'constants/stakingPools'
+import { LiquidityType, Stakings } from 'constants/stakingPools'
 import Copy from 'components/Copy'
 import { truncateAddress } from 'utils/address'
 import Container from './common/Container'
 import { ContentTable, Label, TableHeader, Value, VStack } from './common/Layout'
 import { useDeiPrice, useDeusPrice } from 'hooks/useCoingeckoPrice'
+import { useUserInfo } from 'hooks/useStakingInfo'
+import { useBDeiStats } from 'hooks/useBDeiStats'
+import { useVDeusStats } from 'hooks/useVDeusStats'
 
 const Wrapper = styled(VStack)`
   padding: 12px;
@@ -26,7 +29,7 @@ const Circle = styled.div<{ disabled: boolean }>`
   height: 10px;
 `
 
-const PoolBalance = React.memo(({ pool, totalLocked }: { pool: LiquidityType; totalLocked: number }) => {
+const PoolBalance = React.memo(({ totalLocked }: { totalLocked: number }) => {
   return (
     <ContentTable>
       <Label> Total Locked: </Label>
@@ -36,21 +39,22 @@ const PoolBalance = React.memo(({ pool, totalLocked }: { pool: LiquidityType; to
 })
 PoolBalance.displayName = 'PoolBalance'
 
-export const APR = React.memo(
-  ({ stakingPool, liquidityPool }: { stakingPool: StakingType; liquidityPool: LiquidityType }) => {
-    // generate total APR if pools have secondary APRs
-    const primaryApy = stakingPool.aprHook(stakingPool)
-    const secondaryApy = stakingPool.hasSecondaryApy ? stakingPool.secondaryAprHook(liquidityPool, stakingPool) : 0
-    const apr = primaryApy + secondaryApy
-    return (
-      <ContentTable>
-        <Label>APR:</Label>
-        <Value> {apr.toFixed(0)}% </Value>
-      </ContentTable>
-    )
-  }
-)
-APR.displayName = 'APR'
+// export const APR = React.memo(
+//   ({ stakingPool, liquidityPool }: { stakingPool: StakingType; liquidityPool: LiquidityType }) => {
+//     const deusAPY = useGetDeusApy(liquidityPool, stakingPool)
+//     // generate total APR if pools have secondary APRs
+//     const primaryApy = stakingPool.aprHook(stakingPool)
+//     const secondaryApy = stakingPool.id === 2 ? deusAPY : 0
+//     const apr = primaryApy + secondaryApy
+//     return (
+//       <ContentTable>
+//         <Label>APR:</Label>
+//         <Value> {apr.toFixed(0)}% </Value>
+//       </ContentTable>
+//     )
+//   }
+// )
+// APR.displayName = 'APR'
 
 export default function PoolInfo({ pool }: { pool: LiquidityType }) {
   const stakingPool = Stakings.find((p) => p.id === pool.id) || Stakings[0]
@@ -62,9 +66,29 @@ export default function PoolInfo({ pool }: { pool: LiquidityType }) {
   const totalLocked = poolBalances?.reduce((a, b) => a + b, 0)
   const poolInfo = usePoolInfo(pool)
 
+  const { totalDepositedAmount } = useUserInfo(stakingPool)
+
+  const isSingleStakingPool = useMemo(() => {
+    return stakingPool.isSingleStaking
+  }, [stakingPool])
+
+  const { swapRatio: xDeusRatio } = useVDeusStats()
+  const { swapRatio: bDeiRatio } = useBDeiStats()
+
+  const totalDepositedValue = useMemo(() => {
+    return stakingPool.id === 0
+      ? totalDepositedAmount * bDeiRatio * parseFloat(deiPrice)
+      : totalDepositedAmount * xDeusRatio * parseFloat(deusPrice)
+  }, [bDeiRatio, deiPrice, deusPrice, stakingPool, totalDepositedAmount, xDeusRatio])
+
   const totalLockedValue = useMemo(() => {
-    return poolBalances[1] * 2 * Number(stakingPool.name === 'DEI-bDEI' ? deiPrice : deusPrice)
-  }, [deiPrice, deusPrice, poolBalances, stakingPool.name])
+    return stakingPool.id > 3 ? 0 : poolBalances[1] * 2 * Number(stakingPool.name === 'DEI-bDEI' ? deiPrice : deusPrice)
+  }, [deiPrice, deusPrice, poolBalances, stakingPool])
+
+  // generate total APR if pools have secondary APRs
+  const primaryApy = stakingPool.aprHook(stakingPool, deusPrice)
+  const secondaryApy = stakingPool.secondaryAprHook(pool, stakingPool)
+  const apr = primaryApy + secondaryApy
 
   return (
     <Container>
@@ -75,29 +99,39 @@ export default function PoolInfo({ pool }: { pool: LiquidityType }) {
             <Circle disabled={!active}></Circle>
           </p>
         </TableHeader>
-        <APR stakingPool={stakingPool} liquidityPool={pool} />
-        <PoolBalance pool={pool} totalLocked={totalLocked} />
         <ContentTable>
-          <Label> Fee: </Label>
-          <Value> {formatAmount(poolInfo?.protocolFee)} </Value>
+          <Label>APR:</Label>
+          <Value> {apr.toFixed(0)}% </Value>
         </ContentTable>
+        <PoolBalance totalLocked={isSingleStakingPool ? totalDepositedAmount : totalLocked} />
 
-        <ContentTable>
-          <Label> Virtual Price: </Label>
-          <Value>{formatAmount(poolInfo?.virtualPrice)}</Value>
-        </ContentTable>
+        {!isSingleStakingPool ? (
+          <ContentTable>
+            <Label> Swap Fee: </Label>
+            <Value>{formatAmount(poolInfo?.swapFee)} %</Value>
+          </ContentTable>
+        ) : null}
+
+        {!isSingleStakingPool ? (
+          <ContentTable>
+            <Label> Virtual Price: </Label>
+            <Value>{formatAmount(poolInfo?.virtualPrice)}</Value>
+          </ContentTable>
+        ) : null}
 
         <ContentTable>
           <Label> Total Reserve Value: </Label>
-          <Value> {formatDollarAmount(totalLockedValue)} </Value>
+          <Value>
+            {isSingleStakingPool ? formatAmount(totalDepositedValue) : formatDollarAmount(totalLockedValue)}
+          </Value>
         </ContentTable>
 
         <ContentTable>
           <Label> {pool.tokens[0].symbol} Reserve: </Label>
-          <Value> {formatAmount(poolBalances[0])} </Value>
+          <Value> {isSingleStakingPool ? formatAmount(totalDepositedAmount) : formatAmount(poolBalances[0])} </Value>
         </ContentTable>
 
-        {pool?.tokens[1] && (
+        {!isSingleStakingPool && (
           <ContentTable>
             <Label> {pool.tokens[1].symbol} Reserve: </Label>
             <Value> {formatAmount(poolBalances[1])} </Value>
@@ -117,7 +151,7 @@ export default function PoolInfo({ pool }: { pool: LiquidityType }) {
 
         {pool?.lpToken.address && (
           <ContentTable>
-            <Label> LP Token Address: </Label>
+            <Label>{pool?.lpToken.symbol} Token Address: </Label>
             <Value>
               <p style={{ textDecoration: 'underline' }}>
                 {<Copy toCopy={pool?.lpToken.address} text={truncateAddress(pool?.lpToken.address)} />}

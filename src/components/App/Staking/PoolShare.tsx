@@ -36,7 +36,7 @@ export default function PoolShare({ pool }: { pool: LiquidityType }) {
   const { depositAmount, totalDepositedAmount } = useUserInfo(stakingPool)
 
   const shares = Number(depositAmount) + Number(currencyBalance)
-  const amountsOut = useRemoveLiquidity(pool, depositAmount ? depositAmount.toString() : '0')
+  const amountsOut = useRemoveLiquidity(pool, shares ? shares.toString() : '0')
 
   return (
     <Container>
@@ -58,7 +58,7 @@ export default function PoolShare({ pool }: { pool: LiquidityType }) {
         {pool?.tokens.length > 1 ? (
           <ContentTable>
             <Label>
-              <p>LP Amount:</p>
+              <p>{stakingPool.token?.symbol} Amount:</p>
             </Label>
             <Value>{formatBalance(Number(depositAmount) + Number(currencyBalance))}</Value>
           </ContentTable>

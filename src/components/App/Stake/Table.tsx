@@ -38,6 +38,12 @@ import { Token } from '@sushiswap/core-sdk'
 import { useDeiPrice, useDeusPrice } from 'hooks/useCoingeckoPrice'
 import { usePoolBalances } from 'hooks/useStablePoolInfo'
 import { formatDollarAmount } from 'utils/numbers'
+import { FALLBACK_CHAIN_ID, SupportedChainId } from 'constants/chains'
+import { useBDeiStats } from 'hooks/useBDeiStats'
+import { useUserInfo } from 'hooks/useStakingInfo'
+import { useVDeusStats } from 'hooks/useVDeusStats'
+import useRpcChangerCallback from 'hooks/useRpcChangerCallback'
+import { useWalletModalToggle } from 'state/application/hooks'
 
 const Wrapper = styled.div`
   display: flex;
@@ -136,7 +142,7 @@ const ButtonText = styled.span<{ gradientText?: boolean }>`
 `
 
 const TopBorderWrap = styled.div<{ active?: boolean }>`
-  background: ${({ theme }) => theme.primary2};
+  background: ${({ theme, active }) => (active ? theme.primary2 : theme.white)};
   padding: 2px;
   border-radius: 12px;
   margin-right: 4px;
@@ -327,6 +333,10 @@ interface ITableRowContent {
   tvl: number
   provideLink?: string
   version: StakingVersion
+  chainIdError: boolean
+  rpcChangerCallback: (chainId: any) => void
+  account: string | null | undefined
+  toggleWalletModal: () => void
 }
 
 const TableRowMiniContent = ({
@@ -339,15 +349,31 @@ const TableRowMiniContent = ({
   tvl,
   provideLink,
   version,
+  chainIdError,
+  rpcChangerCallback,
+  account,
+  toggleWalletModal,
 }: ITableRowContent) => {
   return (
     <MiniStakeContainer>
       <MiniStakeHeaderContainer>
         <TokenBox tokens={tokens} title={name} active={active} />
         <div>
-          <MiniTopBorderWrap>
-            <TopBorder {...(version !== StakingVersion.EXTERNAL && { onClick: active ? handleClick : undefined })}>
-              {version === StakingVersion.EXTERNAL && provideLink ? (
+          <MiniTopBorderWrap active={!chainIdError}>
+            <TopBorder
+              {...(version !== StakingVersion.EXTERNAL && {
+                onClick: active && !chainIdError ? handleClick : undefined,
+              })}
+            >
+              {!account ? (
+                <PrimaryButtonWide transparentBG onClick={toggleWalletModal}>
+                  <ButtonText gradientText={chainIdError}>Connect Wallet</ButtonText>
+                </PrimaryButtonWide>
+              ) : chainIdError ? (
+                <PrimaryButtonWide transparentBG onClick={() => rpcChangerCallback(FALLBACK_CHAIN_ID)}>
+                  <ButtonText gradientText={chainIdError}>Switch to Fantom</ButtonText>
+                </PrimaryButtonWide>
+              ) : version === StakingVersion.EXTERNAL && provideLink ? (
                 <CustomButtonWrapper isActive={active} href={provideLink} type={BUTTON_TYPE.MINI} />
               ) : (
                 <PrimaryButtonWide transparentBG>
@@ -386,6 +412,10 @@ const TableRowLargeContent = ({
   tvl,
   provideLink,
   version,
+  chainIdError,
+  rpcChangerCallback,
+  account,
+  toggleWalletModal,
 }: ITableRowContent) => {
   return (
     <>
@@ -409,9 +439,20 @@ const TableRowLargeContent = ({
       </Cell>
 
       <Cell width={'20%'} style={{ padding: '5px 10px' }}>
-        <TopBorderWrap {...(version !== StakingVersion.EXTERNAL && { onClick: active ? handleClick : undefined })}>
+        <TopBorderWrap
+          active={!chainIdError}
+          {...(version !== StakingVersion.EXTERNAL && { onClick: active && !chainIdError ? handleClick : undefined })}
+        >
           <TopBorder>
-            {version === StakingVersion.EXTERNAL && provideLink ? (
+            {!account ? (
+              <PrimaryButtonWide transparentBG onClick={toggleWalletModal}>
+                <ButtonText gradientText={chainIdError}>Connect Wallet</ButtonText>
+              </PrimaryButtonWide>
+            ) : chainIdError ? (
+              <PrimaryButtonWide transparentBG onClick={() => rpcChangerCallback(FALLBACK_CHAIN_ID)}>
+                <ButtonText gradientText={chainIdError}>Switch to Fantom</ButtonText>
+              </PrimaryButtonWide>
+            ) : version === StakingVersion.EXTERNAL && provideLink ? (
               <CustomButtonWrapper
                 isActive={active}
                 href={provideLink}
@@ -429,26 +470,51 @@ const TableRowLargeContent = ({
   )
 }
 
-const TableRowContent = ({ staking }: { staking: StakingType }) => {
-  const { id, rewardTokens, active, name, provideLink = undefined, version } = staking
-  const liquidityPool = LiquidityPool.find((p) => p.id === staking.id) || LiquidityPool[0]
+const TableRowContent = ({ stakingPool }: { stakingPool: StakingType }) => {
+  const { chainId, account } = useWeb3React()
+  const rpcChangerCallback = useRpcChangerCallback()
+  const toggleWalletModal = useWalletModalToggle()
+  const deusPrice = useDeusPrice()
+  const deiPrice = useDeiPrice()
+  const { id, rewardTokens, active, name, provideLink = undefined, version } = stakingPool
+  const liquidityPool = LiquidityPool.find((p) => p.id === stakingPool.id) || LiquidityPool[0]
   const tokens = liquidityPool?.tokens
 
   //const apr = staking.version === StakingVersion.EXTERNAL ? 0 : staking?.aprHook(staking)
 
   // generate total APR if pools have secondary APRs
-  const primaryApy = staking.version === StakingVersion.EXTERNAL ? 0 : staking?.aprHook(staking)
-  const secondaryApy = staking.hasSecondaryApy ? staking.secondaryAprHook(liquidityPool, staking) : 0
+  const primaryApy = stakingPool.version === StakingVersion.EXTERNAL ? 0 : stakingPool?.aprHook(stakingPool, deusPrice)
+  const secondaryApy =
+    stakingPool.version === StakingVersion.EXTERNAL ? 0 : stakingPool.secondaryAprHook(liquidityPool, stakingPool)
   const apr = primaryApy + secondaryApy
-
-  const deusPrice = useDeusPrice()
-  const deiPrice = useDeiPrice()
 
   const poolBalances = usePoolBalances(liquidityPool)
 
   const totalLockedValue = useMemo(() => {
-    return poolBalances[1] * 2 * Number(staking.name === 'DEI-bDEI' ? deiPrice : deusPrice)
-  }, [deiPrice, deusPrice, poolBalances, staking.name])
+    return poolBalances[1] * 2 * Number(stakingPool.name === 'DEI-bDEI' ? deiPrice : deusPrice)
+  }, [deiPrice, deusPrice, poolBalances, stakingPool])
+
+  const supportedChainId: boolean = useMemo(() => {
+    if (!chainId || !account) return false
+    return chainId === SupportedChainId.FANTOM
+  }, [chainId, account])
+
+  const { totalDepositedAmount } = useUserInfo(stakingPool)
+
+  const isSingleStakingPool = useMemo(() => {
+    return stakingPool.isSingleStaking
+  }, [stakingPool])
+
+  const { swapRatio: xDeusRatio } = useVDeusStats()
+  const { swapRatio: bDeiRatio } = useBDeiStats()
+
+  const totalDepositedValue = useMemo(() => {
+    return stakingPool.id === 1
+      ? totalDepositedAmount * bDeiRatio * parseFloat(deiPrice)
+      : stakingPool.id === 3
+      ? totalDepositedAmount * xDeusRatio * parseFloat(deusPrice)
+      : 0
+  }, [bDeiRatio, deiPrice, deusPrice, stakingPool, totalDepositedAmount, xDeusRatio])
 
   const router = useRouter()
   const handleClick = useCallback(() => {
@@ -464,9 +530,13 @@ const TableRowContent = ({ staking }: { staking: StakingType }) => {
           rewardTokens={rewardTokens}
           tokens={tokens}
           apr={apr}
-          tvl={totalLockedValue}
+          tvl={isSingleStakingPool ? totalDepositedValue : totalLockedValue}
           provideLink={provideLink}
           version={version}
+          chainIdError={!supportedChainId}
+          rpcChangerCallback={rpcChangerCallback}
+          account={account}
+          toggleWalletModal={toggleWalletModal}
         />
       </TableRowLargeContainer>
       <TableRowMiniContent
@@ -476,9 +546,13 @@ const TableRowContent = ({ staking }: { staking: StakingType }) => {
         rewardTokens={rewardTokens}
         tokens={tokens}
         apr={apr}
-        tvl={totalLockedValue}
+        tvl={isSingleStakingPool ? totalDepositedValue : totalLockedValue}
         provideLink={provideLink}
         version={version}
+        chainIdError={!supportedChainId}
+        rpcChangerCallback={rpcChangerCallback}
+        account={account}
+        toggleWalletModal={toggleWalletModal}
       />
     </>
   )
@@ -628,7 +702,7 @@ function TableRow({ staking, index, isMobile }: { staking: StakingType; index: n
 
   return (
     <ZebraStripesRow isEven={index % 2 === 0}>
-      <TableRowContent staking={staking} />
+      <TableRowContent stakingPool={staking} />
     </ZebraStripesRow>
   )
 }
