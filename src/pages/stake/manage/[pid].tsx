@@ -6,9 +6,6 @@ import { LiquidityPool as LiquidityPoolList, Stakings } from 'constants/stakingP
 
 import { useWeb3NavbarOption } from 'state/web3navbar/hooks'
 
-import { useCustomCoingeckoPrice, useDeiPrice, useDeusPrice } from 'hooks/useCoingeckoPrice'
-import { usePoolBalances } from 'hooks/useStablePoolInfo'
-
 import LiquidityPool from 'components/App/Staking/LiquidityPool'
 import PoolInfo from 'components/App/Staking/PoolInfo'
 import PoolShare from 'components/App/Staking/PoolShare'
@@ -16,9 +13,6 @@ import AvailableLP from 'components/App/Staking/AvailableLP'
 import StakedLP from 'components/App/Staking/LPStaked'
 import BalanceToken from 'components/App/Staking/BalanceToken'
 import { VStack } from 'components/App/Staking/common/Layout'
-import { useUserInfo } from 'hooks/useStakingInfo'
-import { useBDeiStats } from 'hooks/useBDeiStats'
-import { useVDeusStats } from 'hooks/useVDeusStats'
 import { useMemo } from 'react'
 
 export const Container = styled.div`
