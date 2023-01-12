@@ -230,8 +230,6 @@ export default function NavBar() {
                 </SimpleLinkWrapper>
               )
             })}
-            {getExternalNavBar('cLQDR', 'https://app.deus.finance/clqdr')}
-            {getExternalNavBar('veDEUS', 'https://app.deus.finance/vest')}
             {getExternalNavBar('Terms', 'https://docs.deus.finance/contracts/disclaimer')}
           </Routes>
           <Items>

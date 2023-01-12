@@ -155,10 +155,12 @@ export default function Menu() {
               </IconWrapper>
             </Row>
           </Link>
+          <Separator />
+
           <ExternalLink href="https://app.deus.finance/vest">
             <Row onClick={() => toggle()}>
               <ExternalItem>
-                <div>veDEUS</div>
+                <div>veDEUS (migrator)</div>
                 <ExternalLinkIcon />
               </ExternalItem>
             </Row>

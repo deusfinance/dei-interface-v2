@@ -9,19 +9,10 @@
     "path": "/mint",
     "exact": true
   },
-  {
-    "text": "Arbitrum Mint",
-    "path": "/arbitrum/mint",
-    "exact": true
-  },
+
   {
     "text": "Redeem",
     "path": "/redemption",
-    "exact": true
-  },
-  {
-    "text": "Bond",
-    "path": "/bond",
     "exact": true
   }
 ]
