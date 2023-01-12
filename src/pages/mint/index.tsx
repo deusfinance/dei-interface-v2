@@ -305,7 +305,6 @@ export default function Mint() {
         Read more <Image alt="external-link" src={ExternalLinkIcon} width={8} height={8} />
       </ExternalLink>
     ),
-    link: readMoreLink,
   }
   const items = [...usePoolStats(), readMoreItem]
 
@@ -314,7 +313,7 @@ export default function Mint() {
       <Container>
         <Hero>
           <Image src={DEI_LOGO} height={'90px'} alt="Logo" />
-          <StatsHeader isAddress={false} items={items} />
+          <StatsHeader items={items} />
         </Hero>
 
         <Wrapper>

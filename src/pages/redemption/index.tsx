@@ -197,10 +197,8 @@ export default function Redemption() {
         Read more <Image alt="external-link" src={ExternalLinkIcon} width={8} height={8} />
       </ExternalLink>
     ),
-    link: readMoreLink,
   }
   const items = [...usePoolStats(), readMoreItem]
-  console.log({ items })
 
   const collateralCollectionDelay = useCollateralCollectionDelay()
   const deusCollectionDelay = useDeusCollectionDelay()
@@ -220,7 +218,7 @@ export default function Redemption() {
       <Container>
         <Hero>
           <Image src={DEUS_LOGO} height={'90px'} alt="Logo" />
-          <StatsHeader isAddress={false} items={items} />
+          <StatsHeader items={items} />
         </Hero>
         <MainWrap>
           <Wrapper>
