@@ -12,12 +12,10 @@ import ANALYTICS_LOGO from '/public/static/images/pages/dashboard/ic_analytics_g
 import ANALYTICS_HOVER_LOGO from '/public/static/images/pages/dashboard/ic_analytics_hover.svg'
 import VEDEUS_LOGO from '/public/static/images/pages/dashboard/ic_vedeus_gray.svg'
 import VEDEUS_HOVER_LOGO from '/public/static/images/pages/dashboard/ic_vedeus_hover.svg'
-// import VDEUS_LOGO from '/public/static/images/pages/dashboard/ic_vdeus_gray.svg'
-// import VDEUS_HOVER_LOGO from '/public/static/images/pages/dashboard/ic_vdeus_hover.svg'
 import DEI_LOGO from '/public/static/images/pages/dashboard/DEI_Dashboard.png'
 
 import { useDeiStats } from 'hooks/useDeiStats'
-import useWeb3React from 'hooks/useWeb3'
+import { useDeiPrice } from 'hooks/useCoingeckoPrice'
 import { formatAmount, formatDollarAmount } from 'utils/numbers'
 
 import Hero from 'components/Hero'
@@ -27,8 +25,6 @@ import { RowBetween, RowCenter } from 'components/Row'
 import { Card } from 'components/App/Dashboard/card'
 import { SocialCard } from 'components/App/Dashboard/SocialCard'
 import Stats from 'components/App/Dashboard/Stats'
-import DeiBondStats from 'components/App/Dashboard/DeiBondStats'
-import { useDeiPrice } from 'hooks/useCoingeckoPrice'
 
 const Wrapper = styled(RowCenter)`
   max-width: 1300px;
@@ -65,7 +61,6 @@ const CardWrapper = styled(RowBetween)`
 `
 
 export default function Dashboard() {
-  const { account } = useWeb3React()
   const { totalSupply, totalUSDCReserves, collateralRatio } = useDeiStats()
   const deiPrice = useDeiPrice()
 
@@ -86,7 +81,6 @@ export default function Dashboard() {
         <StatsHeader items={items} />
       </Hero>
       <Wrapper>
-        {account && <DeiBondStats />}
         <CardWrapper>
           <Card href="/mint" title={'Mint DEI'} subTitle="Mint DEI" MainIcon={MINT_LOGO} HoverIcon={MINT_HOVER_LOGO} />
           <Card
@@ -117,13 +111,6 @@ export default function Dashboard() {
             MainIcon={ANALYTICS_LOGO}
             HoverIcon={ANALYTICS_HOVER_LOGO}
           />
-          {/* <Card
-            href="https://legacy.dei.finance/"
-            title={'vDEUS'}
-            subTitle="Migrate to vDEUS ERC20"
-            MainIcon={VDEUS_LOGO}
-            HoverIcon={VDEUS_HOVER_LOGO}
-          /> */}
           <SocialCard />
         </CardWrapper>
         <Stats />

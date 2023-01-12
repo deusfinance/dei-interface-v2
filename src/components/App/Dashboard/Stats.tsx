@@ -8,23 +8,14 @@ import { useDeiPrice, useDeusPrice } from 'hooks/useCoingeckoPrice'
 import { useDeiStats } from 'hooks/useDeiStats'
 import { useVestedAPY } from 'hooks/useVested'
 
-import { formatAmount, formatDollarAmount } from 'utils/numbers'
+import { formatAmount, formatBalance, formatDollarAmount } from 'utils/numbers'
 import { getMaximumDate } from 'utils/vest'
 
 import { Modal, ModalHeader } from 'components/Modal'
 import { RowBetween } from 'components/Row'
 import StatsItem from './StatsItem'
 import Chart from './Chart'
-import {
-  AMO,
-  CollateralPool,
-  DEI_ADDRESS,
-  escrow,
-  USDCReserves1,
-  USDCReserves2,
-  USDCReserves3,
-  veDEUS,
-} from 'constants/addresses'
+import { CollateralPool, DEI_ADDRESS, escrow, USDCReserves3, veDEUS } from 'constants/addresses'
 import { SupportedChainId } from 'constants/chains'
 import { ChainInfo } from 'constants/chainInfo'
 import { Loader } from 'components/Icons'
@@ -209,12 +200,10 @@ export default function Stats() {
     circulatingSupply,
     totalUSDCReserves,
     totalProtocolHoldings,
-    AMOReserve,
-    usdcReserves1,
-    usdcReserves2,
     usdcReserves3,
     usdcPoolReserves,
     escrowReserve,
+    seigniorage,
   } = useDeiStats()
 
   const { lockedVeDEUS } = useVestedAPY(undefined, getMaximumDate())
@@ -228,36 +217,12 @@ export default function Stats() {
         <ModalInfoWrapper>
           <a
             href={
-              ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/address/' + USDCReserves1[SupportedChainId.FANTOM]
-            }
-            target={'_blank'}
-            rel={'noreferrer'}
-          >
-            Reserves 1
-          </a>
-          {usdcReserves1 === null ? <Loader /> : <ModalItemValue>{formatAmount(usdcReserves1, 2)}</ModalItemValue>}
-        </ModalInfoWrapper>
-        <ModalInfoWrapper>
-          <a
-            href={
-              ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/address/' + USDCReserves2[SupportedChainId.FANTOM]
-            }
-            target={'_blank'}
-            rel={'noreferrer'}
-          >
-            Reserves 2
-          </a>
-          {usdcReserves2 === null ? <Loader /> : <ModalItemValue>{formatAmount(usdcReserves2, 2)}</ModalItemValue>}
-        </ModalInfoWrapper>
-        <ModalInfoWrapper>
-          <a
-            href={
               ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/address/' + USDCReserves3[SupportedChainId.FANTOM]
             }
             target={'_blank'}
             rel={'noreferrer'}
           >
-            Reserves 3
+            Reserves 1
           </a>
           {usdcReserves3 === null ? <Loader /> : <ModalItemValue>{formatAmount(usdcReserves3, 2)}</ModalItemValue>}
         </ModalInfoWrapper>
@@ -267,7 +232,7 @@ export default function Stats() {
             target={'_blank'}
             rel={'noreferrer'}
           >
-            Reserves 4
+            Reserves 2
           </a>
           {escrowReserve === null ? <Loader /> : <ModalItemValue>{formatAmount(escrowReserve, 2)}</ModalItemValue>}
         </ModalInfoWrapper>
@@ -294,9 +259,7 @@ export default function Stats() {
           {totalProtocolHoldings === null ? (
             <Loader />
           ) : (
-            <ModalItemValue>
-              {formatAmount(usdcReserves1 + usdcReserves2 + usdcPoolReserves + usdcReserves3 + escrowReserve, 2)}
-            </ModalItemValue>
+            <ModalItemValue>{formatAmount(usdcPoolReserves + usdcReserves3 + escrowReserve, 2)}</ModalItemValue>
           )}
         </ModalInfoWrapper>
       </ModalWrapper>
@@ -345,9 +308,9 @@ export default function Stats() {
                 }
               />
               <StatsItem
-                name="Total Protocol Holdings"
-                value={formatAmount(AMOReserve, 2)}
-                href={ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/address/' + AMO[SupportedChainId.FANTOM]}
+                name="Seigniorage"
+                value={`${formatBalance(seigniorage, 2)}%`}
+                href={'https://docs.deus.finance/usddei/dei-stablecoin-overview'}
               />
               <StatsItem
                 name="Circulating Supply"
