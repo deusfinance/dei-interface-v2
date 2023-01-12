@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useCallback } from 'react'
+import styled, { useTheme } from 'styled-components'
 import { ArrowDown } from 'react-feather'
 import Image from 'next/image'
 
@@ -12,11 +13,11 @@ import { tryParseAmount } from 'utils/parse'
 
 import { useCurrencyBalance } from 'state/wallet/hooks'
 import useWeb3React from 'hooks/useWeb3'
-import { useSupportedChainId } from 'hooks/useSupportedChainId'
+import { useArbitrumSupportedChainId } from 'hooks/useSupportedChainId'
 import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
 import { useArbitrumMintCallback } from 'hooks/useMintCallback'
 
-import { DotFlashing } from 'components/Icons'
+import { DotFlashing, Info } from 'components/Icons'
 import Hero from 'components/Hero'
 import InputBox from 'components/InputBox'
 import DefaultReviewModal from 'components/ReviewModal/DefaultReviewModal'
@@ -26,10 +27,17 @@ import WarningModal from 'components/ReviewModal/Warning'
 import useRpcChangerCallback from 'hooks/useRpcChangerCallback'
 import { useArbitrumMintPaused } from 'hooks/useMintPage'
 
+const InfoText = styled.span`
+  margin-top: 20px;
+  color: ${({ theme }) => theme.error};
+  font-size: 14px;
+`
+
 export default function Mint() {
   const { chainId, account } = useWeb3React()
-  const isSupportedChainId = useSupportedChainId()
+  const isSupportedChainId = useArbitrumSupportedChainId()
   const mintPaused = useArbitrumMintPaused()
+  const theme = useTheme()
 
   const rpcChangerCallback = useRpcChangerCallback()
 
@@ -44,6 +52,7 @@ export default function Mint() {
 
   const inputToken = tokens[1]
   const token1Currency = inputToken[0]
+  const mintMaxValue = 50
 
   const tokensOut = useMemo(
     () => MINT__OUTPUTS[isSupportedChainId && chainId ? chainId : SupportedChainId.ARBITRUM],
@@ -142,6 +151,7 @@ export default function Mint() {
     else if (showApprove1) return null
     else if (insufficientBalance1)
       return <MainButton disabled>Insufficient {token1Currency?.symbol} Balance</MainButton>
+    else if (Number(amountIn) > mintMaxValue) return <MainButton disabled>Exceed amount</MainButton>
     else if (mintPaused) {
       return <MainButton disabled>Mint Paused</MainButton>
     } else if (awaitingMintConfirmation) {
@@ -184,6 +194,12 @@ export default function Mint() {
             <div style={{ marginTop: '30px' }}></div>
             {getApproveButton()}
             {getActionButton()}
+            {Number(amountIn) > mintMaxValue && (
+              <InfoText>
+                <Info style={{ verticalAlign: 'bottom' }} size={20} color={theme.error} /> You can not mint more than 50
+                DEI in a transaction
+              </InfoText>
+            )}
           </InputWrapper>
         </Wrapper>
       </Container>
