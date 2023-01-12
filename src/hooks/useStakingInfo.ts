@@ -271,12 +271,12 @@ export function usePoolInfo(stakingPool: StakingType): {
   }
 }
 
-export function useGetApy(stakingPool: StakingType): number {
+export function useGetApy(stakingPool: StakingType, deusPrice: string): number {
   const { tokenPerBlock, totalAllocPoint } = useGlobalMasterChefData(stakingPool)
   const { totalDeposited, allocPoint } = usePoolInfo(stakingPool)
   // console.log(tokenPerBlock, totalDeposited)
   // const deiPrice = useDeiPrice()
-  const deusPrice = useDeusPrice()
+  // const deusPrice = useDeusPrice()
   // console.log({ allocPoint, totalAllocPoint, pid })
   if (totalDeposited === 0) return 0
   return (
@@ -289,7 +289,7 @@ export function useGetApy(stakingPool: StakingType): number {
 // }
 
 //get vdeus staking rewards
-export function useV2GetApy(stakingPool: StakingType): number {
+export function useV2GetApy(stakingPool: StakingType, deusPrice?: string): number {
   const { tokenPerBlock: tokenPerSecond, totalAllocPoint } = useGlobalMasterChefData(stakingPool)
   const { totalDeposited, allocPoint } = usePoolInfo(stakingPool)
   if (totalDeposited === 0) return 0

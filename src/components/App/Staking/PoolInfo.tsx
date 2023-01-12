@@ -3,7 +3,7 @@ import styled from 'styled-components'
 
 import { usePoolBalances, usePoolInfo } from 'hooks/useStablePoolInfo'
 import { formatAmount, formatDollarAmount } from 'utils/numbers'
-import { LiquidityType, StakingType, Stakings } from 'constants/stakingPools'
+import { LiquidityType, Stakings } from 'constants/stakingPools'
 import Copy from 'components/Copy'
 import { truncateAddress } from 'utils/address'
 import Container from './common/Container'
@@ -39,21 +39,22 @@ const PoolBalance = React.memo(({ totalLocked }: { totalLocked: number }) => {
 })
 PoolBalance.displayName = 'PoolBalance'
 
-export const APR = React.memo(
-  ({ stakingPool, liquidityPool }: { stakingPool: StakingType; liquidityPool: LiquidityType }) => {
-    // generate total APR if pools have secondary APRs
-    const primaryApy = stakingPool.aprHook(stakingPool)
-    const secondaryApy = stakingPool.hasSecondaryApy ? stakingPool.secondaryAprHook(liquidityPool, stakingPool) : 0
-    const apr = primaryApy + secondaryApy
-    return (
-      <ContentTable>
-        <Label>APR:</Label>
-        <Value> {apr.toFixed(0)}% </Value>
-      </ContentTable>
-    )
-  }
-)
-APR.displayName = 'APR'
+// export const APR = React.memo(
+//   ({ stakingPool, liquidityPool }: { stakingPool: StakingType; liquidityPool: LiquidityType }) => {
+//     const deusAPY = useGetDeusApy(liquidityPool, stakingPool)
+//     // generate total APR if pools have secondary APRs
+//     const primaryApy = stakingPool.aprHook(stakingPool)
+//     const secondaryApy = stakingPool.id === 2 ? deusAPY : 0
+//     const apr = primaryApy + secondaryApy
+//     return (
+//       <ContentTable>
+//         <Label>APR:</Label>
+//         <Value> {apr.toFixed(0)}% </Value>
+//       </ContentTable>
+//     )
+//   }
+// )
+// APR.displayName = 'APR'
 
 export default function PoolInfo({ pool }: { pool: LiquidityType }) {
   const stakingPool = Stakings.find((p) => p.id === pool.id) || Stakings[0]
@@ -81,8 +82,13 @@ export default function PoolInfo({ pool }: { pool: LiquidityType }) {
   }, [bDeiRatio, deiPrice, deusPrice, stakingPool, totalDepositedAmount, xDeusRatio])
 
   const totalLockedValue = useMemo(() => {
-    return poolBalances[1] * 2 * Number(stakingPool.name === 'DEI-bDEI' ? deiPrice : deusPrice)
-  }, [deiPrice, deusPrice, poolBalances, stakingPool.name])
+    return stakingPool.id > 3 ? 0 : poolBalances[1] * 2 * Number(stakingPool.name === 'DEI-bDEI' ? deiPrice : deusPrice)
+  }, [deiPrice, deusPrice, poolBalances, stakingPool])
+
+  // generate total APR if pools have secondary APRs
+  const primaryApy = stakingPool.aprHook(stakingPool, deusPrice)
+  const secondaryApy = stakingPool.secondaryAprHook(pool, stakingPool)
+  const apr = primaryApy + secondaryApy
 
   return (
     <Container>
@@ -93,7 +99,10 @@ export default function PoolInfo({ pool }: { pool: LiquidityType }) {
             <Circle disabled={!active}></Circle>
           </p>
         </TableHeader>
-        <APR stakingPool={stakingPool} liquidityPool={pool} />
+        <ContentTable>
+          <Label>APR:</Label>
+          <Value> {apr.toFixed(0)}% </Value>
+        </ContentTable>
         <PoolBalance totalLocked={isSingleStakingPool ? totalDepositedAmount : totalLocked} />
 
         {!isSingleStakingPool ? (

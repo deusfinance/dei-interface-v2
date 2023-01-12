@@ -56,7 +56,7 @@ export type StakingType = {
   rewardTokens: Token[]
   token?: Token
   provideLink?: string
-  aprHook: (h: StakingType) => number
+  aprHook: (h: StakingType, p: string) => number
   secondaryAprHook: (liqPool?: any, stakingPool?: any) => number
   masterChef: string
   pid: number
