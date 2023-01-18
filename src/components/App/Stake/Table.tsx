@@ -35,13 +35,8 @@ import Beethoven from '/public/static/images/pages/stake/beethoven.svg'
 import ExternalIcon from '/public/static/images/pages/stake/down.svg'
 
 import { Token } from '@sushiswap/core-sdk'
-import { useDeiPrice, useDeusPrice } from 'hooks/useCoingeckoPrice'
-import { usePoolBalances } from 'hooks/useStablePoolInfo'
 import { formatDollarAmount } from 'utils/numbers'
 import { FALLBACK_CHAIN_ID, SupportedChainId } from 'constants/chains'
-import { useBDeiStats } from 'hooks/useBDeiStats'
-import { useUserInfo } from 'hooks/useStakingInfo'
-import { useVDeusStats } from 'hooks/useVDeusStats'
 import useRpcChangerCallback from 'hooks/useRpcChangerCallback'
 import { useWalletModalToggle } from 'state/application/hooks'
 
@@ -474,8 +469,6 @@ const TableRowContent = ({ stakingPool }: { stakingPool: StakingType }) => {
   const { chainId, account } = useWeb3React()
   const rpcChangerCallback = useRpcChangerCallback()
   const toggleWalletModal = useWalletModalToggle()
-  const deusPrice = useDeusPrice()
-  const deiPrice = useDeiPrice()
   const { id, rewardTokens, active, name, provideLink = undefined, version } = stakingPool
   const liquidityPool = LiquidityPool.find((p) => p.id === stakingPool.id) || LiquidityPool[0]
   const tokens = liquidityPool?.tokens
@@ -483,38 +476,17 @@ const TableRowContent = ({ stakingPool }: { stakingPool: StakingType }) => {
   //const apr = staking.version === StakingVersion.EXTERNAL ? 0 : staking?.aprHook(staking)
 
   // generate total APR if pools have secondary APRs
-  const primaryApy = stakingPool.version === StakingVersion.EXTERNAL ? 0 : stakingPool?.aprHook(stakingPool, deusPrice)
+  const primaryApy = stakingPool.version === StakingVersion.EXTERNAL ? 0 : stakingPool?.aprHook(stakingPool)
   const secondaryApy =
     stakingPool.version === StakingVersion.EXTERNAL ? 0 : stakingPool.secondaryAprHook(liquidityPool, stakingPool)
   const apr = primaryApy + secondaryApy
 
-  const poolBalances = usePoolBalances(liquidityPool)
-
-  const totalLockedValue = useMemo(() => {
-    return poolBalances[1] * 2 * Number(stakingPool.name === 'DEI-bDEI' ? deiPrice : deusPrice)
-  }, [deiPrice, deusPrice, poolBalances, stakingPool])
+  const tvl = stakingPool.version === StakingVersion.EXTERNAL ? 0 : stakingPool?.tvlHook(stakingPool)
 
   const supportedChainId: boolean = useMemo(() => {
     if (!chainId || !account) return false
     return chainId === SupportedChainId.FANTOM
   }, [chainId, account])
-
-  const { totalDepositedAmount } = useUserInfo(stakingPool)
-
-  const isSingleStakingPool = useMemo(() => {
-    return stakingPool.isSingleStaking
-  }, [stakingPool])
-
-  const { swapRatio: xDeusRatio } = useVDeusStats()
-  const { swapRatio: bDeiRatio } = useBDeiStats()
-
-  const totalDepositedValue = useMemo(() => {
-    return stakingPool.id === 1
-      ? totalDepositedAmount * bDeiRatio * parseFloat(deiPrice)
-      : stakingPool.id === 3
-      ? totalDepositedAmount * xDeusRatio * parseFloat(deusPrice)
-      : 0
-  }, [bDeiRatio, deiPrice, deusPrice, stakingPool, totalDepositedAmount, xDeusRatio])
 
   const router = useRouter()
   const handleClick = useCallback(() => {
@@ -530,7 +502,7 @@ const TableRowContent = ({ stakingPool }: { stakingPool: StakingType }) => {
           rewardTokens={rewardTokens}
           tokens={tokens}
           apr={apr}
-          tvl={isSingleStakingPool ? totalDepositedValue : totalLockedValue}
+          tvl={tvl}
           provideLink={provideLink}
           version={version}
           chainIdError={!supportedChainId}
@@ -546,7 +518,7 @@ const TableRowContent = ({ stakingPool }: { stakingPool: StakingType }) => {
         rewardTokens={rewardTokens}
         tokens={tokens}
         apr={apr}
-        tvl={isSingleStakingPool ? totalDepositedValue : totalLockedValue}
+        tvl={tvl}
         provideLink={provideLink}
         version={version}
         chainIdError={!supportedChainId}
