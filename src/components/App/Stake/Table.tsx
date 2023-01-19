@@ -35,7 +35,7 @@ import Beethoven from '/public/static/images/pages/stake/beethoven.svg'
 import ExternalIcon from '/public/static/images/pages/stake/down.svg'
 
 import { Token } from '@sushiswap/core-sdk'
-import { formatDollarAmount } from 'utils/numbers'
+import { formatAmount, formatDollarAmount } from 'utils/numbers'
 import { FALLBACK_CHAIN_ID, SupportedChainId } from 'constants/chains'
 import useRpcChangerCallback from 'hooks/useRpcChangerCallback'
 import { useWalletModalToggle } from 'state/application/hooks'
@@ -412,6 +412,9 @@ const TableRowLargeContent = ({
   account,
   toggleWalletModal,
 }: ITableRowContent) => {
+  // console.log(name)
+  // console.log('APR', apr)
+  // console.log('TVl', tvl)
   return (
     <>
       <Cell width={'25%'}>
@@ -420,12 +423,12 @@ const TableRowLargeContent = ({
 
       <Cell width={'10%'}>
         <Name>APR</Name>
-        <Value> {apr !== -1 ? apr.toFixed(0) + '%' : 'N/A'} </Value>
+        <Value> {apr ? formatAmount(apr) + '%' : 'N/A'} </Value>
       </Cell>
 
       <Cell width={'18%'}>
         <Name>TVL</Name>
-        <Value>{formatDollarAmount(tvl)}</Value>
+        <Value>{tvl ? formatDollarAmount(tvl) : 'N/A'}</Value>
       </Cell>
 
       <Cell style={{ textAlign: 'start' }}>
@@ -476,12 +479,14 @@ const TableRowContent = ({ stakingPool }: { stakingPool: StakingType }) => {
   //const apr = staking.version === StakingVersion.EXTERNAL ? 0 : staking?.aprHook(staking)
 
   // generate total APR if pools have secondary APRs
-  const primaryApy = stakingPool.version === StakingVersion.EXTERNAL ? 0 : stakingPool?.aprHook(stakingPool)
+  const primaryApy = stakingPool?.aprHook(stakingPool)
   const secondaryApy =
     stakingPool.version === StakingVersion.EXTERNAL ? 0 : stakingPool.secondaryAprHook(liquidityPool, stakingPool)
   const apr = primaryApy + secondaryApy
 
-  const tvl = stakingPool.version === StakingVersion.EXTERNAL ? 0 : stakingPool?.tvlHook(stakingPool)
+  const tvl = stakingPool?.tvlHook(stakingPool)
+
+  // console.log('apr and tvl for ', apr, tvl, name, stakingPool?.aprHook, stakingPool?.tvlHook)
 
   const supportedChainId: boolean = useMemo(() => {
     if (!chainId || !account) return false

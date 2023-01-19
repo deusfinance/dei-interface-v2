@@ -9,6 +9,7 @@ import {
   VDEUS_TOKEN,
   WFTM_TOKEN,
 } from 'constants/tokens'
+import { useGetBeetsApy, useGetBeetsTvl } from 'hooks/useBeetsPoolStats'
 import { useGetApy, useGetDeusApy, useGetTvl, useNFTGetApy } from 'hooks/useStakingInfo'
 import { MasterChefV2, MasterChefV3, StablePool_DEI_bDEI, StablePool_DEUS_vDEUS, vDeusMasterChefV2 } from './addresses'
 import { SupportedChainId } from './chains'
@@ -72,9 +73,10 @@ export type ExternalStakingType = {
   name: string
   rewardTokens: Token[]
   provideLink: string
-  // contract: Token
-  // aprHook: (h: ExternalStakingType) => number
-  // tvlHook: (h: ExternalStakingType) => number
+  tokens?: Token[]
+  contract: string
+  aprHook?: (h: ExternalStakingType) => number
+  tvlHook?: (h: ExternalStakingType) => number
   active: boolean
   version: StakingVersion
 }
@@ -276,10 +278,11 @@ export const ExternalStakings: ExternalStakingType[] = [
     id: 7,
     name: 'Another DEI, another dollar',
     rewardTokens: [DEUS_TOKEN],
+    tokens: [DEI_TOKEN, USDC_TOKEN],
     provideLink: 'https://beets.fi/pool/0x4e415957aa4fd703ad701e43ee5335d1d7891d8300020000000000000000053b',
-    // aprHook: useGetBeetsApy,
-    // tvlHook: useGetBeetsTvl,
-    // contract: '',
+    aprHook: useGetBeetsApy,
+    tvlHook: useGetBeetsTvl,
+    contract: '0x4e415957aa4fd703ad701e43ee5335d1d7891d8300020000000000000000053b', // poolId of the beets pool
     active: true,
     version: StakingVersion.EXTERNAL,
   },
@@ -289,9 +292,9 @@ export const ExternalStakings: ExternalStakingType[] = [
     rewardTokens: [DEUS_TOKEN],
     provideLink:
       'https://spooky.fi/#/add/0xDE1E704dae0B4051e80DAbB26ab6ad6c12262DA0/0x04068DA6C83AFCFA0e13ba15A6696662335D5B75',
-    // aprHook: useGetBeetsApy,
-    // tvlHook: useGetBeetsTvl,
-    // contract: '',
+    aprHook: useGetBeetsApy, // dummy placeholders for now
+    tvlHook: useGetBeetsTvl, // dummy placeholders for now
+    contract: '',
     active: true,
     version: StakingVersion.EXTERNAL,
   },
@@ -300,9 +303,9 @@ export const ExternalStakings: ExternalStakingType[] = [
     name: 'FTM-DEUS',
     rewardTokens: [DEUS_TOKEN],
     provideLink: 'https://spooky.fi/#/add/0xDE5ed76E7c05eC5e4572CfC88d1ACEA165109E44/FTM',
-    // aprHook: useGetBeetsApy,
-    // tvlHook: useGetBeetsTvl,
-    // contract: '',
+    aprHook: useGetBeetsApy, // dummy placeholders for now
+    tvlHook: useGetBeetsTvl, // dummy placeholders for now
+    contract: '',
     active: true,
     version: StakingVersion.EXTERNAL,
   },
