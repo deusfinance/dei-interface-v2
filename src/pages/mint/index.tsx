@@ -33,7 +33,6 @@ import {
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
 import TokensModal from 'components/App/StableCoin/TokensModal'
-import usePoolStats from 'components/App/StableCoin/PoolStats'
 import WarningModal from 'components/ReviewModal/Warning'
 import { RowCenter } from 'components/Row'
 import { useWeb3NavbarOption } from 'state/web3navbar/hooks'
@@ -84,7 +83,6 @@ const TableauContainer = styled(RowCenter)`
   & > div {
     background-color: ${({ theme }) => theme.bg1};
   }
-  margin-bottom: 2px;
 `
 
 const InputContainer = styled.div`
@@ -330,19 +328,17 @@ export default function Mint() {
           if (amountOut !== '0' && amountOut !== '' && amountOut !== '0.') toggleReviewModal(true)
         }}
       >
-        Mint {outputTokenCurrency?.symbol}
+        Mint
       </MainButton>
     )
   }
-
-  const items = usePoolStats()
 
   return (
     <>
       <MainContainer>
         <Wrapper>
           <TableauContainer>
-            <Tableau title={'Mint'} />
+            <Tableau title={'Mint DEI'} />
           </TableauContainer>
           <InputContainer>
             <InputWrapper>

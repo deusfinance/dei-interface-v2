@@ -385,7 +385,7 @@ export default function NavBar() {
                 <MintIcon size={20} />
               </IconWrapper>
               <Link href="/mint" passHref>
-                <NavLink active={router.route.includes('/mint')}>Mint Dei</NavLink>
+                <NavLink active={router.route.includes('/mint')}>Mint DEI</NavLink>
               </Link>
             </SimpleLinkWrapper>
             <SimpleLinkWrapper className="sidebar-link__route" active={router.route.includes('/redemption')}>
@@ -393,7 +393,7 @@ export default function NavBar() {
                 <RedeemIcon size={20} />
               </IconWrapper>
               <Link href="/redemption" passHref>
-                <NavLink active={router.route.includes('/redemption')}>Redeem Dei</NavLink>
+                <NavLink active={router.route.includes('/redemption')}>Redeem DEI</NavLink>
               </Link>
             </SimpleLinkWrapper>
             <SimpleLinkWrapper className="sidebar-link__route" active={router.route.includes('/stake')}>
@@ -486,9 +486,16 @@ export default function NavBar() {
 
         <Column>
           <Data>
-            <p>Bug Bounty</p>
+            <Link href={'https://docs.deus.finance'} passHref>
+              <a style={{ textDecoration: 'none', color: '#8F939C' }} rel="noreferrer" target="_blank">
+                <DataItems>
+                  Bug Bounty
+                  <ArrowUpRight />
+                </DataItems>
+              </a>
+            </Link>
 
-            <Link href={'https://docs.deus.finance/contracts/disclaimer'} passHref>
+            <Link href={'https://docs.deus.finance'} passHref>
               <a style={{ textDecoration: 'none', color: '#8F939C' }} rel="noreferrer" target="_blank">
                 <DataItems>
                   Docs

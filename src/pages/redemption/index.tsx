@@ -1,10 +1,8 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react'
 import styled from 'styled-components'
 import { ArrowDown, Plus } from 'react-feather'
-import Image from 'next/image'
 
 import REDEEM_IMG from '/public/static/images/pages/redemption/TableauBackground.svg'
-import DEUS_LOGO from '/public/static/images/pages/redemption/DEUS_logo.svg'
 
 import { DEI_TOKEN, DEUS_TOKEN, USDC_TOKEN } from 'constants/tokens'
 import { tryParseAmount } from 'utils/parse'
@@ -23,8 +21,6 @@ import useRedemptionCallback from 'hooks/useRedemptionCallback'
 import { useGetCollateralRatios, useRedeemAmountOut } from 'hooks/useRedemptionPage'
 import useUpdateCallback from 'hooks/useOracleCallback'
 
-import Hero from 'components/Hero'
-import StatsHeader from 'components/StatsHeader'
 import InputBox from 'components/InputBox'
 import DefaultReviewModal from 'components/ReviewModal/DefaultReviewModal'
 import {
@@ -40,7 +36,6 @@ import InputBoxInDollar from 'components/App/Redemption/InputBoxInDollar'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
 import Claim from 'components/App/Redemption/Claim'
-import usePoolStats from 'components/App/StableCoin/PoolStats'
 import WarningModal from 'components/ReviewModal/Warning'
 
 const MainWrap = styled.div`
@@ -187,7 +182,6 @@ export default function Redemption() {
       </MainButton>
     )
   }
-  const items = usePoolStats()
 
   const collateralCollectionDelay = useCollateralCollectionDelay()
   const deusCollectionDelay = useDeusCollectionDelay()
@@ -205,10 +199,6 @@ export default function Redemption() {
   return (
     <>
       <Container>
-        <Hero>
-          <Image src={DEUS_LOGO} height={'90px'} alt="Logo" />
-          <StatsHeader items={items} />
-        </Hero>
         <MainWrap>
           <Wrapper>
             <Tableau title={'Redeem DEI'} imgSrc={REDEEM_IMG} />
