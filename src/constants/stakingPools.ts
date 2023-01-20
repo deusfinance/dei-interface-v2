@@ -5,14 +5,19 @@ import {
   DEI_TOKEN,
   DEUS_TOKEN,
   DEUS_VDEUS_LP_TOKEN,
+  SOLID_TOKEN,
   USDC_TOKEN,
   VDEUS_TOKEN,
   WFTM_TOKEN,
+  XDEUS_DEUS_SOLIDLY_LP,
 } from 'constants/tokens'
 import { useGetBeetsApy, useGetBeetsTvl } from 'hooks/useBeetsPoolStats'
+import { useSolidlyApy, useSolidlyTvl } from 'hooks/useSolidlyPoolStats'
 import { useGetApy, useGetDeusApy, useGetTvl, useNFTGetApy } from 'hooks/useStakingInfo'
 import { MasterChefV2, MasterChefV3, StablePool_DEI_bDEI, StablePool_DEUS_vDEUS, vDeusMasterChefV2 } from './addresses'
+import { ChainInfo } from './chainInfo'
 import { SupportedChainId } from './chains'
+import { BUTTON_TYPE } from './misc'
 
 const lpToken_1Year = new Token(
   SupportedChainId.FANTOM,
@@ -66,6 +71,8 @@ export type StakingType = {
   hasSecondaryApy?: boolean
   version: StakingVersion
   isSingleStaking: boolean
+  chain: string
+  type: BUTTON_TYPE
 }
 
 export type ExternalStakingType = {
@@ -79,6 +86,8 @@ export type ExternalStakingType = {
   tvlHook?: (h: ExternalStakingType) => number
   active: boolean
   version: StakingVersion
+  chain: string
+  type: BUTTON_TYPE
 }
 
 export type LiquidityType = {
@@ -185,6 +194,8 @@ export const Stakings: StakingType[] = [
     active: true,
     version: StakingVersion.V1,
     isSingleStaking: false,
+    chain: ChainInfo[SupportedChainId.FANTOM].label,
+    type: BUTTON_TYPE.INTERNAL,
   },
   {
     id: 1,
@@ -199,6 +210,8 @@ export const Stakings: StakingType[] = [
     active: true,
     version: StakingVersion.V1,
     isSingleStaking: true,
+    chain: ChainInfo[SupportedChainId.FANTOM].label,
+    type: BUTTON_TYPE.INTERNAL,
   },
   {
     id: 2,
@@ -214,6 +227,8 @@ export const Stakings: StakingType[] = [
     hasSecondaryApy: true,
     version: StakingVersion.V2,
     isSingleStaking: false,
+    chain: ChainInfo[SupportedChainId.FANTOM].label,
+    type: BUTTON_TYPE.INTERNAL,
   },
   {
     id: 3,
@@ -228,6 +243,8 @@ export const Stakings: StakingType[] = [
     active: true,
     version: StakingVersion.V2,
     isSingleStaking: true,
+    chain: ChainInfo[SupportedChainId.FANTOM].label,
+    type: BUTTON_TYPE.INTERNAL,
   },
   {
     id: 4,
@@ -242,6 +259,8 @@ export const Stakings: StakingType[] = [
     active: true,
     version: StakingVersion.NFT,
     isSingleStaking: true,
+    chain: ChainInfo[SupportedChainId.FANTOM].label,
+    type: BUTTON_TYPE.INTERNAL,
   },
   {
     id: 5,
@@ -256,6 +275,8 @@ export const Stakings: StakingType[] = [
     active: true,
     version: StakingVersion.NFT,
     isSingleStaking: true,
+    chain: ChainInfo[SupportedChainId.FANTOM].label,
+    type: BUTTON_TYPE.INTERNAL,
   },
   {
     id: 6,
@@ -270,6 +291,8 @@ export const Stakings: StakingType[] = [
     active: true,
     version: StakingVersion.NFT,
     isSingleStaking: true,
+    chain: ChainInfo[SupportedChainId.FANTOM].label,
+    type: BUTTON_TYPE.INTERNAL,
   },
 ]
 
@@ -285,6 +308,8 @@ export const ExternalStakings: ExternalStakingType[] = [
     contract: '0x4e415957aa4fd703ad701e43ee5335d1d7891d8300020000000000000000053b', // poolId of the beets pool
     active: true,
     version: StakingVersion.EXTERNAL,
+    chain: ChainInfo[SupportedChainId.FANTOM].label,
+    type: BUTTON_TYPE.BEETHOVEN,
   },
   {
     id: 8,
@@ -297,6 +322,8 @@ export const ExternalStakings: ExternalStakingType[] = [
     contract: '',
     active: true,
     version: StakingVersion.EXTERNAL,
+    chain: ChainInfo[SupportedChainId.FANTOM].label,
+    type: BUTTON_TYPE.SPOOKY_SWAP,
   },
   {
     id: 9,
@@ -308,5 +335,20 @@ export const ExternalStakings: ExternalStakingType[] = [
     contract: '',
     active: true,
     version: StakingVersion.EXTERNAL,
+    chain: ChainInfo[SupportedChainId.FANTOM].label,
+    type: BUTTON_TYPE.SPOOKY_SWAP,
+  },
+  {
+    id: 10,
+    name: 'xDEUS-DEUS',
+    rewardTokens: [VDEUS_TOKEN, SOLID_TOKEN],
+    provideLink: 'https://solidly.com/liquidity/0x4EF3fF9dadBa30cff48133f5Dc780A28fc48693F',
+    active: true,
+    contract: XDEUS_DEUS_SOLIDLY_LP.address,
+    aprHook: useSolidlyApy,
+    tvlHook: useSolidlyTvl,
+    version: StakingVersion.EXTERNAL,
+    chain: ChainInfo[SupportedChainId.MAINNET].label,
+    type: BUTTON_TYPE.SOLIDLY,
   },
 ]

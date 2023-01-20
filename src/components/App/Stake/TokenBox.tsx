@@ -4,7 +4,6 @@ import { useCurrencyLogos } from 'hooks/useCurrencyLogo'
 import useWeb3React from 'hooks/useWeb3'
 import { isMobile } from 'react-device-detect'
 import styled, { useTheme } from 'styled-components'
-import { ChainInfo } from 'constants/chainInfo'
 import { SupportedChainId } from 'constants/chains'
 
 const TokenCell = styled.div`
@@ -67,7 +66,17 @@ function getImageSize() {
   return isMobile ? 22 : 30
 }
 
-export default function TokenBox({ tokens, title, active }: { tokens: Token[]; title: string; active: boolean }) {
+export default function TokenBox({
+  tokens,
+  title,
+  active,
+  chain,
+}: {
+  tokens: Token[]
+  title: string
+  active: boolean
+  chain: string
+}) {
   const tokensAddress = tokens.map((token) => token.address)
   const logos = useCurrencyLogos(tokensAddress)
   const theme = useTheme()
@@ -93,7 +102,7 @@ export default function TokenBox({ tokens, title, active }: { tokens: Token[]; t
         <span style={{ textAlign: 'left' }}>{title}</span>
         {active && chainId === SupportedChainId.FANTOM ? (
           <div>
-            <span style={{ color: theme.blue2 }}>{ChainInfo[chainId].label}</span>
+            <span style={{ color: theme.blue2 }}>{chain}</span>
             <span> | </span>
             <span style={{ color: theme.green1 }}>Live</span>
           </div>

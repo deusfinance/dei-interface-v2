@@ -1,7 +1,16 @@
 import { SupportedChainId } from 'constants/chains'
 import { Token } from '@sushiswap/core-sdk'
 import { duplicateTokenByAddressMap, duplicateTokenByChainId, TokenMap } from 'utils/token'
-import { USDC_ADDRESS, DEUS_ADDRESS, DEI_ADDRESS, BDEI_ADDRESS, LQDR_ADDRESS, CLQDR_ADDRESS } from './addresses'
+import {
+  USDC_ADDRESS,
+  DEUS_ADDRESS,
+  DEI_ADDRESS,
+  BDEI_ADDRESS,
+  LQDR_ADDRESS,
+  CLQDR_ADDRESS,
+  XDEUS_DEUS_SOLIDLY_LP_ADDRESS,
+  SOLID_TOKEN_ADDRESS,
+} from './addresses'
 
 // import USDC_LOGO from 'assets/img/tokens/usdc.svg'
 // import USDT_LOGO from 'assets/img/tokens/usdt.svg'
@@ -52,6 +61,22 @@ export const DEUS_VDEUS_LP_TOKEN = new Token(
   18,
   'DV-LP',
   'DV-LP'
+)
+
+export const XDEUS_DEUS_SOLIDLY_LP = new Token(
+  SupportedChainId.MAINNET,
+  XDEUS_DEUS_SOLIDLY_LP_ADDRESS[SupportedChainId.MAINNET],
+  18,
+  'vAMM-xDEUS/DEUS',
+  'vAMM-xDEUS/DEUS'
+)
+
+export const SOLID_TOKEN = new Token(
+  SupportedChainId.MAINNET,
+  SOLID_TOKEN_ADDRESS[SupportedChainId.MAINNET],
+  18,
+  'SOLID',
+  'SOLID'
 )
 
 /* =====================================
