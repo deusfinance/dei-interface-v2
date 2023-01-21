@@ -8,7 +8,6 @@ import Image from 'next/image'
 // import { useVestedInformation } from 'hooks/useVested'
 // import { useVeDistContract } from 'hooks/useContract'
 
-import Pagination from 'components/Pagination'
 // import ImageWithFallback from 'components/ImageWithFallback'
 // import { RowCenter } from 'components/Row'
 import { PrimaryButtonWide } from 'components/Button'
@@ -90,10 +89,16 @@ const NoResults = styled.div<{ warning?: boolean }>`
 `
 
 const PaginationWrapper = styled.div`
-  background: ${({ theme }) => theme.bg0};
+  background: ${({ theme }) => theme.bg1};
+  /* background: ${({ theme }) => theme.bg0}; */
   border-bottom-right-radius: 12px;
   border-bottom-left-radius: 12px;
   width: 100%;
+  margin-top: 2px;
+  padding-block: 19px;
+  text-align: center;
+  color: ${({ theme }) => theme.text2};
+  font-family: 'IBM Plex Mono';
 `
 
 const Name = styled.div`
@@ -235,9 +240,10 @@ export default function Table({ isMobile, stakings }: { isMobile?: boolean; stak
         )}
       </TableWrapper>
       <PaginationWrapper>
-        {paginatedItems.length > 0 && (
+        {/* {paginatedItems.length > 0 && (
           <Pagination count={stakings.length} pageCount={pageCount} onPageChange={onPageChange} />
-        )}
+        )} */}
+        {paginatedItems.length} of {stakings.length} Stakings
       </PaginationWrapper>
     </Wrapper>
   )
@@ -337,6 +343,7 @@ interface ITableRowContent {
   rpcChangerCallback: (chainId: any) => void
   account: string | null | undefined
   toggleWalletModal: () => void
+  rewardAmounts: number[]
 }
 
 const TableRowMiniContent = ({
@@ -353,7 +360,11 @@ const TableRowMiniContent = ({
   rpcChangerCallback,
   account,
   toggleWalletModal,
+  rewardAmounts,
 }: ITableRowContent) => {
+  const hasReward = useMemo(() => {
+    return rewardAmounts.every((value) => value === 0)
+  }, [rewardAmounts])
   return (
     <MiniStakeContainer>
       <MiniStakeHeaderContainer>
@@ -394,8 +405,8 @@ const TableRowMiniContent = ({
           <Value> {apr !== -1 ? apr.toFixed(0) + '%' : 'N/A'} </Value>
         </SpaceBetween>
         <SpaceBetween>
-          <Name>Reward Tokens</Name>
-          <RewardBox tokens={rewardTokens} />
+          {hasReward ? <Name>Reward Tokens</Name> : <Name>Reward to claim</Name>}
+          <RewardBox tokens={rewardTokens} rewardAmounts={rewardAmounts} />
         </SpaceBetween>
       </MiniStakeContentContainer>
     </MiniStakeContainer>
@@ -416,7 +427,11 @@ const TableRowLargeContent = ({
   rpcChangerCallback,
   account,
   toggleWalletModal,
+  rewardAmounts,
 }: ITableRowContent) => {
+  const hasReward = useMemo(() => {
+    return rewardAmounts.every((value) => value === 0)
+  }, [rewardAmounts])
   return (
     <>
       <Cell width={'25%'}>
@@ -434,8 +449,8 @@ const TableRowLargeContent = ({
       </Cell>
 
       <Cell style={{ textAlign: 'start' }}>
-        <Name>Reward Tokens</Name>
-        <RewardBox tokens={rewardTokens} />
+        {hasReward ? <Name>Reward Tokens</Name> : <Name>Reward to claim</Name>}
+        <RewardBox tokens={rewardTokens} rewardAmounts={rewardAmounts} />
       </Cell>
 
       <Cell width={'20%'} style={{ padding: '5px 10px' }}>
@@ -499,7 +514,7 @@ const TableRowContent = ({ stakingPool }: { stakingPool: StakingType }) => {
     return chainId === SupportedChainId.FANTOM
   }, [chainId, account])
 
-  const { totalDepositedAmount } = useUserInfo(stakingPool)
+  const { totalDepositedAmount, rewardAmounts } = useUserInfo(stakingPool)
 
   const isSingleStakingPool = useMemo(() => {
     return stakingPool.isSingleStaking
@@ -537,9 +552,11 @@ const TableRowContent = ({ stakingPool }: { stakingPool: StakingType }) => {
           rpcChangerCallback={rpcChangerCallback}
           account={account}
           toggleWalletModal={toggleWalletModal}
+          rewardAmounts={rewardAmounts}
         />
       </TableRowLargeContainer>
       <TableRowMiniContent
+        rewardAmounts={rewardAmounts}
         active={active}
         handleClick={handleClick}
         name={name}
