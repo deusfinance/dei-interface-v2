@@ -4,7 +4,7 @@ import { useSingleContractMultipleMethods } from 'state/multicall/hooks'
 import { toBN } from 'utils/numbers'
 import useWeb3React from './useWeb3'
 import { formatUnits } from '@ethersproject/units'
-import { useDeusPrice } from './useCoingeckoPrice'
+import { useDeiPrice, useDeusPrice } from './useCoingeckoPrice'
 import { MasterChefV2 } from 'constants/addresses'
 import { SupportedChainId } from 'constants/chains'
 import { useVDeusMultiRewarderERC20Contract } from './useContract'
@@ -15,6 +15,8 @@ import { Token } from '@sushiswap/core-sdk'
 import BigNumber from 'bignumber.js'
 import { usePoolBalances } from './useStablePoolInfo'
 import { useAverageBlockTime } from 'state/application/hooks'
+import { useVDeusStats } from './useVDeusStats'
+import { useBDeiStats } from './useBDeiStats'
 
 //TODO: should remove all and put it in /constants
 const pids = [0, 1]
@@ -271,17 +273,48 @@ export function usePoolInfo(stakingPool: StakingType): {
   }
 }
 
-export function useGetApy(stakingPool: StakingType, deusPrice: string): number {
+export function useGetApy(stakingPool: StakingType): number {
   const { tokenPerBlock, totalAllocPoint } = useGlobalMasterChefData(stakingPool)
   const { totalDeposited, allocPoint } = usePoolInfo(stakingPool)
-  // console.log(tokenPerBlock, totalDeposited)
-  // const deiPrice = useDeiPrice()
-  // const deusPrice = useDeusPrice()
-  // console.log({ allocPoint, totalAllocPoint, pid })
+  const deusPrice = useDeusPrice()
+
   if (totalDeposited === 0) return 0
-  return (
-    (tokenPerBlock * (allocPoint / totalAllocPoint) * parseFloat(deusPrice) * 365 * 24 * 60 * 60 * 100) / totalDeposited
-  )
+
+  //for dei pools, calculate apr using deus price
+  return stakingPool.id === 0 || stakingPool.id === 1
+    ? (tokenPerBlock * (allocPoint / totalAllocPoint) * parseFloat(deusPrice) * 365 * 24 * 60 * 60 * 100) /
+        totalDeposited
+    : (tokenPerBlock * (allocPoint / totalAllocPoint) * 365 * 24 * 60 * 60 * 100) / totalDeposited
+}
+
+export function useGetTvl(stakingPool: StakingType): number {
+  const liquidityPool = LiquidityPool.find((p) => p.id === stakingPool.id) || LiquidityPool[0]
+  const deusPrice = useDeusPrice()
+  const deiPrice = useDeiPrice()
+  const poolBalances = usePoolBalances(liquidityPool)
+
+  const totalLockedValue = useMemo(() => {
+    return poolBalances[1] * 2 * Number(stakingPool.name === 'DEI-bDEI' ? deiPrice : deusPrice)
+  }, [deiPrice, deusPrice, poolBalances, stakingPool])
+
+  const { totalDepositedAmount } = useUserInfo(stakingPool)
+
+  const isSingleStakingPool = useMemo(() => {
+    return stakingPool.isSingleStaking
+  }, [stakingPool])
+
+  const { swapRatio: xDeusRatio } = useVDeusStats()
+  const { swapRatio: bDeiRatio } = useBDeiStats()
+
+  const totalDepositedValue = useMemo(() => {
+    return stakingPool.id === 1
+      ? totalDepositedAmount * bDeiRatio * parseFloat(deiPrice)
+      : stakingPool.id === 3
+      ? totalDepositedAmount * xDeusRatio * parseFloat(deusPrice)
+      : 0
+  }, [bDeiRatio, deiPrice, deusPrice, stakingPool, totalDepositedAmount, xDeusRatio])
+
+  return isSingleStakingPool ? totalDepositedValue : totalLockedValue
 }
 
 // export function useV2GetApy(stakingPool: StakingType): number {
@@ -289,13 +322,13 @@ export function useGetApy(stakingPool: StakingType, deusPrice: string): number {
 // }
 
 //get vdeus staking rewards
-export function useV2GetApy(stakingPool: StakingType, deusPrice?: string): number {
-  const { tokenPerBlock: tokenPerSecond, totalAllocPoint } = useGlobalMasterChefData(stakingPool)
-  const { totalDeposited, allocPoint } = usePoolInfo(stakingPool)
-  if (totalDeposited === 0) return 0
+// export function useV2GetApy(stakingPool: StakingType, deusPrice?: string): number {
+//   const { tokenPerBlock: tokenPerSecond, totalAllocPoint } = useGlobalMasterChefData(stakingPool)
+//   const { totalDeposited, allocPoint } = usePoolInfo(stakingPool)
+//   if (totalDeposited === 0) return 0
 
-  return (tokenPerSecond * (allocPoint / totalAllocPoint) * 365 * 24 * 60 * 60 * 100) / totalDeposited
-}
+//   return (tokenPerSecond * (allocPoint / totalAllocPoint) * 365 * 24 * 60 * 60 * 100) / totalDeposited
+// }
 
 //get deus reward apy for deus-vdeus lp pool
 export function useGetDeusApy(pool: LiquidityType, stakingPool: StakingType): number {

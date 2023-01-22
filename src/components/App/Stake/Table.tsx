@@ -30,20 +30,17 @@ import RewardBox from 'components/App/Stake/RewardBox'
 import { useRouter } from 'next/router'
 import { ExternalLink } from 'components/Link'
 import { Divider, HStack, VStack } from '../Staking/common/Layout'
-import Spooky from '/public/static/images/pages/stake/spooky.svg'
-import Beethoven from '/public/static/images/pages/stake/beethoven.svg'
+import SPOOKY_SWAP_IMG from '/public/static/images/pages/stake/spooky.svg'
+import BEETHOVEN_IMG from '/public/static/images/pages/stake/beethoven.svg'
+import SOLIDLY_IMG from '/public/static/images/pages/stake/solid.png'
 import ExternalIcon from '/public/static/images/pages/stake/down.svg'
 
 import { Token } from '@sushiswap/core-sdk'
-import { useDeiPrice, useDeusPrice } from 'hooks/useCoingeckoPrice'
-import { usePoolBalances } from 'hooks/useStablePoolInfo'
-import { formatDollarAmount } from 'utils/numbers'
+import { formatAmount, formatDollarAmount } from 'utils/numbers'
 import { FALLBACK_CHAIN_ID, SupportedChainId } from 'constants/chains'
-import { useBDeiStats } from 'hooks/useBDeiStats'
-import { useUserInfo } from 'hooks/useStakingInfo'
-import { useVDeusStats } from 'hooks/useVDeusStats'
 import useRpcChangerCallback from 'hooks/useRpcChangerCallback'
 import { useWalletModalToggle } from 'state/application/hooks'
+import { BUTTON_TYPE } from 'constants/misc'
 
 const Wrapper = styled.div`
   display: flex;
@@ -175,7 +172,7 @@ const MobileWrapper = styled.div`
   margin-bottom: 20px;
 `
 
-const itemsPerPage = 10
+const itemsPerPage = 12
 
 export default function Table({ isMobile, stakings }: { isMobile?: boolean; stakings: StakingType[] }) {
   const [offset, setOffset] = useState(0)
@@ -258,34 +255,45 @@ const CustomButton = styled(ExternalLink)`
   `}
 `
 
-enum BUTTON_TYPE {
-  BEETHOVEN = 'BEETHOVEN',
-  SPOOKY_SWAP = 'SPOOKY_SWAP',
-  MINI = 'MINI',
+const buttonTitles = {
+  BEETHOVEN: 'Farm on',
+  SPOOKY_SWAP: 'Farm on',
+  SOLIDLY: 'Farm on Solidly',
+  INTERNAL: 'Manage',
 }
 
-const titles = {
-  beethoven: 'beethoven-',
-  spookySwap: 'SpookySwap',
-  mini: 'Manage',
+const buttonImageSources = {
+  BEETHOVEN: BEETHOVEN_IMG,
+  SPOOKY_SWAP: SPOOKY_SWAP_IMG,
+  SOLIDLY: SOLIDLY_IMG.src,
+  INTERNAL: ExternalIcon,
 }
+
+const buttonImageHeights = {
+  BEETHOVEN: 20,
+  SPOOKY_SWAP: 20,
+  SOLIDLY: 20,
+  INTERNAL: 0,
+}
+
+const buttonImageWidths = {
+  BEETHOVEN: 120,
+  SPOOKY_SWAP: 120,
+  SOLIDLY: 20,
+  INTERNAL: 0,
+}
+
 const CustomButtonWrapper = ({ type, href, isActive }: { type: BUTTON_TYPE; href: string; isActive: boolean }) => {
   return (
     <CustomButton transparentBG href={isActive && href}>
       <ButtonText>
-        {type === BUTTON_TYPE.MINI ? titles.mini : 'Farm on'}
+        {buttonTitles[type]}
         <HStack style={{ marginLeft: '1ch', alignItems: 'flex-end' }}>
           <Image
-            width={type === BUTTON_TYPE.BEETHOVEN ? 102 : type === BUTTON_TYPE.MINI ? 8 : 110}
-            height={type === BUTTON_TYPE.BEETHOVEN ? 16 : type === BUTTON_TYPE.MINI ? 8 : 19}
-            src={type === BUTTON_TYPE.BEETHOVEN ? Beethoven : type === BUTTON_TYPE.MINI ? ExternalIcon : Spooky}
-            alt={
-              type === BUTTON_TYPE.BEETHOVEN
-                ? titles.beethoven
-                : type === BUTTON_TYPE.MINI
-                ? titles.mini
-                : titles.spookySwap
-            }
+            width={buttonImageWidths[type]}
+            height={buttonImageHeights[type]}
+            src={buttonImageSources[type]}
+            alt={type}
           />
         </HStack>
       </ButtonText>
@@ -337,6 +345,8 @@ interface ITableRowContent {
   rpcChangerCallback: (chainId: any) => void
   account: string | null | undefined
   toggleWalletModal: () => void
+  chain: string
+  type: BUTTON_TYPE
 }
 
 const TableRowMiniContent = ({
@@ -353,11 +363,13 @@ const TableRowMiniContent = ({
   rpcChangerCallback,
   account,
   toggleWalletModal,
+  chain,
+  type,
 }: ITableRowContent) => {
   return (
     <MiniStakeContainer>
       <MiniStakeHeaderContainer>
-        <TokenBox tokens={tokens} title={name} active={active} />
+        <TokenBox tokens={tokens} title={name} active={active} chain={chain} />
         <div>
           <MiniTopBorderWrap active={!chainIdError}>
             <TopBorder
@@ -374,7 +386,7 @@ const TableRowMiniContent = ({
                   <ButtonText gradientText={chainIdError}>Switch to Fantom</ButtonText>
                 </PrimaryButtonWide>
               ) : version === StakingVersion.EXTERNAL && provideLink ? (
-                <CustomButtonWrapper isActive={active} href={provideLink} type={BUTTON_TYPE.MINI} />
+                <CustomButtonWrapper isActive={active} href={provideLink} type={BUTTON_TYPE.INTERNAL} />
               ) : (
                 <PrimaryButtonWide transparentBG>
                   <ButtonText gradientText={!active}>{active ? 'Manage' : 'Withdraw'}</ButtonText>
@@ -387,11 +399,11 @@ const TableRowMiniContent = ({
       <MiniStakeContentContainer>
         <SpaceBetween>
           <Name>TVL</Name>
-          <Value>{formatDollarAmount(tvl)}</Value>
+          <Value>{tvl ? formatDollarAmount(tvl) : 'N/A'}</Value>
         </SpaceBetween>
         <SpaceBetween>
           <Name>APR</Name>
-          <Value> {apr !== -1 ? apr.toFixed(0) + '%' : 'N/A'} </Value>
+          <Value> {apr ? formatAmount(apr) + '%' : 'N/A'} </Value>
         </SpaceBetween>
         <SpaceBetween>
           <Name>Reward Tokens</Name>
@@ -416,21 +428,23 @@ const TableRowLargeContent = ({
   rpcChangerCallback,
   account,
   toggleWalletModal,
+  chain,
+  type,
 }: ITableRowContent) => {
   return (
     <>
       <Cell width={'25%'}>
-        <TokenBox tokens={tokens} title={name} active={active} />
+        <TokenBox tokens={tokens} title={name} active={active} chain={chain} />
       </Cell>
 
       <Cell width={'10%'}>
         <Name>APR</Name>
-        <Value> {apr !== -1 ? apr.toFixed(0) + '%' : 'N/A'} </Value>
+        <Value> {apr ? formatAmount(apr) + '%' : 'N/A'} </Value>
       </Cell>
 
       <Cell width={'18%'}>
         <Name>TVL</Name>
-        <Value>{formatDollarAmount(tvl)}</Value>
+        <Value>{tvl ? formatDollarAmount(tvl) : 'N/A'}</Value>
       </Cell>
 
       <Cell style={{ textAlign: 'start' }}>
@@ -453,11 +467,7 @@ const TableRowLargeContent = ({
                 <ButtonText gradientText={chainIdError}>Switch to Fantom</ButtonText>
               </PrimaryButtonWide>
             ) : version === StakingVersion.EXTERNAL && provideLink ? (
-              <CustomButtonWrapper
-                isActive={active}
-                href={provideLink}
-                type={provideLink.includes('spooky') ? BUTTON_TYPE.SPOOKY_SWAP : BUTTON_TYPE.BEETHOVEN}
-              />
+              <CustomButtonWrapper isActive={active} href={provideLink} type={type} />
             ) : (
               <PrimaryButtonWide style={{ backgroundColor: '#101116' }} transparentBG>
                 <ButtonText gradientText={!active}>{active ? 'Manage' : 'Withdraw'}</ButtonText>
@@ -474,47 +484,26 @@ const TableRowContent = ({ stakingPool }: { stakingPool: StakingType }) => {
   const { chainId, account } = useWeb3React()
   const rpcChangerCallback = useRpcChangerCallback()
   const toggleWalletModal = useWalletModalToggle()
-  const deusPrice = useDeusPrice()
-  const deiPrice = useDeiPrice()
-  const { id, rewardTokens, active, name, provideLink = undefined, version } = stakingPool
+  const { id, rewardTokens, active, name, provideLink = undefined, version, chain, type } = stakingPool
   const liquidityPool = LiquidityPool.find((p) => p.id === stakingPool.id) || LiquidityPool[0]
   const tokens = liquidityPool?.tokens
 
   //const apr = staking.version === StakingVersion.EXTERNAL ? 0 : staking?.aprHook(staking)
 
   // generate total APR if pools have secondary APRs
-  const primaryApy = stakingPool.version === StakingVersion.EXTERNAL ? 0 : stakingPool?.aprHook(stakingPool, deusPrice)
+  const primaryApy = stakingPool?.aprHook(stakingPool)
   const secondaryApy =
     stakingPool.version === StakingVersion.EXTERNAL ? 0 : stakingPool.secondaryAprHook(liquidityPool, stakingPool)
   const apr = primaryApy + secondaryApy
 
-  const poolBalances = usePoolBalances(liquidityPool)
+  const tvl = stakingPool?.tvlHook(stakingPool)
 
-  const totalLockedValue = useMemo(() => {
-    return poolBalances[1] * 2 * Number(stakingPool.name === 'DEI-bDEI' ? deiPrice : deusPrice)
-  }, [deiPrice, deusPrice, poolBalances, stakingPool])
+  // console.log('apr and tvl for ', apr, tvl, name, stakingPool?.aprHook, stakingPool?.tvlHook)
 
   const supportedChainId: boolean = useMemo(() => {
     if (!chainId || !account) return false
     return chainId === SupportedChainId.FANTOM
   }, [chainId, account])
-
-  const { totalDepositedAmount } = useUserInfo(stakingPool)
-
-  const isSingleStakingPool = useMemo(() => {
-    return stakingPool.isSingleStaking
-  }, [stakingPool])
-
-  const { swapRatio: xDeusRatio } = useVDeusStats()
-  const { swapRatio: bDeiRatio } = useBDeiStats()
-
-  const totalDepositedValue = useMemo(() => {
-    return stakingPool.id === 1
-      ? totalDepositedAmount * bDeiRatio * parseFloat(deiPrice)
-      : stakingPool.id === 3
-      ? totalDepositedAmount * xDeusRatio * parseFloat(deusPrice)
-      : 0
-  }, [bDeiRatio, deiPrice, deusPrice, stakingPool, totalDepositedAmount, xDeusRatio])
 
   const router = useRouter()
   const handleClick = useCallback(() => {
@@ -530,13 +519,15 @@ const TableRowContent = ({ stakingPool }: { stakingPool: StakingType }) => {
           rewardTokens={rewardTokens}
           tokens={tokens}
           apr={apr}
-          tvl={isSingleStakingPool ? totalDepositedValue : totalLockedValue}
+          tvl={tvl}
           provideLink={provideLink}
           version={version}
           chainIdError={!supportedChainId}
           rpcChangerCallback={rpcChangerCallback}
           account={account}
           toggleWalletModal={toggleWalletModal}
+          chain={chain}
+          type={type}
         />
       </TableRowLargeContainer>
       <TableRowMiniContent
@@ -546,13 +537,15 @@ const TableRowContent = ({ stakingPool }: { stakingPool: StakingType }) => {
         rewardTokens={rewardTokens}
         tokens={tokens}
         apr={apr}
-        tvl={isSingleStakingPool ? totalDepositedValue : totalLockedValue}
+        tvl={tvl}
         provideLink={provideLink}
         version={version}
         chainIdError={!supportedChainId}
         rpcChangerCallback={rpcChangerCallback}
         account={account}
         toggleWalletModal={toggleWalletModal}
+        chain={chain}
+        type={type}
       />
     </>
   )

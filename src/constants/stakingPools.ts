@@ -5,13 +5,19 @@ import {
   DEI_TOKEN,
   DEUS_TOKEN,
   DEUS_VDEUS_LP_TOKEN,
+  SOLID_TOKEN,
   USDC_TOKEN,
   VDEUS_TOKEN,
   WFTM_TOKEN,
+  XDEUS_DEUS_SOLIDLY_LP,
 } from 'constants/tokens'
-import { useGetApy, useGetDeusApy, useNFTGetApy, useV2GetApy } from 'hooks/useStakingInfo'
+import { useGetBeetsApy, useGetBeetsTvl } from 'hooks/useBeetsPoolStats'
+import { useSolidlyApy, useSolidlyTvl } from 'hooks/useSolidlyPoolStats'
+import { useGetApy, useGetDeusApy, useGetTvl, useNFTGetApy } from 'hooks/useStakingInfo'
 import { MasterChefV2, MasterChefV3, StablePool_DEI_bDEI, StablePool_DEUS_vDEUS, vDeusMasterChefV2 } from './addresses'
+import { ChainInfo } from './chainInfo'
 import { SupportedChainId } from './chains'
+import { BUTTON_TYPE } from './misc'
 
 const lpToken_1Year = new Token(
   SupportedChainId.FANTOM,
@@ -56,7 +62,8 @@ export type StakingType = {
   rewardTokens: Token[]
   token?: Token
   provideLink?: string
-  aprHook: (h: StakingType, p: string) => number
+  aprHook: (h: StakingType) => number
+  tvlHook: (h: StakingType) => number
   secondaryAprHook: (liqPool?: any, stakingPool?: any) => number
   masterChef: string
   pid: number
@@ -64,6 +71,8 @@ export type StakingType = {
   hasSecondaryApy?: boolean
   version: StakingVersion
   isSingleStaking: boolean
+  chain: string
+  type: BUTTON_TYPE
 }
 
 export type ExternalStakingType = {
@@ -71,8 +80,14 @@ export type ExternalStakingType = {
   name: string
   rewardTokens: Token[]
   provideLink: string
+  tokens?: Token[]
+  contract: string
+  aprHook?: (h: ExternalStakingType) => number
+  tvlHook?: (h: ExternalStakingType) => number
   active: boolean
   version: StakingVersion
+  chain: string
+  type: BUTTON_TYPE
 }
 
 export type LiquidityType = {
@@ -172,12 +187,15 @@ export const Stakings: StakingType[] = [
     rewardTokens: [DEUS_TOKEN],
     token: DEI_BDEI_LP_TOKEN,
     aprHook: useGetApy,
+    tvlHook: useGetTvl,
     secondaryAprHook: useGetDeusApy,
     masterChef: MasterChefV2[SupportedChainId.FANTOM],
     pid: 1,
     active: true,
     version: StakingVersion.V1,
     isSingleStaking: false,
+    chain: ChainInfo[SupportedChainId.FANTOM].label,
+    type: BUTTON_TYPE.INTERNAL,
   },
   {
     id: 1,
@@ -185,19 +203,23 @@ export const Stakings: StakingType[] = [
     rewardTokens: [DEUS_TOKEN],
     token: BDEI_TOKEN,
     aprHook: useGetApy,
+    tvlHook: useGetTvl,
     secondaryAprHook: useGetDeusApy,
     masterChef: MasterChefV2[SupportedChainId.FANTOM],
     pid: 0,
     active: true,
     version: StakingVersion.V1,
     isSingleStaking: true,
+    chain: ChainInfo[SupportedChainId.FANTOM].label,
+    type: BUTTON_TYPE.INTERNAL,
   },
   {
     id: 2,
     name: 'DEUS-vDEUS',
     rewardTokens: [VDEUS_TOKEN, DEUS_TOKEN],
     token: DEUS_VDEUS_LP_TOKEN,
-    aprHook: useV2GetApy,
+    aprHook: useGetApy,
+    tvlHook: useGetTvl,
     secondaryAprHook: useGetDeusApy,
     masterChef: MasterChefV3[SupportedChainId.FANTOM],
     pid: 2,
@@ -205,19 +227,24 @@ export const Stakings: StakingType[] = [
     hasSecondaryApy: true,
     version: StakingVersion.V2,
     isSingleStaking: false,
+    chain: ChainInfo[SupportedChainId.FANTOM].label,
+    type: BUTTON_TYPE.INTERNAL,
   },
   {
     id: 3,
     name: 'vDEUS (ERC20)',
     rewardTokens: [DEUS_TOKEN],
     token: VDEUS_TOKEN,
-    aprHook: useV2GetApy,
+    aprHook: useGetApy,
+    tvlHook: useGetTvl,
     secondaryAprHook: useGetDeusApy,
     masterChef: MasterChefV3[SupportedChainId.FANTOM],
     pid: 0,
     active: true,
     version: StakingVersion.V2,
     isSingleStaking: true,
+    chain: ChainInfo[SupportedChainId.FANTOM].label,
+    type: BUTTON_TYPE.INTERNAL,
   },
   {
     id: 4,
@@ -225,12 +252,15 @@ export const Stakings: StakingType[] = [
     rewardTokens: [VDEUS_TOKEN, DEUS_TOKEN],
     token: VDEUS_TOKEN, // TODO: should represent vDEUS NFT
     aprHook: useNFTGetApy,
+    tvlHook: useGetTvl,
     secondaryAprHook: useGetDeusApy,
     masterChef: vDeusMasterChefV2[SupportedChainId.FANTOM],
     pid: 0,
     active: true,
     version: StakingVersion.NFT,
     isSingleStaking: true,
+    chain: ChainInfo[SupportedChainId.FANTOM].label,
+    type: BUTTON_TYPE.INTERNAL,
   },
   {
     id: 5,
@@ -238,12 +268,15 @@ export const Stakings: StakingType[] = [
     rewardTokens: [VDEUS_TOKEN, DEUS_TOKEN],
     token: VDEUS_TOKEN, // TODO: should represent vDEUS NFT
     aprHook: useNFTGetApy,
+    tvlHook: useGetTvl,
     secondaryAprHook: useGetDeusApy,
     masterChef: vDeusMasterChefV2[SupportedChainId.FANTOM],
     pid: 1,
     active: true,
     version: StakingVersion.NFT,
     isSingleStaking: true,
+    chain: ChainInfo[SupportedChainId.FANTOM].label,
+    type: BUTTON_TYPE.INTERNAL,
   },
   {
     id: 6,
@@ -251,12 +284,15 @@ export const Stakings: StakingType[] = [
     rewardTokens: [VDEUS_TOKEN, DEUS_TOKEN],
     token: VDEUS_TOKEN, // TODO: should represent vDEUS NFT
     aprHook: useNFTGetApy,
+    tvlHook: useGetTvl,
     secondaryAprHook: useGetDeusApy,
     masterChef: vDeusMasterChefV2[SupportedChainId.FANTOM],
     pid: 2,
     active: true,
     version: StakingVersion.NFT,
     isSingleStaking: true,
+    chain: ChainInfo[SupportedChainId.FANTOM].label,
+    type: BUTTON_TYPE.INTERNAL,
   },
 ]
 
@@ -265,9 +301,15 @@ export const ExternalStakings: ExternalStakingType[] = [
     id: 7,
     name: 'Another DEI, another dollar',
     rewardTokens: [DEUS_TOKEN],
+    tokens: [DEI_TOKEN, USDC_TOKEN],
     provideLink: 'https://beets.fi/pool/0x4e415957aa4fd703ad701e43ee5335d1d7891d8300020000000000000000053b',
+    aprHook: useGetBeetsApy,
+    tvlHook: useGetBeetsTvl,
+    contract: '0x4e415957aa4fd703ad701e43ee5335d1d7891d8300020000000000000000053b', // poolId of the beets pool
     active: true,
     version: StakingVersion.EXTERNAL,
+    chain: ChainInfo[SupportedChainId.FANTOM].label,
+    type: BUTTON_TYPE.BEETHOVEN,
   },
   {
     id: 8,
@@ -275,15 +317,38 @@ export const ExternalStakings: ExternalStakingType[] = [
     rewardTokens: [DEUS_TOKEN],
     provideLink:
       'https://spooky.fi/#/add/0xDE1E704dae0B4051e80DAbB26ab6ad6c12262DA0/0x04068DA6C83AFCFA0e13ba15A6696662335D5B75',
+    aprHook: useGetBeetsApy, // dummy placeholders for now
+    tvlHook: useGetBeetsTvl, // dummy placeholders for now
+    contract: '',
     active: true,
     version: StakingVersion.EXTERNAL,
+    chain: ChainInfo[SupportedChainId.FANTOM].label,
+    type: BUTTON_TYPE.SPOOKY_SWAP,
   },
   {
     id: 9,
     name: 'FTM-DEUS',
     rewardTokens: [DEUS_TOKEN],
     provideLink: 'https://spooky.fi/#/add/0xDE5ed76E7c05eC5e4572CfC88d1ACEA165109E44/FTM',
+    aprHook: useGetBeetsApy, // dummy placeholders for now
+    tvlHook: useGetBeetsTvl, // dummy placeholders for now
+    contract: '',
     active: true,
     version: StakingVersion.EXTERNAL,
+    chain: ChainInfo[SupportedChainId.FANTOM].label,
+    type: BUTTON_TYPE.SPOOKY_SWAP,
+  },
+  {
+    id: 10,
+    name: 'xDEUS-DEUS',
+    rewardTokens: [VDEUS_TOKEN, SOLID_TOKEN],
+    provideLink: 'https://solidly.com/liquidity/0x4EF3fF9dadBa30cff48133f5Dc780A28fc48693F',
+    active: true,
+    contract: XDEUS_DEUS_SOLIDLY_LP.address,
+    aprHook: useSolidlyApy,
+    tvlHook: useSolidlyTvl,
+    version: StakingVersion.EXTERNAL,
+    chain: ChainInfo[SupportedChainId.MAINNET].label,
+    type: BUTTON_TYPE.SOLIDLY,
   },
 ]
