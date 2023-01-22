@@ -86,7 +86,7 @@ export default function PoolInfo({ pool }: { pool: LiquidityType }) {
   }, [deiPrice, deusPrice, poolBalances, stakingPool])
 
   // generate total APR if pools have secondary APRs
-  const primaryApy = stakingPool.aprHook(stakingPool, deusPrice)
+  const primaryApy = stakingPool.aprHook(stakingPool)
   const secondaryApy = stakingPool.secondaryAprHook(pool, stakingPool)
   const apr = primaryApy + secondaryApy
 

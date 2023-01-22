@@ -202,3 +202,11 @@ export const Migrator: AddressMap = {
 export const veDEUSMultiRewarderERC20: AddressMap = {
   [SupportedChainId.FANTOM]: '0x9909E6046A9Ca950Cd2a28071338BdcB7d33f9Cb',
 }
+
+export const XDEUS_DEUS_SOLIDLY_LP_ADDRESS: AddressMap = {
+  [SupportedChainId.MAINNET]: '0x4EF3fF9dadBa30cff48133f5Dc780A28fc48693F',
+}
+
+export const SOLID_TOKEN_ADDRESS: AddressMap = {
+  [SupportedChainId.MAINNET]: '0x777172D858dC1599914a1C4c6c9fC48c99a60990',
+}

@@ -13,3 +13,10 @@ export const INFO_URL = 'https://info.deus.finance'
 
 //oracle api
 export const ORACLE_BASE_URL = new URL('https://oracle4.deus.finance')
+
+export enum BUTTON_TYPE {
+  BEETHOVEN = 'BEETHOVEN',
+  SPOOKY_SWAP = 'SPOOKY_SWAP',
+  SOLIDLY = 'SOLIDLY',
+  INTERNAL = 'INTERNAL',
+}
