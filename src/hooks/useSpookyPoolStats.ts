@@ -28,6 +28,12 @@ export function useGetSpookyPoolStats(poolId: string): { apr: number; tvl: numbe
         query: GetSpookyPoolsData,
         variables: { id: poolId },
       })
+      //   console.log(
+      //     data.pairs[0].name,
+      //     data.pairs[0].reserveUSD,
+      //     data.pairs[0].volumeUSD,
+      //     (data.pairs[0].volumeUSD * 0.002 * 365 * 100) / data.pairs[0].reserveUSD
+      //   )
       setApr(0)
       setTvl(data.pairs[0].reserveUSD)
     }
