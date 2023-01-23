@@ -81,7 +81,7 @@ export type ExternalStakingType = {
   name: string
   rewardTokens: Token[]
   provideLink: string
-  tokens?: Token[]
+  tokens: Token[]
   contract: string
   aprHook?: (h: ExternalStakingType) => number
   tvlHook?: (h: ExternalStakingType) => number
@@ -316,6 +316,7 @@ export const ExternalStakings: ExternalStakingType[] = [
     id: 8,
     name: 'USDC-DEI',
     rewardTokens: [DEUS_TOKEN],
+    tokens: [USDC_TOKEN, DEI_TOKEN],
     provideLink:
       'https://spooky.fi/#/add/0xDE1E704dae0B4051e80DAbB26ab6ad6c12262DA0/0x04068DA6C83AFCFA0e13ba15A6696662335D5B75',
     aprHook: useGetSpookyApy,
@@ -330,6 +331,7 @@ export const ExternalStakings: ExternalStakingType[] = [
     id: 9,
     name: 'FTM-DEUS',
     rewardTokens: [DEUS_TOKEN],
+    tokens: [WFTM_TOKEN, DEUS_TOKEN],
     provideLink: 'https://spooky.fi/#/add/0xDE5ed76E7c05eC5e4572CfC88d1ACEA165109E44/FTM',
     aprHook: useGetSpookyApy,
     tvlHook: useGetSpookyTvl,
@@ -343,6 +345,7 @@ export const ExternalStakings: ExternalStakingType[] = [
     id: 10,
     name: 'xDEUS-DEUS',
     rewardTokens: [VDEUS_TOKEN, SOLID_TOKEN],
+    tokens: [VDEUS_TOKEN, DEUS_TOKEN],
     provideLink: 'https://solidly.com/liquidity/0x4EF3fF9dadBa30cff48133f5Dc780A28fc48693F',
     active: true,
     contract: XDEUS_DEUS_SOLIDLY_LP.address,
