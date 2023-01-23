@@ -18,7 +18,7 @@ furaHeaders.append('sec-ch-ua-platform', '"Windows"')
 furaHeaders.append('Sec-Fetch-Site', 'cross-site')
 furaHeaders.append('Sec-Fetch-Mode', 'cors')
 furaHeaders.append('Sec-Fetch-Dest', 'empty')
-furaHeaders.append('Origin', 'localhost:3000')
+furaHeaders.append('Origin', 'info.spookyswap.finance')
 furaHeaders.append('host', 'api.fura.org')
 
 const userMiddleware = new ApolloLink((operation, forward) => {
