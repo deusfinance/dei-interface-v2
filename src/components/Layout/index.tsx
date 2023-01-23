@@ -11,6 +11,7 @@ import Web3Navbar from './Web3Navbar'
 const Wrapper = styled.div`
   display: flex;
   flex-flow: row nowrap;
+  background: ${({ theme }) => theme.bg0};
   /* overflow: hidden; */
 `
 

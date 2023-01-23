@@ -4,12 +4,13 @@ import { useCurrencyLogos } from 'hooks/useCurrencyLogo'
 import { isMobile } from 'react-device-detect'
 import styled from 'styled-components'
 
-const TokenCell = styled.div`
+const TokenCell = styled.div<{ hasReward: boolean }>`
   display: flex;
   flex-flow: row nowrap;
-  align-items: center;
-  gap: 10px;
+  align-items: flex-start;
   margin-top: 12px;
+  flex-direction: ${({ hasReward }) => (hasReward ? 'column' : 'row')};
+  gap: 10px;
 `
 
 const TokenWrap = styled.div`
@@ -17,7 +18,6 @@ const TokenWrap = styled.div`
   flex-flow: row nowrap;
   align-items: center;
   gap: 10px;
-  margin: 0 10px;
 `
 
 export const DeusText = styled.span`
@@ -30,14 +30,12 @@ function getImageSize() {
   return isMobile ? 16 : 18
 }
 
-export default function RewardBox({ tokens }: { tokens: Token[] }) {
+export default function RewardBox({ tokens, rewardAmounts }: { tokens: Token[]; rewardAmounts: number[] }) {
   const tokensAddress = tokens.map((token) => token.address)
   const logos = useCurrencyLogos(tokensAddress)
 
-  const rewardAmount = 0
-
   return (
-    <TokenCell>
+    <TokenCell hasReward={rewardAmounts.every((value) => value !== 0)}>
       {tokens.map((token, index) => {
         return (
           <TokenWrap key={index}>
@@ -49,8 +47,10 @@ export default function RewardBox({ tokens }: { tokens: Token[] }) {
               round
             />
             <DeusText>
-              {!!rewardAmount && `${rewardAmount} `}
-              {token.name}
+              {rewardAmounts[index] !== 0 &&
+                !Object.is(Number(rewardAmounts[index]), NaN) &&
+                Number(rewardAmounts[index]).toFixed(2)}
+              {' ' + token.name}
             </DeusText>
           </TokenWrap>
         )

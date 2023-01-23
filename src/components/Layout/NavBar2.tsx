@@ -34,6 +34,7 @@ import {
 import { ArrowUpRight } from 'react-feather'
 import { useDeiPrice, useDeusPrice } from 'hooks/useCoingeckoPrice'
 import Column from 'components/Column'
+import { ExternalLink } from 'components/Link'
 
 const Wrapper = styled.div`
   gap: 5px;
@@ -307,7 +308,10 @@ const Data = styled.div`
 const DataItems = styled(RowStart)`
   margin: 8px 0px;
 `
-
+const CustomLink = styled(ExternalLink)`
+  text-decoration: none;
+  color: #8f939c !important;
+`
 export default function NavBar() {
   const router = useRouter()
 
@@ -435,25 +439,28 @@ export default function NavBar() {
 
             <Separator />
 
-            <SimpleLinkWrapper className="last" active={router.route.includes('/clqdr')}>
+            <SimpleLinkWrapper className="last">
               <IconWrapper>
                 <VeDeusIcon size={20} />
               </IconWrapper>
-              <Link href="/clqdr" passHref>
-                <NavLink active={router.route.includes('/clqdr')}>xDEUS</NavLink>
-              </Link>
+              <ExternalLink style={{ fontSize: 20, padding: '0.25rem 1rem' }} href="https://app.deus.finance/clqdr">
+                xDEUS
+              </ExternalLink>
               <ArrowUpRight />
               <Logo>
                 <ImageWithFallback src={DEUSFINANCE} width={92} height={14} alt={`deus_finance_logo`} />
               </Logo>
             </SimpleLinkWrapper>
-            <SimpleLinkWrapper active={router.route.includes('/clqdr')}>
+            <SimpleLinkWrapper>
               <IconWrapper>
                 <BridgeIcon size={20} />
               </IconWrapper>
-              <Link href="/clqdr" passHref>
-                <NavLink active={router.route.includes('/clqdr')}>Bridge</NavLink>
-              </Link>
+              <ExternalLink
+                style={{ fontSize: 20, padding: '0.25rem 1rem' }}
+                href="https://app.multichain.org/#/router"
+              >
+                Bridge
+              </ExternalLink>
               <ArrowUpRight />
               <Logo>
                 <ImageWithFallback src={MULTICHAIN} width={88} height={13} alt={`multichain_logo`} />
@@ -486,31 +493,25 @@ export default function NavBar() {
 
         <Column>
           <Data>
-            <Link href={'https://docs.deus.finance'} passHref>
-              <a style={{ textDecoration: 'none', color: '#8F939C' }} rel="noreferrer" target="_blank">
-                <DataItems>
-                  Bug Bounty
-                  <ArrowUpRight />
-                </DataItems>
-              </a>
-            </Link>
+            <CustomLink href={'https://docs.deus.finance'} passHref>
+              <DataItems>
+                Bug Bounty
+                <ArrowUpRight />
+              </DataItems>
+            </CustomLink>
 
-            <Link href={'https://docs.deus.finance'} passHref>
-              <a style={{ textDecoration: 'none', color: '#8F939C' }} rel="noreferrer" target="_blank">
-                <DataItems>
-                  Docs
-                  <ArrowUpRight />
-                </DataItems>
-              </a>
-            </Link>
-            <Link href={'https://docs.deus.finance/contracts/disclaimer'} passHref>
-              <a style={{ textDecoration: 'none', color: '#8F939C' }} rel="noreferrer" target="_blank">
-                <DataItems>
-                  Terms
-                  <ArrowUpRight />
-                </DataItems>
-              </a>
-            </Link>
+            <CustomLink href={'https://docs.deus.finance'} passHref>
+              <DataItems>
+                Docs
+                <ArrowUpRight />
+              </DataItems>
+            </CustomLink>
+            <CustomLink href={'https://docs.deus.finance/contracts/disclaimer'} passHref>
+              <DataItems>
+                Terms
+                <ArrowUpRight />
+              </DataItems>
+            </CustomLink>
           </Data>
 
           <Separator />

@@ -1,13 +1,9 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react'
 import styled from 'styled-components'
 import { ArrowDown, Plus } from 'react-feather'
-
-import REDEEM_IMG from '/public/static/images/pages/redemption/TableauBackground.svg'
-
 import { DEI_TOKEN, DEUS_TOKEN, USDC_TOKEN } from 'constants/tokens'
 import { tryParseAmount } from 'utils/parse'
 import { getTimeLength } from 'utils/time'
-
 import { useCurrencyBalance } from 'state/wallet/hooks'
 import {
   useRedemptionFee,
@@ -20,7 +16,6 @@ import useWeb3React from 'hooks/useWeb3'
 import useRedemptionCallback from 'hooks/useRedemptionCallback'
 import { useGetCollateralRatios, useRedeemAmountOut } from 'hooks/useRedemptionPage'
 import useUpdateCallback from 'hooks/useOracleCallback'
-
 import InputBox from 'components/InputBox'
 import DefaultReviewModal from 'components/ReviewModal/DefaultReviewModal'
 import {
@@ -35,21 +30,38 @@ import {
 import InputBoxInDollar from 'components/App/Redemption/InputBoxInDollar'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
-import Claim from 'components/App/Redemption/Claim'
 import WarningModal from 'components/ReviewModal/Warning'
+import { RowCenter } from 'components/Row'
+import { useWeb3NavbarOption } from 'state/web3navbar/hooks'
 
-const MainWrap = styled.div`
-  display: flex;
-  align-items: flex-start;
-  gap: -10px;
-
-  ${({ theme }) => theme.mediaWidth.upToSmall`
-    display: flex;
-    flex-direction: column-reverse;
-  `}
+const MainContainer = styled(Container)`
+  margin-top: 68px;
+  height: 100%;
 `
+const ActionButton = styled.div`
+  width: 100%;
+  & > div {
+    background: linear-gradient(90deg, #e0974c 0%, #c93f6f 100%);
+    &:hover {
+      background: linear-gradient(270deg, #e0974c 0%, #c93f6f 100%);
 
+      & > div {
+        background: linear-gradient(270deg, #e0974c 0%, #c93f6f 100%);
+      }
+    }
+    & > div {
+      background: linear-gradient(90deg, #e0974c 0%, #c93f6f 100%);
+      & > span {
+        color: white;
+        background: transparent;
+        -webkit-text-fill-color: white;
+      }
+    }
+  }
+`
 const RedemptionWrapper = styled(InputWrapper)`
+  margin-top: 2px;
+  background-color: ${({ theme }) => theme.bg1};
   & > * {
     &:nth-child(3) {
       border-bottom-left-radius: 0;
@@ -72,8 +84,34 @@ const PlusIcon = styled(Plus)`
   background-color: ${({ theme }) => theme.bg4};
   color: ${({ theme }) => theme.text2};
 `
-
+const TableauContainer = styled(RowCenter)`
+  align-items: center;
+  width: 100%;
+  background-color: ${({ theme }) => theme.bg1};
+  & > div {
+    background-color: ${({ theme }) => theme.bg1};
+  }
+  span {
+    font-size: 20px;
+  }
+`
+const ArrowContainer = styled(RowCenter)`
+  border: 1px solid ${({ theme }) => theme.text2};
+  width: fit-content;
+  padding: 3px 12px;
+  border-radius: 4px;
+  & > p {
+    font-size: 15px;
+    font-weight: 600;
+    color: ${({ theme }) => theme.text2};
+    margin-right: 24px;
+  }
+  & > svg {
+    color: ${({ theme }) => theme.text2};
+  }
+`
 export default function Redemption() {
+  useWeb3NavbarOption({ reward: true, wallet: true, network: true })
   const { chainId, account } = useWeb3React()
   const [amountIn, setAmountIn] = useState('')
   const redemptionFee = useRedemptionFee()
@@ -198,39 +236,41 @@ export default function Redemption() {
 
   return (
     <>
-      <Container>
-        <MainWrap>
-          <Wrapper>
-            <Tableau title={'Redeem DEI'} imgSrc={REDEEM_IMG} />
-            <RedemptionWrapper>
-              <InputBox
-                currency={deiCurrency}
-                value={amountIn}
-                onChange={(value: string) => setAmountIn(value)}
-                disabled={expiredPrice}
-              />
+      <MainContainer>
+        <Wrapper>
+          <TableauContainer>
+            <Tableau title={'Redeem DEI'} />
+          </TableauContainer>
+          <RedemptionWrapper>
+            <InputBox
+              currency={deiCurrency}
+              value={amountIn}
+              onChange={(value: string) => setAmountIn(value)}
+              disabled={expiredPrice}
+            />
+            <ArrowContainer>
+              <p>Redeem DEI</p>
               <ArrowDown />
+            </ArrowContainer>
 
-              <InputBox
-                currency={usdcCurrency}
-                value={amountOut1}
-                onChange={(value: string) => console.log(value)}
-                disabled={true}
-              />
-              <PlusIcon size={'24px'} />
-              <InputBoxInDollar currency={deusCurrency} value={amountOut2} />
-              <div style={{ marginTop: '20px' }}></div>
-              {getActionButton()}
-            </RedemptionWrapper>
-            <BottomWrapper>
-              <InfoItem name={'Redemption Fee'} value={redemptionFee + '%'} />
-              <InfoItem name={'Redeem Ratio'} value={Number(redeemCollateralRatio).toString() + '%'} />
-              <InfoItem name={'Mint Ratio'} value={Number(mintCollateralRatio).toString() + '%'} />
-            </BottomWrapper>
-          </Wrapper>
-          <Claim redeemCollateralRatio={redeemCollateralRatio} handleUpdatePrice={handleUpdatePrice} />
-        </MainWrap>
-      </Container>
+            <InputBox
+              currency={usdcCurrency}
+              value={amountOut1}
+              onChange={(value: string) => console.log(value)}
+              disabled={true}
+            />
+            <PlusIcon size={'24px'} />
+            <InputBoxInDollar currency={deusCurrency} value={amountOut2} />
+            <div style={{ marginTop: '20px' }}></div>
+            <ActionButton>{getActionButton()}</ActionButton>
+          </RedemptionWrapper>
+          <BottomWrapper>
+            <InfoItem name={'Redemption Fee'} value={redemptionFee + '%'} />
+            <InfoItem name={'Redeem Ratio'} value={Number(redeemCollateralRatio).toString() + '%'} />
+            <InfoItem name={'Mint Ratio'} value={Number(mintCollateralRatio).toString() + '%'} />
+          </BottomWrapper>
+        </Wrapper>
+      </MainContainer>
 
       <WarningModal
         isOpen={isOpenWarningModal}
