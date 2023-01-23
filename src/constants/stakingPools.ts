@@ -13,6 +13,7 @@ import {
 } from 'constants/tokens'
 import { useGetBeetsApy, useGetBeetsTvl } from 'hooks/useBeetsPoolStats'
 import { useSolidlyApy, useSolidlyTvl } from 'hooks/useSolidlyPoolStats'
+import { useGetSpookyApy, useGetSpookyTvl } from 'hooks/useSpookyPoolStats'
 import { useGetApy, useGetDeusApy, useGetTvl, useNFTGetApy } from 'hooks/useStakingInfo'
 import { MasterChefV2, MasterChefV3, StablePool_DEI_bDEI, StablePool_DEUS_vDEUS, vDeusMasterChefV2 } from './addresses'
 import { ChainInfo } from './chainInfo'
@@ -317,9 +318,9 @@ export const ExternalStakings: ExternalStakingType[] = [
     rewardTokens: [DEUS_TOKEN],
     provideLink:
       'https://spooky.fi/#/add/0xDE1E704dae0B4051e80DAbB26ab6ad6c12262DA0/0x04068DA6C83AFCFA0e13ba15A6696662335D5B75',
-    aprHook: useGetBeetsApy, // dummy placeholders for now
-    tvlHook: useGetBeetsTvl, // dummy placeholders for now
-    contract: '',
+    aprHook: useGetSpookyApy,
+    tvlHook: useGetSpookyTvl,
+    contract: '0x91f7120898b4be26cc1e84f421e76725c07d1361',
     active: true,
     version: StakingVersion.EXTERNAL,
     chain: ChainInfo[SupportedChainId.FANTOM].label,
@@ -330,9 +331,9 @@ export const ExternalStakings: ExternalStakingType[] = [
     name: 'FTM-DEUS',
     rewardTokens: [DEUS_TOKEN],
     provideLink: 'https://spooky.fi/#/add/0xDE5ed76E7c05eC5e4572CfC88d1ACEA165109E44/FTM',
-    aprHook: useGetBeetsApy, // dummy placeholders for now
-    tvlHook: useGetBeetsTvl, // dummy placeholders for now
-    contract: '',
+    aprHook: useGetSpookyApy,
+    tvlHook: useGetSpookyTvl,
+    contract: '0xaf918ef5b9f33231764a5557881e6d3e5277d456',
     active: true,
     version: StakingVersion.EXTERNAL,
     chain: ChainInfo[SupportedChainId.FANTOM].label,
