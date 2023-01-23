@@ -310,8 +310,8 @@ export default function Mint() {
   }, [mintCallback, mintCallbackError, mintCallbackState, onUserInput1])
 
   function getApproveButton(): JSX.Element | null {
-    if (isSupportedChainId || account) return null
-    else if (!awaitingApproveConfirmation) {
+    if (!isSupportedChainId || !account) return null
+    else if (awaitingApproveConfirmation) {
       return (
         <MainButton active>
           Awaiting Confirmation <DotFlashing />
