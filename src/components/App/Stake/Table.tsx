@@ -32,7 +32,8 @@ import { ExternalLink } from 'components/Link'
 import { Divider, HStack, VStack } from '../Staking/common/Layout'
 import SPOOKY_SWAP_IMG from '/public/static/images/pages/stake/spooky.svg'
 import BEETHOVEN_IMG from '/public/static/images/pages/stake/beethoven.svg'
-import SOLIDLY_IMG from '/public/static/images/pages/stake/solid.png'
+// import SOLIDLY_IMG from '/public/static/images/pages/stake/solid.png'
+import SOLIDLY_IMG from '/public/static/images/pages/stake/solidly.svg'
 import ExternalIcon from '/public/static/images/pages/stake/down.svg'
 
 import { Token } from '@sushiswap/core-sdk'
@@ -258,28 +259,28 @@ const CustomButton = styled(ExternalLink)`
 const buttonTitles = {
   BEETHOVEN: 'Farm on',
   SPOOKY_SWAP: 'Farm on',
-  SOLIDLY: 'Farm on Solidly',
+  SOLIDLY: 'Farm on',
   INTERNAL: 'Manage',
 }
 
 const buttonImageSources = {
   BEETHOVEN: BEETHOVEN_IMG,
   SPOOKY_SWAP: SPOOKY_SWAP_IMG,
-  SOLIDLY: SOLIDLY_IMG.src,
+  SOLIDLY: SOLIDLY_IMG,
   INTERNAL: ExternalIcon,
 }
 
 const buttonImageHeights = {
   BEETHOVEN: 20,
   SPOOKY_SWAP: 20,
-  SOLIDLY: 20,
+  SOLIDLY: 60,
   INTERNAL: 0,
 }
 
 const buttonImageWidths = {
   BEETHOVEN: 120,
   SPOOKY_SWAP: 120,
-  SOLIDLY: 20,
+  SOLIDLY: 180,
   INTERNAL: 0,
 }
 
