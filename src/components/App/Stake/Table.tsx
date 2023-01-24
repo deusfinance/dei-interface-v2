@@ -273,14 +273,14 @@ const buttonImageSources = {
 const buttonImageHeights = {
   BEETHOVEN: 20,
   SPOOKY_SWAP: 20,
-  SOLIDLY: 60,
+  SOLIDLY: 20,
   INTERNAL: 0,
 }
 
 const buttonImageWidths = {
   BEETHOVEN: 120,
   SPOOKY_SWAP: 120,
-  SOLIDLY: 180,
+  SOLIDLY: 60,
   INTERNAL: 0,
 }
 
@@ -289,7 +289,7 @@ const CustomButtonWrapper = ({ type, href, isActive }: { type: BUTTON_TYPE; href
     <CustomButton transparentBG href={isActive && href}>
       <ButtonText>
         {buttonTitles[type]}
-        <HStack style={{ marginLeft: '1ch', alignItems: 'flex-end' }}>
+        <HStack style={{ marginLeft: '1ch', alignItems: 'flex-start' }}>
           <Image
             width={buttonImageWidths[type]}
             height={buttonImageHeights[type]}

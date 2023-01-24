@@ -14,7 +14,7 @@ import {
 import { useGetBeetsApy, useGetBeetsTvl } from 'hooks/useBeetsPoolStats'
 import { useSolidlyApy, useSolidlyTvl } from 'hooks/useSolidlyPoolStats'
 import { useGetSpookyApy, useGetSpookyTvl } from 'hooks/useSpookyPoolStats'
-import { useGetApy, useGetDeusApy, useGetTvl, useNFTGetApy } from 'hooks/useStakingInfo'
+import { useGetApy, useGetDeusApy, useGetTvl } from 'hooks/useStakingInfo'
 import { MasterChefV2, MasterChefV3, StablePool_DEI_bDEI, StablePool_DEUS_vDEUS, vDeusMasterChefV2 } from './addresses'
 import { ChainInfo } from './chainInfo'
 import { SupportedChainId } from './chains'
@@ -179,6 +179,12 @@ export const LiquidityPool: LiquidityType[] = [
     lpToken: DEI_TOKEN,
     priceToken: DEUS_TOKEN,
   },
+  {
+    id: 10,
+    tokens: [VDEUS_TOKEN, DEUS_TOKEN],
+    lpToken: XDEUS_DEUS_SOLIDLY_LP,
+    priceToken: DEUS_TOKEN,
+  },
 ]
 
 export const Stakings: StakingType[] = [
@@ -252,7 +258,7 @@ export const Stakings: StakingType[] = [
     name: 'vDEUS (3 Months)',
     rewardTokens: [VDEUS_TOKEN, DEUS_TOKEN],
     token: VDEUS_TOKEN, // TODO: should represent vDEUS NFT
-    aprHook: useNFTGetApy,
+    aprHook: useGetApy,
     tvlHook: useGetTvl,
     secondaryAprHook: useGetDeusApy,
     masterChef: vDeusMasterChefV2[SupportedChainId.FANTOM],
@@ -268,7 +274,7 @@ export const Stakings: StakingType[] = [
     name: 'vDEUS (6 Months)',
     rewardTokens: [VDEUS_TOKEN, DEUS_TOKEN],
     token: VDEUS_TOKEN, // TODO: should represent vDEUS NFT
-    aprHook: useNFTGetApy,
+    aprHook: useGetApy,
     tvlHook: useGetTvl,
     secondaryAprHook: useGetDeusApy,
     masterChef: vDeusMasterChefV2[SupportedChainId.FANTOM],
@@ -284,7 +290,7 @@ export const Stakings: StakingType[] = [
     name: 'vDEUS (1 Year)',
     rewardTokens: [VDEUS_TOKEN, DEUS_TOKEN],
     token: VDEUS_TOKEN, // TODO: should represent vDEUS NFT
-    aprHook: useNFTGetApy,
+    aprHook: useGetApy,
     tvlHook: useGetTvl,
     secondaryAprHook: useGetDeusApy,
     masterChef: vDeusMasterChefV2[SupportedChainId.FANTOM],
