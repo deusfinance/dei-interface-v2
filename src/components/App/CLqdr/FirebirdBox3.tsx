@@ -1,7 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
-import ImageWithFallback from 'components/ImageWithFallback'
+import { LQDR_ADDRESS } from 'constants/addresses'
 
+import ImageWithFallback from 'components/ImageWithFallback'
 import FIREBIRD_ICON from '/public/static/images/pages/clqdr/ic_firebird.svg'
 import { ExternalLink } from 'components/Link'
 import { RowEnd } from 'components/Row'
@@ -64,7 +65,10 @@ export default function FirebirdBox3() {
         </div>
         <BuyWrapper>
           <ButtonWrapper>
-            <ExternalLink href={'https://app.firebird.finance/swap'} style={{ textDecoration: 'none' }}>
+            <ExternalLink
+              href={`https://app.firebird.finance/swap?inputCurrency=FTM&outputCurrency=${LQDR_ADDRESS[250]}&net=250`}
+              style={{ textDecoration: 'none' }}
+            >
               <BuyButton>Buy LQDR</BuyButton>
             </ExternalLink>
           </ButtonWrapper>

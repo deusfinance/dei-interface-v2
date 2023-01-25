@@ -11,6 +11,9 @@ import { sendEvent } from 'components/analytics'
 import Web3Network from 'components/Web3Network'
 import Web3Status from 'components/Web3Status'
 import RiskNotification from 'components/InfoHeader'
+import { Link as LinkIcon } from 'components/Icons'
+import { RowStart } from 'components/Row'
+import { ExternalLink } from 'components/Link'
 import Menu from './Menu'
 import NavLogo from './NavLogo'
 
@@ -152,6 +155,36 @@ const NavLink = styled.div<{
   `};
   }
 `
+const ExternalLinkIcon = styled(LinkIcon)`
+  margin-left: 6px;
+`
+const ExternalItem = styled(RowStart)`
+  padding: 0 1rem;
+  div {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  a:hover + svg {
+    path {
+      fill: ${({ theme }) => theme.darkPink};
+    }
+  }
+`
+
+function getExternalNavBar(title: string, link: string): JSX.Element {
+  return (
+    <>
+      <SimpleLinkWrapper>
+        <ExternalItem>
+          <ExternalLink href={link}>
+            <NavLink active={false}>{title}</NavLink>
+          </ExternalLink>
+          <ExternalLinkIcon />
+        </ExternalItem>
+      </SimpleLinkWrapper>
+    </>
+  )
+}
 
 export default function NavBar() {
   const router = useRouter()
@@ -182,13 +215,6 @@ export default function NavBar() {
     )
   }
 
-  // function isSubItemChosen(item: Array<any>) {
-  //   for (let i = 0; i < item.length; i++) {
-  //     if (item[i].path === router.route) return true
-  //   }
-  //   return false
-  // }
-
   function getDefaultContent() {
     return (
       <>
@@ -199,18 +225,12 @@ export default function NavBar() {
               return (
                 <SimpleLinkWrapper key={i}>
                   <Link href={item.path} passHref>
-                    <NavLink active={router.route.includes(item.path)}>{item.text}</NavLink>
+                    <NavLink active={router.route === item.path}>{item.text}</NavLink>
                   </Link>
                 </SimpleLinkWrapper>
               )
             })}
-            <SimpleLinkWrapper>
-              <Link href={'https://docs.deus.finance/contracts/disclaimer'} passHref>
-                <a style={{ textDecoration: 'none' }} rel="noreferrer" target="_blank">
-                  <NavLink active={false}>Terms</NavLink>
-                </a>
-              </Link>
-            </SimpleLinkWrapper>
+            {getExternalNavBar('Terms', 'https://docs.deus.finance/contracts/disclaimer')}
           </Routes>
           <Items>
             <Web3Network />

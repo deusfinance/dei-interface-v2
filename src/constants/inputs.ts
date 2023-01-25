@@ -36,12 +36,17 @@ export const MINT__INPUTS: TokenMap = {
     // [Tokens.NATIVE[SupportedChainId.FANTOM]],
     // [Tokens.WETH[SupportedChainId.FANTOM]],
   ],
+  [SupportedChainId.ARBITRUM]: [
+    [Tokens.USDC[SupportedChainId.ARBITRUM], Tokens.DEUS[SupportedChainId.ARBITRUM]],
+    [Tokens.USDC[SupportedChainId.ARBITRUM]],
+  ],
 }
 
 export const MINT__OUTPUTS: TokenMap = {
   [SupportedChainId.MAINNET]: [[Tokens['DEI'][SupportedChainId.MAINNET]]],
   [SupportedChainId.POLYGON]: [[Tokens['DEI'][SupportedChainId.POLYGON]]],
   [SupportedChainId.FANTOM]: [[Tokens['DEI'][SupportedChainId.FANTOM]]],
+  [SupportedChainId.ARBITRUM]: [[Tokens['DEI'][SupportedChainId.ARBITRUM]]],
 }
 
 /* =====================================

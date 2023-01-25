@@ -10,6 +10,7 @@ import Discord from '/public/static/images/footer/Discord.svg'
 import Twitter from '/public/static/images/footer/Twitter.svg'
 import Github from '/public/static/images/footer/Github.svg'
 import Telegram from '/public/static/images/footer/Telegram.svg'
+import GitBook from '/public/static/images/footer/GitBook.svg'
 
 const Wrapper = styled(RowCenter)`
   color: ${({ theme }) => theme.text3};
@@ -62,6 +63,9 @@ export default function Disclaimer() {
         </ExternalLink>
       </Text>
       <Logos>
+        <ExternalLink href="https://docs.deus.finance">
+          <Image src={GitBook} alt="GitBook Logo" width={getImageSize()} height={getImageSize()} />
+        </ExternalLink>
         <ExternalLink href="https://discord.gg/xTTaBBAMgG">
           <Image src={Discord} alt="Discord Logo" width={getImageSize()} height={getImageSize()} />
         </ExternalLink>

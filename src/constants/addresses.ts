@@ -25,6 +25,7 @@ export const DEI_ADDRESS: AddressMap = {
     SupportedChainId.MAINNET,
     SupportedChainId.POLYGON,
     SupportedChainId.FANTOM,
+    SupportedChainId.ARBITRUM,
   ]),
 }
 
@@ -69,15 +70,8 @@ export const ProtocolHoldings2: AddressMap = {
 }
 
 /* =====================================
-                USDC RESERVES ADDRESS
+                USDC RESERVE ADDRESS
 ===================================== */
-export const USDCReserves1: AddressMap = {
-  [SupportedChainId.FANTOM]: '0x083dee8e5ca1e100a9c9ec0744f461b3507e9376',
-}
-
-export const USDCReserves2: AddressMap = {
-  [SupportedChainId.FANTOM]: '0xfd74e924dc96c72ba52439e28ce780908a630d13',
-}
 
 export const USDCReserves3: AddressMap = {
   [SupportedChainId.FANTOM]: '0x37a7a2a5FCB0DF6B8138fec7730825E92f9D8207',
@@ -89,6 +83,7 @@ export const USDCReserves3: AddressMap = {
 
 export const Multicall2: AddressMap = {
   [SupportedChainId.FANTOM]: '0x22D4cF72C45F8198CfbF4B568dBdB5A85e8DC0B5',
+  [SupportedChainId.ARBITRUM]: '0x7F55Ad3F5659aC8Eb07E545ab04a9Ca5863f7E12',
 }
 
 export const BaseV1Factory: AddressMap = {
@@ -137,6 +132,7 @@ export const MintProxy: AddressMap = {
 
 export const CollateralPool: AddressMap = {
   [SupportedChainId.FANTOM]: '0x6E0098A8c651F7A6A9510B270CD02c858C344D94',
+  [SupportedChainId.ARBITRUM]: '0x24c99A5f82DB4d4B3Ed30A09ccc4A57F451Ea7Bd',
 }
 
 export const Collateral: AddressMap = {

@@ -14,7 +14,7 @@ import { useMintState } from 'state/mint/reducer'
 import { useMintingFee } from 'state/dei/hooks'
 
 import { useDeusPrice } from 'hooks/useCoingeckoPrice'
-import { useCollateralPoolContract, useOracleContract } from 'hooks/useContract'
+import { useArbitrumCollateralPoolContract, useCollateralPoolContract, useOracleContract } from 'hooks/useContract'
 
 export function useMintPage(
   TokenIn1: Token | null,
@@ -38,24 +38,6 @@ export function useMintPage(
   const [amountIn2, setAmountIn2] = useState<string>('')
   const [amountOut, setAmountOut] = useState<string>('')
 
-  // useEffect(() => {
-  //   let result = false
-
-  //   if (!chainId) {
-  //     result = false
-  //   } else if (cRatio == 1 && Collateral[chainId] == TokenIn1?.address && !TokenIn2) {
-  //     result = false
-  //   } else if (cRatio == 0 && TokenIn1?.symbol == 'DEUS' && !TokenIn2) {
-  //     result = false
-  //   } else if (cRatio > 0 && cRatio < 1 && TokenIn2) {
-  //     result = false
-  //   } else {
-  //     result = true
-  //   }
-
-  //   // dispatch(setIsProxyMinter(result))
-  // }, [chainId, cRatio, TokenIn1, TokenIn2])
-
   const [collateralRatio, collateralPrice, deusPrice]: BigNumber[] = useMemo(() => {
     return [toBN(cRatio).div(100), toBN(cPrice).div(1e6), toBN(dPrice)]
   }, [cRatio, cPrice, dPrice])
@@ -64,28 +46,9 @@ export function useMintPage(
     return toBN(1 - feePercentage / 100)
   }, [feePercentage])
 
-  // const proxiedAmountOutCallback = useProxiedAmountOutCallback(
-  //   TokenIn1?.address,
-  //   TokenIn1?.decimals,
-  //   TokenIn1?.symbol,
-  //   collateralPrice,
-  //   deusPrice
-  // )
-
   const [inputUnit1, inputUnit2] = useMemo(() => {
     return [collateralRatio.eq(0) ? deusPrice : collateralPrice, deusPrice]
   }, [collateralRatio, collateralPrice, deusPrice])
-
-  // const updateProxyValues = useCallback(
-  //   (val: any) => {
-  //     if (!val) {
-  //       dispatch(setProxyValues([]))
-  //     } else {
-  //       dispatch(setProxyValues(val.map((v: BigNumber) => v.toString())))
-  //     }
-  //   },
-  //   [dispatch]
-  // )
 
   const debounceUserInput1 = useCallback(
     debounce(async (amount: string) => {
@@ -266,4 +229,20 @@ export function useGetDeusPrice(): string {
           .toFixed(0)
 
   return deusPrice
+}
+
+export function useArbitrumMintPaused(): boolean {
+  const contract = useArbitrumCollateralPoolContract()
+
+  const call = useMemo(
+    () => [
+      {
+        methodName: 'paused',
+        callInputs: [],
+      },
+    ],
+    []
+  )
+  const [res] = useSingleContractMultipleMethods(contract, call)
+  return !res || !res.result ? false : res.result[0]
 }

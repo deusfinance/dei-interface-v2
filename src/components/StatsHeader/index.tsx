@@ -93,7 +93,7 @@ export default function StatsHeader({
   items,
   hasBox,
 }: {
-  items: { name: string; value: string | number; link?: string }[]
+  items: { name: string; value: string | number | JSX.Element; link?: string }[]
   hasBox?: boolean
 }) {
   return (
