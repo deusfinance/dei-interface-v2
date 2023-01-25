@@ -365,7 +365,6 @@ const TableRowMiniContent = ({
   account,
   toggleWalletModal,
   chain,
-  type,
 }: ITableRowContent) => {
   return (
     <MiniStakeContainer>
@@ -497,7 +496,7 @@ const TableRowContent = ({ stakingPool }: { stakingPool: StakingType }) => {
     stakingPool.version === StakingVersion.EXTERNAL ? 0 : stakingPool.secondaryAprHook(liquidityPool, stakingPool)
   const apr = primaryApy + secondaryApy
 
-  const tvl = stakingPool?.tvlHook(stakingPool)
+  const tvl = stakingPool.tvlHook(stakingPool)
 
   // console.log('apr and tvl for ', apr, tvl, name, stakingPool?.aprHook, stakingPool?.tvlHook)
 

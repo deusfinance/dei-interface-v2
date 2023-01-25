@@ -83,8 +83,8 @@ export type ExternalStakingType = {
   provideLink: string
   tokens: Token[]
   contract: string
-  aprHook?: (h: ExternalStakingType) => number
-  tvlHook?: (h: ExternalStakingType) => number
+  aprHook: (h: ExternalStakingType) => number
+  tvlHook: (h: ExternalStakingType) => number
   active: boolean
   version: StakingVersion
   chain: string
