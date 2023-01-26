@@ -17,8 +17,6 @@ import { CollateralPool, DEI_ADDRESS, escrow, USDCReserves3 } from 'constants/ad
 import { SupportedChainId } from 'constants/chains'
 import { ChainInfo } from 'constants/chainInfo'
 import { Loader } from 'components/Icons'
-import { ExternalLink } from 'components/Link'
-import ExternalLinkIcon from '/public/static/images/pages/common/down.svg'
 import useDeusMarketCapStats from 'hooks/useMarketCapStats'
 
 const Wrapper = styled(RowBetween)`
