@@ -192,6 +192,7 @@ const Row = styled.div<{
   display: flex;
   flex-flow: row nowrap;
   justify-content: space-between;
+  align-items: center;
   color: ${({ theme }) => theme.text2};
   &:hover {
     cursor: pointer;
@@ -284,6 +285,8 @@ const Token = styled.div`
   display: flex;
   white-space: nowrap;
   color: ${({ theme }) => theme.text1};
+  justify-content: space-between;
+  width: 100%;
 `
 
 const Separator = styled.div`
@@ -293,9 +296,7 @@ const Separator = styled.div`
   background: ${({ theme }) => theme.bg3};
 `
 
-const Logo = styled(RowEnd)`
-  width: 50%;
-`
+const Logo = styled(RowEnd)``
 
 const Data = styled.div`
   margin-top: 70px;
@@ -318,6 +319,7 @@ const DataItems = styled(RowStart)`
 `
 const MenuItemLinkContainer = styled(Row)`
   align-items: center;
+  width: 100%;
 `
 const NavLinkContainer = styled(Row)<{ isOpen: boolean }>`
   opacity: ${({ isOpen }) => (isOpen ? 1 : 0)};
@@ -326,7 +328,8 @@ const NavLinkContainer = styled(Row)<{ isOpen: boolean }>`
   transform-origin: left;
   transition: all 0.25s;
   white-space: nowrap;
-  justify-content: center;
+  justify-content: flex-start;
+  align-items: center;
 `
 const HamburMenuButton = styled.button<{ isOpen: boolean }>`
   display: flex;
@@ -540,11 +543,13 @@ export default function NavBar() {
             <SimpleLinkWrapper isOpen={isOpen} className="last" active={router.route.includes('/clqdr')}>
               <Link href="/clqdr" passHref>
                 <MenuItemLinkContainer>
-                  <IconWrapper>
-                    <VeDeusIcon size={20} />
-                  </IconWrapper>
-                  <NavLinkContainer isOpen={isOpen}>
+                  <Row>
+                    <IconWrapper>
+                      <VeDeusIcon size={20} />
+                    </IconWrapper>
                     <NavLink active={router.route.includes('/clqdr')}>xDEUS</NavLink>
+                  </Row>
+                  <NavLinkContainer isOpen={isOpen}>
                     <ArrowUpRight />
                     <Logo>
                       <ImageWithFallback src={DEUSFINANCE} width={92} height={14} alt={`deus_finance_logo`} />
@@ -556,11 +561,13 @@ export default function NavBar() {
             <SimpleLinkWrapper isOpen={isOpen} active={router.route.includes('/clqdr')}>
               <Link href="/clqdr" passHref>
                 <MenuItemLinkContainer>
-                  <IconWrapper>
-                    <BridgeIcon size={20} />
-                  </IconWrapper>
-                  <NavLinkContainer isOpen={isOpen}>
+                  <Row>
+                    <IconWrapper>
+                      <BridgeIcon size={20} />
+                    </IconWrapper>
                     <NavLink active={router.route.includes('/clqdr')}>Bridge</NavLink>
+                  </Row>
+                  <NavLinkContainer isOpen={isOpen}>
                     <ArrowUpRight />
                     <Logo>
                       <ImageWithFallback src={MULTICHAIN} width={88} height={13} alt={`multichain_logo`} />
@@ -597,7 +604,7 @@ export default function NavBar() {
         </Column>
 
         <NavLinkContainer isOpen={isOpen}>
-          <Column>
+          <Column style={{ width: '100%' }}>
             <Data>
               <CustomLink href={'https://docs.deus.finance'} passHref>
                 <DataItems>
@@ -622,7 +629,10 @@ export default function NavBar() {
 
             <Separator />
 
-            <Footer />
+            <div style={{ width: '100%' }}>
+              {' '}
+              <Footer />
+            </div>
           </Column>
         </NavLinkContainer>
         {showTopBanner && <RiskNotification onClose={setShowBanner} bg={'gray'} hasInfoIcon={true} text={bannerText} />}
