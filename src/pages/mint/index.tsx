@@ -36,6 +36,7 @@ import TokensModal from 'components/App/StableCoin/TokensModal'
 import WarningModal from 'components/ReviewModal/Warning'
 import { RowCenter } from 'components/Row'
 import { useWeb3NavbarOption } from 'state/web3navbar/hooks'
+import Column from 'components/Column'
 
 const MainContainer = styled(Container)`
   margin-top: 68px;
@@ -83,6 +84,9 @@ const TableauContainer = styled(RowCenter)`
   & > div {
     background-color: ${({ theme }) => theme.bg1};
   }
+  span {
+    font-size: 20px;
+  }
 `
 
 const InputContainer = styled.div`
@@ -115,6 +119,31 @@ const BottomContainer = styled(BottomWrapper)`
   & > * {
     font-weight: 500;
   }
+`
+const ActionButton = styled.div`
+  width: 100%;
+  & > div {
+    background: linear-gradient(90deg, #e0974c 0%, #c93f6f 100%);
+    &:hover {
+      background: linear-gradient(270deg, #e0974c 0%, #c93f6f 100%);
+
+      & > div {
+        background: linear-gradient(270deg, #e0974c 0%, #c93f6f 100%);
+      }
+    }
+    & > div {
+      background: linear-gradient(90deg, #e0974c 0%, #c93f6f 100%);
+      & > span {
+        color: white;
+        background: transparent;
+        -webkit-text-fill-color: white;
+      }
+    }
+  }
+`
+const ActionButtonContainer = styled(Column)`
+  row-gap: 8px;
+  width: 100%;
 `
 export default function Mint() {
   useWeb3NavbarOption({ reward: true, wallet: true, network: true })
@@ -390,8 +419,10 @@ export default function Mint() {
                 disabled={expiredPrice}
               />
               <div style={{ marginTop: '30px' }}></div>
-              {getApproveButton()}
-              {getActionButton()}
+              <ActionButtonContainer>
+                <ActionButton>{getApproveButton()}</ActionButton>
+                <ActionButton>{getActionButton()}</ActionButton>
+              </ActionButtonContainer>
             </InputWrapper>
           </InputContainer>
 

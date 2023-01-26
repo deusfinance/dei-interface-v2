@@ -34,9 +34,10 @@ import {
 import { ArrowUpRight } from 'react-feather'
 import { useDeiPrice, useDeusPrice } from 'hooks/useCoingeckoPrice'
 import Column from 'components/Column'
+import { ExternalLink } from 'components/Link'
 
 const Wrapper = styled.div<{ isOpen?: boolean }>`
-  transition: width 0.5s ease;
+  transition: width 0.25s;
   gap: 5px;
   width: ${({ isOpen }) => (isOpen ? '336px' : '74px')};
   display: flex;
@@ -153,7 +154,7 @@ const SimpleLinkWrapper = styled(RowWrapper)<{
   active?: boolean
   isOpen?: boolean
 }>`
-  transition: width ease 0.5s;
+  transition: width 0.25s;
   margin-bottom: 16px;
   border-radius: 8px;
   width: ${({ isOpen }) => (isOpen ? '312px' : '50px')};
@@ -172,6 +173,7 @@ const SimpleLinkWrapper = styled(RowWrapper)<{
   &.last {
     margin-bottom: 0px;
   }
+  overflow: hidden;
 `
 
 const Items = styled.div`
@@ -318,12 +320,12 @@ const MenuItemLinkContainer = styled(Row)`
   align-items: center;
 `
 const NavLinkContainer = styled(Row)<{ isOpen: boolean }>`
-  visibility: ${({ isOpen }) => (isOpen ? 'visible' : 'hidden')};
   opacity: ${({ isOpen }) => (isOpen ? 1 : 0)};
   z-index: ${({ isOpen }) => (isOpen ? 1 : -1)};
   transform: ${({ isOpen }) => (isOpen ? 'scale(1)' : 'scale(0)')};
   transform-origin: left;
-  transition: all 0.5s ease;
+  transition: all 0.25s;
+  white-space: nowrap;
   justify-content: center;
 `
 const HamburMenuButton = styled.button<{ isOpen: boolean }>`
@@ -333,7 +335,7 @@ const HamburMenuButton = styled.button<{ isOpen: boolean }>`
   max-width: 75px !important;
   position: relative;
   span {
-    transition: all 0.5s ease;
+    transition: all 0.25s;
     margin-inline: auto;
     width: 20px;
     height: 2px;
@@ -364,6 +366,10 @@ const HamburMenuButton = styled.button<{ isOpen: boolean }>`
   }
 `
 
+const CustomLink = styled(ExternalLink)`
+  text-decoration: none;
+  color: #8f939c !important;
+`
 export default function NavBar() {
   const router = useRouter()
 
@@ -593,31 +599,25 @@ export default function NavBar() {
         <NavLinkContainer isOpen={isOpen}>
           <Column>
             <Data>
-              <Link href={'https://docs.deus.finance'} passHref>
-                <a style={{ textDecoration: 'none', color: '#8F939C' }} rel="noreferrer" target="_blank">
-                  <DataItems>
-                    Bug Bounty
-                    <ArrowUpRight />
-                  </DataItems>
-                </a>
-              </Link>
+              <CustomLink href={'https://docs.deus.finance'} passHref>
+                <DataItems>
+                  Bug Bounty
+                  <ArrowUpRight />
+                </DataItems>
+              </CustomLink>
 
-              <Link href={'https://docs.deus.finance'} passHref>
-                <a style={{ textDecoration: 'none', color: '#8F939C' }} rel="noreferrer" target="_blank">
-                  <DataItems>
-                    Docs
-                    <ArrowUpRight />
-                  </DataItems>
-                </a>
-              </Link>
-              <Link href={'https://docs.deus.finance/contracts/disclaimer'} passHref>
-                <a style={{ textDecoration: 'none', color: '#8F939C' }} rel="noreferrer" target="_blank">
-                  <DataItems>
-                    Terms
-                    <ArrowUpRight />
-                  </DataItems>
-                </a>
-              </Link>
+              <CustomLink href={'https://docs.deus.finance'} passHref>
+                <DataItems>
+                  Docs
+                  <ArrowUpRight />
+                </DataItems>
+              </CustomLink>
+              <CustomLink href={'https://docs.deus.finance/contracts/disclaimer'} passHref>
+                <DataItems>
+                  Terms
+                  <ArrowUpRight />
+                </DataItems>
+              </CustomLink>
             </Data>
 
             <Separator />
