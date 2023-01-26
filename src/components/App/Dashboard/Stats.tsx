@@ -4,7 +4,7 @@ import Image from 'next/image'
 
 import BG_DASHBOARD from '/public/static/images/pages/dashboard/bg.svg'
 
-import { useDeiPrice, useDeusPrice } from 'hooks/useCoingeckoPrice'
+import { useDeiPrice } from 'hooks/useCoingeckoPrice'
 import { useDeiStats } from 'hooks/useDeiStats'
 import { useVestedAPY } from 'hooks/useVested'
 
@@ -15,12 +15,13 @@ import { Modal, ModalHeader } from 'components/Modal'
 import { RowBetween } from 'components/Row'
 import StatsItem from './StatsItem'
 import Chart from './Chart'
-import { CollateralPool, DEI_ADDRESS, escrow, USDCReserves3, veDEUS } from 'constants/addresses'
+import { CollateralPool, DEI_ADDRESS, escrow, USDCReserves3 } from 'constants/addresses'
 import { SupportedChainId } from 'constants/chains'
 import { ChainInfo } from 'constants/chainInfo'
 import { Loader } from 'components/Icons'
 import { ExternalLink } from 'components/Link'
 import ExternalLinkIcon from '/public/static/images/pages/common/down.svg'
+import useDeusMarketCapStats from 'hooks/useMarketCapStats'
 
 const Wrapper = styled(RowBetween)`
   background: ${({ theme }) => theme.bg0};
@@ -49,11 +50,9 @@ const ChartWrapper = styled.div`
 
 const AllStats = styled.div`
   width: 100%;
-  & > * {
-    &:nth-child(2) {
-      margin-top: 36px;
-    }
-  }
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
   ${({ theme }) => theme.mediaWidth.upToMedium`
     margin-bottom:25px;
   `};
@@ -193,7 +192,7 @@ const Icon = styled(Image)`
 `
 
 export default function Stats() {
-  const deusPrice = useDeusPrice()
+  //const deusPrice = useDeusPrice()
   const {
     totalSupply,
     collateralRatio,
@@ -208,6 +207,19 @@ export default function Stats() {
 
   const { lockedVeDEUS } = useVestedAPY(undefined, getMaximumDate())
   const deiPrice = useDeiPrice()
+  const {
+    deusPrice,
+    deusCirculatingSupply,
+    deusTotalSupply,
+    deusMarketCap,
+    xDeusPrice,
+    xDeusCirculatingSupply,
+    xDeusMarketCap,
+    combinedSupply,
+    combinedMarketCap,
+    combinedProjectedSupply,
+    inflationRate,
+  } = useDeusMarketCapStats()
 
   function getModalBody() {
     return (
@@ -332,22 +344,29 @@ export default function Stats() {
             <Info>
               <StatsItem
                 name="DEUS Price"
-                value={formatDollarAmount(parseFloat(deusPrice), 2)}
+                value={formatDollarAmount(deusPrice, 2)}
                 href={'https://www.coingecko.com/en/coins/deus-finance'}
               />
-              <StatsItem
-                name="Total Supply"
-                value="650k"
-                href={'https://lafayettetabor.medium.com/a-wealth-creating-revamped-redeem-plan-601dadcc29a1'}
-              />
-              <StatsItem name="Market Cap" value="N/A" />
-              <StatsItem
-                name="veDEUS Supply"
-                value={formatAmount(parseFloat(lockedVeDEUS), 0)}
-                href={
-                  ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/address/' + veDEUS[SupportedChainId.FANTOM]
-                }
-              />
+              <StatsItem name="Circulating Supply" value={formatAmount(deusCirculatingSupply)} />
+              <StatsItem name="Total Supply" value={formatAmount(deusTotalSupply)} />
+              <StatsItem name="Market Cap" value={formatAmount(deusMarketCap)} />
+            </Info>
+          </StatsWrapper>
+          <StatsWrapper>
+            <DeusTitle>xDEUS Stats</DeusTitle>
+            <Info>
+              <StatsItem name="xDEUS Price" value={formatDollarAmount(xDeusPrice)} />
+              <StatsItem name="Circulating Supply" value={formatAmount(xDeusCirculatingSupply)} />
+              <StatsItem name="Market Cap" value={formatDollarAmount(xDeusMarketCap)} />
+            </Info>
+          </StatsWrapper>
+          <StatsWrapper>
+            <DeusTitle>xDEUS and DEUS Combined Stats</DeusTitle>
+            <Info>
+              <StatsItem name="Combined Supply" value={formatAmount(combinedSupply)} />
+              <StatsItem name="Combined Market Cap" value={formatAmount(combinedMarketCap)} />
+              <StatsItem name="Projected Combined Supply in 1yr" value={formatAmount(combinedProjectedSupply)} />
+              <StatsItem name="Inflation Rate" value={formatAmount(inflationRate) + '%'} />
             </Info>
           </StatsWrapper>
         </AllStats>
