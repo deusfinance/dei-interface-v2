@@ -363,9 +363,12 @@ export default function Stats() {
           <StatsWrapper>
             <DeusTitle>xDEUS and DEUS Combined Stats</DeusTitle>
             <Info>
-              <StatsItem name="Combined Supply" value={formatAmount(combinedSupply)} />
+              <StatsItem name="Combined Supply" value={formatAmount(combinedSupply, 2, undefined, true)} />
               <StatsItem name="Combined Market Cap" value={formatAmount(combinedMarketCap)} />
-              <StatsItem name="Projected Combined Supply in 1yr" value={formatAmount(combinedProjectedSupply)} />
+              <StatsItem
+                name="Projected Combined Supply in 1yr"
+                value={formatAmount(combinedProjectedSupply, 2, undefined, true)}
+              />
               <StatsItem name="Inflation Rate" value={formatAmount(inflationRate) + '%'} />
             </Info>
           </StatsWrapper>
