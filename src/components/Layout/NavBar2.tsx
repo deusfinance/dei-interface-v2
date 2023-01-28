@@ -498,7 +498,7 @@ export default function NavBar() {
                 Legacy DEI Price:
                 <Price>
                   <LegacyDeiPriceWrap>
-                    ${formatUnits(legacyUsdc?.maxReturn?.totalTo, USDC_TOKEN.decimals)}
+                    ${(+formatUnits(legacyUsdc?.maxReturn?.totalTo, USDC_TOKEN.decimals))?.toFixed(3)}
                   </LegacyDeiPriceWrap>
                 </Price>
               </Token>
