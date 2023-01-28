@@ -32,9 +32,11 @@ import {
   // Analytics as AnalyticsIcon,
 } from 'components/Icons'
 import { ArrowUpRight } from 'react-feather'
-import { useDeiPrice, useDeusPrice } from 'hooks/useCoingeckoPrice'
+import { useDeiPrice, useDeusPrice, useSwap } from 'hooks/useCoingeckoPrice'
 import Column from 'components/Column'
 import { ExternalLink } from 'components/Link'
+import { formatUnits } from '@ethersproject/units'
+import { USDC_TOKEN } from 'constants/tokens'
 
 const Wrapper = styled.div`
   gap: 5px;
@@ -321,6 +323,16 @@ export default function NavBar() {
   const DeiPrice = useDeiPrice()
   const DeusPrice = useDeusPrice()
 
+  const legacyUsdc = useSwap({
+    amount: '1000000000000000000',
+    chainId: '250',
+    from: '0xde12c7959e1a72bbe8a5f7a1dc8f8eef9ab011b3',
+    to: '0x04068da6c83afcfa0e13ba15a6696662335d5b75',
+    gasInclude: '1',
+    saveGas: '0',
+    slippage: '0.01',
+  })
+
   function setShowBanner(inp: boolean) {
     if (!inp) {
       localStorage.setItem('risk_warning', 'true')
@@ -481,12 +493,16 @@ export default function NavBar() {
                 <DeusPriceWrap>${DeusPrice}</DeusPriceWrap>
               </Price>
             </Token>
-            <Token>
-              Legacy DEI Price:
-              <Price>
-                <LegacyDeiPriceWrap>${DeusPrice}</LegacyDeiPriceWrap>
-              </Price>
-            </Token>
+            {legacyUsdc && (
+              <Token>
+                Legacy DEI Price:
+                <Price>
+                  <LegacyDeiPriceWrap>
+                    ${formatUnits(legacyUsdc?.maxReturn?.totalTo, USDC_TOKEN.decimals)}
+                  </LegacyDeiPriceWrap>
+                </Price>
+              </Token>
+            )}
           </PricesWrap>
           <Separator />
         </Column>
