@@ -13,7 +13,8 @@ import {
 } from 'constants/tokens'
 import { useGetBeetsApy, useGetBeetsTvl } from 'hooks/useBeetsPoolStats'
 import { useSolidlyApy, useSolidlyTvl } from 'hooks/useSolidlyPoolStats'
-import { useGetApy, useGetDeusApy, useGetTvl, useNFTGetApy } from 'hooks/useStakingInfo'
+import { useGetSpookyApy, useGetSpookyTvl } from 'hooks/useSpookyPoolStats'
+import { useGetApy, useGetDeusApy, useGetTvl } from 'hooks/useStakingInfo'
 import { MasterChefV2, MasterChefV3, StablePool_DEI_bDEI, StablePool_DEUS_vDEUS, vDeusMasterChefV2 } from './addresses'
 import { ChainInfo } from './chainInfo'
 import { SupportedChainId } from './chains'
@@ -80,10 +81,10 @@ export type ExternalStakingType = {
   name: string
   rewardTokens: Token[]
   provideLink: string
-  tokens?: Token[]
+  tokens: Token[]
   contract: string
-  aprHook?: (h: ExternalStakingType) => number
-  tvlHook?: (h: ExternalStakingType) => number
+  aprHook: (h: ExternalStakingType) => number
+  tvlHook: (h: ExternalStakingType) => number
   active: boolean
   version: StakingVersion
   chain: string
@@ -178,6 +179,12 @@ export const LiquidityPool: LiquidityType[] = [
     lpToken: DEI_TOKEN,
     priceToken: DEUS_TOKEN,
   },
+  {
+    id: 10,
+    tokens: [VDEUS_TOKEN, DEUS_TOKEN],
+    lpToken: XDEUS_DEUS_SOLIDLY_LP,
+    priceToken: DEUS_TOKEN,
+  },
 ]
 
 export const Stakings: StakingType[] = [
@@ -251,7 +258,7 @@ export const Stakings: StakingType[] = [
     name: 'vDEUS (3 Months)',
     rewardTokens: [VDEUS_TOKEN, DEUS_TOKEN],
     token: VDEUS_TOKEN, // TODO: should represent vDEUS NFT
-    aprHook: useNFTGetApy,
+    aprHook: useGetApy,
     tvlHook: useGetTvl,
     secondaryAprHook: useGetDeusApy,
     masterChef: vDeusMasterChefV2[SupportedChainId.FANTOM],
@@ -267,7 +274,7 @@ export const Stakings: StakingType[] = [
     name: 'vDEUS (6 Months)',
     rewardTokens: [VDEUS_TOKEN, DEUS_TOKEN],
     token: VDEUS_TOKEN, // TODO: should represent vDEUS NFT
-    aprHook: useNFTGetApy,
+    aprHook: useGetApy,
     tvlHook: useGetTvl,
     secondaryAprHook: useGetDeusApy,
     masterChef: vDeusMasterChefV2[SupportedChainId.FANTOM],
@@ -283,7 +290,7 @@ export const Stakings: StakingType[] = [
     name: 'vDEUS (1 Year)',
     rewardTokens: [VDEUS_TOKEN, DEUS_TOKEN],
     token: VDEUS_TOKEN, // TODO: should represent vDEUS NFT
-    aprHook: useNFTGetApy,
+    aprHook: useGetApy,
     tvlHook: useGetTvl,
     secondaryAprHook: useGetDeusApy,
     masterChef: vDeusMasterChefV2[SupportedChainId.FANTOM],
@@ -315,11 +322,12 @@ export const ExternalStakings: ExternalStakingType[] = [
     id: 8,
     name: 'USDC-DEI',
     rewardTokens: [DEUS_TOKEN],
+    tokens: [USDC_TOKEN, DEI_TOKEN],
     provideLink:
       'https://spooky.fi/#/add/0xDE1E704dae0B4051e80DAbB26ab6ad6c12262DA0/0x04068DA6C83AFCFA0e13ba15A6696662335D5B75',
-    aprHook: useGetBeetsApy, // dummy placeholders for now
-    tvlHook: useGetBeetsTvl, // dummy placeholders for now
-    contract: '',
+    aprHook: useGetSpookyApy,
+    tvlHook: useGetSpookyTvl,
+    contract: '0x91f7120898b4be26cc1e84f421e76725c07d1361',
     active: true,
     version: StakingVersion.EXTERNAL,
     chain: ChainInfo[SupportedChainId.FANTOM].label,
@@ -329,10 +337,11 @@ export const ExternalStakings: ExternalStakingType[] = [
     id: 9,
     name: 'FTM-DEUS',
     rewardTokens: [DEUS_TOKEN],
+    tokens: [WFTM_TOKEN, DEUS_TOKEN],
     provideLink: 'https://spooky.fi/#/add/0xDE5ed76E7c05eC5e4572CfC88d1ACEA165109E44/FTM',
-    aprHook: useGetBeetsApy, // dummy placeholders for now
-    tvlHook: useGetBeetsTvl, // dummy placeholders for now
-    contract: '',
+    aprHook: useGetSpookyApy,
+    tvlHook: useGetSpookyTvl,
+    contract: '0xaf918ef5b9f33231764a5557881e6d3e5277d456',
     active: true,
     version: StakingVersion.EXTERNAL,
     chain: ChainInfo[SupportedChainId.FANTOM].label,
@@ -342,6 +351,7 @@ export const ExternalStakings: ExternalStakingType[] = [
     id: 10,
     name: 'xDEUS-DEUS',
     rewardTokens: [VDEUS_TOKEN, SOLID_TOKEN],
+    tokens: [VDEUS_TOKEN, DEUS_TOKEN],
     provideLink: 'https://solidly.com/liquidity/0x4EF3fF9dadBa30cff48133f5Dc780A28fc48693F',
     active: true,
     contract: XDEUS_DEUS_SOLIDLY_LP.address,

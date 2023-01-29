@@ -23,6 +23,7 @@ import DEIStrategy from 'constants/abi/DEIStrategy.json'
 import MasterChefV2_ABI from 'constants/abi/MasterChefV2.json'
 import SWAP_ABI from 'constants/abi/SWAP_ABI.json'
 import VEDEUS_MULTI_REWARDER_ERC20_ABI from 'constants/abi/VEDEUS_MULTI_REWARDER_ERC20.json'
+import SPOOKY_LP_ABI from 'constants/abi/SPOOKY_LP_ABI.json'
 
 import { Providers } from 'constants/providers'
 import {
@@ -39,7 +40,7 @@ import {
   AnyDEI_ADDRESS,
   veDEUSMultiRewarderERC20,
 } from 'constants/addresses'
-import { LiquidityType, StakingType } from 'constants/stakingPools'
+import { ExternalStakingType, LiquidityType, StakingType } from 'constants/stakingPools'
 
 export function useContract<T extends Contract = Contract>(
   addressOrAddressMap: string | null | undefined,
@@ -194,4 +195,9 @@ export function useVDeusMultiRewarderERC20Contract() {
   const { chainId } = useWeb3React()
   const address = useMemo(() => (chainId ? veDEUSMultiRewarderERC20[chainId] : undefined), [chainId])
   return useContract(address, VEDEUS_MULTI_REWARDER_ERC20_ABI)
+}
+
+export function useSpookyLiquidityPoolContract(pool: ExternalStakingType) {
+  const address = useMemo(() => (pool ? pool.contract : undefined), [pool])
+  return useContract(address, SPOOKY_LP_ABI)
 }
