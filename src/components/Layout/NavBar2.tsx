@@ -35,9 +35,10 @@ import { ArrowUpRight } from 'react-feather'
 import { useDeiPrice, useDeusPrice } from 'hooks/useCoingeckoPrice'
 import Column from 'components/Column'
 import { ExternalLink } from 'components/Link'
+import { formatDollarAmount } from 'utils/numbers'
 
 const Wrapper = styled.div<{ isOpen?: boolean }>`
-  transition: width 0.25s;
+  transition: width 0.15s;
   gap: 5px;
   width: ${({ isOpen }) => (isOpen ? '336px' : '74px')};
   display: flex;
@@ -154,7 +155,7 @@ const SimpleLinkWrapper = styled(RowWrapper)<{
   active?: boolean
   isOpen?: boolean
 }>`
-  transition: width 0.25s;
+  transition: width 0.15s;
   margin-bottom: 16px;
   border-radius: 8px;
   width: ${({ isOpen }) => (isOpen ? '312px' : '50px')};
@@ -321,24 +322,25 @@ const MenuItemLinkContainer = styled(Row)`
   align-items: center;
   width: 100%;
 `
-const NavLinkContainer = styled(Row)<{ isOpen: boolean }>`
+const NavLinkContainer = styled(Row)<{ isOpen: boolean; isInternal?: boolean }>`
   opacity: ${({ isOpen }) => (isOpen ? 1 : 0)};
   z-index: ${({ isOpen }) => (isOpen ? 1 : -1)};
   transform: ${({ isOpen }) => (isOpen ? 'scale(1)' : 'scale(0)')};
   transform-origin: left;
-  transition: all 0.25s;
+  transition: all 0.15s;
   white-space: nowrap;
   justify-content: flex-start;
   align-items: center;
+  margin-right: ${({ isInternal }) => (isInternal ? 'auto' : '0')}; ;
 `
-const HamburMenuButton = styled.button<{ isOpen: boolean }>`
+const BurgerMenuButton = styled.button<{ isOpen: boolean }>`
   display: flex;
   flex-direction: column;
   align-self: center;
   max-width: 75px !important;
   position: relative;
   span {
-    transition: all 0.25s;
+    transition: all 0.15s;
     margin-inline: auto;
     width: 20px;
     height: 2px;
@@ -381,7 +383,7 @@ export default function NavBar() {
   const bannerText = 'Users interacting with this software do so entirely at their own risk'
   const DeiPrice = useDeiPrice()
   const DeusPrice = useDeusPrice()
-  const [isOpen, setOpen] = useState(false)
+  const [isOpen, setOpen] = useState(true)
 
   function setShowBanner(inp: boolean) {
     if (!inp) {
@@ -419,11 +421,11 @@ export default function NavBar() {
     return (
       <Wrapper isOpen={isOpen}>
         <DefaultWrapper isOpen={true}>
-          <HamburMenuButton isOpen={isOpen} onClick={() => setOpen((prev) => !prev)}>
+          <BurgerMenuButton isOpen={isOpen} onClick={() => setOpen((prev) => !prev)}>
             <span />
             <span />
             <span />
-          </HamburMenuButton>
+          </BurgerMenuButton>
           <NavLogo2 />
         </DefaultWrapper>
         <Column style={{ position: 'relative', top: '62px' }}>
@@ -455,7 +457,7 @@ export default function NavBar() {
                   <IconWrapper>
                     <DashboardIcon size={20} />
                   </IconWrapper>
-                  <NavLinkContainer isOpen={isOpen}>
+                  <NavLinkContainer isOpen={isOpen} isInternal={true}>
                     <NavLink active={router.route.includes('/dashboard')}>Dashboard</NavLink>
                   </NavLinkContainer>
                 </MenuItemLinkContainer>
@@ -467,7 +469,7 @@ export default function NavBar() {
                   <IconWrapper>
                     <MintIcon size={20} />
                   </IconWrapper>
-                  <NavLinkContainer isOpen={isOpen}>
+                  <NavLinkContainer isOpen={isOpen} isInternal={true}>
                     <NavLink active={router.route.includes('/mint')}>Mint DEI</NavLink>
                   </NavLinkContainer>
                 </MenuItemLinkContainer>
@@ -483,7 +485,7 @@ export default function NavBar() {
                   <IconWrapper>
                     <RedeemIcon size={20} />
                   </IconWrapper>
-                  <NavLinkContainer isOpen={isOpen}>
+                  <NavLinkContainer isOpen={isOpen} isInternal={true}>
                     <NavLink active={router.route.includes('/redemption')}>Redeem DEI</NavLink>
                   </NavLinkContainer>
                 </MenuItemLinkContainer>
@@ -495,7 +497,7 @@ export default function NavBar() {
                   <IconWrapper>
                     <DeiBondsIcon size={20} />
                   </IconWrapper>
-                  <NavLinkContainer isOpen={isOpen}>
+                  <NavLinkContainer isOpen={isOpen} isInternal={true}>
                     <NavLink active={router.route.includes('/stake')}>Pools</NavLink>
                   </NavLinkContainer>
                 </MenuItemLinkContainer>
@@ -519,7 +521,7 @@ export default function NavBar() {
                   <IconWrapper>
                     <SwapIcon width={20} color={'#EBEBEC'} />
                   </IconWrapper>
-                  <NavLinkContainer isOpen={isOpen}>
+                  <NavLinkContainer isOpen={isOpen} isInternal={true}>
                     <NavLink active={router.route.includes('/swap')}>Swap</NavLink>
                   </NavLinkContainer>
                 </MenuItemLinkContainer>
@@ -578,24 +580,24 @@ export default function NavBar() {
             </SimpleLinkWrapper>
           </Routes>
           {isOpen && <Separator />}
-          <NavLinkContainer isOpen={isOpen}>
-            <PricesWrap>
+          <NavLinkContainer isOpen={isOpen} style={{ cursor: 'default' }}>
+            <PricesWrap style={{ cursor: 'default' }}>
               <Token>
                 DEI Price
                 <Price>
-                  <DeiPriceWrap>${DeiPrice}</DeiPriceWrap>
+                  <DeiPriceWrap>{formatDollarAmount(parseFloat(DeiPrice), 3)}</DeiPriceWrap>
                 </Price>
               </Token>
               <Token>
                 DEUS Price
                 <Price>
-                  <DeusPriceWrap>${DeusPrice}</DeusPriceWrap>
+                  <DeusPriceWrap>{formatDollarAmount(parseFloat(DeusPrice), 2)}</DeusPriceWrap>
                 </Price>
               </Token>
               <Token>
                 Legacy DEI Price:
                 <Price>
-                  <LegacyDeiPriceWrap>${DeusPrice}</LegacyDeiPriceWrap>
+                  <LegacyDeiPriceWrap>{formatDollarAmount(parseFloat(DeiPrice), 3)}</LegacyDeiPriceWrap>
                 </Price>
               </Token>
             </PricesWrap>

@@ -33,10 +33,14 @@ import Tableau from 'components/App/StableCoin/Tableau'
 import WarningModal from 'components/ReviewModal/Warning'
 import { RowCenter } from 'components/Row'
 import { useWeb3NavbarOption } from 'state/web3navbar/hooks'
+import Claim from 'components/App/Redemption/Claim'
 
 const MainContainer = styled(Container)`
   margin-top: 68px;
   height: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
 `
 const ActionButton = styled.div`
   width: 100%;
@@ -216,7 +220,7 @@ export default function Redemption() {
           if (amountIn && amountIn !== '0' && amountIn !== '' && amountIn !== '0.') toggleReviewModal(true)
         }}
       >
-        Redeem DEI
+        Redeem
       </MainButton>
     )
   }
@@ -237,6 +241,7 @@ export default function Redemption() {
   return (
     <>
       <MainContainer>
+        {/* style={{ border: '1px solid red', marginRight: '10px' }} */}
         <Wrapper>
           <TableauContainer>
             <Tableau title={'Redeem DEI'} />
@@ -270,6 +275,7 @@ export default function Redemption() {
             <InfoItem name={'Mint Ratio'} value={Number(mintCollateralRatio).toString() + '%'} />
           </BottomWrapper>
         </Wrapper>
+        <Claim redeemCollateralRatio={redeemCollateralRatio} handleUpdatePrice={handleUpdatePrice} />
       </MainContainer>
 
       <WarningModal
