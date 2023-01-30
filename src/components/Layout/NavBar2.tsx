@@ -197,11 +197,6 @@ const Row = styled.div<{
   justify-content: space-between;
   align-items: center;
   color: ${({ theme }) => theme.text2};
-  &:hover {
-    cursor: pointer;
-    color: ${({ theme }) => theme.text1};
-  }
-
   ${({ active, theme }) =>
     active &&
     ` color: ${theme.darkPink};
