@@ -31,7 +31,8 @@ import { ExternalLink } from 'components/Link'
 import { Divider, HStack, VStack } from '../Staking/common/Layout'
 import SPOOKY_SWAP_IMG from '/public/static/images/pages/stake/spooky.svg'
 import BEETHOVEN_IMG from '/public/static/images/pages/stake/beethoven.svg'
-import SOLIDLY_IMG from '/public/static/images/pages/stake/solid.png'
+// import SOLIDLY_IMG from '/public/static/images/pages/stake/solid.png'
+import SOLIDLY_IMG from '/public/static/images/pages/stake/solidly.svg'
 import ExternalIcon from '/public/static/images/pages/stake/down.svg'
 
 import { Token } from '@sushiswap/core-sdk'
@@ -265,14 +266,14 @@ const CustomButton = styled(ExternalLink)`
 const buttonTitles = {
   BEETHOVEN: 'Farm on',
   SPOOKY_SWAP: 'Farm on',
-  SOLIDLY: 'Farm on Solidly',
+  SOLIDLY: 'Farm on',
   INTERNAL: 'Manage',
 }
 
 const buttonImageSources = {
   BEETHOVEN: BEETHOVEN_IMG,
   SPOOKY_SWAP: SPOOKY_SWAP_IMG,
-  SOLIDLY: SOLIDLY_IMG.src,
+  SOLIDLY: SOLIDLY_IMG,
   INTERNAL: ExternalIcon,
 }
 
@@ -286,7 +287,7 @@ const buttonImageHeights = {
 const buttonImageWidths = {
   BEETHOVEN: 120,
   SPOOKY_SWAP: 120,
-  SOLIDLY: 20,
+  SOLIDLY: 60,
   INTERNAL: 0,
 }
 
@@ -295,7 +296,7 @@ const CustomButtonWrapper = ({ type, href, isActive }: { type: BUTTON_TYPE; href
     <CustomButton transparentBG href={isActive && href}>
       <ButtonText>
         {buttonTitles[type]}
-        <HStack style={{ marginLeft: '1ch', alignItems: 'flex-end' }}>
+        <HStack style={{ marginLeft: '1ch', alignItems: 'flex-start' }}>
           <Image
             width={buttonImageWidths[type]}
             height={buttonImageHeights[type]}
@@ -373,7 +374,6 @@ const TableRowMiniContent = ({
   toggleWalletModal,
   rewardAmounts,
   chain,
-  type,
 }: ITableRowContent) => {
   const hasReward = useMemo(() => {
     return rewardAmounts.every((value) => value === 0)
@@ -512,7 +512,7 @@ const TableRowContent = ({ stakingPool }: { stakingPool: StakingType }) => {
     stakingPool.version === StakingVersion.EXTERNAL ? 0 : stakingPool.secondaryAprHook(liquidityPool, stakingPool)
   const apr = primaryApy + secondaryApy
 
-  const tvl = stakingPool?.tvlHook(stakingPool)
+  const tvl = stakingPool.tvlHook(stakingPool)
 
   // console.log('apr and tvl for ', apr, tvl, name, stakingPool?.aprHook, stakingPool?.tvlHook)
 

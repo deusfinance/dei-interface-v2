@@ -32,9 +32,10 @@ import { TokenBox } from './TokenBox'
 const ActionWrap = styled(Card)`
   background: transparent;
   border-radius: 12px;
-  margin-top: 25px;
+  margin-top: -95px;
   width: 320px;
   padding: 2px;
+  margin-right: auto;
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
     margin: 20px auto;

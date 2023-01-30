@@ -5,7 +5,7 @@ import { Row, RowBetween } from 'components/Row'
 import Column from 'components/Column'
 import ImageWithFallback from 'components/ImageWithFallback'
 import ExternalLinkIcon from '/public/static/images/pages/stake/down.svg'
-import MigrationHeaderIcon from '/public/static/images/pages/dashboard/migration-header.svg'
+// import MigrationHeaderIcon from '/public/static/images/pages/dashboard/migration-header.svg'
 
 const MigrationContainer = styled(RowBetween)`
   padding: 20px;
@@ -93,7 +93,7 @@ const MigrationNav = () => {
             </MigrationLink>
           </Column>
           <MigrationHeaderImage>
-            <ImageWithFallback src={MigrationHeaderIcon} alt="" height={68} width={120} />
+            {/* <ImageWithFallback src={MigrationHeaderIcon} alt="migration" height={68} width={120} /> */}
           </MigrationHeaderImage>
         </MigrationHeaderContainer>
         <GradientButton>
