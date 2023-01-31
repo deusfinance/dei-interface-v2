@@ -1,24 +1,24 @@
 import React from 'react'
 import styled from 'styled-components'
-import MINT_LOGO from '/public/static/images/pages/dashboard/ic_mint_gray.svg'
-import MINT_HOVER_LOGO from '/public/static/images/pages/dashboard/ic_mint_hover.svg'
-import REDEEM_LOGO from '/public/static/images/pages/dashboard/ic_redeem_gray.svg'
-import REDEEM_HOVER_LOGO from '/public/static/images/pages/dashboard/ic_redeem_hover.svg'
-import BOND_LOGO from '/public/static/images/pages/dashboard/ic_bond_gray.svg'
-import BOND_HOVER_LOGO from '/public/static/images/pages/dashboard/ic_bond_hover.svg'
-import ANALYTICS_LOGO from '/public/static/images/pages/dashboard/ic_analytics_gray.svg'
-import ANALYTICS_HOVER_LOGO from '/public/static/images/pages/dashboard/ic_analytics_hover.svg'
-import VEDEUS_LOGO from '/public/static/images/pages/dashboard/ic_vedeus_gray.svg'
-import VEDEUS_HOVER_LOGO from '/public/static/images/pages/dashboard/ic_vedeus_hover.svg'
+// import MINT_LOGO from '/public/static/images/pages/dashboard/ic_mint_gray.svg'
+// import MINT_HOVER_LOGO from '/public/static/images/pages/dashboard/ic_mint_hover.svg'
+// import REDEEM_LOGO from '/public/static/images/pages/dashboard/ic_redeem_gray.svg'
+// import REDEEM_HOVER_LOGO from '/public/static/images/pages/dashboard/ic_redeem_hover.svg'
+// import BOND_LOGO from '/public/static/images/pages/dashboard/ic_bond_gray.svg'
+// import BOND_HOVER_LOGO from '/public/static/images/pages/dashboard/ic_bond_hover.svg'
+// import ANALYTICS_LOGO from '/public/static/images/pages/dashboard/ic_analytics_gray.svg'
+// import ANALYTICS_HOVER_LOGO from '/public/static/images/pages/dashboard/ic_analytics_hover.svg'
+// import VEDEUS_LOGO from '/public/static/images/pages/dashboard/ic_vedeus_gray.svg'
+// import VEDEUS_HOVER_LOGO from '/public/static/images/pages/dashboard/ic_vedeus_hover.svg'
 // import { useDeiStats } from 'hooks/useDeiStats'
 import useWeb3React from 'hooks/useWeb3'
 // import { formatAmount, formatDollarAmount } from 'utils/numbers'
 import { Container } from 'components/App/StableCoin'
 import { RowBetween, RowCenter } from 'components/Row'
-import { Card } from 'components/App/Dashboard/card'
-import { SocialCard } from 'components/App/Dashboard/SocialCard'
+// import { Card } from 'components/App/Dashboard/card'
+// import { SocialCard } from 'components/App/Dashboard/SocialCard'
 import Stats from 'components/App/Dashboard/Stats'
-import DeiBondStats from 'components/App/Dashboard/DeiBondStats'
+// import DeiBondStats from 'components/App/Dashboard/DeiBondStats'
 // import { useDeiPrice } from 'hooks/useCoingeckoPrice'
 import MigrationNav from 'components/App/Dashboard/MigrationNav'
 import Account from 'components/App/Dashboard/Account'
@@ -80,7 +80,7 @@ export default function Dashboard() {
       <Wrapper>
         <MigrationNav />
         <Account />
-        {account && <DeiBondStats />}
+        {/* {account && <DeiBondStats />}
         <CardWrapper>
           <Card href="/mint" title={'Mint DEI'} subTitle="Mint DEI" MainIcon={MINT_LOGO} HoverIcon={MINT_HOVER_LOGO} />
           <Card
@@ -112,7 +112,7 @@ export default function Dashboard() {
             HoverIcon={ANALYTICS_HOVER_LOGO}
           />
           <SocialCard />
-        </CardWrapper>
+        </CardWrapper> */}
         <Stats />
       </Wrapper>
     </Container>
