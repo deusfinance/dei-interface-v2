@@ -488,8 +488,6 @@ export default function MultipleChart({
     }
   }, [filteredData, currentID])
 
-  console.log('chart data', chartData)
-
   const CustomTooltip = ({ payload }: { payload: any }) => {
     if (payload && payload.length) {
       const date = new Date(parseInt(payload[0].payload.timestamp) * 1000)

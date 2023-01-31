@@ -1,14 +1,17 @@
 import { formatUnits } from '@ethersproject/units'
 import { getVeDeusStatsApolloClient } from 'apollo/client/veDeusStats'
 import { ChartData } from 'apollo/queries'
+import CoinGecko from 'coingecko-api'
 import Dropdown from 'components/DropDown'
 import { FALLBACK_CHAIN_ID } from 'constants/chains'
+import { useDeusPriceData } from 'hooks/useCoingeckoStats'
 import useWeb3React from 'hooks/useWeb3'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { isMobile } from 'react-device-detect'
 import { ResponsiveContainer, YAxis, AreaChart, Area, CartesianGrid, Tooltip } from 'recharts'
 import styled, { useTheme } from 'styled-components'
 import { formatAmount, toBN } from 'utils/numbers'
+import { CoingeckoQueue } from 'utils/queue'
 
 const Wrapper = styled.div`
   display: flex;
@@ -148,6 +151,54 @@ const tempData: ChartData[] = [
   { timestamp: 'Jun', value: '900' },
 ]
 
+export const SymbolIdentifiers: {
+  [x: string]: string
+} = {
+  DEI: 'dei-token',
+  DEUS: 'deus-finance-2',
+}
+
+const CoinGeckoClient = new CoinGecko()
+
+function useCoingeckoPriceData(
+  id: string,
+  tempData: ChartData[],
+  from: number,
+  to: number,
+  forceRevert?: boolean
+): ChartData[] {
+  const [data, setData] = useState(tempData)
+
+  useEffect(() => {
+    const fetchPrice = () => {
+      CoingeckoQueue.add(async () => {
+        try {
+          const result = await CoinGeckoClient.coins.fetchMarketChartRange(id, {
+            vs_currency: 'usd',
+            from,
+            to,
+          })
+
+          const chartdata = result?.data?.prices.map((item: any[]) => ({
+            timestamp: item[0] / 1000,
+            value: item[1],
+          }))
+          setData(chartdata)
+        } catch (err) {
+          console.log('Unable to fetch Coingecko price:')
+          console.error(err)
+          setData(tempData)
+        }
+      })
+    }
+    if (!forceRevert) {
+      fetchPrice()
+    }
+  }, [id, forceRevert, tempData, from, to])
+
+  return data
+}
+
 export default function SingleChart({
   label,
   primaryColor,
@@ -162,9 +213,12 @@ export default function SingleChart({
   const { chainId = FALLBACK_CHAIN_ID } = useWeb3React()
   const theme = useTheme()
 
-  const [loading, setLoading] = useState(true)
-  const [chartData, setChartData] = useState<ChartData[]>(tempData)
+  const [loading, setLoading] = useState(false)
+  //const [chartData, setChartData] = useState<ChartData[]>(tempData)
   const [currentTimeFrame, setCurrentTimeFrame] = useState('1M')
+  const currentTimestamp = Date.now() / 1000
+  const lastTimestamp = currentTimestamp - timeframeMap[currentTimeFrame]
+  const chartData = useCoingeckoPriceData(SymbolIdentifiers.DEUS, tempData, lastTimestamp, currentTimestamp)
 
   // const getRawData = useCallback(
   //   async (skip: number, timestamp: number) => {
@@ -294,6 +348,8 @@ export default function SingleChart({
     ],
     [filteredData]
   )
+
+  console.log('filtered data', filteredData)
 
   const CustomTooltip = ({ payload }: { payload: any }) => {
     if (payload && payload.length) {

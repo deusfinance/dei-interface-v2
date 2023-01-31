@@ -352,13 +352,13 @@ export default function Stats() {
                 href={'https://lafayettetabor.medium.com/a-wealth-creating-revamped-redeem-plan-601dadcc29a1'}
               />
               <StatsItem name="Market Cap" value="N/A" />
-              <StatsItem
+              {/* <StatsItem
                 name="veDEUS Supply"
                 value={formatAmount(parseFloat(lockedVeDEUS), 0)}
                 href={
                   ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/address/' + veDEUS[SupportedChainId.FANTOM]
                 }
-              />
+              /> */}
             </Info>
           </StatsWrapper>
         </AllStats>
