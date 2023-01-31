@@ -296,15 +296,14 @@ const Data = styled.div`
   font-weight: 500;
   font-size: 16px;
   line-height: 21px;
-
   color: ${({ theme }) => theme.bg6};
-  & > * {
-    margin: 8px 0px;
-  }
 `
 
 const DataItems = styled(RowStart)`
-  margin: 8px 0px;
+  margin: 16px 0px 0px 0px;
+  & > svg {
+    margin-left: 8px;
+  }
 `
 const MenuItemLinkContainer = styled(Row)`
   align-items: center;
@@ -362,6 +361,12 @@ const BurgerMenuButton = styled.button<{ isOpen: boolean }>`
 const CustomLink = styled(ExternalLink)`
   text-decoration: none;
   color: #8f939c !important;
+  &:hover {
+    color: white !important;
+  }
+  font-size: 1rem;
+  font-weight: medium;
+  font-family: 'IBM Plex Mono';
 `
 export default function NavBar() {
   const router = useRouter()
@@ -540,41 +545,45 @@ export default function NavBar() {
 
             <Separator />
 
-            <SimpleLinkWrapper isOpen={isOpen} className="last" active={router.route.includes('/clqdr')}>
-              <Link href="/clqdr" passHref>
-                <MenuItemLinkContainer>
-                  <Row>
-                    <IconWrapper>
-                      <VeDeusIcon size={20} />
-                    </IconWrapper>
-                    <NavLink active={router.route.includes('/clqdr')}>xDEUS</NavLink>
-                  </Row>
-                  <NavLinkContainer isOpen={isOpen}>
-                    <ArrowUpRight />
-                    <Logo>
-                      <ImageWithFallback src={DEUSFINANCE} width={92} height={14} alt={`deus_finance_logo`} />
-                    </Logo>
-                  </NavLinkContainer>
-                </MenuItemLinkContainer>
-              </Link>
+            <SimpleLinkWrapper isOpen={isOpen} className="last" as={ExternalLink} href="https://app.deus.finance/clqdr">
+              <MenuItemLinkContainer>
+                <Row>
+                  <IconWrapper>
+                    <VeDeusIcon size={20} />
+                  </IconWrapper>
+                  <ExternalLink style={{ fontSize: 20, padding: '0.25rem 1rem' }} href="https://app.deus.finance/clqdr">
+                    xDEUS
+                  </ExternalLink>
+                </Row>
+
+                <NavLinkContainer isOpen={isOpen}>
+                  <ArrowUpRight />
+                  <Logo>
+                    <ImageWithFallback src={DEUSFINANCE} width={92} height={14} alt={`deus_finance_logo`} />
+                  </Logo>
+                </NavLinkContainer>
+              </MenuItemLinkContainer>
             </SimpleLinkWrapper>
-            <SimpleLinkWrapper isOpen={isOpen} active={router.route.includes('/clqdr')}>
-              <Link href="/clqdr" passHref>
-                <MenuItemLinkContainer>
-                  <Row>
-                    <IconWrapper>
-                      <BridgeIcon size={20} />
-                    </IconWrapper>
-                    <NavLink active={router.route.includes('/clqdr')}>Bridge</NavLink>
-                  </Row>
-                  <NavLinkContainer isOpen={isOpen}>
-                    <ArrowUpRight />
-                    <Logo>
-                      <ImageWithFallback src={MULTICHAIN} width={88} height={13} alt={`multichain_logo`} />
-                    </Logo>
-                  </NavLinkContainer>
-                </MenuItemLinkContainer>
-              </Link>
+            <SimpleLinkWrapper as={ExternalLink} href="https://app.multichain.org/#/router" isOpen={isOpen}>
+              <MenuItemLinkContainer>
+                <Row>
+                  <IconWrapper>
+                    <BridgeIcon size={20} />
+                  </IconWrapper>
+                  <ExternalLink
+                    style={{ fontSize: 20, padding: '0.25rem 1rem' }}
+                    href="https://app.multichain.org/#/router"
+                  >
+                    Bridge
+                  </ExternalLink>
+                </Row>
+                <NavLinkContainer isOpen={isOpen}>
+                  <ArrowUpRight />
+                  <Logo>
+                    <ImageWithFallback src={MULTICHAIN} width={88} height={13} alt={`multichain_logo`} />
+                  </Logo>
+                </NavLinkContainer>
+              </MenuItemLinkContainer>
             </SimpleLinkWrapper>
           </Routes>
           {isOpen && <Separator />}
@@ -611,10 +620,7 @@ export default function NavBar() {
           <Column style={{ width: '100%' }}>
             <Data>
               <CustomLink href={'https://docs.deus.finance'} passHref>
-                <DataItems>
-                  Bug Bounty
-                  <ArrowUpRight />
-                </DataItems>
+                <DataItems>Bug Bounty</DataItems>
               </CustomLink>
 
               <CustomLink href={'https://docs.deus.finance'} passHref>
@@ -631,7 +637,7 @@ export default function NavBar() {
               </CustomLink>
             </Data>
 
-            <Separator />
+            <Separator style={{ marginBlock: '32px', height: 1 }} />
 
             <div style={{ width: '100%' }}>
               {' '}
