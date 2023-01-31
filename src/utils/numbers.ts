@@ -20,21 +20,38 @@ export const formatDollarAmount = (num: number | undefined, digits = 2, round = 
   })
 }
 
-export const formatAmount = (num: number | undefined, digits = 2, thousandSeparated?: boolean) => {
+export const formatAmount = (
+  num: number | undefined,
+  digits = 2,
+  thousandSeparated?: boolean,
+  forceThousand?: boolean
+) => {
   if (num === 0) return '0'
   if (!num) return '-'
   if (num < 0.001) {
     return '<0.001'
   }
-  return numbro(num).format({
-    thousandSeparated: !!thousandSeparated,
-    average: !thousandSeparated,
-    mantissa: num > 1000 ? 2 : digits,
-    abbreviations: {
-      million: 'M',
-      billion: 'B',
-    },
-  })
+
+  return forceThousand
+    ? numbro(num).format({
+        thousandSeparated: !!thousandSeparated,
+        average: !thousandSeparated,
+        mantissa: num > 1000 ? 2 : digits,
+        forceAverage: 'thousand',
+        abbreviations: {
+          million: 'M',
+          billion: 'B',
+        },
+      })
+    : numbro(num).format({
+        thousandSeparated: !!thousandSeparated,
+        average: !thousandSeparated,
+        mantissa: num > 1000 ? 2 : digits,
+        abbreviations: {
+          million: 'M',
+          billion: 'B',
+        },
+      })
 }
 
 export function toBN(num: BigNumber.Value): BigNumber {

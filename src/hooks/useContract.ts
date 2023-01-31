@@ -13,6 +13,7 @@ import VEDEUS_ABI from 'constants/abi/VEDEUS.json'
 import VE_DIST_ABI from 'constants/abi/VE_DIST.json'
 import DEI_BONDER_ABI from 'constants/abi/DEI_Bonder.json'
 import COLLATERAL_POOL_ABI from 'constants/abi/COLLATERAL_POOL_ABI.json'
+import COLLATERAL_POOL_ARBITRUM_ABI from 'constants/abi/COLLATERAL_POOL_ARBITRUM_ABI.json'
 import PROXY_MINTER_ABI from 'constants/abi/PROXY_MINTER_ABI.json'
 import DEI_BONDER_V3_ABI from 'constants/abi/DEI_BONDER_V3.json'
 import CLQDR_ABI from 'constants/abi/CLQDR_ABI.json'
@@ -123,6 +124,12 @@ export function useCollateralPoolContract() {
   const { chainId } = useWeb3React()
   const address = useMemo(() => (chainId ? CollateralPool[chainId] : undefined), [chainId])
   return useContract(address, COLLATERAL_POOL_ABI)
+}
+
+export function useArbitrumCollateralPoolContract() {
+  const { chainId } = useWeb3React()
+  const address = useMemo(() => (chainId ? CollateralPool[chainId] : undefined), [chainId])
+  return useContract(address, COLLATERAL_POOL_ARBITRUM_ABI)
 }
 
 export function useProxyMinterContract() {
