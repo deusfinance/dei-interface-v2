@@ -1,6 +1,5 @@
 import StatsHeader from 'components/StatsHeader'
 import { useDeusPrice } from 'hooks/useCoingeckoPrice'
-import { useDeusPriceData } from 'hooks/useCoingeckoStats'
 import { useDeusStats } from 'hooks/useDeusStats'
 import { useMemo } from 'react'
 import styled, { useTheme } from 'styled-components'

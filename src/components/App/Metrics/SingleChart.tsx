@@ -1,16 +1,13 @@
-import { formatUnits } from '@ethersproject/units'
-import { getVeDeusStatsApolloClient } from 'apollo/client/veDeusStats'
 import { ChartData } from 'apollo/queries'
 import CoinGecko from 'coingecko-api'
 import Dropdown from 'components/DropDown'
 import { FALLBACK_CHAIN_ID } from 'constants/chains'
-import { useDeusPriceData } from 'hooks/useCoingeckoStats'
 import useWeb3React from 'hooks/useWeb3'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { isMobile } from 'react-device-detect'
 import { ResponsiveContainer, YAxis, AreaChart, Area, CartesianGrid, Tooltip } from 'recharts'
 import styled, { useTheme } from 'styled-components'
-import { formatAmount, toBN } from 'utils/numbers'
+import { formatAmount } from 'utils/numbers'
 import { CoingeckoQueue } from 'utils/queue'
 
 const Wrapper = styled.div`
