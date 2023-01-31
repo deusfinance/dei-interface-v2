@@ -551,13 +551,16 @@ export default function NavBar() {
                   <IconWrapper>
                     <VeDeusIcon size={20} />
                   </IconWrapper>
-                  <ExternalLink style={{ fontSize: 20, padding: '0.25rem 1rem' }} href="https://app.deus.finance/clqdr">
+                  <ExternalLink
+                    style={{ fontSize: 20, padding: '0.25rem 1rem', paddingRight: '0.3rem' }}
+                    href="https://app.deus.finance/xdeus/swap"
+                  >
                     xDEUS
                   </ExternalLink>
+                  <ArrowUpRight />
                 </Row>
 
                 <NavLinkContainer isOpen={isOpen}>
-                  <ArrowUpRight />
                   <Logo>
                     <ImageWithFallback src={DEUSFINANCE} width={92} height={14} alt={`deus_finance_logo`} />
                   </Logo>
@@ -571,14 +574,14 @@ export default function NavBar() {
                     <BridgeIcon size={20} />
                   </IconWrapper>
                   <ExternalLink
-                    style={{ fontSize: 20, padding: '0.25rem 1rem' }}
+                    style={{ fontSize: 20, padding: '0.25rem 1rem', paddingRight: '0.3rem' }}
                     href="https://app.multichain.org/#/router"
                   >
                     Bridge
                   </ExternalLink>
+                  <ArrowUpRight />
                 </Row>
                 <NavLinkContainer isOpen={isOpen}>
-                  <ArrowUpRight />
                   <Logo>
                     <ImageWithFallback src={MULTICHAIN} width={88} height={13} alt={`multichain_logo`} />
                   </Logo>
