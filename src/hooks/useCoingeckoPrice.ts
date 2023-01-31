@@ -48,29 +48,6 @@ export function useCustomCoingeckoPrice(symbol: string) {
   return useCoingeckoPrice(valid ? SymbolIdentifiers[symbol] : '', '0', !valid)
 }
 
-type TUseSwap = Record<'from' | 'to' | 'amount' | 'slippage' | 'chainId' | 'saveGas' | 'gasInclude', string>
-type TUseSwapResponse = {
-  maxReturn: {
-    totalTo: string
-  }
-}
-export const useSwap = ({ from, to, amount, slippage, chainId, saveGas, gasInclude }: TUseSwap) => {
-  const dexes =
-    'basedfinance,beethovenx,bombswap,curve,knightswap,deusstable,equalizer,excalibur,firebird,fraxswap,fusd,jetswap,morpheusswap,mummy,paintswap,protofi,saddle,solidly,soulswap,spartacus,spiritswap,spiritswapv2,spookyswap,sushiswap,synapse,tombswap,wigoswap,woofi,woofiv2,yoshiexchange'
-  const [price, setPrice] = useState<TUseSwapResponse>()
-  useEffect(() => {
-    const handleSwapRequest = async () => {
-      const response = await fetch(
-        `https://router.firebird.finance/fantom/route?amount=${amount}&dexes=${dexes}&slippage=${slippage}&from=${from}&to=${to}&chainId=${chainId}&saveGas=${saveGas}&gasInclude=${gasInclude}&source=firebird&compareDexes=spookyswap`
-      )
-      const responseJson: TUseSwapResponse = await response.json()
-      setPrice(responseJson)
-    }
-    handleSwapRequest()
-  }, [])
-  return price
-}
-
 // TODO add this to global state, so we don't refetch prices.
 export default function useCoingeckoPrice(id: string, DEFAULT_PRICE: string, forceRevert?: boolean): string {
   const [price, setPrice] = useState(DEFAULT_PRICE)

@@ -32,12 +32,15 @@ import {
   // Analytics as AnalyticsIcon,
 } from 'components/Icons'
 import { ArrowUpRight } from 'react-feather'
-import { useDeiPrice, useDeusPrice, useSwap } from 'hooks/useCoingeckoPrice'
+import { useDeiPrice, useDeusPrice } from 'hooks/useCoingeckoPrice'
 import Column from 'components/Column'
 import { ExternalLink } from 'components/Link'
 import { formatUnits } from '@ethersproject/units'
 import { USDC_TOKEN } from 'constants/tokens'
 import { formatDollarAmount } from 'utils/numbers'
+import { useFirebirdPrice } from 'hooks/useFirebirdPrice'
+import { SolidAddress, USDC_ADDRESS } from 'constants/addresses'
+import { SupportedChainId } from 'constants/chains'
 
 const Wrapper = styled.div<{ isOpen?: boolean }>`
   transition: width 0.15s;
@@ -68,7 +71,6 @@ const DefaultWrapper = styled(Wrapper)`
   height: 62px;
   position: absolute;
   top: 0px;
-  /* width: 336px; */
   background: ${({ theme }) => theme.bg0};
 
   border-bottom: 2px solid ${({ theme }) => theme.bg3};
@@ -179,16 +181,6 @@ const SimpleLinkWrapper = styled(RowWrapper)<{
   overflow: hidden;
 `
 
-const Items = styled.div`
-  display: flex;
-  flex-flow: column nowrap;
-  justify-content: flex-end;
-  gap: 8px;
-  ${({ theme }) => theme.mediaWidth.upToSmall`
-      gap: 5px;
-  `};
-`
-
 const Row = styled.div<{
   active?: boolean
 }>`
@@ -209,7 +201,6 @@ const NavLink = styled.div<{
 }>`
   font-size: 1rem;
   padding: 0.25rem 1rem;
-  /* text-align: center; */
   color: ${({ theme }) => theme.text1};
 
   font-family: 'IBM Plex Mono';
@@ -382,11 +373,11 @@ export default function NavBar() {
   const DeusPrice = useDeusPrice()
   const [isOpen, setOpen] = useState(true)
 
-  const legacyUsdc = useSwap({
+  const LegacyDeiPrice = useFirebirdPrice({
     amount: '1000000000000000000',
-    chainId: '250',
-    from: '0xde12c7959e1a72bbe8a5f7a1dc8f8eef9ab011b3',
-    to: '0x04068da6c83afcfa0e13ba15a6696662335d5b75',
+    chainId: SupportedChainId.FANTOM.toString(),
+    from: SolidAddress[SupportedChainId.FANTOM].toString(),
+    to: USDC_ADDRESS[SupportedChainId.FANTOM].toString(),
     gasInclude: '1',
     saveGas: '0',
     slippage: '0.01',
@@ -601,12 +592,12 @@ export default function NavBar() {
                   <DeusPriceWrap>{formatDollarAmount(parseFloat(DeusPrice), 2)}</DeusPriceWrap>
                 </Price>
               </Token>
-              {legacyUsdc && (
+              {LegacyDeiPrice && (
                 <Token>
                   Legacy DEI Price:
                   <Price>
                     <LegacyDeiPriceWrap>
-                      ${(+formatUnits(legacyUsdc?.maxReturn?.totalTo, USDC_TOKEN.decimals))?.toFixed(3)}
+                      ${(+formatUnits(LegacyDeiPrice, USDC_TOKEN.decimals))?.toFixed(3)}
                     </LegacyDeiPriceWrap>
                   </Price>
                 </Token>

@@ -111,13 +111,6 @@ export default function Dashboard() {
             MainIcon={ANALYTICS_LOGO}
             HoverIcon={ANALYTICS_HOVER_LOGO}
           />
-          {/* <Card
-            href="https://legacy.dei.finance/"
-            title={'vDEUS'}
-            subTitle="Migrate to vDEUS ERC20"
-            MainIcon={VDEUS_LOGO}
-            HoverIcon={VDEUS_HOVER_LOGO}
-          /> */}
           <SocialCard />
         </CardWrapper>
         <Stats />
