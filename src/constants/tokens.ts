@@ -56,12 +56,12 @@ export const DEI_BDEI_LP_TOKEN = new Token(
   'DB-LP'
 )
 
-export const VDEUS_TOKEN = new Token(
+export const XDEUS_TOKEN = new Token(
   SupportedChainId.FANTOM,
   '0x953Cd009a490176FcEB3a26b9753e6F01645ff28',
   18,
-  'vDEUS',
-  'vDEUS'
+  'xDEUS',
+  'xDEUS'
 )
 
 export const DEUS_VDEUS_LP_TOKEN = new Token(

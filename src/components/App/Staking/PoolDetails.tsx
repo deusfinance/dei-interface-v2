@@ -35,7 +35,7 @@ export const PoolDetails = () => {
     <Container>
       <ReadingContent>
         <ReadingHeader>
-          <p>DEUS-vDEUS Staking</p>
+          <p>DEUS-xDEUS Staking</p>
           <ExternalLink href="https://google.com">
             <p>Read more</p>
             <Icon width="8px" height="8px" src="/static/images/pages/stake/down.svg" />

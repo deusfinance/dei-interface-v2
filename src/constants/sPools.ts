@@ -5,7 +5,7 @@ import {
   DEI_TOKEN,
   DEUS_TOKEN,
   DEUS_VDEUS_LP_TOKEN,
-  VDEUS_TOKEN,
+  XDEUS_TOKEN,
   DEI_BDEI_LP_TOKEN,
 } from 'constants/tokens'
 import { StablePool_DEUS_vDEUS, StablePool_DEI_bDEI } from './addresses'
@@ -27,11 +27,11 @@ export const StablePools: StablePoolType[] = [
     rewardsTokens: [DEUS_TOKEN],
   },
   {
-    name: 'DEUS-vDEUS',
+    name: 'DEUS-xDEUS',
     swapFlashLoan: StablePool_DEUS_vDEUS[SupportedChainId.FANTOM],
-    liquidityTokens: [VDEUS_TOKEN, DEUS_TOKEN],
+    liquidityTokens: [XDEUS_TOKEN, DEUS_TOKEN],
     lpToken: DEUS_VDEUS_LP_TOKEN,
-    rewardsTokens: [VDEUS_TOKEN],
+    rewardsTokens: [XDEUS_TOKEN],
   },
 ]
 

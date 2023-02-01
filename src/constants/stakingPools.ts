@@ -7,7 +7,7 @@ import {
   DEUS_VDEUS_LP_TOKEN,
   SOLID_TOKEN,
   USDC_TOKEN,
-  VDEUS_TOKEN,
+  XDEUS_TOKEN,
   WFTM_TOKEN,
   XDEUS_DEUS_SOLIDLY_LP,
 } from 'constants/tokens'
@@ -124,7 +124,7 @@ export const LiquidityPool: LiquidityType[] = [
   },
   {
     id: 2,
-    tokens: [VDEUS_TOKEN, DEUS_TOKEN],
+    tokens: [XDEUS_TOKEN, DEUS_TOKEN],
     provideLinks: [
       { id: 0, title: 'Go to Swap Page', link: '/swap' },
       {
@@ -139,25 +139,25 @@ export const LiquidityPool: LiquidityType[] = [
   },
   {
     id: 3,
-    tokens: [VDEUS_TOKEN], // TODO: remove
-    lpToken: VDEUS_TOKEN,
+    tokens: [XDEUS_TOKEN], // TODO: remove
+    lpToken: XDEUS_TOKEN,
     priceToken: DEUS_TOKEN,
   },
   {
     id: 4,
-    tokens: [VDEUS_TOKEN],
+    tokens: [XDEUS_TOKEN],
     lpToken: lpToken_3Months,
     priceToken: DEUS_TOKEN,
   },
   {
     id: 5,
-    tokens: [VDEUS_TOKEN],
+    tokens: [XDEUS_TOKEN],
     lpToken: lpToken_6Months,
     priceToken: DEUS_TOKEN,
   },
   {
     id: 6,
-    tokens: [VDEUS_TOKEN],
+    tokens: [XDEUS_TOKEN],
     lpToken: lpToken_1Year,
     priceToken: DEUS_TOKEN,
   },
@@ -181,7 +181,7 @@ export const LiquidityPool: LiquidityType[] = [
   },
   {
     id: 10,
-    tokens: [VDEUS_TOKEN, DEUS_TOKEN],
+    tokens: [XDEUS_TOKEN, DEUS_TOKEN],
     lpToken: XDEUS_DEUS_SOLIDLY_LP,
     priceToken: DEUS_TOKEN,
   },
@@ -222,8 +222,8 @@ export const Stakings: StakingType[] = [
   },
   {
     id: 2,
-    name: 'DEUS-vDEUS',
-    rewardTokens: [VDEUS_TOKEN, DEUS_TOKEN],
+    name: 'DEUS-xDEUS',
+    rewardTokens: [XDEUS_TOKEN, DEUS_TOKEN],
     token: DEUS_VDEUS_LP_TOKEN,
     aprHook: useGetApy,
     tvlHook: useGetTvl,
@@ -241,7 +241,7 @@ export const Stakings: StakingType[] = [
     id: 3,
     name: 'vDEUS (ERC20)',
     rewardTokens: [DEUS_TOKEN],
-    token: VDEUS_TOKEN,
+    token: XDEUS_TOKEN,
     aprHook: useGetApy,
     tvlHook: useGetTvl,
     secondaryAprHook: useGetDeusApy,
@@ -256,8 +256,8 @@ export const Stakings: StakingType[] = [
   {
     id: 4,
     name: 'vDEUS (3 Months)',
-    rewardTokens: [VDEUS_TOKEN, DEUS_TOKEN],
-    token: VDEUS_TOKEN, // TODO: should represent vDEUS NFT
+    rewardTokens: [XDEUS_TOKEN, DEUS_TOKEN],
+    token: XDEUS_TOKEN, // TODO: should represent vDEUS NFT
     aprHook: useGetApy,
     tvlHook: useGetTvl,
     secondaryAprHook: useGetDeusApy,
@@ -272,8 +272,8 @@ export const Stakings: StakingType[] = [
   {
     id: 5,
     name: 'vDEUS (6 Months)',
-    rewardTokens: [VDEUS_TOKEN, DEUS_TOKEN],
-    token: VDEUS_TOKEN, // TODO: should represent vDEUS NFT
+    rewardTokens: [XDEUS_TOKEN, DEUS_TOKEN],
+    token: XDEUS_TOKEN, // TODO: should represent vDEUS NFT
     aprHook: useGetApy,
     tvlHook: useGetTvl,
     secondaryAprHook: useGetDeusApy,
@@ -288,8 +288,8 @@ export const Stakings: StakingType[] = [
   {
     id: 6,
     name: 'vDEUS (1 Year)',
-    rewardTokens: [VDEUS_TOKEN, DEUS_TOKEN],
-    token: VDEUS_TOKEN, // TODO: should represent vDEUS NFT
+    rewardTokens: [XDEUS_TOKEN, DEUS_TOKEN],
+    token: XDEUS_TOKEN, // TODO: should represent vDEUS NFT
     aprHook: useGetApy,
     tvlHook: useGetTvl,
     secondaryAprHook: useGetDeusApy,
@@ -350,8 +350,8 @@ export const ExternalStakings: ExternalStakingType[] = [
   {
     id: 10,
     name: 'xDEUS-DEUS',
-    rewardTokens: [VDEUS_TOKEN, SOLID_TOKEN],
-    tokens: [VDEUS_TOKEN, DEUS_TOKEN],
+    rewardTokens: [XDEUS_TOKEN, SOLID_TOKEN],
+    tokens: [XDEUS_TOKEN, DEUS_TOKEN],
     provideLink: 'https://solidly.com/liquidity/0x4EF3fF9dadBa30cff48133f5Dc780A28fc48693F',
     active: true,
     contract: XDEUS_DEUS_SOLIDLY_LP.address,

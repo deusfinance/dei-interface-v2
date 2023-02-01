@@ -4,7 +4,7 @@ import Column from 'components/Column'
 import { Row, RowBetween } from 'components/Row'
 import useWeb3React from 'hooks/useWeb3'
 import { useTokenBalances } from 'state/wallet/hooks'
-import { DEI_TOKEN, BDEI_TOKEN, DEUS_TOKEN, VDEUS_TOKEN, LegacyDEI_TOKEN } from 'constants/tokens'
+import { DEI_TOKEN, BDEI_TOKEN, DEUS_TOKEN, XDEUS_TOKEN, LegacyDEI_TOKEN } from 'constants/tokens'
 
 const Wrapper = styled(RowBetween)`
   background-color: ${({ theme }) => theme.bg1};
@@ -127,7 +127,7 @@ const Account = () => {
 
   const tokenBalances = useTokenBalances(
     account ?? undefined,
-    [DEI_TOKEN, BDEI_TOKEN, DEUS_TOKEN, VDEUS_TOKEN, LegacyDEI_TOKEN] ?? undefined
+    [DEI_TOKEN, BDEI_TOKEN, DEUS_TOKEN, XDEUS_TOKEN, LegacyDEI_TOKEN] ?? undefined
   )
 
   const coins = [
@@ -154,9 +154,9 @@ const Account = () => {
     },
     {
       id: 3,
-      name: VDEUS_TOKEN.symbol,
+      name: XDEUS_TOKEN.symbol,
       image: '',
-      value: tokenBalances[VDEUS_TOKEN.address]?.toSignificant(2) ?? 'N/A',
+      value: tokenBalances[XDEUS_TOKEN.address]?.toSignificant(2) ?? 'N/A',
       colorType: COLOR_TYPE.BLUE,
     },
     {
@@ -172,10 +172,10 @@ const Account = () => {
     <Wrapper>
       <AccountPowerWrapper>
         <p>My Account</p>
-        <Row>
+        {/* <Row>
           <p>My Voting Power:</p>
           <p> N/A veDEUS</p>
-        </Row>
+        </Row> */}
       </AccountPowerWrapper>
       <CoinInfoWrapper>
         {coins.map((coin) => (
