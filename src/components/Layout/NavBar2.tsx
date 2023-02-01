@@ -4,7 +4,6 @@ import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { isMobileOnly as isMobile } from 'react-device-detect'
 
-// import routes from 'constants/files/routes.json'
 import MULTICHAIN from '/public/static/images/pages/dashboard/ic_multichain.svg'
 import DEUSFINANCE from '/public/static/images/pages/dashboard/ic_deus_finance.svg'
 import ImageWithFallback from 'components/ImageWithFallback'
@@ -29,18 +28,19 @@ import {
   DeiBonds as DeiBondsIcon,
   Bridge as BridgeIcon,
   Swap as SwapIcon,
-  // Analytics as AnalyticsIcon,
 } from 'components/Icons'
 import { ArrowUpRight } from 'react-feather'
 import { useDeiPrice, useDeusPrice } from 'hooks/useCoingeckoPrice'
 import Column from 'components/Column'
 import { ExternalLink } from 'components/Link'
 import { formatUnits } from '@ethersproject/units'
-import { USDC_TOKEN } from 'constants/tokens'
+import { LegacyDEI_TOKEN, USDC_TOKEN } from 'constants/tokens'
 import { formatDollarAmount } from 'utils/numbers'
 import { useFirebirdPrice } from 'hooks/useFirebirdPrice'
-import { SolidAddress, USDC_ADDRESS } from 'constants/addresses'
+import { LegacyDEI_Address, USDC_ADDRESS } from 'constants/addresses'
 import { SupportedChainId } from 'constants/chains'
+import useWeb3React from 'hooks/useWeb3'
+import { useTokenBalance } from 'state/wallet/hooks'
 
 const Wrapper = styled.div<{ isOpen?: boolean }>`
   transition: width 0.15s;
@@ -155,10 +155,7 @@ export const SubNavbarContentWrap = styled.ul`
   }
 `
 
-const SimpleLinkWrapper = styled(RowWrapper)<{
-  active?: boolean
-  isOpen?: boolean
-}>`
+const SimpleLinkWrapper = styled(RowWrapper)<{ active?: boolean; isOpen?: boolean }>`
   transition: width 0.15s;
   margin-bottom: 16px;
   border-radius: 8px;
@@ -196,9 +193,7 @@ const Row = styled.div<{
   `};
 `
 
-const NavLink = styled.div<{
-  active: boolean
-}>`
+const NavLink = styled.div<{ active: boolean }>`
   font-size: 1rem;
   padding: 0.25rem 1rem;
   color: ${({ theme }) => theme.text1};
@@ -369,6 +364,7 @@ const CustomLink = styled(ExternalLink)`
   font-family: 'IBM Plex Mono';
 `
 export default function NavBar() {
+  const { account } = useWeb3React()
   const router = useRouter()
 
   const showBanner = localStorage.getItem('risk_warning') === 'true' ? false : true
@@ -381,12 +377,15 @@ export default function NavBar() {
   const LegacyDeiPrice = useFirebirdPrice({
     amount: '1000000000000000000',
     chainId: SupportedChainId.FANTOM.toString(),
-    from: SolidAddress[SupportedChainId.FANTOM].toString(),
+    from: LegacyDEI_Address[SupportedChainId.FANTOM].toString(),
     to: USDC_ADDRESS[SupportedChainId.FANTOM].toString(),
     gasInclude: '1',
     saveGas: '0',
     slippage: '0.01',
   })
+
+  const LegacyDeiBalance = useTokenBalance(account ?? undefined, LegacyDEI_TOKEN ?? undefined)
+  const hasLegacyDei = !!Number(LegacyDeiBalance?.toSignificant(6))
 
   function setShowBanner(inp: boolean) {
     if (!inp) {
@@ -410,16 +409,6 @@ export default function NavBar() {
     )
   }
 
-  // function isSubItemChosen(item: Array<any>) {
-  //   for (let i = 0; i < item.length; i++) {
-  //     if (item[i].path === router.route) return true
-  //   }
-  //   return false
-  // }
-
-  // <Link passHref href="/">
-  //   <ImageWithFallback alt="dei-logo" src={DEUSLOGO} width={40} height={40} />
-  // </Link>
   function getDefaultContent() {
     return (
       <Wrapper isOpen={isOpen}>
@@ -432,24 +421,7 @@ export default function NavBar() {
           <NavLogo2 />
         </DefaultWrapper>
         <Column style={{ position: 'relative', top: '62px' }}>
-          {/* <Items>
-            <Web3Network />
-            <Web3Status />
-            <Menu />
-          </Items> */}
           <Routes>
-            {/* {routes.map((item, i) => {
-            return (
-              <SimpleLinkWrapper key={i} active={router.route.includes(item.path)}>
-                <IconWrapper>
-                  <DashboardIcon size={20} />
-                </IconWrapper>
-                <Link href={item.path} passHref>
-                  <NavLink active={router.route.includes(item.path)}>{item.text}</NavLink>
-                </Link>
-              </SimpleLinkWrapper>
-            )
-          })} */}
             <SimpleLinkWrapper
               isOpen={isOpen}
               className="sidebar-link__route"
@@ -506,14 +478,6 @@ export default function NavBar() {
                 </MenuItemLinkContainer>
               </Link>
             </SimpleLinkWrapper>
-            {/* <SimpleLinkWrapper className="sidebar-link__route" active={router.route.includes('/vest')}>
-                <IconWrapper>
-                  <VeDeusIcon size={20} />
-                </IconWrapper>
-                <Link href="/vest" passHref>
-                  <NavLink active={router.route.includes('/vest')}>veDEUS</NavLink>
-                </Link>
-              </SimpleLinkWrapper> */}
             <SimpleLinkWrapper
               isOpen={isOpen}
               className="sidebar-link__route last"
@@ -530,18 +494,6 @@ export default function NavBar() {
                 </MenuItemLinkContainer>
               </Link>
             </SimpleLinkWrapper>
-            {/* <SimpleLinkWrapper active={router.route.includes('/clqdr')}>
-            <Link href="/clqdr" passHref>
-              <NavLink active={router.route.includes('/clqdr')}>cLQDR</NavLink>
-            </Link>
-          </SimpleLinkWrapper>
-          <SimpleLinkWrapper>
-            <Link href={'https://docs.deus.finance/contracts/disclaimer'} passHref>
-              <a style={{ textDecoration: 'none' }} rel="noreferrer" target="_blank">
-                <NavLink active={false}>Terms</NavLink>
-              </a>
-            </Link>
-          </SimpleLinkWrapper> */}
 
             <Separator />
 
@@ -604,7 +556,7 @@ export default function NavBar() {
                   <DeusPriceWrap>{formatDollarAmount(parseFloat(DeusPrice), 2)}</DeusPriceWrap>
                 </Price>
               </Token>
-              {LegacyDeiPrice && (
+              {hasLegacyDei && LegacyDeiPrice && (
                 <Token>
                   Legacy DEI Price:
                   <Price>

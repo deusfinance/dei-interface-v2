@@ -1,4 +1,3 @@
-// import { useMemo } from 'react'
 import { useRouter } from 'next/router'
 import styled from 'styled-components'
 
@@ -43,62 +42,12 @@ export default function StakingPage() {
   const pidNumber = Number(pid)
   const liquidityPool = LiquidityPoolList.find((pool) => pool.id === pidNumber) || LiquidityPoolList[0]
   const stakingPool = Stakings.find((p) => p.id === liquidityPool.id) || Stakings[0]
-  // const poolBalances = usePoolBalances(liquidityPool)
-
-  // const priceToken = liquidityPool.priceToken?.symbol ?? ''
-  // //const price = useCustomCoingeckoPrice(priceToken) ?? '0'
-  // const deusPrice = useDeusPrice()
-  // const deiPrice = useDeiPrice()
-
-  // const totalLockedValue =
-  //   poolBalances[1] * 2 * Number(useCustomCoingeckoPrice(liquidityPool.priceToken?.symbol ?? 'DEI'))
-
-  // // generate total APR if pools have secondary APRs
-  // const primaryApy = stakingPool.aprHook(stakingPool)
-  // const secondaryApy = stakingPool.hasSecondaryApy ? stakingPool.secondaryAprHook(liquidityPool, stakingPool) : 0
-  // const totalApy = primaryApy + secondaryApy
-
-  // // generate respective tooltip info if pools have more than 1 reward tokens
-  // const primaryTooltipInfo = primaryApy.toFixed(0) + '% ' + stakingPool.rewardTokens[0].symbol
-  // const secondaryTooltipInfo = stakingPool.hasSecondaryApy
-  //   ? ' + ' + secondaryApy.toFixed(0) + '% ' + stakingPool.rewardTokens[1].symbol
-  //   : ''
-
-  // const { totalDepositedAmount } = useUserInfo(stakingPool)
 
   const isSingleStakingPool = useMemo(() => {
     return stakingPool.isSingleStaking
   }, [stakingPool])
 
-  // const { swapRatio: xDeusRatio } = useVDeusStats()
-  // const { swapRatio: bDeiRatio } = useBDeiStats()
-
-  // const totalDepositedValue = useMemo(() => {
-  //   return stakingPool.id === 1
-  //     ? totalDepositedAmount * bDeiRatio * parseFloat(deiPrice)
-  //     : stakingPool.id === 3
-  //     ? totalDepositedAmount * xDeusRatio * parseFloat(deusPrice)
-  //     : 0
-  // }, [bDeiRatio, deiPrice, deusPrice, stakingPool, totalDepositedAmount, xDeusRatio])
-
-  // const toolTipInfo = primaryTooltipInfo + secondaryTooltipInfo
-
-  // function onSelect(pid: number) {
-  //   router.push(`/stake/manage/${pid}`)
-  // }
-
   useWeb3NavbarOption({ network: true, wallet: true, stake: true })
-
-  // const items = [
-  //   {
-  //     name: 'APR',
-  //     value: totalApy.toFixed(0) + '%',
-  //     hasTooltip: true,
-  //     toolTipInfo,
-  //   },
-  //   { name: 'TVL', value: formatDollarAmount(isSingleStakingPool ? totalDepositedValue : totalLockedValue) },
-  //   { name: priceToken + ' Price', value: formatDollarAmount(parseFloat(price)) },
-  // ]
 
   return (
     <Container>

@@ -2,18 +2,11 @@ import React from 'react'
 import styled from 'styled-components'
 import { isMobile } from 'react-device-detect'
 
-// import Hero from 'components/Hero'
-// import ImageWithFallback from 'components/ImageWithFallback'
-// import STAKE_ICON from '/public/static/images/pages/stake/ic_stake.svg'
 import { Row, RowBetween } from 'components/Row'
-// import TokenBox from 'components/App/Stake/TokenBox'
-// import InfoCell from 'components/App/Stake/InfoCell'
-// import RewardBox from 'components/App/Stake/RewardBox'
 import { useSearch, SearchField } from 'components/App/Stake/Search'
 import Table, { Cell } from 'components/App/Stake/Table'
 import { ExternalStakings, Stakings, StakingType } from 'constants/stakingPools'
 import { useWeb3NavbarOption } from 'state/web3navbar/hooks'
-// import { TNAVBAR_OPTIONS } from 'state/web3navbar/types'
 
 export const Container = styled.div`
   display: flex;

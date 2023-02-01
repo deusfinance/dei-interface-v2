@@ -378,10 +378,6 @@ export default function Mint() {
                     value={amountIn1}
                     onChange={(value: string) => onUserInput1(value)}
                     disabled={expiredPrice}
-                    // onTokenSelect={() => {
-                    //   toggleTokensModal(true)
-                    //   setInputTokenIndex(inputTokenIndex)
-                    // }}
                   />
                   <PlusIcon size={'24px'} />
                   <InputBox
@@ -389,11 +385,6 @@ export default function Mint() {
                     value={amountIn2}
                     onChange={(value: string) => onUserInput2(value)}
                     disabled={expiredPrice}
-
-                    // onTokenSelect={() => {
-                    //   toggleTokensModal(true)
-                    //   setInputTokenIndex(inputTokenIndex)
-                    // }}
                   />
                 </ComboInputBox>
               ) : (
@@ -402,10 +393,6 @@ export default function Mint() {
                   value={amountIn1}
                   onChange={(value: string) => onUserInput1(value)}
                   disabled={expiredPrice}
-                  // onTokenSelect={() => {
-                  //   toggleTokensModal(true)
-                  //   setInputTokenIndex(inputTokenIndex)
-                  // }}
                 />
               )}
               <ArrowContainer>

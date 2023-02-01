@@ -10,6 +10,7 @@ import {
   CLQDR_ADDRESS,
   XDEUS_DEUS_SOLIDLY_LP_ADDRESS,
   SOLID_TOKEN_ADDRESS,
+  LegacyDEI_Address,
 } from './addresses'
 
 // import USDC_LOGO from 'assets/img/tokens/usdc.svg'
@@ -23,6 +24,14 @@ import {
 // import FTM_LOGO from 'assets/img/tokens/ftm.svg'
 
 export const DEI_TOKEN = new Token(SupportedChainId.FANTOM, DEI_ADDRESS[SupportedChainId.FANTOM], 18, 'DEI', 'DEI')
+
+export const LegacyDEI_TOKEN = new Token(
+  SupportedChainId.FANTOM,
+  LegacyDEI_Address[SupportedChainId.FANTOM],
+  18,
+  'LegacyDEI',
+  'LegacyDEI'
+)
 
 // FIXME: this token is only used in migration page, do we need this?
 export const DEIv2_TOKEN = new Token(

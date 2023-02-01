@@ -278,7 +278,6 @@ export default function Redemption() {
   return (
     <>
       <MainContainer>
-        {/* style={{ border: '1px solid red', marginRight: '10px' }} */}
         <CustomWrapper>
           <Row>
             <Column style={{ width: '100%' }}>
