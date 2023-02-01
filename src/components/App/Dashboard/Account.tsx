@@ -1,6 +1,10 @@
+import styled from 'styled-components'
+
 import Column from 'components/Column'
 import { Row, RowBetween } from 'components/Row'
-import styled from 'styled-components'
+import useWeb3React from 'hooks/useWeb3'
+import { useTokenBalances } from 'state/wallet/hooks'
+import { DEI_TOKEN, BDEI_TOKEN, DEUS_TOKEN, VDEUS_TOKEN, LegacyDEI_TOKEN } from 'constants/tokens'
 
 const Wrapper = styled(RowBetween)`
   background-color: ${({ theme }) => theme.bg1};
@@ -118,51 +122,59 @@ enum COLOR_TYPE {
   BROWN = 'BROWN',
 }
 
-const coins = [
-  {
-    id: 0,
-    name: 'DEI',
-    image: '',
-    value: '12,239',
-    colorType: COLOR_TYPE.RED,
-  },
-  {
-    id: 1,
-    name: 'bDEI',
-    image: '',
-    value: '1.23m',
-    colorType: COLOR_TYPE.RED,
-  },
-  {
-    id: 2,
-    name: 'Deus',
-    image: '',
-    value: '1,239',
-    colorType: COLOR_TYPE.BLUE,
-  },
-  {
-    id: 3,
-    name: 'vDEUS',
-    image: '',
-    value: '83.55',
-    colorType: COLOR_TYPE.BLUE,
-  },
-  {
-    id: 4,
-    name: 'Legacy DEI',
-    image: '',
-    value: '1,200',
-    colorType: COLOR_TYPE.BROWN,
-  },
-]
 const Account = () => {
+  const { account } = useWeb3React()
+
+  const tokenBalances = useTokenBalances(
+    account ?? undefined,
+    [DEI_TOKEN, BDEI_TOKEN, DEUS_TOKEN, VDEUS_TOKEN, LegacyDEI_TOKEN] ?? undefined
+  )
+
+  const coins = [
+    {
+      id: 0,
+      name: DEI_TOKEN.symbol,
+      image: '',
+      value: tokenBalances[DEI_TOKEN.address]?.toSignificant(3) ?? 'N/A',
+      colorType: COLOR_TYPE.RED,
+    },
+    {
+      id: 1,
+      name: BDEI_TOKEN.symbol,
+      image: '',
+      value: tokenBalances[BDEI_TOKEN.address]?.toSignificant(3) ?? 'N/A',
+      colorType: COLOR_TYPE.RED,
+    },
+    {
+      id: 2,
+      name: DEUS_TOKEN.symbol,
+      image: '',
+      value: tokenBalances[DEUS_TOKEN.address]?.toSignificant(2) ?? 'N/A',
+      colorType: COLOR_TYPE.BLUE,
+    },
+    {
+      id: 3,
+      name: VDEUS_TOKEN.symbol,
+      image: '',
+      value: tokenBalances[VDEUS_TOKEN.address]?.toSignificant(2) ?? 'N/A',
+      colorType: COLOR_TYPE.BLUE,
+    },
+    {
+      id: 4,
+      name: LegacyDEI_TOKEN.symbol,
+      image: '',
+      value: tokenBalances[LegacyDEI_TOKEN.address]?.toSignificant(3) ?? 'N/A',
+      colorType: COLOR_TYPE.BROWN,
+    },
+  ]
+
   return (
     <Wrapper>
       <AccountPowerWrapper>
         <p>My Account</p>
         <Row>
           <p>My Voting Power:</p>
-          <p> 17.398 veDEUS</p>
+          <p> N/A veDEUS</p>
         </Row>
       </AccountPowerWrapper>
       <CoinInfoWrapper>
