@@ -1,34 +1,30 @@
 import React, { useMemo, useState } from 'react'
 import styled from 'styled-components'
-import { useDeiPrice, useDeusPrice } from 'hooks/useCoingeckoPrice'
+import Image from 'next/image'
+
+import BG_DASHBOARD from '/public/static/images/pages/dashboard/bg.svg'
+
+import { useDeiPrice } from 'hooks/useCoingeckoPrice'
 import { useDeiStats } from 'hooks/useDeiStats'
-import { useVestedAPY } from 'hooks/useVested'
-import { formatAmount, formatDollarAmount } from 'utils/numbers'
-import { getMaximumDate } from 'utils/vest'
+
+import { formatAmount, formatBalance, formatDollarAmount } from 'utils/numbers'
+
 import { Modal, ModalHeader } from 'components/Modal'
 import { RowBetween } from 'components/Row'
 import StatsItem from './StatsItem'
 import Chart from './Chart'
-import {
-  AMO,
-  CollateralPool,
-  DEI_ADDRESS,
-  escrow,
-  USDCReserves1,
-  USDCReserves2,
-  USDCReserves3,
-  veDEUS,
-} from 'constants/addresses'
+import { CollateralPool, DEI_ADDRESS, escrow, USDCReserves3 } from 'constants/addresses'
 import { SupportedChainId } from 'constants/chains'
 import { ChainInfo } from 'constants/chainInfo'
 import { Loader } from 'components/Icons'
+import useDeusMarketCapStats from 'hooks/useMarketCapStats'
 
 const Wrapper = styled(RowBetween)`
-  background: ${({ theme }) => theme.bg1};
+  background: ${({ theme }) => theme.bg0};
   align-items: stretch;
   border-radius: 12px;
   padding: 38px 36px;
-  padding-right: 24px;
+  padding-left: 14px;
   margin-bottom: 80px;
   position: relative;
 
@@ -50,11 +46,9 @@ const ChartWrapper = styled.div`
 
 const AllStats = styled.div`
   width: 100%;
-  & > * {
-    &:nth-child(2) {
-      margin-top: 36px;
-    }
-  }
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
   ${({ theme }) => theme.mediaWidth.upToMedium`
     margin-bottom:25px;
   `};
@@ -77,6 +71,30 @@ const Info = styled(RowBetween)`
   }
   ${({ theme }) => theme.mediaWidth.upToMedium`
     margin:unset;
+      & > * {
+      &:nth-child(3n) {
+        border-right: 1px solid ${({ theme }) => theme.border1};
+      }
+      &:nth-child(2n) {
+        border-right: none;
+      }
+    }
+  `};
+`
+
+const DeiTitleContainer = styled(RowBetween)`
+  & > a {
+    color: ${({ theme }) => theme.text2};
+    margin-right: 20px;
+    &:hover {
+      color: ${({ theme }) => theme.text2};
+      text-decoration: underline;
+    }
+  }
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+   & > a {
+      margin-right: 0px;
+    }
   `};
 `
 
@@ -86,7 +104,6 @@ const Title = styled.span`
   background: ${({ theme }) => theme.specialBG1};
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-
   ${({ theme }) => theme.mediaWidth.upToMedium`
     margin-left:11px;
   `};
@@ -127,9 +144,7 @@ const ModalWrapper = styled.div`
   }
 `
 
-const ModalInfoWrapper = styled(RowBetween)<{
-  active?: boolean
-}>`
+const ModalInfoWrapper = styled(RowBetween)<{ active?: boolean }>`
   align-items: center;
   margin-top: 1px;
   white-space: nowrap;
@@ -167,23 +182,33 @@ const ModalItemValue = styled.div`
 `
 
 export default function Stats() {
-  const deusPrice = useDeusPrice()
   const {
     totalSupply,
     collateralRatio,
     circulatingSupply,
     totalUSDCReserves,
     totalProtocolHoldings,
-    AMOReserve,
-    usdcReserves1,
-    usdcReserves2,
     usdcReserves3,
     usdcPoolReserves,
     escrowReserve,
+    seigniorage,
   } = useDeiStats()
 
-  const { lockedVeDEUS } = useVestedAPY(undefined, getMaximumDate())
   const deiPrice = useDeiPrice()
+
+  const {
+    deusPrice,
+    deusCirculatingSupply,
+    deusTotalSupply,
+    deusMarketCap,
+    xDeusPrice,
+    xDeusCirculatingSupply,
+    xDeusMarketCap,
+    combinedSupply,
+    combinedMarketCap,
+    combinedProjectedSupply,
+    inflationRate,
+  } = useDeusMarketCapStats()
 
   function getModalBody() {
     return (
@@ -193,36 +218,12 @@ export default function Stats() {
         <ModalInfoWrapper>
           <a
             href={
-              ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/address/' + USDCReserves1[SupportedChainId.FANTOM]
-            }
-            target={'_blank'}
-            rel={'noreferrer'}
-          >
-            Reserves 1
-          </a>
-          {usdcReserves1 === null ? <Loader /> : <ModalItemValue>{formatAmount(usdcReserves1, 2)}</ModalItemValue>}
-        </ModalInfoWrapper>
-        <ModalInfoWrapper>
-          <a
-            href={
-              ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/address/' + USDCReserves2[SupportedChainId.FANTOM]
-            }
-            target={'_blank'}
-            rel={'noreferrer'}
-          >
-            Reserves 2
-          </a>
-          {usdcReserves2 === null ? <Loader /> : <ModalItemValue>{formatAmount(usdcReserves2, 2)}</ModalItemValue>}
-        </ModalInfoWrapper>
-        <ModalInfoWrapper>
-          <a
-            href={
               ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/address/' + USDCReserves3[SupportedChainId.FANTOM]
             }
             target={'_blank'}
             rel={'noreferrer'}
           >
-            Reserves 3
+            Reserves 1
           </a>
           {usdcReserves3 === null ? <Loader /> : <ModalItemValue>{formatAmount(usdcReserves3, 2)}</ModalItemValue>}
         </ModalInfoWrapper>
@@ -232,7 +233,7 @@ export default function Stats() {
             target={'_blank'}
             rel={'noreferrer'}
           >
-            Reserves 4
+            Reserves 2
           </a>
           {escrowReserve === null ? <Loader /> : <ModalItemValue>{formatAmount(escrowReserve, 2)}</ModalItemValue>}
         </ModalInfoWrapper>
@@ -259,9 +260,7 @@ export default function Stats() {
           {totalProtocolHoldings === null ? (
             <Loader />
           ) : (
-            <ModalItemValue>
-              {formatAmount(usdcReserves1 + usdcReserves2 + usdcPoolReserves + usdcReserves3 + escrowReserve, 2)}
-            </ModalItemValue>
+            <ModalItemValue>{formatAmount(usdcPoolReserves + usdcReserves3 + escrowReserve, 2)}</ModalItemValue>
           )}
         </ModalInfoWrapper>
       </ModalWrapper>
@@ -290,7 +289,9 @@ export default function Stats() {
       <Wrapper>
         <AllStats>
           <StatsWrapper>
-            <Title>DEI Stats</Title>
+            <DeiTitleContainer>
+              <Title>DEI Stats</Title>
+            </DeiTitleContainer>
             <Info>
               <StatsItem
                 name="DEI Price"
@@ -305,9 +306,9 @@ export default function Stats() {
                 }
               />
               <StatsItem
-                name="Total Protocol Holdings"
-                value={formatAmount(AMOReserve, 2)}
-                href={ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/address/' + AMO[SupportedChainId.FANTOM]}
+                name="Seigniorage"
+                value={`${formatBalance(seigniorage, 2)}%`}
+                href={'https://docs.deus.finance/usddei/dei-stablecoin-overview'}
               />
               <StatsItem
                 name="Circulating Supply"
@@ -329,28 +330,41 @@ export default function Stats() {
             <Info>
               <StatsItem
                 name="DEUS Price"
-                value={formatDollarAmount(parseFloat(deusPrice), 2)}
+                value={formatDollarAmount(deusPrice, 2)}
                 href={'https://www.coingecko.com/en/coins/deus-finance'}
               />
+              <StatsItem name="Circulating Supply" value={formatAmount(deusCirculatingSupply)} />
+              <StatsItem name="Total Supply" value={formatAmount(deusTotalSupply)} />
+              <StatsItem name="Market Cap" value={formatAmount(deusMarketCap)} />
+            </Info>
+          </StatsWrapper>
+          <StatsWrapper>
+            <DeusTitle>xDEUS Stats</DeusTitle>
+            <Info>
+              <StatsItem name="xDEUS Price" value={formatDollarAmount(xDeusPrice)} />
+              <StatsItem name="Circulating Supply" value={formatAmount(xDeusCirculatingSupply)} />
+              <StatsItem name="Market Cap" value={formatDollarAmount(xDeusMarketCap)} />
+            </Info>
+          </StatsWrapper>
+          <StatsWrapper>
+            <DeusTitle>xDEUS and DEUS Combined Stats</DeusTitle>
+            <Info>
+              <StatsItem name="Combined Supply" value={formatAmount(combinedSupply, 2, undefined, true)} />
+              <StatsItem name="Combined Market Cap" value={formatAmount(combinedMarketCap)} />
               <StatsItem
-                name="Total Supply"
-                value="650k"
-                href={'https://lafayettetabor.medium.com/a-wealth-creating-revamped-redeem-plan-601dadcc29a1'}
+                name="Projected Combined Supply in 1yr"
+                value={formatAmount(combinedProjectedSupply, 2, undefined, true)}
               />
-              <StatsItem name="Market Cap" value="N/A" />
-              <StatsItem
-                name="veDEUS Supply"
-                value={formatAmount(parseFloat(lockedVeDEUS), 0)}
-                href={
-                  ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/address/' + veDEUS[SupportedChainId.FANTOM]
-                }
-              />
+              <StatsItem name="Inflation Rate" value={formatAmount(inflationRate) + '%'} />
             </Info>
           </StatsWrapper>
         </AllStats>
         <ChartWrapper>
           <Chart />
         </ChartWrapper>
+        <BackgroundImageWrapper>
+          <Image src={BG_DASHBOARD} alt="swap bg" layout="fill" objectFit="cover" />
+        </BackgroundImageWrapper>
       </Wrapper>
       <Modal
         width="500px"
