@@ -9,6 +9,7 @@ import LQDR_ICON from '/public/static/images/tokens/lqdr.svg'
 import CLQDR_ICON from '/public/static/images/tokens/clqdr.svg'
 import vDEUS_LOGO from '/public/static/images/tokens/vdeus.svg'
 import SOLID_ICON from '/public/static/images/pages/stake/solid.png'
+import LEGACYDEI_LOGO from '/public/static/images/tokens/legacyDei.svg'
 
 const LogoMap: { [contractOrSymbol: string]: string } = {
   // symbols
@@ -26,6 +27,7 @@ const LogoMap: { [contractOrSymbol: string]: string } = {
   '0x814c66594a22404e101FEcfECac1012D8d75C156': CLQDR_ICON,
   '0x953Cd009a490176FcEB3a26b9753e6F01645ff28': vDEUS_LOGO,
   '0x777172D858dC1599914a1C4c6c9fC48c99a60990': SOLID_ICON.src,
+  '0xDE12c7959E1a72bbe8a5f7A1dc8f8EeF9Ab011B3': LEGACYDEI_LOGO,
   usdc: USDC_LOGO,
   deus: DEUS_LOGO,
 }

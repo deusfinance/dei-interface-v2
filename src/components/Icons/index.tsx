@@ -37,7 +37,13 @@ export { default as Swap } from './Swap'
 export { default as Bridge } from './Bridge'
 
 // for wrapping react feather icons
-export const IconWrapper = styled.div<{ stroke?: string; size?: string; marginRight?: string; marginLeft?: string }>`
+export const IconWrapper = styled.div<{
+  stroke?: string
+  size?: string
+  marginRight?: string
+  marginLeft?: string
+  disable?: boolean
+}>`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -48,4 +54,5 @@ export const IconWrapper = styled.div<{ stroke?: string; size?: string; marginRi
   & > * {
     stroke: ${({ theme, stroke }) => stroke && theme.text1};
   }
+  opacity: ${({ disable }) => disable && '0.55'};
 `

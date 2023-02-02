@@ -43,7 +43,7 @@ import useWeb3React from 'hooks/useWeb3'
 import { useTokenBalance } from 'state/wallet/hooks'
 
 const Wrapper = styled.div<{ isOpen?: boolean }>`
-  transition: width 0.15s;
+  transition: width 0.25s;
   gap: 5px;
   width: ${({ isOpen }) => (isOpen ? '336px' : '74px')};
   display: flex;
@@ -156,7 +156,7 @@ export const SubNavbarContentWrap = styled.ul`
 `
 
 const SimpleLinkWrapper = styled(RowWrapper)<{ active?: boolean; isOpen?: boolean }>`
-  transition: width 0.15s;
+  transition: width 0.25s;
   margin-bottom: 16px;
   border-radius: 8px;
   width: ${({ isOpen }) => (isOpen ? '312px' : '50px')};
@@ -197,10 +197,9 @@ const NavLink = styled.div<{ active: boolean }>`
   font-size: 1rem;
   padding: 0.25rem 1rem;
   color: ${({ theme }) => theme.text1};
-
   font-family: 'IBM Plex Mono';
   font-style: normal;
-  font-weight: 500;
+  font-weight: ${({ active }) => (active ? '700' : '500')};
   font-size: 20px;
   line-height: 26px;
   cursor: pointer;
@@ -309,7 +308,7 @@ const NavLinkContainer = styled(Row)<{ isOpen: boolean; isInternal?: boolean }>`
   z-index: ${({ isOpen }) => (isOpen ? 1 : -1)};
   transform: ${({ isOpen }) => (isOpen ? 'scale(1)' : 'scale(0)')};
   transform-origin: left;
-  transition: all 0.15s;
+  transition: all 0.25s;
   white-space: nowrap;
   justify-content: flex-start;
   align-items: center;
@@ -322,7 +321,7 @@ const BurgerMenuButton = styled.button<{ isOpen: boolean }>`
   max-width: 75px !important;
   position: relative;
   span {
-    transition: all 0.15s;
+    transition: all 0.25s;
     margin-inline: auto;
     width: 20px;
     height: 2px;
@@ -429,7 +428,7 @@ export default function NavBar() {
             >
               <Link href="/dashboard" passHref>
                 <MenuItemLinkContainer>
-                  <IconWrapper>
+                  <IconWrapper disable={!router.route.includes('/dashboard')}>
                     <DashboardIcon size={20} />
                   </IconWrapper>
                   <NavLinkContainer isOpen={isOpen} isInternal={true}>
@@ -441,7 +440,7 @@ export default function NavBar() {
             <SimpleLinkWrapper isOpen={isOpen} className="sidebar-link__route" active={router.route.includes('/mint')}>
               <Link href="/mint" passHref>
                 <MenuItemLinkContainer>
-                  <IconWrapper>
+                  <IconWrapper disable={!router.route.includes('/mint')}>
                     <MintIcon size={20} />
                   </IconWrapper>
                   <NavLinkContainer isOpen={isOpen} isInternal={true}>
@@ -457,7 +456,7 @@ export default function NavBar() {
             >
               <Link href="/redemption" passHref>
                 <MenuItemLinkContainer>
-                  <IconWrapper>
+                  <IconWrapper disable={!router.route.includes('/redemption')}>
                     <RedeemIcon size={20} />
                   </IconWrapper>
                   <NavLinkContainer isOpen={isOpen} isInternal={true}>
@@ -469,7 +468,7 @@ export default function NavBar() {
             <SimpleLinkWrapper isOpen={isOpen} className="sidebar-link__route" active={router.route.includes('/stake')}>
               <Link href="/stake" passHref>
                 <MenuItemLinkContainer>
-                  <IconWrapper>
+                  <IconWrapper disable={!router.route.includes('/stake')}>
                     <DeiBondsIcon size={20} />
                   </IconWrapper>
                   <NavLinkContainer isOpen={isOpen} isInternal={true}>
@@ -485,7 +484,7 @@ export default function NavBar() {
             >
               <Link href="/swap" passHref>
                 <MenuItemLinkContainer>
-                  <IconWrapper>
+                  <IconWrapper disable={!router.route.includes('/swap')}>
                     <SwapIcon width={20} color={'#EBEBEC'} />
                   </IconWrapper>
                   <NavLinkContainer isOpen={isOpen} isInternal={true}>
@@ -497,10 +496,15 @@ export default function NavBar() {
 
             <Separator />
 
-            <SimpleLinkWrapper isOpen={isOpen} className="last" as={ExternalLink} href="https://app.deus.finance/clqdr">
+            <SimpleLinkWrapper
+              isOpen={isOpen}
+              className="last"
+              as={ExternalLink}
+              href="https://app.deus.finance/xdeus/swap"
+            >
               <MenuItemLinkContainer>
                 <Row>
-                  <IconWrapper>
+                  <IconWrapper disable>
                     <VeDeusIcon size={20} />
                   </IconWrapper>
                   <ExternalLink
@@ -522,7 +526,7 @@ export default function NavBar() {
             <SimpleLinkWrapper as={ExternalLink} href="https://app.multichain.org/#/router" isOpen={isOpen}>
               <MenuItemLinkContainer>
                 <Row>
-                  <IconWrapper>
+                  <IconWrapper disable>
                     <BridgeIcon size={20} />
                   </IconWrapper>
                   <ExternalLink
