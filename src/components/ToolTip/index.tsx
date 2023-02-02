@@ -1,12 +1,12 @@
 import styled from 'styled-components'
 import ReactTooltip from 'react-tooltip'
 
-export const ToolTip = styled(ReactTooltip).attrs({
-  place: 'right',
+export const ToolTip = styled(ReactTooltip).attrs(({ place = 'right' }) => ({
+  place,
   type: 'info',
   effect: 'solid',
   multiline: true,
-})`
+}))`
   color: ${({ theme }) => theme.text1} !important;
   background: ${({ theme }) => theme.primary1} !important;
   opacity: 1 !important;

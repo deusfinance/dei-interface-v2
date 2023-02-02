@@ -1,5 +1,6 @@
-import { Link as LinkIconLogo } from 'components/Icons'
+import { Info, Link as LinkIconLogo } from 'components/Icons'
 import { ExternalLink } from 'components/Link'
+import { ToolTip } from 'components/ToolTip'
 import styled from 'styled-components'
 
 const Item = styled.div`
@@ -29,8 +30,10 @@ const Name = styled.div`
 `
 
 const Value = styled.div<{ isLink?: boolean }>`
+  display: flex;
   font-weight: 500;
   font-size: 14px;
+  width: fit-content;
   color: ${({ theme }) => theme.yellow4};
   margin-top: 10px;
   cursor: ${({ isLink }) => (isLink ? 'pointer' : 'auto')};
@@ -39,16 +42,30 @@ const Value = styled.div<{ isLink?: boolean }>`
   }
 `
 
+const CustomTooltip = styled(ToolTip)`
+  max-width: 600px !important;
+  font-size: 0.8rem !important;
+`
+
+const InfoIcon = styled(Info)`
+  margin-top: 1px;
+  color: ${({ theme }) => theme.text1} !important;
+`
+
 export default function StatsItem({
   name,
   value,
   href,
   onClick,
+  hasToolTip,
+  toolTipInfo,
 }: {
   name: string
   value: string
   href?: string
   onClick?: () => void
+  hasToolTip?: boolean
+  toolTipInfo?: string
 }) {
   const isLink = !!href
   return (
@@ -58,16 +75,24 @@ export default function StatsItem({
         <ExternalLink href={href} passHref>
           <Value isLink>
             {value}
-            <LinkIconLogo />
+            <LinkIconLogo style={{ marginTop: '6px' }} />
           </Value>
         </ExternalLink>
       ) : !!onClick ? (
         <Value isLink>
           {value}
-          <LinkIconLogo />
+          <LinkIconLogo style={{ marginTop: '6px' }} />
         </Value>
       ) : (
-        <Value>{value}</Value>
+        <Value data-for="id" data-tip={hasToolTip ? toolTipInfo : null}>
+          {value}
+          {hasToolTip && (
+            <span style={{ marginTop: '1px' }}>
+              <InfoIcon size={12} />
+              <CustomTooltip id="id" />
+            </span>
+          )}
+        </Value>
       )}
     </Item>
   )
