@@ -12,7 +12,7 @@ import {
   Dashboard as DashboardIcon,
   Mint as MintIcon,
   Redeem as RedeemIcon,
-  DeiBonds as DeiBondsIcon,
+  Staking as StakingIcon,
   Swap as SwapIcon,
 } from 'components/Icons'
 import { Card } from 'components/Card'
@@ -114,7 +114,7 @@ export default function Menu() {
             <Row active={router.route === '/stake'}>
               <div>Pools</div>
               <IconWrapper>
-                <DeiBondsIcon size={20} />
+                <StakingIcon size={20} />
               </IconWrapper>
             </Row>
           </Link>

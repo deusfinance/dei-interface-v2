@@ -35,6 +35,7 @@ export { default as Link } from './Link'
 export { default as Error } from './Error'
 export { default as Swap } from './Swap'
 export { default as Bridge } from './Bridge'
+export { default as Staking } from './Staking'
 
 // for wrapping react feather icons
 export const IconWrapper = styled.div<{

@@ -25,7 +25,7 @@ import {
   VeDeus as VeDeusIcon,
   Mint as MintIcon,
   Redeem as RedeemIcon,
-  DeiBonds as DeiBondsIcon,
+  Staking as StakingIcon,
   Bridge as BridgeIcon,
   Swap as SwapIcon,
 } from 'components/Icons'
@@ -471,7 +471,7 @@ export default function Slider() {
               <Link href="/stake" passHref>
                 <MenuItemLinkContainer>
                   <IconWrapper disable={!router.route.includes('/stake')}>
-                    <DeiBondsIcon size={20} />
+                    <StakingIcon size={20} />
                   </IconWrapper>
                   <NavLinkContainer isOpen={isOpen} isInternal={true}>
                     <NavLink active={router.route.includes('/stake')}>Pools</NavLink>
