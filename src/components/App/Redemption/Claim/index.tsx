@@ -127,7 +127,7 @@ const NoTokens = styled.div`
   padding: 25px 0;
 `
 
-interface IPositions {
+export interface IPositions {
   usdAmount: string
   timestamp: string
 }
