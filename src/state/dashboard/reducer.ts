@@ -12,6 +12,7 @@ export enum DashboardStatus {
 const initialState = {
   status: DashboardStatus.LOADING,
   deusPrice: 0,
+  deusCirculatingSupply: 0,
   deiPrice: 0,
 }
 
