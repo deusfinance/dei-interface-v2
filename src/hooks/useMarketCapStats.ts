@@ -50,9 +50,9 @@ export default function useDeusMarketCapStats(): {
       setCombinedProjectedSupply(
         (toBN(formatUnits(response.result.deus.total.circulatingSupply, 18)).toNumber() +
           toBN(formatUnits(response.result.xdeus.total.circulatingSupply, 18)).toNumber()) *
-          1.2567
+          1.1822
       )
-      setInflationRate(25.67)
+      setInflationRate(18.22)
     }
     fetchStats()
   }, [])
