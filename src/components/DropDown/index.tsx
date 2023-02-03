@@ -1,10 +1,12 @@
-import React, { useState, useRef, useMemo, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useMemo } from 'react'
 import styled, { css } from 'styled-components'
+// import find from 'lodash/find'
 
 import useOnOutsideClick from 'hooks/useOnOutsideClick'
 import { ChevronDown } from 'components/Icons'
+// import { DropDownName, DropDownValue } from 'components/App/CLqdr/StatsHeader'
 import Box from 'components/Box'
-import find from 'lodash/find'
+// import { truncateAddress } from 'utils/address'
 
 const Wrapper = styled.div<{
   width: string
@@ -26,7 +28,7 @@ const Header = styled(Box)<{
   justify-content: space-between;
   font-size: 1rem;
   text-align: left;
-  padding: 10px;
+  padding: 0 0rem;
   align-items: center;
   height: 48px;
   background: ${({ theme }) => theme.bg1};
@@ -45,7 +47,7 @@ const Header = styled(Box)<{
   `}
 `
 
-const StyledChevron = styled(({ ...props }) => <ChevronDown {...props} />)<{
+const StyledChevron = styled(({ isOpen, ...props }) => <ChevronDown {...props} />)<{
   isOpen?: boolean
 }>`
   transition: transform 0.5s ease-out;
@@ -81,12 +83,13 @@ const List = styled.ul<{
 const ListItem = styled.li`
   list-style: none;
   text-align: left;
+  height: 48px;
   border-top: none;
-  line-height: 17px;
-  font-size: 14px;
+  line-height: 40px;
+  font-size: 13px;
   z-index: 999;
   color: ${({ theme }) => theme.text1};
-  padding: 10px;
+  margin: 15px 0px;
 
   &:hover {
     cursor: pointer;
@@ -94,8 +97,33 @@ const ListItem = styled.li`
   }
 `
 
-export interface Option {
+const OptionItem = styled.div`
+  background: ${({ theme }) => theme.bg1};
+  width: 162px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  padding: 0px 8px;
+  & > * {
+    &:first-child {
+      margin-bottom: 5px;
+    }
+  }
+`
+
+const PlaceHolder = styled.div`
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 17px;
+  margin-left: 10px;
+  color: ${({ theme }) => theme.text2};
+`
+
+interface Option {
   value: string
+  name: string
   label: JSX.Element | string
 }
 
@@ -109,25 +137,35 @@ export default function Dropdown({
 }: {
   options: Option[]
   placeholder: string
-  onSelect: (val: string) => void
+  onSelect: (val: number) => void
   width: string
-  defaultValue?: string
+  defaultValue?: number
   disabled?: boolean
 }) {
   const ref = useRef() as React.MutableRefObject<HTMLInputElement>
   const [isOpen, setIsOpen] = useState<boolean>(false)
-  const [selectedOption, setSelectedOption] = useState<string>(defaultValue || '')
+  const [selectedOption, setSelectedOption] = useState<string>('')
 
   useOnOutsideClick(ref, () => setIsOpen(false))
 
   useEffect(() => {
-    if (!selectedOption) setSelectedOption(options[0]?.value ?? defaultValue)
-  }, [options, defaultValue, selectedOption])
+    if (options.length > 0) {
+      const value = defaultValue ? options[defaultValue].value : options[0].value
+      setSelectedOption(value)
+    }
+  }, [options, defaultValue, onSelect])
 
   const header: JSX.Element | string = useMemo(() => {
-    const option: Option | undefined = find(options, (obj) => obj.value == selectedOption)
-    return option?.label ?? placeholder
-  }, [selectedOption, options, placeholder])
+    // const option: Option | undefined = find(options, (obj) => obj.value == selectedOption)
+    // return option ? (
+    //   <OptionItem>
+    //     <DropDownName>{option?.name}</DropDownName>
+    //     <DropDownValue>{truncateAddress(option?.value)}</DropDownValue>
+    //   </OptionItem>
+    // ) : (
+    //   placeholder
+    return <PlaceHolder>{placeholder}</PlaceHolder>
+  }, [placeholder])
 
   const toggle = () => {
     !disabled && setIsOpen(!isOpen)
@@ -165,7 +203,7 @@ export default function Dropdown({
             key={i}
             onClick={() => {
               const selected = option.value
-              onSelect(selected)
+              onSelect(i)
               setSelectedOption(selected)
               toggle()
             }}
