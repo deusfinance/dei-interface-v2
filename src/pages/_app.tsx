@@ -24,7 +24,7 @@ if (typeof window !== 'undefined' && !!window.ethereum) {
   window.ethereum.autoRefreshOnNetworkChange = false
 }
 
-const MyApp = ({ Component, pageProps }: AppProps) => {
+export default function MyApp({ Component, pageProps }: AppProps) {
   useAnalyticsReporter()
   return (
     <ReduxProvider store={store}>
@@ -48,5 +48,3 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
     </ReduxProvider>
   )
 }
-
-export default MyApp

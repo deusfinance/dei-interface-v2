@@ -45,10 +45,6 @@ export interface Colors {
   // pinks
   secondary1: Color
   secondary2: Color
-  deiPrimaryColor: Color
-  deiSecondaryColor: Color
-  deusPrimaryColor: Color
-  deusSecondaryColor: Color
 
   // other
   red1: Color
