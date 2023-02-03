@@ -2,8 +2,8 @@ import React from 'react'
 import styled from 'styled-components'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
+import { useDeusPrice } from 'state/dashboard/hooks'
 import { useVestedAPY, useVestedInformation } from 'hooks/useVested'
-import { useDeusPrice } from 'hooks/useCoingeckoPrice'
 
 import { formatAmount, formatDollarAmount } from 'utils/numbers'
 

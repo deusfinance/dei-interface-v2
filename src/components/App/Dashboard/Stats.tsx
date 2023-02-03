@@ -4,7 +4,7 @@ import Image from 'next/image'
 
 import BG_DASHBOARD from '/public/static/images/pages/dashboard/bg.svg'
 
-import { useDeiPrice } from 'hooks/useCoingeckoPrice'
+import { useDeiPrice } from 'state/dashboard/hooks'
 import { useDeiStats } from 'hooks/useDeiStats'
 
 import { formatAmount, formatBalance, formatDollarAmount } from 'utils/numbers'
