@@ -13,7 +13,7 @@ import { DefaultHandlerError } from 'utils/parseError'
 
 import { useIsTransactionPending, useTransactionAdder } from 'state/transactions/hooks'
 import { useWalletModalToggle } from 'state/application/hooks'
-import { useDeusPrice } from 'hooks/useCoingeckoPrice'
+import { useDeusPrice } from 'state/dashboard/hooks'
 import useWeb3React from 'hooks/useWeb3'
 import { useVestedAPY } from 'hooks/useVested'
 import { useVeDistContract } from 'hooks/useContract'
