@@ -66,13 +66,6 @@ const Row = styled.tr`
   color: ${({ theme }) => theme.text1};
 `
 
-const FirstRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 0 5px;
-`
-
 export const Cell = styled.td<{ justify?: boolean }>`
   align-items: center;
   text-align: center;
@@ -167,18 +160,6 @@ export const TopBorder = styled.div`
   display: flex;
 `
 
-const MobileCell = styled.div`
-  display: flex;
-  justify-content: space-between;
-  width: 95%;
-  margin-left: 10px;
-`
-
-const MobileWrapper = styled.div`
-  margin-top: 10px;
-  margin-bottom: 20px;
-`
-
 const itemsPerPage = 12
 
 export default function Table({ isMobile, stakings }: { isMobile?: boolean; stakings: StakingType[] }) {
@@ -189,13 +170,13 @@ export default function Table({ isMobile, stakings }: { isMobile?: boolean; stak
     return stakings.slice(offset, offset + itemsPerPage)
   }, [stakings, offset])
 
-  const pageCount = useMemo(() => {
-    return Math.ceil(stakings.length / itemsPerPage)
-  }, [stakings])
+  // const pageCount = useMemo(() => {
+  //   return Math.ceil(stakings.length / itemsPerPage)
+  // }, [stakings])
 
-  const onPageChange = ({ selected }: { selected: number }) => {
-    setOffset(Math.ceil(selected * itemsPerPage))
-  }
+  // const onPageChange = ({ selected }: { selected: number }) => {
+  //   setOffset(Math.ceil(selected * itemsPerPage))
+  // }
 
   const isLoading = false
 

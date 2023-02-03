@@ -144,32 +144,32 @@ const Account = () => {
     {
       id: 0,
       name: DEI_TOKEN.symbol,
-      value: tokenBalances[DEI_TOKEN.address]?.toSignificant(3) ?? 'N/A',
+      value: tokenBalances[DEI_TOKEN.address]?.toFixed(3) ?? 'N/A',
       colorType: COLOR_TYPE.RED,
     },
     {
       id: 1,
       name: BDEI_TOKEN.symbol,
-      value: tokenBalances[BDEI_TOKEN.address]?.toSignificant(3) ?? 'N/A',
+      value: tokenBalances[BDEI_TOKEN.address]?.toFixed(3) ?? 'N/A',
       colorType: COLOR_TYPE.RED,
     },
     {
       id: 2,
       name: DEUS_TOKEN.symbol,
-      value: tokenBalances[DEUS_TOKEN.address]?.toSignificant(2) ?? 'N/A',
+      value: tokenBalances[DEUS_TOKEN.address]?.toFixed(2) ?? 'N/A',
       colorType: COLOR_TYPE.BLUE,
     },
     {
       id: 3,
       name: XDEUS_TOKEN.symbol,
-      value: tokenBalances[XDEUS_TOKEN.address]?.toSignificant(2) ?? 'N/A',
+      value: tokenBalances[XDEUS_TOKEN.address]?.toFixed(2) ?? 'N/A',
       colorType: COLOR_TYPE.BLUE,
       info: 'xDEUS is the revenue-accruing token of the DEUS ecosystem.',
     },
     {
       id: 4,
       name: LegacyDEI_TOKEN.symbol,
-      value: tokenBalances[LegacyDEI_TOKEN.address]?.toSignificant(3) ?? 'N/A',
+      value: tokenBalances[LegacyDEI_TOKEN.address]?.toFixed(3) ?? 'N/A',
       colorType: COLOR_TYPE.BROWN,
     },
   ]

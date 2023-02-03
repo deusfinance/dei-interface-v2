@@ -320,6 +320,8 @@ const BurgerMenuButton = styled.button<{ isOpen: boolean }>`
   align-self: center;
   max-width: 75px !important;
   position: relative;
+  padding-top: 16px;
+  padding-bottom: 16px;
   span {
     transition: all 0.25s;
     margin-inline: auto;
@@ -362,7 +364,7 @@ const CustomLink = styled(ExternalLink)`
   font-weight: medium;
   font-family: 'IBM Plex Mono';
 `
-export default function NavBar() {
+export default function Slider() {
   const { account } = useWeb3React()
   const router = useRouter()
 
@@ -411,7 +413,7 @@ export default function NavBar() {
   function getDefaultContent() {
     return (
       <Wrapper isOpen={isOpen}>
-        <DefaultWrapper isOpen={true}>
+        <DefaultWrapper isOpen>
           <BurgerMenuButton isOpen={isOpen} onClick={() => setOpen((prev) => !prev)}>
             <span />
             <span />
@@ -599,7 +601,6 @@ export default function NavBar() {
             <Separator style={{ marginBlock: '32px', height: 1 }} />
 
             <div style={{ width: '100%' }}>
-              {' '}
               <Footer />
             </div>
           </Column>
