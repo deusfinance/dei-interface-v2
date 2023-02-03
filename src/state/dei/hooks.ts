@@ -25,11 +25,6 @@ export const useCollateralPrice = () => {
   return useMemo(() => collateral, [collateral])
 }
 
-export const useDeusPrice = () => {
-  const { deus } = usePrices()
-  return useMemo(() => deus, [deus])
-}
-
 export const useMintCollateralRatio = () => {
   const { mintCollateralRatio } = useDeiState()
   return useMemo(() => mintCollateralRatio, [mintCollateralRatio])

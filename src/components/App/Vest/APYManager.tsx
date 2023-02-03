@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { useVestedAPY, useVestedInformation } from 'hooks/useVested'
-import { useDeusPrice } from 'hooks/useCoingeckoPrice'
+import { useDeusPrice } from 'state/dashboard/hooks'
 
 import { formatAmount, formatDollarAmount } from 'utils/numbers'
 

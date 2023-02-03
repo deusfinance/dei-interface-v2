@@ -12,8 +12,8 @@ import { useSingleContractMultipleMethods } from 'state/multicall/hooks'
 import { useCollateralPrice, useMintCollateralRatio } from 'state/dei/hooks'
 import { useMintState } from 'state/mint/reducer'
 import { useMintingFee } from 'state/dei/hooks'
+import { useDeusPrice } from 'state/dashboard/hooks'
 
-import { useDeusPrice } from 'hooks/useCoingeckoPrice'
 import { useArbitrumCollateralPoolContract, useCollateralPoolContract, useOracleContract } from 'hooks/useContract'
 
 export function useMintPage(
