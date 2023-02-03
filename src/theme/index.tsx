@@ -103,6 +103,10 @@ function colors(themeName: SupportedThemes): Colors {
       // secondary colors
       secondary1: '#1749FA',
       secondary2: 'rgba(23, 73, 250, 0.2)',
+      deiPrimaryColor: '#CF8D49',
+      deiSecondaryColor: '#B63562',
+      deusPrimaryColor: '#0BADF4',
+      deusSecondaryColor: '#30EFE4',
 
       // other
       red1: '#DD5D5D',
@@ -168,6 +172,10 @@ function colors(themeName: SupportedThemes): Colors {
       // secondary colors
       secondary1: '#1749FA',
       secondary2: 'rgba(23, 73, 250, 0.2)',
+      deiPrimaryColor: '#CF8D49',
+      deiSecondaryColor: '#B63562',
+      deusPrimaryColor: '#0BADF4',
+      deusSecondaryColor: '#30EFE4',
 
       // other
       red1: '#DD5D5D',

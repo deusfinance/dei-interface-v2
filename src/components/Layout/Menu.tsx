@@ -16,7 +16,7 @@ import {
   Mint as MintIcon,
   Redeem as RedeemIcon,
   DeiBonds as DeiBondsIcon,
-  // Analytics as AnalyticsIcon,
+  Metrics as MetricsIcon,
 } from 'components/Icons'
 import { Card } from 'components/Card'
 import { ExternalLink } from 'components/Link'
@@ -155,8 +155,14 @@ export default function Menu() {
               </IconWrapper>
             </Row>
           </Link>
-          <Separator />
-
+          <Link href="/metrics" passHref>
+            <Row active={router.route === '/metrics'}>
+              <div>Metrics</div>
+              <IconWrapper>
+                <MetricsIcon size={20} />
+              </IconWrapper>
+            </Row>
+          </Link>
           <ExternalLink href="https://app.deus.finance/vest">
             <Row onClick={() => toggle()}>
               <ExternalItem>

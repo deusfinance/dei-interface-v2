@@ -14,5 +14,11 @@
     "text": "Redeem",
     "path": "/redemption",
     "exact": true
+  },
+
+  {
+    "text": "Metrics",
+    "path": "/metrics",
+    "exact": true
   }
 ]

@@ -44,10 +44,12 @@ const Name = styled.div`
 `
 
 const Value = styled.div`
+  display: flex;
   font-weight: 500;
   font-size: 14px;
   color: ${({ theme }) => theme.text1};
   margin-top: 10px;
+  justify-content: center;
 `
 
 const ValueLink = styled(Value)`
