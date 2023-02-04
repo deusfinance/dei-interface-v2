@@ -3,9 +3,7 @@ import { useRouter } from 'next/router'
 import styled from 'styled-components'
 import Link from 'next/link'
 import { Z_INDEX } from 'theme'
-
 import useOnOutsideClick from 'hooks/useOnOutsideClick'
-
 import {
   NavToggle as NavToggleIcon,
   IconWrapper,
@@ -17,6 +15,13 @@ import {
 } from 'components/Icons'
 import { Card } from 'components/Card'
 import { ExternalLink } from 'components/Link'
+import Discord from '/public/static/images/footer/Discord.svg'
+import Twitter from '/public/static/images/footer/Twitter.svg'
+import Github from '/public/static/images/footer/Github.svg'
+import Telegram from '/public/static/images/footer/Telegram.svg'
+import Image from 'next/image'
+import { isMobile } from 'react-device-detect'
+import { ArrowUpRight } from 'react-feather'
 
 const Container = styled.div`
   overflow: hidden;
@@ -45,6 +50,10 @@ const Row = styled.div<{ active?: boolean }>`
   &:hover {
     cursor: pointer;
     color: ${({ theme }) => theme.text1};
+    svg,
+    img {
+      opacity: 1;
+    }
   }
 
   ${({ active, theme }) =>
@@ -52,7 +61,14 @@ const Row = styled.div<{ active?: boolean }>`
     ` color: ${theme.darkPink};
       font-weight: 700;
       pointer-events: none;
+      svg,img {
+        opacity: 1 !important;
+      }
   `};
+  svg,
+  img {
+    opacity: 0.5;
+  }
 `
 
 const NavToggle = styled(NavToggleIcon)`
@@ -69,7 +85,16 @@ const Separator = styled.div`
   height: 1px;
   background: ${({ theme }) => theme.bg4};
 `
-
+const ExternalLinkContentWrapper = styled(Row)`
+  justify-content: flex-start;
+  align-items: flex-end;
+  svg {
+    margin-left: 4px;
+  }
+`
+function getImageSize() {
+  return isMobile ? 25 : 30
+}
 export default function Menu() {
   const ref = useRef(null)
   const [isOpen, setIsOpen] = useState(false)
@@ -137,15 +162,21 @@ export default function Menu() {
           </ExternalLink>
 
           <ExternalLink href="https://docs.deus.finance">
-            <Row onClick={() => toggle()}>
+            <ExternalLinkContentWrapper onClick={() => toggle()}>
               <div>Docs</div>
-            </Row>
+              <IconWrapper>
+                <ArrowUpRight />
+              </IconWrapper>
+            </ExternalLinkContentWrapper>
           </ExternalLink>
 
           <ExternalLink href="https://docs.deus.finance/contracts/disclaimer">
-            <Row onClick={() => toggle()}>
+            <ExternalLinkContentWrapper onClick={() => toggle()}>
               <div>Terms</div>
-            </Row>
+              <IconWrapper>
+                <ArrowUpRight />
+              </IconWrapper>
+            </ExternalLinkContentWrapper>
           </ExternalLink>
 
           <Separator />
@@ -153,24 +184,36 @@ export default function Menu() {
           <ExternalLink href="https://discord.gg/xTTaBBAMgG">
             <Row onClick={() => toggle()}>
               <div>Discord</div>
+              <IconWrapper>
+                <Image src={Discord} alt="Discord Logo" width={getImageSize()} height={getImageSize()} />
+              </IconWrapper>
             </Row>
           </ExternalLink>
 
           <ExternalLink href="https://twitter.com/deusdao">
             <Row onClick={() => toggle()}>
               <div>Twitter</div>
+              <IconWrapper>
+                <Image src={Twitter} alt="Twitter Logo" width={getImageSize()} height={getImageSize()} />
+              </IconWrapper>
             </Row>
           </ExternalLink>
 
           <ExternalLink href="https://github.com/deusfinance">
             <Row onClick={() => toggle()}>
               <div>Github</div>
+              <IconWrapper>
+                <Image src={Github} alt="Github Logo" width={getImageSize()} height={getImageSize()} />
+              </IconWrapper>
             </Row>
           </ExternalLink>
 
           <ExternalLink href="https://t.me/deusfinance">
             <Row onClick={() => toggle()}>
               <div>Telegram</div>
+              <IconWrapper>
+                <Image src={Telegram} alt="Telegram Logo" width={getImageSize()} height={getImageSize()} />
+              </IconWrapper>
             </Row>
           </ExternalLink>
         </InlineModal>
