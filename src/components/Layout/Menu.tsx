@@ -85,6 +85,13 @@ const Separator = styled.div`
   height: 1px;
   background: ${({ theme }) => theme.bg4};
 `
+const ExternalLinkContentWrapper = styled(Row)`
+  justify-content: flex-start;
+  align-items: flex-end;
+  svg {
+    margin-left: 4px;
+  }
+`
 function getImageSize() {
   return isMobile ? 25 : 30
 }
@@ -155,21 +162,21 @@ export default function Menu() {
           </ExternalLink>
 
           <ExternalLink href="https://docs.deus.finance">
-            <Row onClick={() => toggle()}>
+            <ExternalLinkContentWrapper onClick={() => toggle()}>
               <div>Docs</div>
               <IconWrapper>
                 <ArrowUpRight />
               </IconWrapper>
-            </Row>
+            </ExternalLinkContentWrapper>
           </ExternalLink>
 
           <ExternalLink href="https://docs.deus.finance/contracts/disclaimer">
-            <Row onClick={() => toggle()}>
+            <ExternalLinkContentWrapper onClick={() => toggle()}>
               <div>Terms</div>
               <IconWrapper>
                 <ArrowUpRight />
               </IconWrapper>
-            </Row>
+            </ExternalLinkContentWrapper>
           </ExternalLink>
 
           <Separator />
