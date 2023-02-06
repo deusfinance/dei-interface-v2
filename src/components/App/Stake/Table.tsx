@@ -28,7 +28,7 @@ import TokenBox from 'components/App/Stake/TokenBox'
 import RewardBox from 'components/App/Stake/RewardBox'
 import { useRouter } from 'next/router'
 import { ExternalLink } from 'components/Link'
-import { Divider, HStack, VStack } from '../Staking/common/Layout'
+import { HStack } from '../Staking/common/Layout'
 import SPOOKY_SWAP_IMG from '/public/static/images/pages/stake/spooky.svg'
 import BEETHOVEN_IMG from '/public/static/images/pages/stake/beethoven.svg'
 // import SOLIDLY_IMG from '/public/static/images/pages/stake/solid.png'
@@ -162,6 +162,15 @@ export const TopBorder = styled.div`
 
 const itemsPerPage = 12
 
+interface TableRowItemProps {
+  index: number
+  stakingPool: StakingType
+  isMobile: boolean | undefined
+}
+
+const TableRowItem = ({ index, stakingPool, isMobile }: TableRowItemProps) => (
+  <TableRow index={index} staking={stakingPool} isMobile={isMobile} />
+)
 export default function Table({ isMobile, stakings }: { isMobile?: boolean; stakings: StakingType[] }) {
   const [offset, setOffset] = useState(0)
   const { account } = useWeb3React()
@@ -186,10 +195,7 @@ export default function Table({ isMobile, stakings }: { isMobile?: boolean; stak
         <tbody>
           {paginatedItems.length > 0 &&
             paginatedItems.map((stakingPool: StakingType, index) => (
-              <>
-                <Divider backgroundColor="#101116" />
-                <TableRow key={index} index={index} staking={stakingPool} isMobile={isMobile} />
-              </>
+              <TableRowItem key={stakingPool.id} index={index} stakingPool={stakingPool} isMobile={isMobile} />
             ))}
         </tbody>
         {paginatedItems.length === 0 && (
@@ -292,15 +298,19 @@ const CustomButtonWrapper = ({ type, href, isActive }: { type: BUTTON_TYPE; href
 const SpaceBetween = styled(HStack)`
   justify-content: space-between;
 `
-const TableRowLargeContainer = styled.div`
+const TableRowLargeContainer = styled.tr`
   width: 100%;
   display: table;
   ${({ theme }) => theme.mediaWidth.upToSmall`
     display:none;
   `};
 `
-const MiniStakeHeaderContainer = styled(SpaceBetween)``
-const MiniStakeContainer = styled.div`
+const MiniStakeHeaderContainer = styled.td`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+`
+const MiniStakeContainer = styled.tr`
   margin-block: 2px;
   background: ${({ theme }) => theme.bg1};
   display: none;
@@ -309,8 +319,12 @@ const MiniStakeContainer = styled.div`
   display:block;
   `};
 `
-const MiniStakeContentContainer = styled(VStack)`
+const MiniStakeContentContainer = styled.td`
   margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  justify-content: space-between;
 `
 const MiniTopBorderWrap = styled(TopBorderWrap)`
   min-width: 109px;
@@ -694,8 +708,8 @@ function TableRow({ staking, index, isMobile }: { staking: StakingType; index: n
   // }
 
   return (
-    <ZebraStripesRow isEven={index % 2 === 0}>
-      <TableRowContent stakingPool={staking} />
-    </ZebraStripesRow>
+    // <ZebraStripesRow isEven={index % 2 === 0}>
+    <TableRowContent stakingPool={staking} />
+    // </ZebraStripesRow>
   )
 }
