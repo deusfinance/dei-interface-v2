@@ -19,16 +19,7 @@ import NavLogo2 from './NavLogo2'
 import { Row as RowWrapper, RowEnd, RowStart } from 'components/Row'
 import Footer from 'components/Disclaimer'
 
-import {
-  IconWrapper,
-  Dashboard as DashboardIcon,
-  VeDeus as VeDeusIcon,
-  Mint as MintIcon,
-  Redeem as RedeemIcon,
-  Staking as StakingIcon,
-  Bridge as BridgeIcon,
-  Swap as SwapIcon,
-} from 'components/Icons'
+import { IconWrapper, VeDeus as VeDeusIcon, Bridge as BridgeIcon } from 'components/Icons'
 import { ArrowUpRight } from 'react-feather'
 import { useDeiPrice, useDeusPrice } from 'hooks/useCoingeckoPrice'
 import Column from 'components/Column'
@@ -41,6 +32,7 @@ import { LegacyDEI_Address, USDC_ADDRESS } from 'constants/addresses'
 import { SupportedChainId } from 'constants/chains'
 import useWeb3React from 'hooks/useWeb3'
 import { useTokenBalance } from 'state/wallet/hooks'
+import { ROUTES } from './constants'
 
 const Wrapper = styled.div<{ isOpen?: boolean }>`
   transition: width 0.25s;
@@ -364,6 +356,7 @@ const CustomLink = styled(ExternalLink)`
   font-weight: medium;
   font-family: 'IBM Plex Mono';
 `
+
 export default function Slider() {
   const { account } = useWeb3React()
   const router = useRouter()
@@ -423,87 +416,29 @@ export default function Slider() {
         </DefaultWrapper>
         <Column style={{ position: 'relative', top: '62px' }}>
           <Routes>
-            <SimpleLinkWrapper
-              isOpen={isOpen}
-              className="sidebar-link__route"
-              active={router.route.includes('/dashboard')}
-            >
-              <Link href="/dashboard" passHref>
-                <MenuItemLinkContainer>
-                  <IconWrapper disable={!router.route.includes('/dashboard')}>
-                    <DashboardIcon size={20} />
-                  </IconWrapper>
-                  <NavLinkContainer isOpen={isOpen} isInternal={true}>
-                    <NavLink active={router.route.includes('/dashboard')}>Dashboard</NavLink>
-                  </NavLinkContainer>
-                </MenuItemLinkContainer>
-              </Link>
-            </SimpleLinkWrapper>
-            <SimpleLinkWrapper isOpen={isOpen} className="sidebar-link__route" active={router.route.includes('/mint')}>
-              <Link href="/mint" passHref>
-                <MenuItemLinkContainer>
-                  <IconWrapper disable={!router.route.includes('/mint')}>
-                    <MintIcon size={20} />
-                  </IconWrapper>
-                  <NavLinkContainer isOpen={isOpen} isInternal={true}>
-                    <NavLink active={router.route.includes('/mint')}>Mint DEI</NavLink>
-                  </NavLinkContainer>
-                </MenuItemLinkContainer>
-              </Link>
-            </SimpleLinkWrapper>
-            <SimpleLinkWrapper
-              isOpen={isOpen}
-              className="sidebar-link__route"
-              active={router.route.includes('/redemption')}
-            >
-              <Link href="/redemption" passHref>
-                <MenuItemLinkContainer>
-                  <IconWrapper disable={!router.route.includes('/redemption')}>
-                    <RedeemIcon size={20} />
-                  </IconWrapper>
-                  <NavLinkContainer isOpen={isOpen} isInternal={true}>
-                    <NavLink active={router.route.includes('/redemption')}>Redeem DEI</NavLink>
-                  </NavLinkContainer>
-                </MenuItemLinkContainer>
-              </Link>
-            </SimpleLinkWrapper>
-            <SimpleLinkWrapper isOpen={isOpen} className="sidebar-link__route" active={router.route.includes('/stake')}>
-              <Link href="/stake" passHref>
-                <MenuItemLinkContainer>
-                  <IconWrapper disable={!router.route.includes('/stake')}>
-                    <StakingIcon size={20} />
-                  </IconWrapper>
-                  <NavLinkContainer isOpen={isOpen} isInternal={true}>
-                    <NavLink active={router.route.includes('/stake')}>Pools</NavLink>
-                  </NavLinkContainer>
-                </MenuItemLinkContainer>
-              </Link>
-            </SimpleLinkWrapper>
-            <SimpleLinkWrapper
-              isOpen={isOpen}
-              className="sidebar-link__route last"
-              active={router.route.includes('/swap')}
-            >
-              <Link href="/swap" passHref>
-                <MenuItemLinkContainer>
-                  <IconWrapper disable={!router.route.includes('/swap')}>
-                    <SwapIcon width={20} color={'#EBEBEC'} />
-                  </IconWrapper>
-                  <NavLinkContainer isOpen={isOpen} isInternal={true}>
-                    <NavLink active={router.route.includes('/swap')}>Swap</NavLink>
-                  </NavLinkContainer>
-                </MenuItemLinkContainer>
-              </Link>
-            </SimpleLinkWrapper>
+            {ROUTES.map((route, index) => (
+              <SimpleLinkWrapper
+                key={route.id}
+                isOpen={isOpen}
+                className={`sidebar-link__route ${index + 1 === ROUTES.length && 'last'}`}
+                active={router.asPath === route.path}
+              >
+                <Link href={route.path} passHref>
+                  <MenuItemLinkContainer>
+                    <IconWrapper disable={router.asPath !== route.path}>
+                      <route.icon size={20} {...(route.path === '/swap' && { color: '#EBEBEC' })} />
+                    </IconWrapper>
+                    <NavLinkContainer isOpen={isOpen} isInternal={true}>
+                      <NavLink active={router.asPath === route.path}>{route.title}</NavLink>
+                    </NavLinkContainer>
+                  </MenuItemLinkContainer>
+                </Link>
+              </SimpleLinkWrapper>
+            ))}
 
             <Separator />
 
-            <SimpleLinkWrapper
-              isOpen={isOpen}
-              className="last"
-              as={ExternalLink}
-              href="https://app.deus.finance/xdeus/swap"
-            >
+            <SimpleLinkWrapper isOpen={isOpen} className="last">
               <MenuItemLinkContainer>
                 <Row>
                   <IconWrapper disable>
@@ -525,7 +460,7 @@ export default function Slider() {
                 </NavLinkContainer>
               </MenuItemLinkContainer>
             </SimpleLinkWrapper>
-            <SimpleLinkWrapper as={ExternalLink} href="https://app.multichain.org/#/router" isOpen={isOpen}>
+            <SimpleLinkWrapper isOpen={isOpen}>
               <MenuItemLinkContainer>
                 <Row>
                   <IconWrapper disable>
