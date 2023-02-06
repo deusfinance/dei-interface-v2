@@ -68,7 +68,7 @@ const CoinName = styled.p`
   color: ${({ theme }) => theme.text1};
   margin-right: 6px;
 `
-const CoinValue = styled.p<{ colorType: COLOR_TYPE }>`
+const CoinValue = styled.div<{ colorType: COLOR_TYPE }>`
 font-family: 'IBM Plex Mono';
 font-weight: 500;
 font-size: 14px;

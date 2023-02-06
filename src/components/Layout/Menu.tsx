@@ -4,15 +4,7 @@ import styled from 'styled-components'
 import Link from 'next/link'
 import { Z_INDEX } from 'theme'
 import useOnOutsideClick from 'hooks/useOnOutsideClick'
-import {
-  NavToggle as NavToggleIcon,
-  IconWrapper,
-  Dashboard as DashboardIcon,
-  Mint as MintIcon,
-  Redeem as RedeemIcon,
-  Staking as StakingIcon,
-  Swap as SwapIcon,
-} from 'components/Icons'
+import { NavToggle as NavToggleIcon, IconWrapper } from 'components/Icons'
 import { Card } from 'components/Card'
 import { ExternalLink } from 'components/Link'
 import Discord from '/public/static/images/footer/Discord.svg'
@@ -22,6 +14,7 @@ import Telegram from '/public/static/images/footer/Telegram.svg'
 import Image from 'next/image'
 import { isMobile } from 'react-device-detect'
 import { ArrowUpRight } from 'react-feather'
+import { ROUTES } from './constants'
 
 const Container = styled.div`
   overflow: hidden;
@@ -108,50 +101,16 @@ export default function Menu() {
       <NavToggle onClick={() => toggle()} />
       <div>
         <InlineModal isOpen={isOpen}>
-          <Link href="/dashboard" passHref>
-            <Row active={router.route === '/dashboard'}>
-              <div>Dashboard</div>
-              <IconWrapper>
-                <DashboardIcon size={20} />
-              </IconWrapper>
-            </Row>
-          </Link>
-
-          <Link href="/mint" passHref>
-            <Row active={router.route === '/mint'}>
-              <div>Mint DEI</div>
-              <IconWrapper>
-                <MintIcon size={20} />
-              </IconWrapper>
-            </Row>
-          </Link>
-
-          <Link href="/redemption" passHref>
-            <Row active={router.route === '/redemption'}>
-              <div>Redeem DEI</div>
-              <IconWrapper>
-                <RedeemIcon size={20} />
-              </IconWrapper>
-            </Row>
-          </Link>
-
-          <Link href="/stake" passHref>
-            <Row active={router.route === '/stake'}>
-              <div>Pools</div>
-              <IconWrapper>
-                <StakingIcon size={20} />
-              </IconWrapper>
-            </Row>
-          </Link>
-
-          <Link href="/swap" passHref>
-            <Row active={router.route === '/swap'}>
-              <div>Swap</div>
-              <IconWrapper>
-                <SwapIcon size={20} color={'#FFF'} />
-              </IconWrapper>
-            </Row>
-          </Link>
+          {ROUTES.map((route) => (
+            <Link key={route.id} href={route.path} passHref>
+              <Row active={router.asPath === route.path}>
+                <div>{route.title}</div>
+                <IconWrapper>
+                  <route.icon size={20} {...(route.path === '/swap' && { color: '#EBEBEC' })} />
+                </IconWrapper>
+              </Row>
+            </Link>
+          ))}
 
           <Separator />
 

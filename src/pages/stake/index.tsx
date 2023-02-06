@@ -4,7 +4,7 @@ import { isMobile } from 'react-device-detect'
 
 import { Row, RowBetween } from 'components/Row'
 import { useSearch, SearchField } from 'components/App/Stake/Search'
-import Table, { Cell } from 'components/App/Stake/Table'
+import Table from 'components/App/Stake/Table'
 import { ExternalStakings, Stakings, StakingType } from 'constants/stakingPools'
 import { useWeb3NavbarOption } from 'state/web3navbar/hooks'
 
@@ -49,7 +49,7 @@ const UpperRow = styled(RowBetween)`
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-
+  margin-bottom: 2px;
   & > * {
     margin: 8px 8px;
   }
@@ -65,7 +65,13 @@ const FirstRowWrapper = styled.div`
     width: 50%;
   `};
 `
-
+const Cell = styled.div<{ justify?: boolean }>`
+  align-items: center;
+  text-align: center;
+  vertical-align: middle;
+  padding: 5px;
+  height: 90px;
+`
 export default function Stake() {
   const { snapshot, searchProps } = useSearch(Stakings, ExternalStakings)
   const result = snapshot.options.map((stakings) => stakings)
@@ -84,15 +90,11 @@ export default function Stake() {
       return (
         <UpperRow>
           <Row>
-            <Cell style={{ height: 'fit-content' }} width="25%">
+            <Cell style={{ height: 'fit-content', width: '25%' }}>
               <SearchField searchProps={searchProps} />
             </Cell>
-            <Cell style={{ height: 'fit-content', color: '#FFBA93', fontWeight: 'medium' }} width="10%">
-              APR
-            </Cell>
-            <Cell style={{ height: 'fit-content', color: '#6F7380' }} width="18%">
-              TVL
-            </Cell>
+            <Cell style={{ height: 'fit-content', color: '#FFBA93', fontWeight: 'medium', width: '10%' }}>APR</Cell>
+            <Cell style={{ height: 'fit-content', color: '#6F7380', width: '18%' }}>TVL</Cell>
             <Cell style={{ height: 'fit-content', textAlign: 'left', color: '#6F7380' }}>Reward Tokens</Cell>
           </Row>
         </UpperRow>
