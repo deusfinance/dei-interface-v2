@@ -49,7 +49,7 @@ const StakingBalance = () => {
     <Container>
       <>
         <BalanceContent>
-          <p>Your DEUS-vDEUS LP balance :</p>
+          <p>Your DEUS-xDEUS LP balance :</p>
           <p>389.00 LP</p>
         </BalanceContent>
         <BalanceContent>

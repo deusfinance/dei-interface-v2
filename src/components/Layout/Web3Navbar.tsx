@@ -1,6 +1,5 @@
 import { RowBetween } from 'components/Row'
 import React, { useEffect, useState } from 'react'
-// import { useAppSelector } from 'state'
 import { useGetWeb3NavbarOption } from 'state/web3navbar/hooks'
 import { TNAVBAR_OPTIONS } from 'state/web3navbar/types'
 import styled from 'styled-components'
@@ -10,7 +9,7 @@ import Menu from './Menu'
 import Web3Status from '../Web3Status/index'
 import Web3Network from 'components/Web3Network'
 import { HStack } from 'components/App/Staking/common/Layout'
-import RewardCoin from 'components/ClaimReward'
+import DeusClaimBar from 'components/DeusClaimBar'
 
 const Wrapper = styled(RowBetween)<{ rtl: boolean }>`
   height: 60px;
@@ -98,14 +97,14 @@ const Web3Navbar = () => {
             {components.left.map((componentName) => {
               if (componentName === componentKey['left'][0] && pid) {
                 return (
-                  <StatsHeaderWrapper>
+                  <StatsHeaderWrapper key={componentKey['left'][0]}>
                     <StatsHeader pid={+pid} onSelectDropDown={onSelect} />
                   </StatsHeaderWrapper>
                 )
               }
               if (componentName === componentKey['left'][1]) {
                 return (
-                  <AprTvlWrapper>
+                  <AprTvlWrapper key={componentKey['left'][1]}>
                     <p>APR:</p>
                     <p>25%</p>
                   </AprTvlWrapper>
@@ -113,7 +112,7 @@ const Web3Navbar = () => {
               }
               if (componentName === componentKey['left'][2]) {
                 return (
-                  <AprTvlWrapper>
+                  <AprTvlWrapper key={componentKey['left'][2]}>
                     <p>TVL:</p>
                     <p>$4,394,883</p>
                   </AprTvlWrapper>
@@ -125,13 +124,13 @@ const Web3Navbar = () => {
         <ComponentWrapper>
           {components.right.map((componentName) => {
             if (componentName === componentKey['right'][0]) {
-              return <RewardCoin coinName="Deus" hour={0} minute={17} second={0} />
+              return <DeusClaimBar key={componentKey['right'][0]} />
             }
             if (componentName === componentKey['right'][1]) {
-              return <Web3Network />
+              return <Web3Network key={componentKey['right'][1]} />
             }
             if (componentName === componentKey['right'][2]) {
-              return <Web3Status />
+              return <Web3Status key={componentKey['right'][2]} />
             }
           })}
           <MenuWrapper>

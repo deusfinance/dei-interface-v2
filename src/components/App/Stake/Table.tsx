@@ -28,10 +28,11 @@ import TokenBox from 'components/App/Stake/TokenBox'
 import RewardBox from 'components/App/Stake/RewardBox'
 import { useRouter } from 'next/router'
 import { ExternalLink } from 'components/Link'
-import { Divider, HStack, VStack } from '../Staking/common/Layout'
+import { HStack } from '../Staking/common/Layout'
 import SPOOKY_SWAP_IMG from '/public/static/images/pages/stake/spooky.svg'
 import BEETHOVEN_IMG from '/public/static/images/pages/stake/beethoven.svg'
-import SOLIDLY_IMG from '/public/static/images/pages/stake/solid.png'
+// import SOLIDLY_IMG from '/public/static/images/pages/stake/solid.png'
+import SOLIDLY_IMG from '/public/static/images/pages/stake/solidly.svg'
 import ExternalIcon from '/public/static/images/pages/stake/down.svg'
 
 import { Token } from '@sushiswap/core-sdk'
@@ -63,13 +64,6 @@ const Row = styled.tr`
   height: 21px;
   font-size: 0.8rem;
   color: ${({ theme }) => theme.text1};
-`
-
-const FirstRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 0 5px;
 `
 
 export const Cell = styled.td<{ justify?: boolean }>`
@@ -166,20 +160,17 @@ export const TopBorder = styled.div`
   display: flex;
 `
 
-const MobileCell = styled.div`
-  display: flex;
-  justify-content: space-between;
-  width: 95%;
-  margin-left: 10px;
-`
-
-const MobileWrapper = styled.div`
-  margin-top: 10px;
-  margin-bottom: 20px;
-`
-
 const itemsPerPage = 12
 
+interface TableRowItemProps {
+  index: number
+  stakingPool: StakingType
+  isMobile: boolean | undefined
+}
+
+const TableRowItem = ({ index, stakingPool, isMobile }: TableRowItemProps) => (
+  <TableRow index={index} staking={stakingPool} isMobile={isMobile} />
+)
 export default function Table({ isMobile, stakings }: { isMobile?: boolean; stakings: StakingType[] }) {
   const [offset, setOffset] = useState(0)
   const { account } = useWeb3React()
@@ -188,13 +179,13 @@ export default function Table({ isMobile, stakings }: { isMobile?: boolean; stak
     return stakings.slice(offset, offset + itemsPerPage)
   }, [stakings, offset])
 
-  const pageCount = useMemo(() => {
-    return Math.ceil(stakings.length / itemsPerPage)
-  }, [stakings])
+  // const pageCount = useMemo(() => {
+  //   return Math.ceil(stakings.length / itemsPerPage)
+  // }, [stakings])
 
-  const onPageChange = ({ selected }: { selected: number }) => {
-    setOffset(Math.ceil(selected * itemsPerPage))
-  }
+  // const onPageChange = ({ selected }: { selected: number }) => {
+  //   setOffset(Math.ceil(selected * itemsPerPage))
+  // }
 
   const isLoading = false
 
@@ -204,10 +195,7 @@ export default function Table({ isMobile, stakings }: { isMobile?: boolean; stak
         <tbody>
           {paginatedItems.length > 0 &&
             paginatedItems.map((stakingPool: StakingType, index) => (
-              <>
-                <Divider backgroundColor="#101116" />
-                <TableRow key={index} index={index} staking={stakingPool} isMobile={isMobile} />
-              </>
+              <TableRowItem key={stakingPool.id} index={index} stakingPool={stakingPool} isMobile={isMobile} />
             ))}
         </tbody>
         {paginatedItems.length === 0 && (
@@ -265,14 +253,14 @@ const CustomButton = styled(ExternalLink)`
 const buttonTitles = {
   BEETHOVEN: 'Farm on',
   SPOOKY_SWAP: 'Farm on',
-  SOLIDLY: 'Farm on Solidly',
+  SOLIDLY: 'Farm on',
   INTERNAL: 'Manage',
 }
 
 const buttonImageSources = {
   BEETHOVEN: BEETHOVEN_IMG,
   SPOOKY_SWAP: SPOOKY_SWAP_IMG,
-  SOLIDLY: SOLIDLY_IMG.src,
+  SOLIDLY: SOLIDLY_IMG,
   INTERNAL: ExternalIcon,
 }
 
@@ -286,7 +274,7 @@ const buttonImageHeights = {
 const buttonImageWidths = {
   BEETHOVEN: 120,
   SPOOKY_SWAP: 120,
-  SOLIDLY: 20,
+  SOLIDLY: 60,
   INTERNAL: 0,
 }
 
@@ -295,7 +283,7 @@ const CustomButtonWrapper = ({ type, href, isActive }: { type: BUTTON_TYPE; href
     <CustomButton transparentBG href={isActive && href}>
       <ButtonText>
         {buttonTitles[type]}
-        <HStack style={{ marginLeft: '1ch', alignItems: 'flex-end' }}>
+        <HStack style={{ marginLeft: '1ch', alignItems: 'flex-start' }}>
           <Image
             width={buttonImageWidths[type]}
             height={buttonImageHeights[type]}
@@ -310,15 +298,19 @@ const CustomButtonWrapper = ({ type, href, isActive }: { type: BUTTON_TYPE; href
 const SpaceBetween = styled(HStack)`
   justify-content: space-between;
 `
-const TableRowLargeContainer = styled.div`
+const TableRowLargeContainer = styled.tr`
   width: 100%;
   display: table;
   ${({ theme }) => theme.mediaWidth.upToSmall`
     display:none;
   `};
 `
-const MiniStakeHeaderContainer = styled(SpaceBetween)``
-const MiniStakeContainer = styled.div`
+const MiniStakeHeaderContainer = styled.td`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+`
+const MiniStakeContainer = styled.tr`
   margin-block: 2px;
   background: ${({ theme }) => theme.bg1};
   display: none;
@@ -327,8 +319,12 @@ const MiniStakeContainer = styled.div`
   display:block;
   `};
 `
-const MiniStakeContentContainer = styled(VStack)`
+const MiniStakeContentContainer = styled.td`
   margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  justify-content: space-between;
 `
 const MiniTopBorderWrap = styled(TopBorderWrap)`
   min-width: 109px;
@@ -373,7 +369,6 @@ const TableRowMiniContent = ({
   toggleWalletModal,
   rewardAmounts,
   chain,
-  type,
 }: ITableRowContent) => {
   const hasReward = useMemo(() => {
     return rewardAmounts.every((value) => value === 0)
@@ -512,7 +507,7 @@ const TableRowContent = ({ stakingPool }: { stakingPool: StakingType }) => {
     stakingPool.version === StakingVersion.EXTERNAL ? 0 : stakingPool.secondaryAprHook(liquidityPool, stakingPool)
   const apr = primaryApy + secondaryApy
 
-  const tvl = stakingPool?.tvlHook(stakingPool)
+  const tvl = stakingPool.tvlHook(stakingPool)
 
   // console.log('apr and tvl for ', apr, tvl, name, stakingPool?.aprHook, stakingPool?.tvlHook)
 
@@ -713,8 +708,8 @@ function TableRow({ staking, index, isMobile }: { staking: StakingType; index: n
   // }
 
   return (
-    <ZebraStripesRow isEven={index % 2 === 0}>
-      <TableRowContent stakingPool={staking} />
-    </ZebraStripesRow>
+    // <ZebraStripesRow isEven={index % 2 === 0}>
+    <TableRowContent stakingPool={staking} />
+    // </ZebraStripesRow>
   )
 }

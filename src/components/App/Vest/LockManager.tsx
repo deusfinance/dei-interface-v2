@@ -22,7 +22,6 @@ import { PrimaryButtonWide } from 'components/Button'
 import { DotFlashing } from 'components/Icons'
 import { SelectDatePresets } from './InputDate'
 import UserLockInformation from './UserLockInformation'
-import { ButtonText } from 'pages/vest'
 import InputBox from 'components/InputBox'
 
 dayjs.extend(utc)
@@ -45,6 +44,27 @@ const ModalInnerWrapper = styled.div`
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
     padding: 0.8rem;
+  `}
+`
+
+export const ButtonText = styled.span<{ gradientText?: boolean }>`
+  display: flex;
+  font-family: 'Inter';
+  font-weight: 600;
+  font-size: 15px;
+  white-space: nowrap;
+  color: ${({ theme }) => theme.text1};
+
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    font-size: 14px;
+  `}
+
+  ${({ gradientText }) =>
+    gradientText &&
+    `
+    background: -webkit-linear-gradient(92.33deg, #e29d52 -10.26%, #de4a7b 80%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   `}
 `
 

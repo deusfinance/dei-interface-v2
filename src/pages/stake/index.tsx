@@ -2,18 +2,11 @@ import React from 'react'
 import styled from 'styled-components'
 import { isMobile } from 'react-device-detect'
 
-// import Hero from 'components/Hero'
-// import ImageWithFallback from 'components/ImageWithFallback'
-// import STAKE_ICON from '/public/static/images/pages/stake/ic_stake.svg'
 import { Row, RowBetween } from 'components/Row'
-// import TokenBox from 'components/App/Stake/TokenBox'
-// import InfoCell from 'components/App/Stake/InfoCell'
-// import RewardBox from 'components/App/Stake/RewardBox'
 import { useSearch, SearchField } from 'components/App/Stake/Search'
-import Table, { Cell } from 'components/App/Stake/Table'
+import Table from 'components/App/Stake/Table'
 import { ExternalStakings, Stakings, StakingType } from 'constants/stakingPools'
 import { useWeb3NavbarOption } from 'state/web3navbar/hooks'
-// import { TNAVBAR_OPTIONS } from 'state/web3navbar/types'
 
 export const Container = styled.div`
   display: flex;
@@ -56,7 +49,7 @@ const UpperRow = styled(RowBetween)`
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-
+  margin-bottom: 2px;
   & > * {
     margin: 8px 8px;
   }
@@ -72,7 +65,13 @@ const FirstRowWrapper = styled.div`
     width: 50%;
   `};
 `
-
+const Cell = styled.div<{ justify?: boolean }>`
+  align-items: center;
+  text-align: center;
+  vertical-align: middle;
+  padding: 5px;
+  height: 90px;
+`
 export default function Stake() {
   const { snapshot, searchProps } = useSearch(Stakings, ExternalStakings)
   const result = snapshot.options.map((stakings) => stakings)
@@ -91,15 +90,11 @@ export default function Stake() {
       return (
         <UpperRow>
           <Row>
-            <Cell style={{ height: 'fit-content' }} width="25%">
+            <Cell style={{ height: 'fit-content', width: '25%' }}>
               <SearchField searchProps={searchProps} />
             </Cell>
-            <Cell style={{ height: 'fit-content', color: '#FFBA93', fontWeight: 'medium' }} width="10%">
-              APR
-            </Cell>
-            <Cell style={{ height: 'fit-content', color: '#6F7380' }} width="18%">
-              TVL
-            </Cell>
+            <Cell style={{ height: 'fit-content', color: '#FFBA93', fontWeight: 'medium', width: '10%' }}>APR</Cell>
+            <Cell style={{ height: 'fit-content', color: '#6F7380', width: '18%' }}>TVL</Cell>
             <Cell style={{ height: 'fit-content', textAlign: 'left', color: '#6F7380' }}>Reward Tokens</Cell>
           </Row>
         </UpperRow>

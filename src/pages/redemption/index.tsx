@@ -31,12 +31,13 @@ import InputBoxInDollar from 'components/App/Redemption/InputBoxInDollar'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
 import WarningModal from 'components/ReviewModal/Warning'
-import { RowCenter } from 'components/Row'
+import { Row, RowCenter } from 'components/Row'
 import { useWeb3NavbarOption } from 'state/web3navbar/hooks'
+import Claim from 'components/App/Redemption/Claim'
+import Column from 'components/Column'
 
 const MainContainer = styled(Container)`
   margin-top: 68px;
-  height: 100%;
 `
 const ActionButton = styled.div`
   width: 100%;
@@ -88,6 +89,7 @@ const TableauContainer = styled(RowCenter)`
   align-items: center;
   width: 100%;
   background-color: ${({ theme }) => theme.bg1};
+  border-radius: 12px;
   & > div {
     background-color: ${({ theme }) => theme.bg1};
   }
@@ -110,6 +112,45 @@ const ArrowContainer = styled(RowCenter)`
     color: ${({ theme }) => theme.text2};
   }
 `
+const CustomWrapper = styled(Wrapper)`
+  width: clamp(250px, 90%, 800px);
+  border-radius: 0px;
+  & > div {
+    width: 100%;
+    align-items: flex-start;
+    column-gap: 20px;
+  }
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    width: clamp(250px, 90%, 500px);
+    &>div{
+      flex-direction:column;
+    }
+  `}
+`
+const ClaimWrapper = styled.div`
+  & > div {
+    margin-top: 0px;
+    border: none;
+    padding: 0px;
+    & > div:first-child,
+    & > div:last-child {
+      background-color: ${({ theme }) => theme.bg1};
+      min-height: 60px;
+    }
+    & > div:nth-child(2) {
+      margin-top: 2px;
+      background-color: ${({ theme }) => theme.bg2};
+    }
+  }
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    &>div{
+      margin-top: 20px;
+      width:100% !important;
+    }
+    width:100%
+  `}
+`
+
 export default function Redemption() {
   useWeb3NavbarOption({ reward: true, wallet: true, network: true })
   const { chainId, account } = useWeb3React()
@@ -216,7 +257,7 @@ export default function Redemption() {
           if (amountIn && amountIn !== '0' && amountIn !== '' && amountIn !== '0.') toggleReviewModal(true)
         }}
       >
-        Redeem DEI
+        Redeem
       </MainButton>
     )
   }
@@ -237,39 +278,46 @@ export default function Redemption() {
   return (
     <>
       <MainContainer>
-        <Wrapper>
-          <TableauContainer>
-            <Tableau title={'Redeem DEI'} />
-          </TableauContainer>
-          <RedemptionWrapper>
-            <InputBox
-              currency={deiCurrency}
-              value={amountIn}
-              onChange={(value: string) => setAmountIn(value)}
-              disabled={expiredPrice}
-            />
-            <ArrowContainer>
-              <p>Redeem DEI</p>
-              <ArrowDown />
-            </ArrowContainer>
+        <CustomWrapper>
+          <Row>
+            <Column style={{ width: '100%' }}>
+              <TableauContainer>
+                <Tableau title={'Redeem DEI'} />
+              </TableauContainer>
+              <RedemptionWrapper>
+                <InputBox
+                  currency={deiCurrency}
+                  value={amountIn}
+                  onChange={(value: string) => setAmountIn(value)}
+                  disabled={expiredPrice}
+                />
+                <ArrowContainer>
+                  <p>Redeem DEI</p>
+                  <ArrowDown />
+                </ArrowContainer>
 
-            <InputBox
-              currency={usdcCurrency}
-              value={amountOut1}
-              onChange={(value: string) => console.log(value)}
-              disabled={true}
-            />
-            <PlusIcon size={'24px'} />
-            <InputBoxInDollar currency={deusCurrency} value={amountOut2} />
-            <div style={{ marginTop: '20px' }}></div>
-            <ActionButton>{getActionButton()}</ActionButton>
-          </RedemptionWrapper>
-          <BottomWrapper>
-            <InfoItem name={'Redemption Fee'} value={redemptionFee + '%'} />
-            <InfoItem name={'Redeem Ratio'} value={Number(redeemCollateralRatio).toString() + '%'} />
-            <InfoItem name={'Mint Ratio'} value={Number(mintCollateralRatio).toString() + '%'} />
-          </BottomWrapper>
-        </Wrapper>
+                <InputBox
+                  currency={usdcCurrency}
+                  value={amountOut1}
+                  onChange={(value: string) => console.log(value)}
+                  disabled={true}
+                />
+                <PlusIcon size={'24px'} />
+                <InputBoxInDollar currency={deusCurrency} value={amountOut2} />
+                <div style={{ marginTop: '20px' }}></div>
+                <ActionButton>{getActionButton()}</ActionButton>
+              </RedemptionWrapper>
+              <BottomWrapper>
+                <InfoItem name={'Redemption Fee'} value={redemptionFee + '%'} />
+                <InfoItem name={'Redeem Ratio'} value={Number(redeemCollateralRatio).toString() + '%'} />
+                <InfoItem name={'Mint Ratio'} value={Number(mintCollateralRatio).toString() + '%'} />
+              </BottomWrapper>
+            </Column>
+            <ClaimWrapper>
+              <Claim redeemCollateralRatio={redeemCollateralRatio} handleUpdatePrice={handleUpdatePrice} />
+            </ClaimWrapper>
+          </Row>
+        </CustomWrapper>
       </MainContainer>
 
       <WarningModal

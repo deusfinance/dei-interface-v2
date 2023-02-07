@@ -10,18 +10,19 @@ const TokenCell = styled.div<{ hasReward: boolean }>`
   align-items: flex-start;
   margin-top: 12px;
   flex-direction: ${({ hasReward }) => (hasReward ? 'column' : 'row')};
-  gap: 10px;
+  gap: 25px;
 `
 
 const TokenWrap = styled.div`
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 `
 
-export const DeusText = styled.span`
-  background: -webkit-linear-gradient(90deg, #0badf4 0%, #30efe4 93.4%);
+export const DeusText = styled.span<{ hasReward: boolean }>`
+  background: ${({ hasReward, theme }) =>
+    hasReward ? '-webkit-linear-gradient(90deg, #0badf4 0%, #30efe4 93.4%)' : theme.text1};
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 `
@@ -46,7 +47,7 @@ export default function RewardBox({ tokens, rewardAmounts }: { tokens: Token[]; 
               alt={`${token?.symbol} Logo`}
               round
             />
-            <DeusText>
+            <DeusText hasReward={!!rewardAmounts.find((value) => value !== 0)}>
               {rewardAmounts[index] !== 0 &&
                 !Object.is(Number(rewardAmounts[index]), NaN) &&
                 Number(rewardAmounts[index]).toFixed(2)}

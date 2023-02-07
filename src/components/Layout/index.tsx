@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { useInjectedAddress } from 'hooks/useInjectedAddress'
 
 // import NavBar from './NavBar'
-import NavBar2 from './NavBar2'
+import Slider from './Slider'
 import Warning from './Warning'
 import Web3Navbar from './Web3Navbar'
 
@@ -38,7 +38,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <Wrapper>
       {/* <NavBar /> */}
-      <NavBar2 />
+      <Slider />
       <div style={{ width: '100%' }}>
         {hasInjected && (
           <Warning message={`❌ You are in "READ-ONLY" mode. Please do not confirm any transactions! ❌ `} />

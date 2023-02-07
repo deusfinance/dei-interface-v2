@@ -59,7 +59,7 @@ const Amount = () => {
       <>
         <BoxContent>
           <ContentValue>Your Staked Amount</ContentValue>
-          <ContentValue isGray>0.00 vDEUS</ContentValue>
+          <ContentValue isGray>0.00 xDEUS</ContentValue>
         </BoxContent>
         <BoxContent>
           <div style={{ display: 'flex' }}>

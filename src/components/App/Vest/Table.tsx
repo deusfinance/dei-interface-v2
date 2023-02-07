@@ -27,7 +27,6 @@ import LOADING_LOCK_MOBILE from '/public/static/images/pages/veDEUS/loadingLockM
 
 import { formatAmount } from 'utils/numbers'
 import { DefaultHandlerError } from 'utils/parseError'
-import { ButtonText, TopBorder, TopBorderWrap } from 'pages/vest'
 import useWeb3React from 'hooks/useWeb3'
 
 dayjs.extend(utc)
@@ -48,6 +47,49 @@ const TableWrapper = styled.table<{ isEmpty?: boolean }>`
   background: ${({ theme }) => theme.bg1};
   border-bottom-right-radius: ${({ isEmpty }) => (isEmpty ? '12px' : '0')};
   border-bottom-left-radius: ${({ isEmpty }) => (isEmpty ? '12px' : '0')};
+`
+
+export const ButtonText = styled.span<{ gradientText?: boolean }>`
+  display: flex;
+  font-family: 'Inter';
+  font-weight: 600;
+  font-size: 15px;
+  white-space: nowrap;
+  color: ${({ theme }) => theme.text1};
+
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    font-size: 14px;
+  `}
+
+  ${({ gradientText }) =>
+    gradientText &&
+    `
+    background: -webkit-linear-gradient(92.33deg, #e29d52 -10.26%, #de4a7b 80%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  `}
+`
+
+export const TopBorderWrap = styled.div<{ active?: boolean }>`
+  background: ${({ theme }) => theme.primary2};
+  padding: 1px;
+  border-radius: 8px;
+  margin-right: 4px;
+  margin-left: 3px;
+  border: 1px solid ${({ theme }) => theme.bg0};
+  flex: 1;
+
+  &:hover {
+    border: 1px solid ${({ theme, active }) => (active ? theme.bg0 : theme.warning)};
+  }
+`
+
+export const TopBorder = styled.div`
+  background: ${({ theme }) => theme.bg0};
+  border-radius: 6px;
+  height: 100%;
+  width: 100%;
+  display: flex;
 `
 
 const Row = styled.tr`

@@ -1,21 +1,18 @@
 import React, { useState, useMemo, useCallback } from 'react'
 import styled from 'styled-components'
-// import CLQDR_ICON from '/public/static/images/pages/swap/tableauBackground.svg'
 
 import { Swap as SwapIcon } from 'components/Icons'
 import { LQDR_TOKEN, cLQDR_TOKEN, DEUS_TOKEN, DEI_TOKEN, BDEI_TOKEN } from 'constants/tokens'
 import { CLQDR_ADDRESS } from 'constants/addresses'
 import { tryParseAmount } from 'utils/parse'
-import { formatBalance, toBN } from 'utils/numbers'
-import { useDeiPrice, useDeusPrice } from 'hooks/useCoingeckoPrice'
+import { toBN } from 'utils/numbers'
 
 import { useCurrencyBalance } from 'state/wallet/hooks'
 import useWeb3React from 'hooks/useWeb3'
 import { useSupportedChainId } from 'hooks/useSupportedChainId'
 import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
 import { useDepositLQDRCallback } from 'hooks/useClqdrCallback'
-import { useCalcSharesFromAmount, useFetchFirebirdData } from 'hooks/useClqdrPage'
-import useDebounce from 'hooks/useDebounce'
+import { useCalcSharesFromAmount } from 'hooks/useClqdrPage'
 
 import { DotFlashing } from 'components/Icons'
 import InputBox from 'components/InputBox'
@@ -88,12 +85,12 @@ export default function Swap() {
   const inputCurrencyBalance = useCurrencyBalance(account ?? undefined, inputCurrency)
 
   const [amount, setAmount] = useState('')
-  const debouncedAmount = useDebounce(amount, 500)
+  // const debouncedAmount = useDebounce(amount, 500)
   const amountOutBN = useCalcSharesFromAmount(amount)
 
   const formattedAmountOut = amountOutBN == '' ? '0' : toBN(amountOutBN).div(1e18).toFixed()
 
-  const firebird = useFetchFirebirdData(debouncedAmount)
+  // const firebird = useFetchFirebirdData(debouncedAmount)
 
   const token1Amount = useMemo(() => {
     return tryParseAmount(amount, inputCurrency || undefined)
@@ -188,16 +185,16 @@ export default function Swap() {
       </MainButton>
     )
   }
-  const deiPrice = useDeiPrice()
-  const deusPrice = useDeusPrice()
-  const items = useMemo(
-    () => [
-      { name: 'DEI Price', value: `$${formatBalance(deiPrice, 3)}` },
-      { name: 'VDEUS Price', value: `$${formatBalance(deusPrice, 4)}` },
-      { name: 'DEUS Price', value: `$${formatBalance(deusPrice, 4)}` },
-    ],
-    []
-  )
+  // const deiPrice = useDeiPrice()
+  // const deusPrice = useDeusPrice()
+  // const items = useMemo(
+  //   () => [
+  //     { name: 'DEI Price', value: `$${formatBalance(deiPrice, 3)}` },
+  //     { name: 'VDEUS Price', value: `$${formatBalance(deusPrice, 4)}` },
+  //     { name: 'DEUS Price', value: `$${formatBalance(deusPrice, 4)}` },
+  //   ],
+  //   []
+  // )
 
   const slippageInfo =
     'Setting a high slippage tolerance can help transactions succeed, but you may not get such a good price. Use with caution.'

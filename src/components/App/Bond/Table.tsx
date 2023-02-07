@@ -29,7 +29,6 @@ import ImageWithFallback from 'components/ImageWithFallback'
 import { RowCenter } from 'components/Row'
 import Column from 'components/Column'
 import { PrimaryButton } from 'components/Button'
-import { ButtonText } from 'pages/vest'
 import { DotFlashing } from 'components/Icons'
 import useMigrateNftToDeiCallback from 'hooks/useBondsCallback'
 
@@ -64,6 +63,27 @@ const TableWrapper = styled.table<{ isEmpty?: boolean }>`
       `};
     }
   }
+`
+
+export const ButtonText = styled.span<{ gradientText?: boolean }>`
+  display: flex;
+  font-family: 'Inter';
+  font-weight: 600;
+  font-size: 15px;
+  white-space: nowrap;
+  color: ${({ theme }) => theme.text1};
+
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    font-size: 14px;
+  `}
+
+  ${({ gradientText }) =>
+    gradientText &&
+    `
+    background: -webkit-linear-gradient(92.33deg, #e29d52 -10.26%, #de4a7b 80%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  `}
 `
 
 const Row = styled.tr`

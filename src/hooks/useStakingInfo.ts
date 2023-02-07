@@ -278,6 +278,11 @@ export function useGetApy(stakingPool: StakingType): number {
   const { totalDeposited, allocPoint } = usePoolInfo(stakingPool)
   const deusPrice = useDeusPrice()
 
+  // static APY for NFT single stake pools
+  if (stakingPool.id === 4) return 10
+  if (stakingPool.id === 5) return 20
+  if (stakingPool.id === 6) return 40
+
   if (totalDeposited === 0) return 0
 
   //for dei pools, calculate apr using deus price
@@ -374,6 +379,6 @@ export function useGetDeusApy(pool: LiquidityType, stakingPool: StakingType): nu
   // return (retrieveTokenPerBlockValue * parseFloat(deusPrice) * 365 * 24 * 60 * 60 * 100) / totalDeposited
 }
 
-export function useNFTGetApy(stakingPool: StakingType): number {
-  return stakingPool.pid === 0 ? 10 : stakingPool.pid === 1 ? 20 : 40
-}
+// export function useNFTGetApy(stakingPool: StakingType): number {
+//   return stakingPool.pid === 0 ? 10 : stakingPool.pid === 1 ? 20 : 40
+// }
