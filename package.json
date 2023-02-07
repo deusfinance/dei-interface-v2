@@ -115,6 +115,8 @@
   },
   "resolutions": {
     "@walletconnect/ethereum-provider": "1.7.1",
-    "minimist": "1.2.6"
+    "minimist": "1.2.6",
+    "ua-parser-js": "^0.7.33",
+    "json5": "1.0.2"
   }
 }

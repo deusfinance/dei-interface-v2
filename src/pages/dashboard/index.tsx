@@ -15,7 +15,7 @@ import VEDEUS_HOVER_LOGO from '/public/static/images/pages/dashboard/ic_vedeus_h
 import DEI_LOGO from '/public/static/images/pages/dashboard/DEI_Dashboard.png'
 
 import { useDeiStats } from 'hooks/useDeiStats'
-import { useDeiPrice } from 'hooks/useCoingeckoPrice'
+import { useDeiPrice } from 'state/dashboard/hooks'
 import { formatAmount, formatDollarAmount } from 'utils/numbers'
 
 import Hero from 'components/Hero'
