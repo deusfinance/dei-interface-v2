@@ -234,8 +234,14 @@ export default function Stats() {
     deusCirculatingSupply,
     deusTotalSupply,
     deusMarketCap,
+    deusNonCirculatingSupply,
+    deusSupplyInBridges,
+    deusSupplyInVeDeusContract,
+    deusTotalSupplyOnChain,
     xDeusPrice,
     xDeusCirculatingSupply,
+    xDeusNonCirculatingSupply,
+    xDeusTotalSupply,
     xDeusMarketCap,
     combinedSupply,
     combinedMarketCap,
@@ -318,11 +324,7 @@ export default function Stats() {
             <ModalText>Circulating Supply = Total Supply - Non Circulating Supply</ModalText>
             <ModalInfoWrapper>
               <p>Total Supply</p>
-              {deusCirculatingSupply === null ? (
-                <Loader />
-              ) : (
-                <ModalItemValue>{formatAmount(deusCirculatingSupply)}</ModalItemValue>
-              )}
+              {deusTotalSupply === null ? <Loader /> : <ModalItemValue>{formatAmount(deusTotalSupply)}</ModalItemValue>}
             </ModalInfoWrapper>
             <ModalInfoWrapper>
               <p
@@ -336,10 +338,10 @@ export default function Stats() {
                   <CustomTooltip id="id" />
                 </span>
               </p>
-              {deusCirculatingSupply === null ? (
+              {deusNonCirculatingSupply === null ? (
                 <Loader />
               ) : (
-                <ModalItemValue>{formatAmount(deusCirculatingSupply)}</ModalItemValue>
+                <ModalItemValue>{formatAmount(deusNonCirculatingSupply)}</ModalItemValue>
               )}
             </ModalInfoWrapper>
             <ModalInfoWrapper active>
@@ -362,15 +364,27 @@ export default function Stats() {
             </ModalText>
             <ModalInfoWrapper>
               <p>Total Supply across all chains</p>
-              {deusTotalSupply === null ? <Loader /> : <ModalItemValue>{formatAmount(deusTotalSupply)}</ModalItemValue>}
+              {deusTotalSupplyOnChain === null ? (
+                <Loader />
+              ) : (
+                <ModalItemValue>{formatAmount(deusTotalSupplyOnChain)}</ModalItemValue>
+              )}
             </ModalInfoWrapper>
             <ModalInfoWrapper>
               <p>Balance held in Bridge contracts</p>
-              {deusTotalSupply === null ? <Loader /> : <ModalItemValue>{formatAmount(deusTotalSupply)}</ModalItemValue>}
+              {deusSupplyInBridges === null ? (
+                <Loader />
+              ) : (
+                <ModalItemValue>{formatAmount(deusSupplyInBridges)}</ModalItemValue>
+              )}
             </ModalInfoWrapper>
             <ModalInfoWrapper>
               <p>Balance held in xDEUS contract</p>
-              {deusTotalSupply === null ? <Loader /> : <ModalItemValue>{formatAmount(deusTotalSupply)}</ModalItemValue>}
+              {deusSupplyInVeDeusContract === null ? (
+                <Loader />
+              ) : (
+                <ModalItemValue>{formatAmount(deusSupplyInVeDeusContract)}</ModalItemValue>
+              )}
             </ModalInfoWrapper>
             <ModalInfoWrapper active>
               <p>Total Supply</p>
@@ -385,10 +399,10 @@ export default function Stats() {
             <ModalText>Circulating Supply = Total Supply - Non Circulating Supply</ModalText>
             <ModalInfoWrapper>
               <p>Total Supply</p>
-              {xDeusCirculatingSupply === null ? (
+              {xDeusTotalSupply === null ? (
                 <Loader />
               ) : (
-                <ModalItemValue>{formatAmount(xDeusCirculatingSupply)}</ModalItemValue>
+                <ModalItemValue>{formatAmount(xDeusTotalSupply)}</ModalItemValue>
               )}
             </ModalInfoWrapper>
             <ModalInfoWrapper>
@@ -406,7 +420,7 @@ export default function Stats() {
               {xDeusCirculatingSupply === null ? (
                 <Loader />
               ) : (
-                <ModalItemValue>{formatAmount(xDeusCirculatingSupply)}</ModalItemValue>
+                <ModalItemValue>{formatAmount(xDeusNonCirculatingSupply)}</ModalItemValue>
               )}
             </ModalInfoWrapper>
             <ModalInfoWrapper active>
