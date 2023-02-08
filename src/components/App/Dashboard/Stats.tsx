@@ -15,7 +15,7 @@ import { Modal, ModalHeader } from 'components/Modal'
 import { RowBetween } from 'components/Row'
 import StatsItem from './StatsItem'
 import Chart from './Chart'
-import { CollateralPool, DEI_ADDRESS, escrow, USDCReserves3 } from 'constants/addresses'
+import { CollateralPool, DEI_ADDRESS, escrow, USDCReserves3, USDCReserves4 } from 'constants/addresses'
 import { SupportedChainId } from 'constants/chains'
 import { ChainInfo } from 'constants/chainInfo'
 import { Loader } from 'components/Icons'
@@ -200,6 +200,7 @@ export default function Stats() {
     totalUSDCReserves,
     totalProtocolHoldings,
     usdcReserves3,
+    usdcReserves4,
     usdcPoolReserves,
     escrowReserve,
     seigniorage,
@@ -248,6 +249,20 @@ export default function Stats() {
           </a>
           {escrowReserve === null ? <Loader /> : <ModalItemValue>{formatAmount(escrowReserve, 2)}</ModalItemValue>}
         </ModalInfoWrapper>
+
+        <ModalInfoWrapper>
+          <a
+            href={
+              ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/address/' + USDCReserves4[SupportedChainId.FANTOM]
+            }
+            target={'_blank'}
+            rel={'noreferrer'}
+          >
+            Reserves 3
+          </a>
+          {usdcReserves4 === null ? <Loader /> : <ModalItemValue>{formatAmount(usdcReserves4, 2)}</ModalItemValue>}
+        </ModalInfoWrapper>
+
         <ModalInfoWrapper>
           <a
             href={
