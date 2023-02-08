@@ -2,7 +2,17 @@ import React, { useState, useMemo, useCallback } from 'react'
 import styled from 'styled-components'
 
 import { Swap as SwapIcon } from 'components/Icons'
-import { LQDR_TOKEN, cLQDR_TOKEN, DEUS_TOKEN, DEI_TOKEN, BDEI_TOKEN } from 'constants/tokens'
+import {
+  LQDR_TOKEN,
+  cLQDR_TOKEN,
+  DEUS_TOKEN,
+  DEI_TOKEN,
+  BDEI_TOKEN,
+  XDEUS_TOKEN,
+  LegacyDEI_TOKEN,
+  USDC_TOKEN,
+  WFTM_TOKEN,
+} from 'constants/tokens'
 import { CLQDR_ADDRESS } from 'constants/addresses'
 import { tryParseAmount } from 'utils/parse'
 import { toBN } from 'utils/numbers'
@@ -64,6 +74,64 @@ const TableauContainer = styled(RowCenter)`
     }
   }
 `
+enum SwapType {
+  INTERNAL,
+  EXTERNAL,
+}
+
+interface TokenSwap {
+  id: number
+  token0: Token
+  token1: Token
+  swapType: SwapType
+  link?: string
+}
+
+const tokenSwaps: TokenSwap[] = [
+  {
+    id: 0,
+    token0: LQDR_TOKEN,
+    token1: cLQDR_TOKEN,
+    swapType: SwapType.INTERNAL,
+  },
+  {
+    id: 1,
+    token0: DEI_TOKEN,
+    token1: BDEI_TOKEN,
+    swapType: SwapType.INTERNAL,
+  },
+  {
+    id: 2,
+    token0: DEUS_TOKEN,
+    token1: XDEUS_TOKEN,
+    swapType: SwapType.INTERNAL,
+  },
+  {
+    id: 3,
+    token0: LegacyDEI_TOKEN,
+    token1: USDC_TOKEN,
+    swapType: SwapType.INTERNAL,
+  },
+  {
+    id: 4,
+    token0: DEUS_TOKEN,
+    token1: USDC_TOKEN,
+    swapType: SwapType.EXTERNAL,
+  },
+  {
+    id: 5,
+    token0: WFTM_TOKEN,
+    token1: DEUS_TOKEN,
+    swapType: SwapType.EXTERNAL,
+  },
+  {
+    id: 6,
+    token0: DEI_TOKEN,
+    token1: USDC_TOKEN,
+    swapType: SwapType.EXTERNAL,
+  },
+]
+
 export default function Swap() {
   const { chainId, account } = useWeb3React()
   const isSupportedChainId = useSupportedChainId()
@@ -113,6 +181,27 @@ export default function Swap() {
     const show = inputCurrency && approvalState !== ApprovalState.APPROVED && !!amount
     return [show, show && approvalState === ApprovalState.PENDING]
   }, [inputCurrency, approvalState, amount])
+
+  function getFirebirdLink(inputToken: Token, outputToken: Token): string {
+    return `https://app.firebird.finance/swap?inputCurrency=${inputToken.address}&outputCurrency=${outputToken.address}&net=250`
+  }
+
+  const inputTokens: Token[] = useMemo(() => {
+    return [...new Set([...tokenSwaps.map((x) => x.token0), ...tokenSwaps.map((x) => x.token1)])]
+  }, [])
+
+  const outputTokens: Token[] = useMemo(() => {
+    const tokens: Token[] = []
+    tokenSwaps.map((x) => {
+      if (x.token0.address === inputCurrency.address) tokens.push(x.token1)
+      if (x.token1.address === inputCurrency.address) tokens.push(x.token0)
+    })
+    return tokens
+  }, [inputCurrency])
+
+  useMemo(() => {
+    setOutputCurrency(outputTokens[0])
+  }, [outputTokens])
 
   const handleApprove = async () => {
     setAwaitingApproveConfirmation(true)
@@ -174,6 +263,7 @@ export default function Swap() {
         </MainButton>
       )
     }
+
     return (
       <MainButton
         onClick={() => {
@@ -272,7 +362,7 @@ export default function Swap() {
 
       <TokensModal
         isOpen={isOpenTokensModal}
-        tokens={[LQDR_TOKEN, cLQDR_TOKEN, DEUS_TOKEN, DEI_TOKEN]}
+        tokens={field === 'input' ? inputTokens : outputTokens}
         toggleModal={(action: boolean) => toggleTokensModal(action)}
         selectedTokenIndex={field === 'input' ? inputCurrency : outputCurrency}
         setToken={setToken}
