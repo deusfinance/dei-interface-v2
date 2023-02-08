@@ -125,14 +125,14 @@ export function useDeiStats(): {
       usdcPoolReserves: usdcPoolBalance?.result
         ? toBN(formatUnits(usdcPoolBalance?.result[0], 6)).minus(unclaimedCollateralAmount).toNumber()
         : 0,
-      escrowReserve: escrowBalance?.result ? toBN(formatUnits(escrowBalance.result[0], 6)).toNumber() : 0,
+      escrowReserve: escrowBalance?.result ? toBN(formatUnits(escrowBalance?.result[0], 6)).toNumber() : 0,
       usdcReserves3: usdcBalance3?.result ? toBN(formatUnits(usdcBalance3?.result[0], 6)).toNumber() : 0,
       usdcReserves4: usdcBalance4?.result ? toBN(formatUnits(usdcBalance4?.result[0], 6)).toNumber() : 0,
     }
   }, [
     usdcPoolBalance?.result,
     unclaimedCollateralAmount,
-    escrowBalance.result,
+    escrowBalance?.result,
     usdcBalance3?.result,
     usdcBalance4?.result,
   ])
