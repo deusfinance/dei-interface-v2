@@ -77,6 +77,10 @@ export const USDCReserves3: AddressMap = {
   [SupportedChainId.FANTOM]: '0x37a7a2a5FCB0DF6B8138fec7730825E92f9D8207',
 }
 
+export const USDCReserves4: AddressMap = {
+  [SupportedChainId.FANTOM]: '0x0092fc463b969347f2F6d18a572BDf99F61B5e8F',
+}
+
 /* =====================================
                 DAPP CONTRACTS ADDRESS
 ===================================== */

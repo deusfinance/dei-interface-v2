@@ -15,7 +15,7 @@ import { Modal, ModalHeader } from 'components/Modal'
 import { RowBetween } from 'components/Row'
 import StatsItem from './StatsItem'
 import Chart from './Chart'
-import { CollateralPool, DEI_ADDRESS, escrow, USDCReserves3 } from 'constants/addresses'
+import { CollateralPool, DEI_ADDRESS, USDCReserves4 } from 'constants/addresses'
 import { SupportedChainId } from 'constants/chains'
 import { ChainInfo } from 'constants/chainInfo'
 import { Loader, Info as InfoImage } from 'components/Icons'
@@ -222,6 +222,7 @@ export default function Stats() {
     totalUSDCReserves,
     totalProtocolHoldings,
     usdcReserves3,
+    usdcReserves4,
     usdcPoolReserves,
     escrowReserve,
     seigniorage,
