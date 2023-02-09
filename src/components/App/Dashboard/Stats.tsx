@@ -262,34 +262,27 @@ export default function Stats() {
       case DASHBOARD_STATS_TITLES.DEI_TOTAL_RESERVES:
         return (
           <ModalWrapper>
-            <div>DEI Total Reserve Assets are held in three wallets.</div>
-            <div>Below is the USDC holdings in each wallet.</div>
+            <div>
+              DEI Total Reserve Assets are held in multiple reserve contracts to isolate risk for security reasons.
+            </div>
+            <div style={{ marginTop: '16px' }}>
+              Below is a list of current reserve contracts and their holdings in USDC:
+            </div>
             <ModalInfoWrapper>
               <a
                 href={
                   ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl +
                   '/address/' +
-                  USDCReserves3[SupportedChainId.FANTOM]
+                  USDCReserves4[SupportedChainId.FANTOM]
                 }
                 target={'_blank'}
                 rel={'noreferrer'}
               >
                 Reserves 1
               </a>
-              {usdcReserves3 === null ? <Loader /> : <ModalItemValue>{formatAmount(usdcReserves3, 2)}</ModalItemValue>}
+              {usdcReserves4 === null ? <Loader /> : <ModalItemValue>{formatAmount(usdcReserves4, 2)}</ModalItemValue>}
             </ModalInfoWrapper>
-            <ModalInfoWrapper>
-              <a
-                href={
-                  ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/address/' + escrow[SupportedChainId.FANTOM]
-                }
-                target={'_blank'}
-                rel={'noreferrer'}
-              >
-                Reserves 2
-              </a>
-              {escrowReserve === null ? <Loader /> : <ModalItemValue>{formatAmount(escrowReserve, 2)}</ModalItemValue>}
-            </ModalInfoWrapper>
+
             <ModalInfoWrapper>
               <a
                 href={
@@ -313,7 +306,7 @@ export default function Stats() {
               {totalProtocolHoldings === null ? (
                 <Loader />
               ) : (
-                <ModalItemValue>{formatAmount(usdcPoolReserves + usdcReserves3 + escrowReserve, 2)}</ModalItemValue>
+                <ModalItemValue>{formatAmount(usdcPoolReserves + usdcReserves4, 2)}</ModalItemValue>
               )}
             </ModalInfoWrapper>
           </ModalWrapper>
