@@ -4,6 +4,7 @@ import { FALLBACK_CHAIN_ID, SupportedChainId } from 'constants/chains'
 export enum ExplorerDataType {
   TRANSACTION = 'transaction',
   ADDRESS = 'address',
+  TOKEN = 'token',
 }
 
 /**
@@ -20,6 +21,8 @@ export function getExplorerLink(chainId: SupportedChainId, type: ExplorerDataTyp
       return `${base}/tx/${data}`
     case ExplorerDataType.ADDRESS:
       return `${base}/address/${data}`
+    case ExplorerDataType.TOKEN:
+      return `${base}/token/${data}`
     default:
       return base
   }

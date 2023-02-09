@@ -6,22 +6,20 @@ import BG_DASHBOARD from '/public/static/images/pages/dashboard/bg.svg'
 
 import { useDeiPrice } from 'state/dashboard/hooks'
 import { useDeiStats } from 'hooks/useDeiStats'
-import { useVestedAPY } from 'hooks/useVested'
 
 import { formatAmount, formatBalance, formatDollarAmount } from 'utils/numbers'
-import { getMaximumDate } from 'utils/vest'
 
 import { Modal, ModalHeader } from 'components/Modal'
 import { RowBetween } from 'components/Row'
 import StatsItem from './StatsItem'
 import Chart from './Chart'
-import { CollateralPool, DEI_ADDRESS, USDCReserves4 } from 'constants/addresses'
+import { CollateralPool, DEI_ADDRESS, USDCReserves1 } from 'constants/addresses'
 import { SupportedChainId } from 'constants/chains'
-import { ChainInfo } from 'constants/chainInfo'
 import { Loader } from 'components/Icons'
 import { ExternalLink } from 'components/Link'
 import ExternalLinkIcon from '/public/static/images/pages/common/down.svg'
 import useDeusMarketCapStats from 'hooks/useMarketCapStats'
+import { ExplorerDataType, getExplorerLink } from 'utils/explorers'
 
 const Wrapper = styled(RowBetween)`
   background: ${({ theme }) => theme.bg0};
@@ -136,6 +134,9 @@ const ModalWrapper = styled.div`
   display: flex;
   flex-flow: column nowrap;
   justify-content: flex-start;
+  font-family: 'Inter';
+  font-size: 14px;
+  line-height: 20px;
   gap: 8px;
   width: 100%;
   padding: 1.5rem;
@@ -191,6 +192,17 @@ const Icon = styled(Image)`
   margin-left: 4px;
 `
 
+enum DeiStatsModalType {
+  TOTAL_SUPPLY = 'Total Supply',
+  SEIGNIORAGE_SUPPLY = 'Seigniorage',
+  CIRCULATING_SUPPLY = 'Circulating Supply',
+  TOTAL_RESERVE_ASSETS = 'Total Reserve Assets',
+  USDC_BACKING_PER_DEI = 'USDC Backing Per DEI',
+}
+
+const getContractExplorerLink = (address: string, dataType = ExplorerDataType.TOKEN) =>
+  getExplorerLink(SupportedChainId.FANTOM, dataType, address)
+
 export default function Stats() {
   //const deusPrice = useDeusPrice()
   const {
@@ -198,15 +210,11 @@ export default function Stats() {
     collateralRatio,
     circulatingSupply,
     totalUSDCReserves,
-    totalProtocolHoldings,
-    usdcReserves3,
-    usdcReserves4,
+    usdcReserves1,
     usdcPoolReserves,
-    escrowReserve,
     seigniorage,
   } = useDeiStats()
 
-  const { lockedVeDEUS } = useVestedAPY(undefined, getMaximumDate())
   const deiPrice = useDeiPrice()
   const {
     deusPrice,
@@ -222,7 +230,9 @@ export default function Stats() {
     inflationRate,
   } = useDeusMarketCapStats()
 
-  function getModalBody() {
+  const [deiStatType, setDeiStatType] = useState(DeiStatsModalType.TOTAL_SUPPLY)
+
+  function getTotalReserveModalBody() {
     return (
       <ModalWrapper>
         <div>DEI Total Reserve Assets are held in multiple reserve contracts to isolate risk for security reasons.</div>
@@ -231,24 +241,18 @@ export default function Stats() {
         </div>
         <ModalInfoWrapper>
           <a
-            href={
-              ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/address/' + USDCReserves4[SupportedChainId.FANTOM]
-            }
+            href={getContractExplorerLink(USDCReserves1[SupportedChainId.FANTOM], ExplorerDataType.ADDRESS)}
             target={'_blank'}
             rel={'noreferrer'}
           >
             Reserves 1
           </a>
-          {usdcReserves4 === null ? <Loader /> : <ModalItemValue>{formatAmount(usdcReserves4, 2)}</ModalItemValue>}
+          {usdcReserves1 === null ? <Loader /> : <ModalItemValue>{formatAmount(usdcReserves1, 2)}</ModalItemValue>}
         </ModalInfoWrapper>
 
         <ModalInfoWrapper>
           <a
-            href={
-              ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl +
-              '/address/' +
-              CollateralPool[SupportedChainId.FANTOM]
-            }
+            href={getContractExplorerLink(CollateralPool[SupportedChainId.FANTOM], ExplorerDataType.ADDRESS)}
             target={'_blank'}
             rel={'noreferrer'}
           >
@@ -262,11 +266,7 @@ export default function Stats() {
         </ModalInfoWrapper>
         <ModalInfoWrapper active>
           <p>Total USDC holdings</p>
-          {totalProtocolHoldings === null ? (
-            <Loader />
-          ) : (
-            <ModalItemValue>{formatAmount(usdcPoolReserves + usdcReserves4, 2)}</ModalItemValue>
-          )}
+          <ModalItemValue>{formatAmount(totalUSDCReserves, 2)}</ModalItemValue>
         </ModalInfoWrapper>
       </ModalWrapper>
     )
@@ -274,20 +274,82 @@ export default function Stats() {
 
   const [toggleDashboardModal, setToggleDashboardModal] = useState(false)
 
-  function getModalContent() {
-    return (
-      <>
-        <ModalHeader title={'Total Reserve Assets'} onClose={() => setToggleDashboardModal(false)} />
-        {getModalBody()}
-      </>
-    )
-  }
-
   const usdcBackingPerDei = useMemo(() => {
     if (collateralRatio > 100) return '100%'
     else if (collateralRatio < 90) return '90%'
     return `${formatAmount(collateralRatio, 1).toString()}%`
   }, [collateralRatio])
+
+  function getModalContent() {
+    if (deiStatType == DeiStatsModalType.TOTAL_RESERVE_ASSETS) {
+      return (
+        <>
+          <ModalHeader
+            title={DeiStatsModalType.TOTAL_RESERVE_ASSETS.toString()}
+            onClose={() => setToggleDashboardModal(false)}
+          />
+          {getTotalReserveModalBody()}
+        </>
+      )
+    }
+
+    if (deiStatType == DeiStatsModalType.CIRCULATING_SUPPLY) {
+      return (
+        <>
+          <ModalHeader
+            title={DeiStatsModalType.CIRCULATING_SUPPLY.toString()}
+            onClose={() => setToggleDashboardModal(false)}
+          />
+          <ModalWrapper>
+            <div>There are currently no contracts that are excluded from circulating supply, the formula is:</div>
+            <div style={{ marginTop: '10px', marginBottom: '30px' }}>TotalSupplyFantom = CirculatingSupply</div>
+            <ModalInfoWrapper active>
+              {DeiStatsModalType.CIRCULATING_SUPPLY.toString()}
+              <ModalItemValue>{formatAmount(circulatingSupply, 2)}</ModalItemValue>
+            </ModalInfoWrapper>
+          </ModalWrapper>
+        </>
+      )
+    }
+
+    if (deiStatType == DeiStatsModalType.USDC_BACKING_PER_DEI) {
+      return (
+        <>
+          <ModalHeader
+            title={DeiStatsModalType.USDC_BACKING_PER_DEI.toString()}
+            onClose={() => setToggleDashboardModal(false)}
+          />
+          <ModalWrapper>
+            <div>
+              USDC backing per DEI is calculated by taking the {`"Total Reserve Assets"`} USDC amount (this includes ALL
+              reserve wallets that are listed on {`"Total Reserve Assets"`}) <br /> divided by the Circulating Supply,
+              the Circulating Supply is calculated by removing all non-circulating contracts (like Bridges or Protocol
+              Owned liquidity)
+            </div>
+            <div>
+              A list of excluded supply contracts can be found when clicking on circulating supply element on the left
+              of the Dashboard.
+            </div>
+            <div style={{ marginTop: '10px', marginBottom: '30px' }}>
+              The formula: TotalReserveAssets / CirculatingSupply{' '}
+            </div>
+            <ModalInfoWrapper>
+              {DeiStatsModalType.TOTAL_RESERVE_ASSETS.toString()}
+              <ModalItemValue>{formatAmount(totalUSDCReserves)}</ModalItemValue>
+            </ModalInfoWrapper>
+            <ModalInfoWrapper>
+              {DeiStatsModalType.CIRCULATING_SUPPLY.toString()}
+              <ModalItemValue>{formatAmount(circulatingSupply, 2)}</ModalItemValue>
+            </ModalInfoWrapper>
+            <ModalInfoWrapper active>
+              {DeiStatsModalType.USDC_BACKING_PER_DEI.toString()}
+              <ModalItemValue>{usdcBackingPerDei}</ModalItemValue>
+            </ModalInfoWrapper>
+          </ModalWrapper>
+        </>
+      )
+    }
+  }
 
   return (
     <>
@@ -309,9 +371,7 @@ export default function Stats() {
               <StatsItem
                 name="Total Supply"
                 value={formatAmount(totalSupply, 2)}
-                href={
-                  ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/token/' + DEI_ADDRESS[SupportedChainId.FANTOM]
-                }
+                href={getContractExplorerLink(DEI_ADDRESS[SupportedChainId.FANTOM])}
               />
               <StatsItem
                 name="Seigniorage"
@@ -321,16 +381,27 @@ export default function Stats() {
               <StatsItem
                 name="Circulating Supply"
                 value={formatAmount(circulatingSupply, 2)}
-                href={
-                  ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/token/' + DEI_ADDRESS[SupportedChainId.FANTOM]
-                }
+                onClick={() => {
+                  setToggleDashboardModal(true)
+                  setDeiStatType(DeiStatsModalType.CIRCULATING_SUPPLY)
+                }}
               />
               <StatsItem
                 name="Total Reserve Assets"
                 value={formatDollarAmount(totalUSDCReserves, 2)}
-                onClick={() => setToggleDashboardModal(true)}
+                onClick={() => {
+                  setDeiStatType(DeiStatsModalType.TOTAL_RESERVE_ASSETS)
+                  setToggleDashboardModal(true)
+                }}
               />
-              <StatsItem name="USDC Backing Per DEI" value={usdcBackingPerDei} />
+              <StatsItem
+                name="USDC Backing Per DEI"
+                value={usdcBackingPerDei}
+                onClick={() => {
+                  setDeiStatType(DeiStatsModalType.USDC_BACKING_PER_DEI)
+                  setToggleDashboardModal(true)
+                }}
+              />
             </Info>
           </StatsWrapper>
           <StatsWrapper>

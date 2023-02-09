@@ -97,20 +97,6 @@ const ListItem = styled.li`
   }
 `
 
-const OptionItem = styled.div`
-  background: ${({ theme }) => theme.bg1};
-  width: 162px;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  padding: 0px 8px;
-  & > * {
-    &:first-child {
-      margin-bottom: 5px;
-    }
-  }
-`
-
 const PlaceHolder = styled.div`
   font-family: 'Inter';
   font-style: normal;

@@ -14,7 +14,6 @@ import VE_DIST_ABI from 'constants/abi/VE_DIST.json'
 import DEI_BONDER_ABI from 'constants/abi/DEI_Bonder.json'
 import COLLATERAL_POOL_ABI from 'constants/abi/COLLATERAL_POOL_ABI.json'
 import COLLATERAL_POOL_ARBITRUM_ABI from 'constants/abi/COLLATERAL_POOL_ARBITRUM_ABI.json'
-import PROXY_MINTER_ABI from 'constants/abi/PROXY_MINTER_ABI.json'
 import DEI_BONDER_V3_ABI from 'constants/abi/DEI_BONDER_V3.json'
 import CLQDR_ABI from 'constants/abi/CLQDR_ABI.json'
 import CLQDR_FULL_ABI from 'constants/abi/CLQDR_FULL_ABI.json'
@@ -30,7 +29,6 @@ import {
   DeiBonder,
   veDist,
   CollateralPool,
-  MintProxy,
   TwapOracle,
   DeiBonderV3,
   CLQDR_ADDRESS,
@@ -130,19 +128,6 @@ export function useArbitrumCollateralPoolContract() {
   const { chainId } = useWeb3React()
   const address = useMemo(() => (chainId ? CollateralPool[chainId] : undefined), [chainId])
   return useContract(address, COLLATERAL_POOL_ARBITRUM_ABI)
-}
-
-export function useProxyMinterContract() {
-  const { chainId } = useWeb3React()
-  const address = useMemo(() => (chainId ? MintProxy[chainId] : undefined), [chainId])
-  return useContract(address, PROXY_MINTER_ABI)
-}
-
-// FIXME: add dei contract address
-export function useDeiContract() {
-  const { chainId } = useWeb3React()
-  const address = useMemo(() => (chainId ? MintProxy[chainId] : undefined), [chainId])
-  return useContract(address, PROXY_MINTER_ABI)
 }
 
 export function useOracleContract(address: string) {

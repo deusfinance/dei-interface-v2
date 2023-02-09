@@ -12,6 +12,7 @@ import { useVeDeusContract } from './useContract'
 
 dayjs.extend(utc)
 
+//TODO: it should be delete completely
 export function useVestedInformation(nftId: number): {
   deusAmount: string
   veDEUSAmount: string
