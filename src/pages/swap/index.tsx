@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react'
 import styled from 'styled-components'
 
-import { Swap as SwapIcon } from 'components/Icons'
+import { IconWrapper, Swap as SwapIcon } from 'components/Icons'
 import {
   LQDR_TOKEN,
   cLQDR_TOKEN,
@@ -43,6 +43,8 @@ import TokensModal from 'components/App/Swap/TokensModal'
 import { Currency, Token } from '@sushiswap/core-sdk'
 import { useWeb3NavbarOption } from 'state/web3navbar/hooks'
 import { RowCenter } from 'components/Row'
+import { ExternalLink } from 'components/Link'
+import { ArrowUpRight } from 'react-feather'
 
 const Wrapper = styled(MainWrapper)`
   margin-top: 68px;
@@ -71,6 +73,11 @@ const TableauContainer = styled(RowCenter)`
     }
   }
 `
+const TextWrapper = styled.div`
+  display: flex;
+  gap: 4px;
+`
+
 enum SwapType {
   INTERNAL,
   EXTERNAL,
@@ -87,26 +94,26 @@ interface TokenSwap {
 const tokenSwaps: TokenSwap[] = [
   {
     id: 0,
-    token0: LQDR_TOKEN,
-    token1: cLQDR_TOKEN,
-    swapType: SwapType.INTERNAL,
-  },
-  {
-    id: 1,
     token0: DEI_TOKEN,
     token1: BDEI_TOKEN,
     swapType: SwapType.INTERNAL,
   },
   {
-    id: 2,
+    id: 1,
     token0: DEUS_TOKEN,
     token1: XDEUS_TOKEN,
     swapType: SwapType.INTERNAL,
   },
   {
-    id: 3,
+    id: 2,
     token0: LegacyDEI_TOKEN,
     token1: USDC_TOKEN,
+    swapType: SwapType.INTERNAL,
+  },
+  {
+    id: 3,
+    token0: LQDR_TOKEN,
+    token1: cLQDR_TOKEN,
     swapType: SwapType.INTERNAL,
   },
   {
@@ -143,6 +150,7 @@ export default function Swap() {
 
   const [inputCurrency, setInputCurrency] = useState<Token>(DEI_TOKEN)
   const [outputCurrency, setOutputCurrency] = useState<Token>(BDEI_TOKEN)
+  const [tokenSwap, setTokenSwap] = useState<TokenSwap>(tokenSwaps[0])
   // const inputCurrency = LQDR_TOKEN
   // const outputCurrency = cLQDR_TOKEN
   const [field, setField] = useState('')
@@ -196,9 +204,29 @@ export default function Swap() {
     return tokens
   }, [inputCurrency])
 
+  const getOutputTokens = (inputToken: Token): Token[] => {
+    const tokens: Token[] = []
+    tokenSwaps.map((x) => {
+      if (x.token0.address === inputToken.address) tokens.push(x.token1)
+      if (x.token1.address === inputToken.address) tokens.push(x.token0)
+    })
+    return tokens
+  }
+
   useMemo(() => {
-    setOutputCurrency(outputTokens[0])
-  }, [outputTokens])
+    tokenSwaps.map((x) => {
+      if (
+        (x.token0.address === inputCurrency.address && x.token1.address === outputCurrency.address) ||
+        (x.token1.address === inputCurrency.address && x.token0.address === outputCurrency.address)
+      )
+        setTokenSwap(x)
+    })
+  }, [inputCurrency, outputCurrency])
+
+  const handleTokenSelect = (token: Token) => {
+    setToken(token)
+    if (field === 'input') setOutputCurrency(getOutputTokens(token)[0])
+  }
 
   const handleApprove = async () => {
     setAwaitingApproveConfirmation(true)
@@ -267,8 +295,18 @@ export default function Swap() {
           if (amount !== '0' && amount !== '' && amount !== '0.') toggleReviewModal(true)
         }}
       >
-        {/* Mint {outputCurrency?.symbol} */}
-        Swap
+        <ExternalLink href={tokenSwap.swapType === SwapType.EXTERNAL ? firebirdLink : ''}>
+          {tokenSwap.swapType === SwapType.EXTERNAL ? (
+            <TextWrapper>
+              Swap on firebird
+              <IconWrapper>
+                <ArrowUpRight />
+              </IconWrapper>
+            </TextWrapper>
+          ) : (
+            'Swap'
+          )}
+        </ExternalLink>
       </MainButton>
     )
   }
@@ -362,7 +400,7 @@ export default function Swap() {
         tokens={field === 'input' ? inputTokens : outputTokens}
         toggleModal={(action: boolean) => toggleTokensModal(action)}
         selectedTokenIndex={field === 'input' ? inputCurrency : outputCurrency}
-        setToken={setToken}
+        setToken={(currency) => handleTokenSelect(currency as Token)}
       />
 
       <WarningModal
