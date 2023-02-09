@@ -324,7 +324,11 @@ export default function Stats() {
             <ModalText>Circulating Supply = Total Supply - Non Circulating Supply</ModalText>
             <ModalInfoWrapper>
               <p>Total Supply</p>
-              {deusTotalSupply === null ? <Loader /> : <ModalItemValue>{formatAmount(deusTotalSupply)}</ModalItemValue>}
+              {deusTotalSupply === null ? (
+                <Loader />
+              ) : (
+                <ModalItemValue>{formatAmount(deusTotalSupply, 2, undefined, true)}</ModalItemValue>
+              )}
             </ModalInfoWrapper>
             <ModalInfoWrapper>
               <p
@@ -341,7 +345,7 @@ export default function Stats() {
               {deusNonCirculatingSupply === null ? (
                 <Loader />
               ) : (
-                <ModalItemValue>{formatAmount(deusNonCirculatingSupply)}</ModalItemValue>
+                <ModalItemValue>{formatAmount(deusNonCirculatingSupply, 2, undefined, true)}</ModalItemValue>
               )}
             </ModalInfoWrapper>
             <ModalInfoWrapper active>
@@ -349,7 +353,7 @@ export default function Stats() {
               {deusCirculatingSupply === null ? (
                 <Loader />
               ) : (
-                <ModalItemValue>{formatAmount(deusCirculatingSupply)}</ModalItemValue>
+                <ModalItemValue>{formatAmount(deusCirculatingSupply, 2, undefined, true)}</ModalItemValue>
               )}
             </ModalInfoWrapper>
           </ModalWrapper>
@@ -367,7 +371,7 @@ export default function Stats() {
               {deusTotalSupplyOnChain === null ? (
                 <Loader />
               ) : (
-                <ModalItemValue>{formatAmount(deusTotalSupplyOnChain)}</ModalItemValue>
+                <ModalItemValue>{formatAmount(deusTotalSupplyOnChain, 2, undefined, true)}</ModalItemValue>
               )}
             </ModalInfoWrapper>
             <ModalInfoWrapper>
@@ -375,7 +379,7 @@ export default function Stats() {
               {deusSupplyInBridges === null ? (
                 <Loader />
               ) : (
-                <ModalItemValue>{formatAmount(deusSupplyInBridges)}</ModalItemValue>
+                <ModalItemValue>{formatAmount(deusSupplyInBridges, 2, undefined, true)}</ModalItemValue>
               )}
             </ModalInfoWrapper>
             <ModalInfoWrapper>
@@ -383,12 +387,16 @@ export default function Stats() {
               {deusSupplyInVeDeusContract === null ? (
                 <Loader />
               ) : (
-                <ModalItemValue>{formatAmount(deusSupplyInVeDeusContract)}</ModalItemValue>
+                <ModalItemValue>{formatAmount(deusSupplyInVeDeusContract, 2, undefined, true)}</ModalItemValue>
               )}
             </ModalInfoWrapper>
             <ModalInfoWrapper active>
               <p>Total Supply</p>
-              {deusTotalSupply === null ? <Loader /> : <ModalItemValue>{formatAmount(deusTotalSupply)}</ModalItemValue>}
+              {deusTotalSupply === null ? (
+                <Loader />
+              ) : (
+                <ModalItemValue>{formatAmount(deusTotalSupply, 2, undefined, true)}</ModalItemValue>
+              )}
             </ModalInfoWrapper>
           </ModalWrapper>
         )
@@ -402,7 +410,7 @@ export default function Stats() {
               {xDeusTotalSupply === null ? (
                 <Loader />
               ) : (
-                <ModalItemValue>{formatAmount(xDeusTotalSupply)}</ModalItemValue>
+                <ModalItemValue>{formatAmount(xDeusTotalSupply, 2, undefined, true)}</ModalItemValue>
               )}
             </ModalInfoWrapper>
             <ModalInfoWrapper>
@@ -417,10 +425,10 @@ export default function Stats() {
                   <CustomTooltip id="id" />
                 </span>
               </p>
-              {xDeusCirculatingSupply === null ? (
+              {xDeusNonCirculatingSupply === null ? (
                 <Loader />
               ) : (
-                <ModalItemValue>{formatAmount(xDeusNonCirculatingSupply)}</ModalItemValue>
+                <ModalItemValue>{formatAmount(xDeusNonCirculatingSupply, 2, undefined, true)}</ModalItemValue>
               )}
             </ModalInfoWrapper>
             <ModalInfoWrapper active>
@@ -428,7 +436,7 @@ export default function Stats() {
               {xDeusCirculatingSupply === null ? (
                 <Loader />
               ) : (
-                <ModalItemValue>{formatAmount(xDeusCirculatingSupply)}</ModalItemValue>
+                <ModalItemValue>{formatAmount(xDeusCirculatingSupply, 2, undefined, true)}</ModalItemValue>
               )}
             </ModalInfoWrapper>
           </ModalWrapper>
