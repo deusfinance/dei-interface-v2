@@ -86,12 +86,12 @@ export function useDeiStats(): {
   }, [totalSupplyDEI?.result, ph1DeiHoldings?.result, ph2DeiHoldings?.result])
 
   const totalSupplyDEIValue = useMemo(() => {
-    return totalSupplyDEIValueRaw - AnyDEIReserve
-  }, [AnyDEIReserve, totalSupplyDEIValueRaw])
+    return totalSupplyDEIValueRaw
+  }, [totalSupplyDEIValueRaw])
 
   const circulatingSupply = useMemo(() => {
-    return totalSupplyDEIValue - totalProtocolHoldings
-  }, [totalSupplyDEIValue, totalProtocolHoldings])
+    return totalSupplyDEIValue - AnyDEIReserve
+  }, [totalSupplyDEIValue, AnyDEIReserve])
 
   const reservesCalls = !usdcContract
     ? []

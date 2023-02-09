@@ -15,7 +15,7 @@ import { Modal, ModalHeader } from 'components/Modal'
 import { RowBetween } from 'components/Row'
 import StatsItem from './StatsItem'
 import Chart from './Chart'
-import { CollateralPool, DEI_ADDRESS, escrow, USDCReserves3, USDCReserves4 } from 'constants/addresses'
+import { CollateralPool, DEI_ADDRESS, USDCReserves4 } from 'constants/addresses'
 import { SupportedChainId } from 'constants/chains'
 import { ChainInfo } from 'constants/chainInfo'
 import { Loader } from 'components/Icons'
@@ -225,31 +225,10 @@ export default function Stats() {
   function getModalBody() {
     return (
       <ModalWrapper>
-        <div>DEI Total Reserve Assets are held in three wallets.</div>
-        <div>Below is the USDC holdings in each wallet.</div>
-        <ModalInfoWrapper>
-          <a
-            href={
-              ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/address/' + USDCReserves3[SupportedChainId.FANTOM]
-            }
-            target={'_blank'}
-            rel={'noreferrer'}
-          >
-            Reserves 1
-          </a>
-          {usdcReserves3 === null ? <Loader /> : <ModalItemValue>{formatAmount(usdcReserves3, 2)}</ModalItemValue>}
-        </ModalInfoWrapper>
-        <ModalInfoWrapper>
-          <a
-            href={ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/address/' + escrow[SupportedChainId.FANTOM]}
-            target={'_blank'}
-            rel={'noreferrer'}
-          >
-            Reserves 2
-          </a>
-          {escrowReserve === null ? <Loader /> : <ModalItemValue>{formatAmount(escrowReserve, 2)}</ModalItemValue>}
-        </ModalInfoWrapper>
-
+        <div>DEI Total Reserve Assets are held in multiple reserve contracts to isolate risk for security reasons.</div>
+        <div style={{ marginTop: '16px' }}>
+          Below is a list of current reserve contracts and their holdings in USDC:
+        </div>
         <ModalInfoWrapper>
           <a
             href={
@@ -258,7 +237,7 @@ export default function Stats() {
             target={'_blank'}
             rel={'noreferrer'}
           >
-            Reserves 3
+            Reserves 1
           </a>
           {usdcReserves4 === null ? <Loader /> : <ModalItemValue>{formatAmount(usdcReserves4, 2)}</ModalItemValue>}
         </ModalInfoWrapper>
@@ -286,7 +265,7 @@ export default function Stats() {
           {totalProtocolHoldings === null ? (
             <Loader />
           ) : (
-            <ModalItemValue>{formatAmount(usdcPoolReserves + usdcReserves3 + escrowReserve, 2)}</ModalItemValue>
+            <ModalItemValue>{formatAmount(usdcPoolReserves + usdcReserves4, 2)}</ModalItemValue>
           )}
         </ModalInfoWrapper>
       </ModalWrapper>
