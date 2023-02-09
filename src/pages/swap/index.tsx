@@ -42,10 +42,7 @@ import { useUserSlippageTolerance, useSetUserSlippageTolerance } from 'state/use
 import TokensModal from 'components/App/Swap/TokensModal'
 import { Currency, Token } from '@sushiswap/core-sdk'
 import { useWeb3NavbarOption } from 'state/web3navbar/hooks'
-import Question from '/public/static/images/pages/swap/Union.svg'
-import ImageWithFallback from 'components/ImageWithFallback'
 import { RowCenter } from 'components/Row'
-import { ToolTip } from 'components/ToolTip'
 
 const Wrapper = styled(MainWrapper)`
   margin-top: 68px;
@@ -182,9 +179,9 @@ export default function Swap() {
     return [show, show && approvalState === ApprovalState.PENDING]
   }, [inputCurrency, approvalState, amount])
 
-  function getFirebirdLink(inputToken: Token, outputToken: Token): string {
-    return `https://app.firebird.finance/swap?inputCurrency=${inputToken.address}&outputCurrency=${outputToken.address}&net=250`
-  }
+  const firebirdLink: string = useMemo(() => {
+    return `https://app.firebird.finance/swap?inputCurrency=${inputCurrency.address}&outputCurrency=${outputCurrency.address}&net=250`
+  }, [inputCurrency, outputCurrency])
 
   const inputTokens: Token[] = useMemo(() => {
     return [...new Set([...tokenSwaps.map((x) => x.token0), ...tokenSwaps.map((x) => x.token1)])]
@@ -307,15 +304,15 @@ export default function Swap() {
         <Wrapper>
           <TableauContainer>
             <Tableau title={'Swap'} />
-            <ToolTip id="id" />
-            <ImageWithFallback
+            {/* <ToolTip id="id" /> */}
+            {/* <ImageWithFallback
               data-for="id"
               data-tip={slippageInfo}
               alt="question"
               src={Question}
               width={16}
               height={16}
-            />
+            /> */}
           </TableauContainer>
           <InputContainer>
             <InputWrapper>
