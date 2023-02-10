@@ -79,6 +79,7 @@ const TextWrapper = styled.div`
 `
 
 enum SwapType {
+  MINT,
   INTERNAL,
   EXTERNAL,
 }
@@ -94,7 +95,7 @@ interface TokenSwap {
 const tokenSwaps: TokenSwap[] = [
   {
     id: 0,
-    token0: DEI_TOKEN,
+    token0: LegacyDEI_TOKEN,
     token1: BDEI_TOKEN,
     swapType: SwapType.INTERNAL,
   },
@@ -108,13 +109,13 @@ const tokenSwaps: TokenSwap[] = [
     id: 2,
     token0: LegacyDEI_TOKEN,
     token1: USDC_TOKEN,
-    swapType: SwapType.INTERNAL,
+    swapType: SwapType.EXTERNAL,
   },
   {
     id: 3,
     token0: LQDR_TOKEN,
     token1: cLQDR_TOKEN,
-    swapType: SwapType.INTERNAL,
+    swapType: SwapType.MINT,
   },
   {
     id: 4,
@@ -148,11 +149,9 @@ export default function Swap() {
   // const currentFieldSide = useMemo(() => (currentField === Field.INPUT ? Field.OUTPUT : Field.INPUT), [currentField])
   // const { allowedSlippage, parsedAmount, currencies, trade, inputError: swapInputError } = useDerivedSwapInfo()
 
-  const [inputCurrency, setInputCurrency] = useState<Token>(DEI_TOKEN)
-  const [outputCurrency, setOutputCurrency] = useState<Token>(BDEI_TOKEN)
+  const [inputCurrency, setInputCurrency] = useState<Token>(DEUS_TOKEN)
+  const [outputCurrency, setOutputCurrency] = useState<Token>(XDEUS_TOKEN)
   const [tokenSwap, setTokenSwap] = useState<TokenSwap>(tokenSwaps[0])
-  // const inputCurrency = LQDR_TOKEN
-  // const outputCurrency = cLQDR_TOKEN
   const [field, setField] = useState('')
 
   const inputCurrencyBalance = useCurrencyBalance(account ?? undefined, inputCurrency)
@@ -192,7 +191,13 @@ export default function Swap() {
   }, [inputCurrency, outputCurrency])
 
   const inputTokens: Token[] = useMemo(() => {
-    return [...new Set([...tokenSwaps.map((x) => x.token0), ...tokenSwaps.map((x) => x.token1)])]
+    return [
+      ...new Set([
+        ...tokenSwaps.filter((x) => x.swapType != SwapType.MINT).map((x) => x.token0),
+        ...tokenSwaps.filter((x) => x.swapType != SwapType.MINT).map((x) => x.token1),
+        ...tokenSwaps.filter((x) => x.swapType === SwapType.MINT).map((x) => x.token0), // MINT swaps are not bidirectional
+      ]),
+    ]
   }, [])
 
   const outputTokens: Token[] = useMemo(() => {
@@ -303,23 +308,15 @@ export default function Swap() {
                 <ArrowUpRight />
               </IconWrapper>
             </TextWrapper>
-          ) : (
+          ) : tokenSwap.swapType != SwapType.MINT ? (
             'Swap'
+          ) : (
+            'Mint'
           )}
         </ExternalLink>
       </MainButton>
     )
   }
-  // const deiPrice = useDeiPrice()
-  // const deusPrice = useDeusPrice()
-  // const items = useMemo(
-  //   () => [
-  //     { name: 'DEI Price', value: `$${formatBalance(deiPrice, 3)}` },
-  //     { name: 'VDEUS Price', value: `$${formatBalance(deusPrice, 4)}` },
-  //     { name: 'DEUS Price', value: `$${formatBalance(deusPrice, 4)}` },
-  //   ],
-  //   []
-  // )
 
   const slippageInfo =
     'Setting a high slippage tolerance can help transactions succeed, but you may not get such a good price. Use with caution.'
@@ -331,8 +328,10 @@ export default function Swap() {
 
   function handleClick() {
     const currency = inputCurrency
-    setInputCurrency(outputCurrency)
-    setOutputCurrency(currency)
+    if (tokenSwap.swapType != SwapType.MINT) {
+      setInputCurrency(outputCurrency)
+      setOutputCurrency(currency)
+    }
   }
   useWeb3NavbarOption({ reward: true, wallet: true, network: true })
 
@@ -342,15 +341,6 @@ export default function Swap() {
         <Wrapper>
           <TableauContainer>
             <Tableau title={'Swap'} />
-            {/* <ToolTip id="id" /> */}
-            {/* <ImageWithFallback
-              data-for="id"
-              data-tip={slippageInfo}
-              alt="question"
-              src={Question}
-              width={16}
-              height={16}
-            /> */}
           </TableauContainer>
           <InputContainer>
             <InputWrapper>
