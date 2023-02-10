@@ -357,8 +357,8 @@ export default function Stats() {
           <ModalWrapper>
             <div>DEUS Total Supply is calculated as:</div>
             <ModalText>
-              Total Supply = Total Supply across all chains - Balance held in Bridge contracts - Balance held in xDEUS
-              contract
+              Total Supply = Total Supply across all chains - Balance held in Bridge contracts - Balance held in
+              deprecated veDeus contract
             </ModalText>
             <ModalInfoWrapper>
               <p>Total Supply across all chains</p>
@@ -377,7 +377,7 @@ export default function Stats() {
               )}
             </ModalInfoWrapper>
             <ModalInfoWrapper>
-              <p>Balance held in xDEUS contract</p>
+              <p>Balance held in deprecated veDeus contract</p>
               {deusSupplyInVeDeusContract === null ? (
                 <Loader />
               ) : (
