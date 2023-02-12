@@ -225,6 +225,7 @@ export default function RedeemClaim({
   const [pendingTokens, setPendingTokens] = useState<IToken[]>([])
   const [readyCount, setReadyCount] = useState(0)
   const [pendingCount, setPendingCount] = useState(0)
+
   useEffect(() => {
     setPendingTokens(
       unClaimed.filter((token) => {
@@ -300,7 +301,7 @@ export default function RedeemClaim({
         <TitleWrap>
           <Title>Claim your tokens</Title>
         </TitleWrap>
-        {!unClaimed || unClaimed.length == 0 ? (
+        {(!unClaimed || unClaimed.length == 0) && !unClaimedCollateral ? (
           <ClaimBox>
             {!account ? (
               <Image
