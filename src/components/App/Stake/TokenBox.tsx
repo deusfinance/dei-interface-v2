@@ -32,7 +32,7 @@ const TokensWrap = styled.div`
   /* margin: 0 10px; */
 `
 
-const MultipleImageWrapper = styled.div<{ isSingle?: boolean }>`
+export const MultipleImageWrapper = styled.div<{ isSingle?: boolean }>`
   display: flex;
   flex-flow: row nowrap;
   align-items: center;

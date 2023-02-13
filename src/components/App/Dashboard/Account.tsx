@@ -17,6 +17,7 @@ const Wrapper = styled(RowBetween)`
   width: 100%;
   border-radius: 12px;
   font-family: 'Inter';
+  margin-top: 16px;
 `
 const AccountPowerWrapper = styled(Column)`
   row-gap: 23px;

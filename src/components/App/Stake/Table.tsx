@@ -117,7 +117,7 @@ const ZebraStripesRow = styled(Row)<{ isEven?: boolean }>`
   `};
 `
 
-const ButtonText = styled.span<{ gradientText?: boolean }>`
+export const ButtonText = styled.span<{ gradientText?: boolean }>`
   display: flex;
   font-family: 'Inter';
   font-weight: 600;
@@ -138,7 +138,7 @@ const ButtonText = styled.span<{ gradientText?: boolean }>`
   `}
 `
 
-const TopBorderWrap = styled.div<{ active?: boolean }>`
+export const TopBorderWrap = styled.div<{ active?: boolean }>`
   background: ${({ theme, active }) => (active ? theme.primary2 : theme.white)};
   padding: 2px;
   border-radius: 12px;
@@ -278,7 +278,15 @@ const buttonImageWidths = {
   INTERNAL: 0,
 }
 
-const CustomButtonWrapper = ({ type, href, isActive }: { type: BUTTON_TYPE; href: string; isActive: boolean }) => {
+export const CustomButtonWrapper = ({
+  type,
+  href,
+  isActive,
+}: {
+  type: BUTTON_TYPE
+  href: string
+  isActive: boolean
+}) => {
   return (
     <CustomButton transparentBG href={isActive && href}>
       <ButtonText>
@@ -334,7 +342,7 @@ const MiniTopBorderWrap = styled(TopBorderWrap)`
     max-height: 32px;
   }
 `
-interface ITableRowContent {
+export interface ITableRowContent {
   tokens: Token[]
   name: StakingType['name']
   active: StakingType['active']
@@ -421,7 +429,7 @@ const TableRowMiniContent = ({
   )
 }
 
-const TableRowLargeContent = ({
+export const TableRowLargeContent = ({
   tokens,
   name,
   active,
