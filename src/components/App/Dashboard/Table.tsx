@@ -110,6 +110,23 @@ const StackedAmountTd = styled.td`
     }
   }
 `
+const ButtonTd = styled.td`
+  div:first-of-type {
+    margin: 0px;
+    div:first-of-type {
+      div:first-of-type {
+        height: 30px !important;
+        padding: 13px !important;
+      }
+    }
+  }
+  span {
+    font-size: 10px;
+    background: -webkit-linear-gradient(1deg, #e29d52 -10.26%, #de4a7b 90%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+`
 
 function getImageSize() {
   return isMobile ? 22 : 30
@@ -127,7 +144,8 @@ const TableRowMiniContent = ({
   account,
   toggleWalletModal,
   type,
-}: ITableRowContent) => {
+  depositAmount,
+}: ITableRowContent & { depositAmount: string }) => {
   const tokensAddress = tokens.map((token) => token.address)
   const logos = useCurrencyLogos(tokensAddress)
   return (
@@ -155,10 +173,13 @@ const TableRowMiniContent = ({
       <StackedAmountTd>
         <Column>
           <p>Staked Amount:</p>
-          <p>2,485.203 LP</p>
+          <p>
+            {Number(depositAmount).toFixed(6)}{' '}
+            {tokens.map((token, index) => (index + 1 !== tokens.length ? token?.symbol + '-' : token?.symbol))}
+          </p>
         </Column>
       </StackedAmountTd>
-      <td>
+      <ButtonTd>
         <TopBorderWrap
           active={!chainIdError}
           {...(version !== StakingVersion.EXTERNAL && { onClick: active && !chainIdError ? handleClick : undefined })}
@@ -181,7 +202,7 @@ const TableRowMiniContent = ({
             )}
           </TopBorder>
         </TopBorderWrap>
-      </td>
+      </ButtonTd>
     </MiniRow>
   )
 }
@@ -204,7 +225,7 @@ const TableRowContent = ({ stakingPool }: { stakingPool: StakingType }) => {
     if (!chainId || !account) return false
     return chainId === SupportedChainId.FANTOM
   }, [chainId, account])
-  const { rewardAmounts } = useUserInfo(stakingPool)
+  const { rewardAmounts, depositAmount } = useUserInfo(stakingPool)
 
   const router = useRouter()
   const handleClick = useCallback(() => {
@@ -249,6 +270,7 @@ const TableRowContent = ({ stakingPool }: { stakingPool: StakingType }) => {
         toggleWalletModal={toggleWalletModal}
         chain={chain}
         type={type}
+        depositAmount={depositAmount}
       />
     </>
   )
