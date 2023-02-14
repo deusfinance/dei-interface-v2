@@ -10,6 +10,12 @@ import { useCurrencyLogos } from 'hooks/useCurrencyLogo'
 import { isMobile } from 'react-device-detect'
 import { ToolTip } from 'components/ToolTip'
 import Exclamation from '/public/static/images/pages/swap/info.svg'
+import { useDeiPrice, useDeusPrice } from 'hooks/useCoingeckoPrice'
+import { usePoolBalances } from 'hooks/useStablePoolInfo'
+import { LiquidityPool } from 'constants/stakingPools'
+import { useFirebirdPrice } from 'hooks/useFirebirdPrice'
+import { SupportedChainId } from 'constants/chains'
+import { LegacyDEI_Address, USDC_ADDRESS } from 'constants/addresses'
 
 const Wrapper = styled(RowBetween)`
   background-color: ${({ theme }) => theme.bg1};
@@ -175,10 +181,46 @@ const Account = () => {
     },
   ]
 
+  const deiPrice = useDeiPrice()
+  const deusPrice = useDeusPrice()
+
+  const DB_pool = LiquidityPool[0] // DEI-BDEI pool
+  const DX_pool = LiquidityPool[2] // DEUS-XDEUS pool
+
+  const DB_poolBalances = usePoolBalances(DB_pool)
+  const DX_poolBalances = usePoolBalances(DX_pool)
+
+  const bDEIPrice = ((DB_poolBalances[1] * Number(deiPrice)) / DB_poolBalances[0]).toFixed(2)
+  const XDEUSPrice = ((DX_poolBalances[1] * Number(deusPrice)) / DX_poolBalances[0]).toFixed(2)
+
+  const LegacyDeiPrice = useFirebirdPrice({
+    amount: '1000000000000000000',
+    chainId: SupportedChainId.FANTOM.toString(),
+    from: LegacyDEI_Address[SupportedChainId.FANTOM].toString(),
+    to: USDC_ADDRESS[SupportedChainId.FANTOM].toString(),
+    gasInclude: '1',
+    saveGas: '0',
+    slippage: '0.01',
+  })
+
+  const getTokenValue = (): number => {
+    let sum = 0
+    sum = sum + Number(coins[0]?.value) * Number(deiPrice) // Add DEI
+    sum = sum + Number(coins[1]?.value) * Number(bDEIPrice) // Add bDEI
+    sum = sum + Number(coins[2]?.value) * Number(deusPrice) // Add DEUS
+    sum = sum + Number(coins[3]?.value) * Number(XDEUSPrice) // Add XDEUS
+    sum = sum + Number(coins[4]?.value) * (Number(LegacyDeiPrice) * 1e-6) // Add LegacyDEI
+    return sum ? sum : 0
+  }
+
   return (
     <Wrapper>
       <AccountPowerWrapper>
         <p>My Account</p>
+        <Row>
+          <p>Total balance:</p>
+          <p>≈ ${getTokenValue().toFixed(2)}</p>
+        </Row>
       </AccountPowerWrapper>
       <CoinInfoWrapper>
         {coins.map((coin, index) => (
