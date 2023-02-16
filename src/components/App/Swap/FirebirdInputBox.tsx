@@ -203,7 +203,7 @@ export default function FirebirdInputBox({
                 style={{ textDecoration: 'underline', textDecorationColor: 'rgba(255, 128, 128, 0.5)' }}
               >
                 <BuyButton>
-                  Buy {currency.symbol}
+                  Buy on Firebird
                   <ArrowUpRight size={15} style={{ marginTop: '3px' }} />
                 </BuyButton>
               </ExternalLink>
