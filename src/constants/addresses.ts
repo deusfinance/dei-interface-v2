@@ -186,7 +186,7 @@ export const MasterChefV3: AddressMap = {
   [SupportedChainId.FANTOM]: '0x62ad8dE6740314677F06723a7A07797aE5082Dbb',
 }
 
-export const StablePool_DEI_bDEI: AddressMap = {
+export const StablePool_legacyDEI_bDEI: AddressMap = {
   [SupportedChainId.FANTOM]: '0x9caC3CE5D8327aa5AF54b1b4e99785F991885Bf3',
 }
 

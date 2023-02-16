@@ -2,15 +2,16 @@ import { Token } from '@sushiswap/core-sdk'
 import { SupportedChainId } from 'constants/chains'
 import {
   BDEI_TOKEN,
-  DEI_TOKEN,
   DEUS_TOKEN,
   DEUS_VDEUS_LP_TOKEN,
   XDEUS_TOKEN,
-  DEI_BDEI_LP_TOKEN,
+  LegacyDEI_TOKEN,
+  LEGACY_DEI_BDEI_LP_TOKEN,
 } from 'constants/tokens'
-import { StablePool_DEUS_vDEUS, StablePool_DEI_bDEI } from './addresses'
+import { StablePool_DEUS_vDEUS, StablePool_legacyDEI_bDEI } from './addresses'
 
 export type StablePoolType = {
+  id: number
   name: string
   swapFlashLoan: string
   liquidityTokens: Token[]
@@ -20,13 +21,15 @@ export type StablePoolType = {
 
 export const StablePools: StablePoolType[] = [
   {
-    name: 'DEI-bDEI',
-    swapFlashLoan: StablePool_DEI_bDEI[SupportedChainId.FANTOM],
-    liquidityTokens: [DEI_TOKEN, BDEI_TOKEN],
-    lpToken: DEI_BDEI_LP_TOKEN,
+    id: 0,
+    name: 'legacyDEI-bDEI',
+    swapFlashLoan: StablePool_legacyDEI_bDEI[SupportedChainId.FANTOM],
+    liquidityTokens: [LegacyDEI_TOKEN, BDEI_TOKEN],
+    lpToken: LEGACY_DEI_BDEI_LP_TOKEN,
     rewardsTokens: [DEUS_TOKEN],
   },
   {
+    id: 2, // to make sure LiquidityPool and StablePools have same ids
     name: 'DEUS-xDEUS',
     swapFlashLoan: StablePool_DEUS_vDEUS[SupportedChainId.FANTOM],
     liquidityTokens: [XDEUS_TOKEN, DEUS_TOKEN],

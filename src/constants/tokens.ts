@@ -48,7 +48,7 @@ export const DEUS_TOKEN = new Token(SupportedChainId.FANTOM, DEUS_ADDRESS[Suppor
 
 export const BDEI_TOKEN = new Token(SupportedChainId.FANTOM, BDEI_ADDRESS[SupportedChainId.FANTOM], 18, 'bDEI', 'bDEI')
 
-export const DEI_BDEI_LP_TOKEN = new Token(
+export const LEGACY_DEI_BDEI_LP_TOKEN = new Token(
   SupportedChainId.FANTOM,
   '0xDce9EC1eB454829B6fe0f54F504FEF3c3C0642Fc',
   18,

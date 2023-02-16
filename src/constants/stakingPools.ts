@@ -1,7 +1,6 @@
 import { Token } from '@sushiswap/core-sdk'
 import {
   BDEI_TOKEN,
-  DEI_BDEI_LP_TOKEN,
   DEI_TOKEN,
   DEUS_TOKEN,
   DEUS_VDEUS_LP_TOKEN,
@@ -10,12 +9,20 @@ import {
   XDEUS_TOKEN,
   WFTM_TOKEN,
   XDEUS_DEUS_SOLIDLY_LP,
+  LegacyDEI_TOKEN,
+  LEGACY_DEI_BDEI_LP_TOKEN,
 } from 'constants/tokens'
 import { useGetBeetsApy, useGetBeetsTvl } from 'hooks/useBeetsPoolStats'
 import { useSolidlyApy, useSolidlyTvl } from 'hooks/useSolidlyPoolStats'
 import { useGetSpookyApy, useGetSpookyTvl } from 'hooks/useSpookyPoolStats'
 import { useGetApy, useGetDeusApy, useGetTvl } from 'hooks/useStakingInfo'
-import { MasterChefV2, MasterChefV3, StablePool_DEI_bDEI, StablePool_DEUS_vDEUS, vDeusMasterChefV2 } from './addresses'
+import {
+  MasterChefV2,
+  MasterChefV3,
+  StablePool_DEUS_vDEUS,
+  StablePool_legacyDEI_bDEI,
+  vDeusMasterChefV2,
+} from './addresses'
 import { ChainInfo } from './chainInfo'
 import { SupportedChainId } from './chains'
 import { BUTTON_TYPE } from './misc'
@@ -103,7 +110,7 @@ export type LiquidityType = {
 export const LiquidityPool: LiquidityType[] = [
   {
     id: 0,
-    tokens: [DEI_TOKEN, BDEI_TOKEN],
+    tokens: [LegacyDEI_TOKEN, BDEI_TOKEN],
     provideLinks: [
       {
         id: 0,
@@ -112,8 +119,8 @@ export const LiquidityPool: LiquidityType[] = [
       },
       { id: 1, title: 'Go to Swap Page', link: '/swap' },
     ],
-    lpToken: DEI_BDEI_LP_TOKEN,
-    contract: StablePool_DEI_bDEI[SupportedChainId.FANTOM],
+    lpToken: LEGACY_DEI_BDEI_LP_TOKEN,
+    contract: StablePool_legacyDEI_bDEI[SupportedChainId.FANTOM],
     priceToken: DEI_TOKEN,
   },
   {
@@ -190,9 +197,9 @@ export const LiquidityPool: LiquidityType[] = [
 export const Stakings: StakingType[] = [
   {
     id: 0,
-    name: 'DEI-bDEI',
+    name: 'legacyDEI-bDEI',
     rewardTokens: [DEUS_TOKEN],
-    token: DEI_BDEI_LP_TOKEN,
+    token: LEGACY_DEI_BDEI_LP_TOKEN,
     aprHook: useGetApy,
     tvlHook: useGetTvl,
     secondaryAprHook: useGetDeusApy,

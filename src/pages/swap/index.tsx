@@ -15,18 +15,17 @@ import {
 } from 'constants/tokens'
 import { CLQDR_ADDRESS } from 'constants/addresses'
 import { tryParseAmount } from 'utils/parse'
-import { toBN } from 'utils/numbers'
+import { formatBalance, toBN } from 'utils/numbers'
 
 import { useCurrencyBalance } from 'state/wallet/hooks'
 import useWeb3React from 'hooks/useWeb3'
 import { useSupportedChainId } from 'hooks/useSupportedChainId'
 import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
 import { useDepositLQDRCallback } from 'hooks/useClqdrCallback'
-import { useCalcSharesFromAmount } from 'hooks/useClqdrPage'
+import { useCalcSharesFromAmount, useClqdrData } from 'hooks/useClqdrPage'
 
 import { DotFlashing } from 'components/Icons'
 import InputBox from 'components/InputBox'
-import DefaultReviewModal from 'components/App/CLqdr/DefaultReviewModal'
 import {
   BottomWrapper,
   Container,
@@ -44,7 +43,14 @@ import { Currency, Token } from '@sushiswap/core-sdk'
 import { useWeb3NavbarOption } from 'state/web3navbar/hooks'
 import { RowCenter } from 'components/Row'
 import { ExternalLink } from 'components/Link'
-import { ArrowUpRight } from 'react-feather'
+import { ArrowUpRight, X } from 'react-feather'
+import useDebounce from 'hooks/useDebounce'
+import { StablePools } from 'constants/sPools'
+import { useSwapAmountsOut } from 'hooks/useSwapPage'
+import { useFetchFirebirdData } from 'hooks/useFirebirdPage'
+import FirebirdInputBox from 'components/App/Swap/FirebirdInputBox'
+import DefaultReviewModal from 'components/ReviewModal/DefaultReviewModal'
+import Link from 'next/link'
 
 const Wrapper = styled(MainWrapper)`
   margin-top: 68px;
@@ -80,8 +86,8 @@ const TextWrapper = styled.div`
 
 enum SwapType {
   MINT,
-  INTERNAL,
   EXTERNAL,
+  STABLEPOOL,
 }
 
 interface TokenSwap {
@@ -97,13 +103,13 @@ const tokenSwaps: TokenSwap[] = [
     id: 0,
     token0: LegacyDEI_TOKEN,
     token1: BDEI_TOKEN,
-    swapType: SwapType.INTERNAL,
+    swapType: SwapType.STABLEPOOL,
   },
   {
     id: 1,
     token0: DEUS_TOKEN,
     token1: XDEUS_TOKEN,
-    swapType: SwapType.INTERNAL,
+    swapType: SwapType.STABLEPOOL,
   },
   {
     id: 2,
@@ -131,9 +137,10 @@ const tokenSwaps: TokenSwap[] = [
   },
   {
     id: 6,
-    token0: DEI_TOKEN,
-    token1: USDC_TOKEN,
-    swapType: SwapType.EXTERNAL,
+    token0: USDC_TOKEN,
+    token1: DEI_TOKEN,
+    swapType: SwapType.MINT,
+    link: '/mint',
   },
 ]
 
@@ -153,16 +160,74 @@ export default function Swap() {
   const [outputCurrency, setOutputCurrency] = useState<Token>(XDEUS_TOKEN)
   const [tokenSwap, setTokenSwap] = useState<TokenSwap>(tokenSwaps[0])
   const [field, setField] = useState('')
+  const [formattedOutputAmount, setFormattedOutputAmount] = useState('')
 
   const inputCurrencyBalance = useCurrencyBalance(account ?? undefined, inputCurrency)
 
   const [amount, setAmount] = useState('')
-  // const debouncedAmount = useDebounce(amount, 500)
+  const debouncedAmount = useDebounce(amount, 500)
   const amountOutBN = useCalcSharesFromAmount(amount)
+
+  const firebirdLink: string = useMemo(() => {
+    return `https://app.firebird.finance/swap?inputCurrency=${inputCurrency.address}&outputCurrency=${outputCurrency.address}&net=250`
+  }, [inputCurrency, outputCurrency])
+
+  const inputTokens: Token[] = useMemo(() => {
+    return [
+      ...new Set([
+        ...tokenSwaps.filter((x) => x.swapType != SwapType.MINT).map((x) => x.token0),
+        ...tokenSwaps.filter((x) => x.swapType != SwapType.MINT).map((x) => x.token1),
+        ...tokenSwaps.filter((x) => x.swapType === SwapType.MINT).map((x) => x.token0), // MINT swaps are not bidirectional
+      ]),
+    ]
+  }, [])
+
+  const outputTokens: Token[] = useMemo(() => {
+    const tokens: Token[] = []
+    tokenSwaps.map((x) => {
+      if (x.token0.address === inputCurrency.address) tokens.push(x.token1)
+      if (x.swapType != SwapType.MINT && x.token1.address === inputCurrency.address) tokens.push(x.token0) // can't redeem for mintable swaps
+    })
+    return tokens
+  }, [inputCurrency])
+
+  const getOutputTokens = (inputToken: Token): Token[] => {
+    const tokens: Token[] = []
+    tokenSwaps.map((x) => {
+      if (x.token0.address === inputToken.address) tokens.push(x.token1)
+      if (x.swapType != SwapType.MINT && x.token1.address === inputToken.address) tokens.push(x.token0) // can't redeem for mintable swaps
+    })
+    return tokens
+  }
+
+  useMemo(() => {
+    tokenSwaps.map((x) => {
+      if (
+        (x.token0.address === inputCurrency.address && x.token1.address === outputCurrency.address) ||
+        (x.token1.address === inputCurrency.address && x.token0.address === outputCurrency.address)
+      )
+        setTokenSwap(x)
+    })
+  }, [inputCurrency, outputCurrency])
+
+  //get stable pool info
+  const stablePool = useMemo(() => {
+    return StablePools[tokenSwap.id] || StablePools[0]
+  }, [tokenSwap])
+
+  //todo fix me in dei bond
+  const { amountOut: stablePoolAmountOut } = useSwapAmountsOut(
+    debouncedAmount,
+    inputCurrency,
+    outputCurrency,
+    stablePool
+  )
 
   const formattedAmountOut = amountOutBN == '' ? '0' : toBN(amountOutBN).div(1e18).toFixed()
 
-  // const firebird = useFetchFirebirdData(debouncedAmount)
+  const firebird = useFetchFirebirdData(debouncedAmount, inputCurrency || LQDR_TOKEN, outputCurrency || cLQDR_TOKEN)
+
+  const { mintRate: cLqdrMintRate } = useClqdrData()
 
   const token1Amount = useMemo(() => {
     return tryParseAmount(amount, inputCurrency || undefined)
@@ -186,52 +251,26 @@ export default function Swap() {
     return [show, show && approvalState === ApprovalState.PENDING]
   }, [inputCurrency, approvalState, amount])
 
-  const firebirdLink: string = useMemo(() => {
-    return `https://app.firebird.finance/swap?inputCurrency=${inputCurrency.address}&outputCurrency=${outputCurrency.address}&net=250`
-  }, [inputCurrency, outputCurrency])
-
-  const inputTokens: Token[] = useMemo(() => {
-    return [
-      ...new Set([
-        ...tokenSwaps.filter((x) => x.swapType != SwapType.MINT).map((x) => x.token0),
-        ...tokenSwaps.filter((x) => x.swapType != SwapType.MINT).map((x) => x.token1),
-        ...tokenSwaps.filter((x) => x.swapType === SwapType.MINT).map((x) => x.token0), // MINT swaps are not bidirectional
-      ]),
-    ]
-  }, [])
-
-  const outputTokens: Token[] = useMemo(() => {
-    const tokens: Token[] = []
-    tokenSwaps.map((x) => {
-      if (x.token0.address === inputCurrency.address) tokens.push(x.token1)
-      if (x.token1.address === inputCurrency.address) tokens.push(x.token0)
-    })
-    return tokens
-  }, [inputCurrency])
-
-  const getOutputTokens = (inputToken: Token): Token[] => {
-    const tokens: Token[] = []
-    tokenSwaps.map((x) => {
-      if (x.token0.address === inputToken.address) tokens.push(x.token1)
-      if (x.token1.address === inputToken.address) tokens.push(x.token0)
-    })
-    return tokens
-  }
-
   useMemo(() => {
-    tokenSwaps.map((x) => {
-      if (
-        (x.token0.address === inputCurrency.address && x.token1.address === outputCurrency.address) ||
-        (x.token1.address === inputCurrency.address && x.token0.address === outputCurrency.address)
-      )
-        setTokenSwap(x)
-    })
-  }, [inputCurrency, outputCurrency])
+    if (tokenSwap.swapType === SwapType.MINT)
+      setFormattedOutputAmount(formattedAmountOut == '0' ? '' : formattedAmountOut)
+    else if (tokenSwap.swapType === SwapType.STABLEPOOL) setFormattedOutputAmount(stablePoolAmountOut)
+    else if (tokenSwap.swapType === SwapType.EXTERNAL)
+      amount ? setFormattedOutputAmount(firebird?.outputTokenAmount || '') : setFormattedOutputAmount('')
+  }, [firebird, formattedAmountOut, stablePoolAmountOut, tokenSwap, amount])
 
   const handleTokenSelect = (token: Token) => {
     setToken(token)
     if (field === 'input') setOutputCurrency(getOutputTokens(token)[0])
   }
+
+  const buyOnFirebird = useMemo(
+    () =>
+      formattedAmountOut !== '0' && firebird && firebird.convertRate && toBN(firebird.convertRate).lt(cLqdrMintRate)
+        ? true
+        : false,
+    [firebird, formattedAmountOut, cLqdrMintRate]
+  )
 
   const handleApprove = async () => {
     setAwaitingApproveConfirmation(true)
@@ -276,8 +315,21 @@ export default function Swap() {
           Approving <DotFlashing />
         </MainButton>
       )
-    } else if (showApprove)
+    } else if (showApprove && tokenSwap.swapType != SwapType.EXTERNAL)
       return <MainButton onClick={() => handleApprove()}>Allow us to spend {inputCurrency?.symbol}</MainButton>
+    else if (showApprove && tokenSwap.swapType === SwapType.EXTERNAL)
+      return (
+        <MainButton>
+          <ExternalLink href={firebirdLink}>
+            <TextWrapper>
+              Swap on firebird
+              <IconWrapper>
+                <ArrowUpRight />
+              </IconWrapper>
+            </TextWrapper>
+          </ExternalLink>
+        </MainButton>
+      )
 
     return null
   }
@@ -295,26 +347,29 @@ export default function Swap() {
     }
 
     return (
-      <MainButton
-        onClick={() => {
-          if (amount !== '0' && amount !== '' && amount !== '0.') toggleReviewModal(true)
-        }}
-      >
-        <ExternalLink href={tokenSwap.swapType === SwapType.EXTERNAL ? firebirdLink : ''}>
+      <Link href={tokenSwap.link || ''} passHref>
+        <MainButton
+          onClick={() => {
+            if (amount !== '0' && amount !== '' && amount !== '0.' && tokenSwap.swapType != SwapType.EXTERNAL)
+              toggleReviewModal(true)
+          }}
+        >
           {tokenSwap.swapType === SwapType.EXTERNAL ? (
-            <TextWrapper>
-              Swap on firebird
-              <IconWrapper>
-                <ArrowUpRight />
-              </IconWrapper>
-            </TextWrapper>
-          ) : tokenSwap.swapType != SwapType.MINT ? (
+            <ExternalLink href={firebirdLink}>
+              <TextWrapper>
+                Swap on firebird
+                <IconWrapper>
+                  <ArrowUpRight />
+                </IconWrapper>
+              </TextWrapper>
+            </ExternalLink>
+          ) : tokenSwap.swapType === SwapType.STABLEPOOL ? (
             'Swap'
           ) : (
             'Mint'
           )}
-        </ExternalLink>
-      </MainButton>
+        </MainButton>
+      </Link>
     )
   }
 
@@ -358,14 +413,26 @@ export default function Swap() {
 
               <InputBox
                 currency={outputCurrency}
-                value={formattedAmountOut == '0' ? '' : formattedAmountOut}
+                value={formattedOutputAmount}
                 onChange={() => console.log('')}
                 onTokenSelect={() => {
                   toggleTokensModal(true)
                   setField('output')
                 }}
-                disabled
               />
+              {tokenSwap.swapType === SwapType.MINT &&
+                firebird &&
+                firebird.outputTokenAmount &&
+                amount &&
+                buyOnFirebird && (
+                  <FirebirdInputBox
+                    currency={outputCurrency}
+                    firebirdLink={firebirdLink}
+                    value={formatBalance(firebird.outputTokenAmount, 7)}
+                    onChange={() => console.log('')}
+                    disabled
+                  />
+                )}
               <div style={{ marginTop: '30px' }}></div>
               {getApproveButton()}
               {getActionButton()}
@@ -400,18 +467,22 @@ export default function Swap() {
       />
 
       <DefaultReviewModal
-        title="Review Mint Transaction"
+        title={tokenSwap.swapType === SwapType.MINT ? 'Review Mint Transaction' : 'Review Swap Transaction'}
         isOpen={isOpenReviewModal}
         toggleModal={(action: boolean) => toggleReviewModal(action)}
-        inputTokens={[LQDR_TOKEN]}
-        outputTokens={[cLQDR_TOKEN]}
+        inputTokens={[inputCurrency]}
+        outputTokens={[outputCurrency]}
         amountsIn={[amount]}
         amountsOut={[formattedAmountOut]}
         info={[]}
         data={''}
-        buttonText={'Confirm Mint'}
+        buttonText={tokenSwap.swapType === SwapType.MINT ? 'Confirm Mint' : 'Confirm Swap'}
         awaiting={awaitingMintConfirmation}
-        summary={`Minting ${formattedAmountOut} cLQDR by ${amount} LQDR`}
+        summary={
+          tokenSwap.swapType === SwapType.MINT
+            ? `Minting ${formattedAmountOut} ${outputCurrency.symbol} by ${amount} ${inputCurrency.symbol}`
+            : `Swapping ${amount} ${inputCurrency.symbol} for ${formattedAmountOut} ${outputCurrency.symbol}`
+        }
         handleClick={handleMint}
       />
     </>
