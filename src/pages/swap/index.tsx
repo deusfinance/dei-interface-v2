@@ -23,7 +23,7 @@ import useWeb3React from 'hooks/useWeb3'
 import { useSupportedChainId } from 'hooks/useSupportedChainId'
 import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
 import { useDepositLQDRCallback } from 'hooks/useClqdrCallback'
-import { useCalcSharesFromAmount, useClqdrData } from 'hooks/useClqdrPage'
+import { useCalcSharesFromAmount } from 'hooks/useClqdrPage'
 
 import { DotFlashing } from 'components/Icons'
 import InputBox from 'components/InputBox'
@@ -50,10 +50,11 @@ import { StablePools } from 'constants/sPools'
 import { useSwapAmountsOut } from 'hooks/useSwapPage'
 import { useFetchFirebirdData } from 'hooks/useFirebirdPage'
 import FirebirdInputBox from 'components/App/Swap/FirebirdInputBox'
-import DefaultReviewModal from 'components/ReviewModal/DefaultReviewModal'
 import Link from 'next/link'
 import { useMintPage } from 'hooks/useMintPage'
 import { SupportedChainId } from 'constants/chains'
+import ReviewModal from 'components/ReviewModal/ReviewModal'
+import useSwapCallback from 'hooks/useSwapCallback'
 
 const Wrapper = styled(MainWrapper)`
   margin-top: 68px;
@@ -167,12 +168,16 @@ export default function Swap() {
 
   const [awaitingApproveConfirmation, setAwaitingApproveConfirmation] = useState<boolean>(false)
   const [awaitingMintConfirmation, setAwaitingMintConfirmation] = useState<boolean>(false)
+  const [awaitingSwapConfirmation, setAwaitingSwapConfirmation] = useState<boolean>(false)
 
   const debouncedAmount = useDebounce(amount, 500)
   const inputCurrencyBalance = useCurrencyBalance(account ?? undefined, inputCurrency)
   const token1Amount = useMemo(() => {
     return tryParseAmount(amount, inputCurrency || undefined)
   }, [amount, inputCurrency])
+  const token2Amount = useMemo(() => {
+    return tryParseAmount(formattedOutputAmount, outputCurrency || undefined)
+  }, [formattedOutputAmount, outputCurrency])
 
   // firebird hooks
   const firebird = useFetchFirebirdData(debouncedAmount, inputCurrency || LQDR_TOKEN, outputCurrency || cLQDR_TOKEN)
@@ -246,36 +251,33 @@ export default function Swap() {
     stablePool
   )
 
+  const {
+    state: swapCallbackState,
+    callback: swapCallback,
+    error: swapCallbackError,
+  } = useSwapCallback(
+    inputCurrency,
+    outputCurrency,
+    token1Amount,
+    token2Amount,
+    stablePool,
+    Number(useUserSlippageTolerance()),
+    20
+  )
+
   // clqdr mint hooks
   const clqdrMintOutputAmount = useCalcSharesFromAmount(amount)
-  const { mintRate: cLqdrMintRate } = useClqdrData()
   const { state: mintCallbackState, callback: mintCallback, error: mintCallbackError } = useDepositLQDRCallback(amount)
 
   // dei mint hooks
   const {
-    amountIn1,
-    amountIn2,
     amountOut: deiMintOutputAmount,
     onUserInput1,
-    onUserInput2,
     onUserOutput,
   } = useMintPage(
     Tokens.USDC[SupportedChainId.FANTOM],
     Tokens.DEUS[SupportedChainId.FANTOM],
     Tokens['DEI'][SupportedChainId.FANTOM]
-  )
-
-  console.log(
-    'output',
-    'amountIn1',
-    amountIn1,
-    'amountIn2',
-    amountIn2,
-    'amountOut',
-    deiMintOutputAmount
-    // onUserInput1,
-    // onUserInput2,
-    // onUserOutput
   )
 
   // set output amount based on selected token swap
@@ -288,13 +290,29 @@ export default function Swap() {
       amount ? setFormattedOutputAmount(firebird?.outputTokenAmount || '') : setFormattedOutputAmount('')
   }, [tokenSwap, deiMintOutputAmount, clqdrMintOutputAmount, stablePoolAmountOut, amount, firebird])
 
-  const spender = useMemo(() => (chainId ? CLQDR_ADDRESS[chainId] : undefined), [chainId])
+  const spender = useMemo(
+    () =>
+      chainId
+        ? tokenSwap.swapType === SwapType.STABLEPOOL
+          ? stablePool
+            ? stablePool.swapFlashLoan
+            : undefined
+          : CLQDR_ADDRESS[chainId]
+        : undefined,
+    [chainId, stablePool, tokenSwap]
+  )
   const [approvalState, approveCallback] = useApproveCallback(inputCurrency ?? undefined, spender)
 
   const [showApprove, showApproveLoader] = useMemo(() => {
     const show = inputCurrency && approvalState !== ApprovalState.APPROVED && !!amount
     return [show, show && approvalState === ApprovalState.PENDING]
   }, [inputCurrency, approvalState, amount])
+
+  const summaryText = useMemo(() => {
+    return tokenSwap.swapType === SwapType.MINT
+      ? `Minting ${formattedOutputAmount} ${outputCurrency.symbol} from ${amount} ${inputCurrency.symbol}`
+      : `Swapping ${amount} ${inputCurrency.symbol} for ${formattedOutputAmount} ${outputCurrency.symbol}`
+  }, [tokenSwap, inputCurrency, outputCurrency, amount, formattedOutputAmount])
 
   const insufficientBalance = useMemo(() => {
     if (!token1Amount) return false
@@ -316,6 +334,28 @@ export default function Swap() {
     await approveCallback()
     setAwaitingApproveConfirmation(false)
   }
+
+  const handleSwap = useCallback(async () => {
+    console.log('called handleSwap')
+    console.log(swapCallbackState, swapCallbackError)
+    if (!swapCallback) return
+    try {
+      setAwaitingSwapConfirmation(true)
+      const txHash = await swapCallback()
+      setAwaitingSwapConfirmation(false)
+      console.log({ txHash })
+      toggleReviewModal(false)
+      setAmount('')
+    } catch (e) {
+      setAwaitingSwapConfirmation(false)
+      toggleWarningModal(true)
+      toggleReviewModal(false)
+      if (e instanceof Error) {
+      } else {
+        console.error(e)
+      }
+    }
+  }, [swapCallbackState, swapCallback, swapCallbackError])
 
   const handleMint = useCallback(async () => {
     console.log('called handleMint')
@@ -349,7 +389,6 @@ export default function Swap() {
   }
 
   function handleInputChange(value: string) {
-    console.log('clicked')
     setAmount(value)
     onUserInput1(amount)
   }
@@ -390,6 +429,19 @@ export default function Swap() {
   function getActionButton(): JSX.Element | null {
     if (!chainId || !account) return <ConnectWallet />
     else if (showApprove) return null
+    else if (tokenSwap.swapType === SwapType.EXTERNAL)
+      return (
+        <MainButton>
+          <ExternalLink href={firebirdLink}>
+            <TextWrapper>
+              Swap on firebird
+              <IconWrapper>
+                <ArrowUpRight />
+              </IconWrapper>
+            </TextWrapper>
+          </ExternalLink>
+        </MainButton>
+      )
     else if (insufficientBalance) return <MainButton disabled>Insufficient {inputCurrency?.symbol} Balance</MainButton>
     else if (awaitingMintConfirmation) {
       return (
@@ -407,20 +459,7 @@ export default function Swap() {
               toggleReviewModal(true)
           }}
         >
-          {tokenSwap.swapType === SwapType.EXTERNAL ? (
-            <ExternalLink href={firebirdLink}>
-              <TextWrapper>
-                Swap on firebird
-                <IconWrapper>
-                  <ArrowUpRight />
-                </IconWrapper>
-              </TextWrapper>
-            </ExternalLink>
-          ) : tokenSwap.swapType === SwapType.STABLEPOOL ? (
-            'Swap'
-          ) : (
-            'Mint'
-          )}
+          {tokenSwap.swapType === SwapType.STABLEPOOL ? 'Swap' : 'Mint'}
         </MainButton>
       </Link>
     )
@@ -501,10 +540,10 @@ export default function Swap() {
       <WarningModal
         isOpen={isOpenWarningModal}
         toggleModal={(action: boolean) => toggleWarningModal(action)}
-        summary={['Transaction rejected', `Minting ${amount} cLQDR by ${amount} LQDR`]}
+        summary={['Transaction rejected', summaryText]}
       />
 
-      <DefaultReviewModal
+      <ReviewModal
         title={tokenSwap.swapType === SwapType.MINT ? 'Review Mint Transaction' : 'Review Swap Transaction'}
         isOpen={isOpenReviewModal}
         toggleModal={(action: boolean) => toggleReviewModal(action)}
@@ -515,13 +554,9 @@ export default function Swap() {
         info={[]}
         data={''}
         buttonText={tokenSwap.swapType === SwapType.MINT ? 'Confirm Mint' : 'Confirm Swap'}
-        awaiting={awaitingMintConfirmation}
-        summary={
-          tokenSwap.swapType === SwapType.MINT
-            ? `Minting ${formattedOutputAmount} ${outputCurrency.symbol} from ${amount} ${inputCurrency.symbol}`
-            : `Swapping ${amount} ${inputCurrency.symbol} for ${formattedOutputAmount} ${outputCurrency.symbol}`
-        }
-        handleClick={handleMint}
+        awaiting={tokenSwap.swapType === SwapType.MINT ? awaitingMintConfirmation : awaitingSwapConfirmation}
+        summary={summaryText}
+        handleClick={tokenSwap.swapType === SwapType.MINT ? handleMint : handleSwap}
       />
     </>
   )
