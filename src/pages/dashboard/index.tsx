@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { Container } from 'components/App/StableCoin'
 import { RowCenter } from 'components/Row'
 import Stats from 'components/App/Dashboard/Stats'
-import MigrationNav from 'components/App/Dashboard/MigrationNav'
+import NotificationBox from 'components/App/Dashboard/NotificationBox'
 import Account from 'components/App/Dashboard/Account'
 import { useWeb3NavbarOption } from 'state/web3navbar/hooks'
 import Staking from 'components/App/Dashboard/Staking'
@@ -40,7 +40,12 @@ export default function Dashboard() {
   return (
     <Container>
       <Wrapper>
-        <MigrationNav />
+        <NotificationBox
+          source="vDEUS NFT"
+          destination="vDEUS ERC20"
+          readMore="http://www.google.com"
+          migrationLink="https://www.google.com"
+        />
         <Account />
         {results.length !== 0 && <Staking stakings={results} />}
         <Stats />
