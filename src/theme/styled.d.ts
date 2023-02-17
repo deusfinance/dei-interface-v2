@@ -40,6 +40,7 @@ export interface Colors {
   primary5: Color
   primary6: Color
   primary7: Color
+  primary8: Color
 
   primaryText1: Color
 
@@ -59,6 +60,7 @@ export interface Colors {
   blue1: Color
   blue2: Color
   darkPink: Color
+  darkOrange: Color
 
   error: Color
   success: Color

@@ -97,6 +97,7 @@ function colors(themeName: SupportedThemes): Colors {
       primary5: 'linear-gradient(92.33deg, #8f3e5c -10.26%, #a97d4d 80%)',
       primary6: 'linear-gradient(-90deg, #B63562 10%, #CF8D49 90%)',
       primary7: 'linear-gradient(90deg, #B63562 10%, #CF8D49 90%)',
+      primary8: 'linear-gradient(90deg, #F78C2A 0%, #F34038 100%)',
 
       // color text
       primaryText1: '#FFB463',
@@ -117,6 +118,7 @@ function colors(themeName: SupportedThemes): Colors {
       blue1: '#0068FC',
       blue2: '#0068FC',
       darkPink: '#de4a7b',
+      darkOrange: '#391D12',
 
       error: '#DF1F38',
       success: '#007D35',
@@ -165,6 +167,7 @@ function colors(themeName: SupportedThemes): Colors {
       primary5: 'linear-gradient(-92.33deg, #421D2D -10.26%, #493625 80%)',
       primary6: 'linear-gradient(-90deg, #B63562 10%, #CF8D49 90%)',
       primary7: 'linear-gradient(90deg, #ff538f 10%, #ffb56c 90%)',
+      primary8: 'linear-gradient(90deg, #F78C2A 0%, #F34038 100%)',
       // color text
       primaryText1: '#1749FA',
 
@@ -184,6 +187,7 @@ function colors(themeName: SupportedThemes): Colors {
       blue1: '#2172E5',
       blue2: '#5199FF',
       darkPink: '#de4a7b',
+      darkOrange: '#391D12',
 
       error: '#FD4040',
       success: '#27AE60',
