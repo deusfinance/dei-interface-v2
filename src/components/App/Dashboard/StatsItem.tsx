@@ -23,25 +23,27 @@ const Item = styled.div`
   }
   &:nth-child(3n):after {
     content: '';
-    border-right: none;
+    border-right: none !important;
   }
   ${({ theme }) => theme.mediaWidth.upToMedium`
     padding:0 12px;
-    width: 50%;
-    &:nth-child(3n):after {
-      content: '';
-    position: absolute;
-    display: flex;
-    height: 100%;
-    width: 1px;
-    border-right: 1px solid ${({ theme }) => theme.border1};
-    right: 24px;
-    top: 0;
+    width: 30%;
+    &:nth-child(3n){
+      border-right:none !important;
     }
-    &:nth-child(2n):after {
-        border-right: none;
-      }
   `};
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+  &:nth-child(3n){
+    border-right: none !important;
+    &:after {
+    content: '';
+    border-right: none !important
+  }
+  }
+  `}
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    &:after{border-right:none;}
+  `}
 `
 
 const Name = styled.div`

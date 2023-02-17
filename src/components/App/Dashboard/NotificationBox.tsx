@@ -5,22 +5,23 @@ import { Row, RowBetween } from 'components/Row'
 import Column from 'components/Column'
 import ImageWithFallback from 'components/ImageWithFallback'
 import ExternalLinkIcon from '/public/static/images/pages/stake/down.svg'
+import Link from 'next/link'
 // import MigrationHeaderIcon from '/public/static/images/pages/dashboard/migration-header.svg'
 
-const MigrationContainer = styled(RowBetween)`
+const NotificationBoxContainer = styled(RowBetween)`
   padding: 20px;
   border-radius: 12px;
   padding: 2px;
   background-image: linear-gradient(90deg, rgba(224, 151, 76, 0.52) 0%, rgba(201, 63, 111, 0.52) 100%);
 `
-const MigrationWrapper = styled(RowBetween)`
+const NotificationBoxWrapper = styled(RowBetween)`
   padding: 20px 25px;
   border-radius: 12px;
   background-color: ${({ theme }) => theme.bg3};
 `
-const MigrationHeaderContainer = styled(Row)``
+const NotificationBoxHeaderContainer = styled(Row)``
 
-const MigrationHeader = styled(Row)`
+const NotificationBoxHeader = styled(Row)`
   font-size: 1rem;
   font-weight: 600;
   & > p:first-of-type {
@@ -34,7 +35,7 @@ const MigrationHeader = styled(Row)`
     margin-left: 1ch;
   }
 `
-const MigrationLink = styled(ExternalLink)`
+const NotificationBoxLink = styled(ExternalLink)`
   display: flex;
   margin-top: 14px;
   color: ${({ theme }) => theme.bg6};
@@ -48,7 +49,7 @@ const MigrationLink = styled(ExternalLink)`
     text-decoration: underline;
   }
 `
-const MigrationHeaderImage = styled.div`
+const NotificationBoxHeaderImage = styled.div`
   transform: translateY(20px);
 `
 const ButtonText = styled.span`
@@ -76,34 +77,49 @@ const GradientButton = styled(PrimaryButton)`
   padding: 2px;
   width: fit-content;
   border-radius: 12px;
+  display: flex;
+  justify-content: flex-end;
 `
 
-const MigrationNav = () => {
+const NotificationBox = ({
+  source,
+  destination,
+  readMore,
+  migrationLink,
+}: {
+  source: string
+  destination: string
+  readMore: string
+  migrationLink: string
+}) => {
   return (
-    <MigrationContainer>
-      <MigrationWrapper>
-        <MigrationHeaderContainer>
+    <NotificationBoxContainer>
+      <NotificationBoxWrapper>
+        <NotificationBoxHeaderContainer>
           <Column>
-            <MigrationHeader>
-              <p>Migrate form vDEUS NFT to </p>
-              <p>vDEUS ERC20</p>
-            </MigrationHeader>
-            <MigrationLink href="/">
-              read more about vDEUS ERC20 <ImageWithFallback alt="arrow" width={8} height={8} src={ExternalLinkIcon} />
-            </MigrationLink>
+            <NotificationBoxHeader>
+              <p>Migrate form {source} to </p>
+              <p>{destination}</p>
+            </NotificationBoxHeader>
+            <NotificationBoxLink href={readMore}>
+              read more about {destination}
+              <ImageWithFallback alt="arrow" width={8} height={8} src={ExternalLinkIcon} />
+            </NotificationBoxLink>
           </Column>
-          <MigrationHeaderImage>
+          <NotificationBoxHeaderImage>
             {/* <ImageWithFallback src={MigrationHeaderIcon} alt="migration" height={68} width={120} /> */}
-          </MigrationHeaderImage>
-        </MigrationHeaderContainer>
-        <GradientButton>
-          <ButtonText>
-            <p style={{ padding: '18px 23px' }}>Migrate to vDEUS ERC20</p>
-          </ButtonText>
-        </GradientButton>
-      </MigrationWrapper>
-    </MigrationContainer>
+          </NotificationBoxHeaderImage>
+        </NotificationBoxHeaderContainer>
+        <Column href={migrationLink} as={migrationLink.startsWith('/') ? Link : ExternalLink}>
+          <GradientButton>
+            <ButtonText>
+              <p style={{ padding: '18px 23px' }}>Migrate to {destination}</p>
+            </ButtonText>
+          </GradientButton>
+        </Column>
+      </NotificationBoxWrapper>
+    </NotificationBoxContainer>
   )
 }
 
-export default MigrationNav
+export default NotificationBox
