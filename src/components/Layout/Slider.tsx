@@ -37,7 +37,7 @@ import { ROUTES } from './constants'
 const Wrapper = styled.div<{ isOpen?: boolean }>`
   transition: width 0.25s;
   gap: 5px;
-  width: ${({ isOpen }) => (isOpen ? '336px' : '74px')};
+  width: ${({ isOpen }) => (isOpen ? '450px' : '74px')};
   display: flex;
   flex-direction: column;
   z-index: ${Z_INDEX.fixed};
@@ -356,6 +356,14 @@ const CustomLink = styled(ExternalLink)`
   font-weight: medium;
   font-family: 'IBM Plex Mono';
 `
+const SidebarContent = styled.div<{ isOpen: boolean }>`
+  position: fixed;
+  overflow-y: scroll;
+  height: 100%;
+  width: ${({ isOpen }) => (isOpen ? '336px' : '74px')};
+  top: 0px;
+  left: 0px;
+`
 
 export default function Slider() {
   const { account } = useWeb3React()
@@ -406,141 +414,145 @@ export default function Slider() {
   function getDefaultContent() {
     return (
       <Wrapper isOpen={isOpen}>
-        <DefaultWrapper isOpen>
-          <BurgerMenuButton isOpen={isOpen} onClick={() => setOpen((prev) => !prev)}>
-            <span />
-            <span />
-            <span />
-          </BurgerMenuButton>
-          <NavLogo2 />
-        </DefaultWrapper>
-        <Column style={{ position: 'relative', top: '62px' }}>
-          <Routes>
-            {ROUTES.map((route, index) => (
-              <SimpleLinkWrapper
-                key={route.id}
-                isOpen={isOpen}
-                className={`sidebar-link__route ${index + 1 === ROUTES.length && 'last'}`}
-                active={router.asPath === route.path}
-              >
-                <Link href={route.path} passHref>
-                  <MenuItemLinkContainer>
-                    <IconWrapper disable={router.asPath !== route.path}>
-                      <route.icon size={20} {...(route.path === '/swap' && { color: '#EBEBEC' })} />
+        <SidebarContent isOpen={isOpen}>
+          <DefaultWrapper isOpen>
+            <BurgerMenuButton isOpen={isOpen} onClick={() => setOpen((prev) => !prev)}>
+              <span />
+              <span />
+              <span />
+            </BurgerMenuButton>
+            <NavLogo2 />
+          </DefaultWrapper>
+          <Column style={{ position: 'relative', top: '62px' }}>
+            <Routes>
+              {ROUTES.map((route, index) => (
+                <SimpleLinkWrapper
+                  key={route.id}
+                  isOpen={isOpen}
+                  className={`sidebar-link__route ${index + 1 === ROUTES.length && 'last'}`}
+                  active={router.asPath === route.path}
+                >
+                  <Link href={route.path} passHref>
+                    <MenuItemLinkContainer>
+                      <IconWrapper disable={router.asPath !== route.path}>
+                        <route.icon size={20} {...(route.path === '/swap' && { color: '#EBEBEC' })} />
+                      </IconWrapper>
+                      <NavLinkContainer isOpen={isOpen} isInternal={true}>
+                        <NavLink active={router.asPath === route.path}>{route.title}</NavLink>
+                      </NavLinkContainer>
+                    </MenuItemLinkContainer>
+                  </Link>
+                </SimpleLinkWrapper>
+              ))}
+
+              <Separator />
+
+              <SimpleLinkWrapper isOpen={isOpen} className="last">
+                <MenuItemLinkContainer>
+                  <Row>
+                    <IconWrapper disable>
+                      <VeDeusIcon size={20} />
                     </IconWrapper>
-                    <NavLinkContainer isOpen={isOpen} isInternal={true}>
-                      <NavLink active={router.asPath === route.path}>{route.title}</NavLink>
-                    </NavLinkContainer>
-                  </MenuItemLinkContainer>
-                </Link>
+                    <ExternalLink
+                      style={{ fontSize: 20, padding: '0.25rem 1rem', paddingRight: '0.3rem' }}
+                      href="https://app.deus.finance/xdeus/swap"
+                    >
+                      xDEUS
+                    </ExternalLink>
+                    <ArrowUpRight />
+                  </Row>
+
+                  <NavLinkContainer isOpen={isOpen}>
+                    <Logo>
+                      <ImageWithFallback src={DEUSFINANCE} width={92} height={14} alt={`deus_finance_logo`} />
+                    </Logo>
+                  </NavLinkContainer>
+                </MenuItemLinkContainer>
               </SimpleLinkWrapper>
-            ))}
-
-            <Separator />
-
-            <SimpleLinkWrapper isOpen={isOpen} className="last">
-              <MenuItemLinkContainer>
-                <Row>
-                  <IconWrapper disable>
-                    <VeDeusIcon size={20} />
-                  </IconWrapper>
-                  <ExternalLink
-                    style={{ fontSize: 20, padding: '0.25rem 1rem', paddingRight: '0.3rem' }}
-                    href="https://app.deus.finance/xdeus/swap"
-                  >
-                    xDEUS
-                  </ExternalLink>
-                  <ArrowUpRight />
-                </Row>
-
-                <NavLinkContainer isOpen={isOpen}>
-                  <Logo>
-                    <ImageWithFallback src={DEUSFINANCE} width={92} height={14} alt={`deus_finance_logo`} />
-                  </Logo>
-                </NavLinkContainer>
-              </MenuItemLinkContainer>
-            </SimpleLinkWrapper>
-            <SimpleLinkWrapper isOpen={isOpen}>
-              <MenuItemLinkContainer>
-                <Row>
-                  <IconWrapper disable>
-                    <BridgeIcon size={20} />
-                  </IconWrapper>
-                  <ExternalLink
-                    style={{ fontSize: 20, padding: '0.25rem 1rem', paddingRight: '0.3rem' }}
-                    href="https://app.multichain.org/#/router"
-                  >
-                    Bridge
-                  </ExternalLink>
-                  <ArrowUpRight />
-                </Row>
-                <NavLinkContainer isOpen={isOpen}>
-                  <Logo>
-                    <ImageWithFallback src={MULTICHAIN} width={88} height={13} alt={`multichain_logo`} />
-                  </Logo>
-                </NavLinkContainer>
-              </MenuItemLinkContainer>
-            </SimpleLinkWrapper>
-          </Routes>
-          {isOpen && <Separator />}
-          <NavLinkContainer isOpen={isOpen} style={{ cursor: 'default' }}>
-            <PricesWrap style={{ cursor: 'default' }}>
-              <Token>
-                DEI Price
-                <Price>
-                  <DeiPriceWrap>{formatDollarAmount(parseFloat(DeiPrice), 3)}</DeiPriceWrap>
-                </Price>
-              </Token>
-              <Token>
-                DEUS Price
-                <Price>
-                  <DeusPriceWrap>{formatDollarAmount(parseFloat(DeusPrice), 2)}</DeusPriceWrap>
-                </Price>
-              </Token>
-              {hasLegacyDei && LegacyDeiPrice && (
+              <SimpleLinkWrapper isOpen={isOpen}>
+                <MenuItemLinkContainer>
+                  <Row>
+                    <IconWrapper disable>
+                      <BridgeIcon size={20} />
+                    </IconWrapper>
+                    <ExternalLink
+                      style={{ fontSize: 20, padding: '0.25rem 1rem', paddingRight: '0.3rem' }}
+                      href="https://app.multichain.org/#/router"
+                    >
+                      Bridge
+                    </ExternalLink>
+                    <ArrowUpRight />
+                  </Row>
+                  <NavLinkContainer isOpen={isOpen}>
+                    <Logo>
+                      <ImageWithFallback src={MULTICHAIN} width={88} height={13} alt={`multichain_logo`} />
+                    </Logo>
+                  </NavLinkContainer>
+                </MenuItemLinkContainer>
+              </SimpleLinkWrapper>
+            </Routes>
+            {isOpen && <Separator />}
+            <NavLinkContainer isOpen={isOpen} style={{ cursor: 'default' }}>
+              <PricesWrap style={{ cursor: 'default' }}>
                 <Token>
-                  Legacy DEI Price:
+                  DEI Price
                   <Price>
-                    <LegacyDeiPriceWrap>
-                      ${(+formatUnits(LegacyDeiPrice, USDC_TOKEN.decimals))?.toFixed(3)}
-                    </LegacyDeiPriceWrap>
+                    <DeiPriceWrap>{formatDollarAmount(parseFloat(DeiPrice), 3)}</DeiPriceWrap>
                   </Price>
                 </Token>
-              )}
-            </PricesWrap>
-          </NavLinkContainer>
-          <Separator />
-        </Column>
-
-        <NavLinkContainer isOpen={isOpen}>
-          <Column style={{ width: '100%' }}>
-            <Data>
-              <CustomLink href={'https://docs.deus.finance'} passHref>
-                <DataItems>Bug Bounty</DataItems>
-              </CustomLink>
-
-              <CustomLink href={'https://docs.deus.finance'} passHref>
-                <DataItems>
-                  Docs
-                  <ArrowUpRight />
-                </DataItems>
-              </CustomLink>
-              <CustomLink href={'https://docs.deus.finance/contracts/disclaimer'} passHref>
-                <DataItems>
-                  Terms
-                  <ArrowUpRight />
-                </DataItems>
-              </CustomLink>
-            </Data>
-
-            <Separator style={{ marginBlock: '32px', height: 1 }} />
-
-            <div style={{ width: '100%' }}>
-              <Footer />
-            </div>
+                <Token>
+                  DEUS Price
+                  <Price>
+                    <DeusPriceWrap>{formatDollarAmount(parseFloat(DeusPrice), 2)}</DeusPriceWrap>
+                  </Price>
+                </Token>
+                {hasLegacyDei && LegacyDeiPrice && (
+                  <Token>
+                    Legacy DEI Price:
+                    <Price>
+                      <LegacyDeiPriceWrap>
+                        ${(+formatUnits(LegacyDeiPrice, USDC_TOKEN.decimals))?.toFixed(3)}
+                      </LegacyDeiPriceWrap>
+                    </Price>
+                  </Token>
+                )}
+              </PricesWrap>
+            </NavLinkContainer>
+            {isOpen && <Separator />}
           </Column>
-        </NavLinkContainer>
-        {showTopBanner && <RiskNotification onClose={setShowBanner} bg={'gray'} hasInfoIcon={true} text={bannerText} />}
+
+          <NavLinkContainer isOpen={isOpen}>
+            <Column style={{ width: '100%' }}>
+              <Data>
+                <CustomLink href={'https://docs.deus.finance'} passHref>
+                  <DataItems>Bug Bounty</DataItems>
+                </CustomLink>
+
+                <CustomLink href={'https://docs.deus.finance'} passHref>
+                  <DataItems>
+                    Docs
+                    <ArrowUpRight />
+                  </DataItems>
+                </CustomLink>
+                <CustomLink href={'https://docs.deus.finance/contracts/disclaimer'} passHref>
+                  <DataItems>
+                    Terms
+                    <ArrowUpRight />
+                  </DataItems>
+                </CustomLink>
+              </Data>
+
+              <Separator style={{ marginBlock: '32px', height: 1 }} />
+
+              <div style={{ width: '100%' }}>
+                <Footer />
+              </div>
+            </Column>
+          </NavLinkContainer>
+          {showTopBanner && (
+            <RiskNotification onClose={setShowBanner} bg={'gray'} hasInfoIcon={true} text={bannerText} />
+          )}
+        </SidebarContent>
       </Wrapper>
     )
   }

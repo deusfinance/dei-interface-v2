@@ -150,6 +150,7 @@ const BalanceToken = ({ pool }: { pool: LiquidityType }) => {
   const deiPrice = useDeiPrice()
 
   const poolBalances = usePoolBalances(pool)
+
   const secondTokenPrice = (
     (poolBalances[1] * Number(pool.lpToken.symbol === 'DB-LP' ? deiPrice : deusPrice)) /
     poolBalances[0]
