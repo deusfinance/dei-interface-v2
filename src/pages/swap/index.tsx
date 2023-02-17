@@ -273,6 +273,7 @@ export default function Swap() {
   const {
     amountOut: deiMintOutputAmount,
     onUserInput1,
+    onUserInput2,
     onUserOutput,
   } = useMintPage(
     Tokens.USDC[SupportedChainId.FANTOM],
@@ -389,8 +390,8 @@ export default function Swap() {
   }
 
   function handleInputChange(value: string) {
+    onUserInput1(value)
     setAmount(value)
-    onUserInput1(amount)
   }
 
   function getApproveButton(): JSX.Element | null {
@@ -459,7 +460,7 @@ export default function Swap() {
               toggleReviewModal(true)
           }}
         >
-          {tokenSwap.swapType === SwapType.STABLEPOOL ? 'Swap' : 'Mint'}
+          {tokenSwap.swapType === SwapType.STABLEPOOL ? 'Swap' : firebird && buyOnFirebird ? 'Mint anyway' : 'Mint'}
         </MainButton>
       </Link>
     )
@@ -479,7 +480,7 @@ export default function Swap() {
               <InputBox
                 currency={inputCurrency}
                 value={amount}
-                onChange={setAmount}
+                onChange={handleInputChange}
                 onTokenSelect={() => {
                   toggleTokensModal(true)
                   setField('input')
@@ -497,19 +498,15 @@ export default function Swap() {
                   setField('output')
                 }}
               />
-              {tokenSwap.swapType === SwapType.MINT &&
-                firebird &&
-                firebird.outputTokenAmount &&
-                amount &&
-                buyOnFirebird && (
-                  <FirebirdInputBox
-                    currency={outputCurrency}
-                    firebirdLink={firebirdLink}
-                    value={formatBalance(firebird.outputTokenAmount, 7)}
-                    onChange={() => console.log('')}
-                    disabled
-                  />
-                )}
+              {tokenSwap.swapType === SwapType.MINT && firebird && buyOnFirebird && (
+                <FirebirdInputBox
+                  currency={outputCurrency}
+                  firebirdLink={firebirdLink}
+                  value={formatBalance(firebird.outputTokenAmount, 7)}
+                  onChange={() => console.log('')}
+                  disabled
+                />
+              )}
               <div style={{ marginTop: '30px' }}></div>
               {getApproveButton()}
               {getActionButton()}

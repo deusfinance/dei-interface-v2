@@ -202,28 +202,6 @@ export default function Mint() {
     outputTokenCurrency
   )
 
-  console.log(
-    'inputs',
-    'token1Currency',
-    token1Currency,
-    'token2Currency',
-    token2Currency,
-    'outputTokenCurrency',
-    outputTokenCurrency
-  )
-  console.log(
-    'output',
-    'amountIn1',
-    amountIn1,
-    'amountIn2',
-    amountIn2,
-    'amountOut',
-    amountOut,
-    onUserInput1,
-    onUserInput2,
-    onUserOutput
-  )
-
   useEffect(() => {
     if (Number(mintCollateralRatio) === 100) {
       setHasPair(false)
