@@ -88,6 +88,10 @@ const TextWrapper = styled.div`
   gap: 4px;
 `
 
+const ExtLink = styled(ExternalLink)`
+  width: 100%;
+`
+
 enum SwapType {
   MINT,
   EXTERNAL,
@@ -412,16 +416,16 @@ export default function Swap() {
       return <MainButton onClick={() => handleApprove()}>Allow us to spend {inputCurrency?.symbol}</MainButton>
     else if (showApprove && tokenSwap.swapType === SwapType.EXTERNAL)
       return (
-        <MainButton>
-          <ExternalLink href={firebirdLink}>
+        <ExtLink href={firebirdLink}>
+          <MainButton>
             <TextWrapper>
               Swap on firebird
               <IconWrapper>
                 <ArrowUpRight />
               </IconWrapper>
             </TextWrapper>
-          </ExternalLink>
-        </MainButton>
+          </MainButton>
+        </ExtLink>
       )
 
     return null
@@ -432,16 +436,16 @@ export default function Swap() {
     else if (showApprove) return null
     else if (tokenSwap.swapType === SwapType.EXTERNAL)
       return (
-        <MainButton>
-          <ExternalLink href={firebirdLink}>
+        <ExtLink href={firebirdLink}>
+          <MainButton>
             <TextWrapper>
               Swap on firebird
               <IconWrapper>
                 <ArrowUpRight />
               </IconWrapper>
             </TextWrapper>
-          </ExternalLink>
-        </MainButton>
+          </MainButton>
+        </ExtLink>
       )
     else if (insufficientBalance) return <MainButton disabled>Insufficient {inputCurrency?.symbol} Balance</MainButton>
     else if (awaitingMintConfirmation) {
