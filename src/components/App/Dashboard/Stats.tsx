@@ -16,7 +16,7 @@ import Chart from './Chart'
 import { CollateralPool, DEI_ADDRESS, escrow, USDCReserves3 } from 'constants/addresses'
 import { SupportedChainId } from 'constants/chains'
 import { ChainInfo } from 'constants/chainInfo'
-import { Loader, Info as InfoImage } from 'components/Icons'
+import { Loader, Info as InfoImage, Link } from 'components/Icons'
 import { ExternalLink } from 'components/Link'
 import ExternalLinkIcon from '/public/static/images/pages/common/down.svg'
 import useDeusMarketCapStats from 'hooks/useMarketCapStats'
@@ -201,6 +201,10 @@ const InfoIcon = styled(InfoImage)`
   color: ${({ theme }) => theme.text1} !important;
 `
 
+const ExtLink = styled(ExternalLink)`
+  display: flex;
+`
+
 enum DASHBOARD_STATS_TITLES {
   DEI_TOTAL_RESERVES = 'Total Reserve Assets',
   DEUS_CIRCULATING_SUPPLY = 'Deus Circulating Supply',
@@ -247,6 +251,7 @@ export default function Stats() {
 
   const [modalId, setModalId] = useState(DASHBOARD_STATS_TITLES.DEI_TOTAL_RESERVES)
   const [toggleDashboardModal, setToggleDashboardModal] = useState(false)
+  //const [toggleInfoModal, setToggleInfoModal] = useState(false)
 
   function getModalHeader() {
     return <ModalHeader title={modalId} onClose={() => setToggleDashboardModal(false)} />
@@ -319,7 +324,10 @@ export default function Stats() {
             <div>DEUS Circulating Supply is calculated as:</div>
             <ModalText>Circulating Supply = Total Supply - Non Circulating Supply</ModalText>
             <ModalInfoWrapper>
-              <p>Total Supply</p>
+              <p onClick={() => handleDashboardModal(DASHBOARD_STATS_TITLES.DEUS_TOTAL_SUPPLY)}>
+                Total Supply
+                <Link style={{ marginTop: '6px', marginLeft: '6px' }} />
+              </p>
               {deusTotalSupply === null ? (
                 <Loader />
               ) : (
@@ -379,7 +387,10 @@ export default function Stats() {
               )}
             </ModalInfoWrapper>
             <ModalInfoWrapper>
-              <p>Balance held in deprecated veDeus contract</p>
+              <ExtLink href="https://ftmscan.com/token/0xde5ed76e7c05ec5e4572cfc88d1acea165109e44?a=0x8b42c6cb07c8dd5fe5db3ac03693867afd11353d">
+                <p>Balance in deprecated veDeus contract</p>
+                <Link style={{ marginTop: '6px', marginLeft: '6px' }} />
+              </ExtLink>
               {deusSupplyInVeDeusContract === null ? (
                 <Loader />
               ) : (
@@ -587,6 +598,14 @@ export default function Stats() {
       >
         {getModalContent()}
       </Modal>
+      {/* <Modal
+        width="400px"
+        isOpen={toggleInfoModal}
+        onBackgroundClick={() => setToggleInfoModal(false)}
+        onEscapeKeydown={() => setToggleInfoModal(false)}
+      >
+        {getModalContent()}
+      </Modal> */}
     </>
   )
 }
