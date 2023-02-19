@@ -3,7 +3,7 @@ import { ExternalLink } from 'components/Link'
 import { ToolTip } from 'components/ToolTip'
 import styled from 'styled-components'
 
-const Item = styled.div`
+const Item = styled.div<{ hasOnClick?: any }>`
   display: inline-block;
   padding: 0 24px;
   border-right: 1px solid ${({ theme }) => theme.border1};
@@ -14,6 +14,14 @@ const Item = styled.div`
   ${({ theme }) => theme.mediaWidth.upToMedium`
     padding:0 12px;
     width: 50%;
+  `};
+
+  ${({ hasOnClick }) =>
+    hasOnClick &&
+    `
+    &:hover {
+      cursor: pointer;
+    }
   `};
 `
 
@@ -57,6 +65,7 @@ export default function StatsItem({
   value,
   href,
   onClick,
+  hasOnClick,
   hasToolTip,
   toolTipInfo,
 }: {
@@ -64,12 +73,13 @@ export default function StatsItem({
   value: string
   href?: string
   onClick?: () => void
+  hasOnClick?: boolean
   hasToolTip?: boolean
   toolTipInfo?: string
 }) {
   const isLink = !!href
   return (
-    <Item onClick={onClick}>
+    <Item onClick={onClick} hasOnClick={hasOnClick}>
       <Name>{name}</Name>
       {isLink ? (
         <ExternalLink href={href} passHref>
