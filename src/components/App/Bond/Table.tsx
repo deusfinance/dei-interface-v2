@@ -260,12 +260,12 @@ export default function Table({
 }
 
 function TableRow({ nft, index, isMobile }: { nft: BondNFT; index: number; isMobile?: boolean }) {
-  const { tokenId, deiAmount, redeemTime } = nft
+  const { tokenId, redeemTime } = nft
   const { chainId } = useWeb3React()
-  const [diff, day] = useMemo(() => {
-    if (!nft.redeemTime) return [null, null]
-    const { diff, day } = getRemainingTime(nft.redeemTime)
-    return [diff, day]
+  const day = useMemo(() => {
+    if (!nft.redeemTime) return null
+    const { day } = getRemainingTime(nft.redeemTime)
+    return day
   }, [nft])
 
   const insufficientBalance = false

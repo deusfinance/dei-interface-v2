@@ -26,7 +26,6 @@ import { useBlockTimestamp } from 'state/application/hooks'
 export default function Updater(): null {
   const { chainId } = useWeb3React()
   const dispatch = useAppDispatch()
-  // const DeiContract = useDeiContract()
   const CollateralPoolContract = useCollateralPoolContract()
   const TwapOracle = useTwapOracleContract()
   const isSupported: boolean = useMemo(() => {

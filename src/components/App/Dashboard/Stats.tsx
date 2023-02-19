@@ -6,23 +6,21 @@ import BG_DASHBOARD from '/public/static/images/pages/dashboard/bg.svg'
 
 import { useDeiPrice } from 'state/dashboard/hooks'
 import { useDeiStats } from 'hooks/useDeiStats'
-import { useVestedAPY } from 'hooks/useVested'
 
 import { formatAmount, formatBalance, formatDollarAmount } from 'utils/numbers'
-import { getMaximumDate } from 'utils/vest'
 
 import { Modal, ModalHeader } from 'components/Modal'
 import { RowBetween } from 'components/Row'
 import StatsItem from './StatsItem'
 import Chart from './Chart'
-import { CollateralPool, DEI_ADDRESS, USDCReserves4 } from 'constants/addresses'
+import { CollateralPool, DEI_ADDRESS, USDCReserves1 } from 'constants/addresses'
 import { SupportedChainId } from 'constants/chains'
-import { ChainInfo } from 'constants/chainInfo'
 import { Loader, Info as InfoImage, Link } from 'components/Icons'
 import { ExternalLink } from 'components/Link'
 import ExternalLinkIcon from '/public/static/images/pages/common/down.svg'
 import useDeusMarketCapStats from 'hooks/useMarketCapStats'
 import { ToolTip } from 'components/ToolTip'
+import { ExplorerDataType, getExplorerLink } from 'utils/explorers'
 
 const Wrapper = styled(RowBetween)`
   background: ${({ theme }) => theme.bg0};
@@ -137,6 +135,8 @@ const ModalWrapper = styled.div`
   display: flex;
   flex-flow: column nowrap;
   justify-content: flex-start;
+  font-size: 14px;
+  line-height: 20px;
   gap: 8px;
   width: 100%;
   padding: 1.5rem;
@@ -152,6 +152,7 @@ const ModalWrapper = styled.div`
 
 const ModalInfoWrapper = styled(RowBetween)<{
   active?: boolean
+  hasOnClick?: boolean
 }>`
   align-items: center;
   margin-top: 1px;
@@ -174,6 +175,14 @@ const ModalInfoWrapper = styled(RowBetween)<{
     active &&
     `
     border: 1px solid ${theme.text1};
+  `}
+
+  ${({ hasOnClick }) =>
+    hasOnClick &&
+    `
+    &:hover{
+      cursor: pointer;
+    }
   `}
 `
 
@@ -208,6 +217,10 @@ const InfoIcon = styled(InfoImage)`
 
 const ExtLink = styled(ExternalLink)`
   display: flex;
+
+  &:hover {
+    cursor: pointer !important;
+  }
 `
 
 enum DASHBOARD_STATS_TITLES {
@@ -215,7 +228,12 @@ enum DASHBOARD_STATS_TITLES {
   DEUS_CIRCULATING_SUPPLY = 'Deus Circulating Supply',
   DEUS_TOTAL_SUPPLY = 'Deus Total Supply',
   XDEUS_CIRCULATING_SUPPLY = 'xDEUS Circulating Supply',
+  DEI_CIRCULATING_SUPPLY = 'DEI Circulating Supply',
+  DEI_USDC_BACKING_PER_DEI = 'USDC Backing per DEI',
 }
+
+const getContractExplorerLink = (address: string, dataType = ExplorerDataType.TOKEN) =>
+  getExplorerLink(SupportedChainId.FANTOM, dataType, address)
 
 export default function Stats() {
   //const deusPrice = useDeusPrice()
@@ -224,15 +242,11 @@ export default function Stats() {
     collateralRatio,
     circulatingSupply,
     totalUSDCReserves,
-    totalProtocolHoldings,
-    usdcReserves3,
-    usdcReserves4,
+    usdcReserves1,
     usdcPoolReserves,
-    escrowReserve,
     seigniorage,
   } = useDeiStats()
 
-  const { lockedVeDEUS } = useVestedAPY(undefined, getMaximumDate())
   const deiPrice = useDeiPrice()
   const {
     deusPrice,
@@ -275,26 +289,18 @@ export default function Stats() {
             </div>
             <ModalInfoWrapper>
               <a
-                href={
-                  ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl +
-                  '/address/' +
-                  USDCReserves4[SupportedChainId.FANTOM]
-                }
+                href={getContractExplorerLink(USDCReserves1[SupportedChainId.FANTOM], ExplorerDataType.ADDRESS)}
                 target={'_blank'}
                 rel={'noreferrer'}
               >
                 Reserves 1
               </a>
-              {usdcReserves4 === null ? <Loader /> : <ModalItemValue>{formatAmount(usdcReserves4, 2)}</ModalItemValue>}
+              {usdcReserves1 === null ? <Loader /> : <ModalItemValue>{formatAmount(usdcReserves1, 2)}</ModalItemValue>}
             </ModalInfoWrapper>
 
             <ModalInfoWrapper>
               <a
-                href={
-                  ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl +
-                  '/address/' +
-                  CollateralPool[SupportedChainId.FANTOM]
-                }
+                href={getContractExplorerLink(CollateralPool[SupportedChainId.FANTOM], ExplorerDataType.ADDRESS)}
                 target={'_blank'}
                 rel={'noreferrer'}
               >
@@ -308,11 +314,7 @@ export default function Stats() {
             </ModalInfoWrapper>
             <ModalInfoWrapper active>
               <p>Total USDC holdings</p>
-              {totalProtocolHoldings === null ? (
-                <Loader />
-              ) : (
-                <ModalItemValue>{formatAmount(usdcPoolReserves + usdcReserves4, 2)}</ModalItemValue>
-              )}
+              <ModalItemValue>{formatAmount(totalUSDCReserves, 2)}</ModalItemValue>
             </ModalInfoWrapper>
           </ModalWrapper>
         )
@@ -321,7 +323,7 @@ export default function Stats() {
           <ModalWrapper>
             <div>DEUS Circulating Supply is calculated as:</div>
             <ModalText>Circulating Supply = Total Supply - Non Circulating Supply</ModalText>
-            <ModalInfoWrapper>
+            <ModalInfoWrapper hasOnClick={true}>
               <p onClick={() => handleDashboardModal(DASHBOARD_STATS_TITLES.DEUS_TOTAL_SUPPLY)}>
                 Total Supply
                 <Link style={{ marginTop: '6px', marginLeft: '6px' }} />
@@ -385,8 +387,11 @@ export default function Stats() {
               )}
             </ModalInfoWrapper>
             <ModalInfoWrapper>
-              <ExtLink href="https://ftmscan.com/token/0xde5ed76e7c05ec5e4572cfc88d1acea165109e44?a=0x8b42c6cb07c8dd5fe5db3ac03693867afd11353d">
-                <p>Balance in deprecated veDeus contract</p>
+              <ExtLink
+                style={{ textDecoration: 'underline' }}
+                href="https://ftmscan.com/token/0xde5ed76e7c05ec5e4572cfc88d1acea165109e44?a=0x8b42c6cb07c8dd5fe5db3ac03693867afd11353d"
+              >
+                Balance in deprecated veDeus contract
                 <Link style={{ marginTop: '6px', marginLeft: '6px' }} />
               </ExtLink>
               {deusSupplyInVeDeusContract === null ? (
@@ -446,6 +451,57 @@ export default function Stats() {
             </ModalInfoWrapper>
           </ModalWrapper>
         )
+      case DASHBOARD_STATS_TITLES.DEI_CIRCULATING_SUPPLY:
+        return (
+          <ModalWrapper>
+            <div>There are currently no contracts that are excluded from circulating supply, the formula is:</div>
+            <ModalText>Total Supply on Fantom = Circulating Supply</ModalText>
+            <ModalInfoWrapper active>
+              <p>Circulating Supply</p>
+              {circulatingSupply === null ? (
+                <Loader />
+              ) : (
+                <ModalItemValue>{formatAmount(circulatingSupply, 2)}</ModalItemValue>
+              )}
+            </ModalInfoWrapper>
+          </ModalWrapper>
+        )
+      case DASHBOARD_STATS_TITLES.DEI_USDC_BACKING_PER_DEI:
+        return (
+          <ModalWrapper>
+            <div>
+              USDC backing per DEI is calculated by taking the {`"Total Reserve Assets"`} USDC amount (this includes ALL
+              reserve wallets that are listed on {`"Total Reserve Assets"`}) <br /> divided by the Circulating Supply,
+              the Circulating Supply is calculated by removing all non-circulating contracts (like Bridges or Protocol
+              Owned liquidity)
+            </div>
+            <div>
+              A list of excluded supply contracts can be found when clicking on circulating supply element on the left
+              of the Dashboard.
+            </div>
+            <ModalText>USDC Backing Per DEI = Total Reserve Assets / Circulating Supply</ModalText>
+            <ModalInfoWrapper>
+              <p>Total Reserve Assets</p>
+              {totalUSDCReserves === null ? (
+                <Loader />
+              ) : (
+                <ModalItemValue>{formatAmount(totalUSDCReserves)}</ModalItemValue>
+              )}
+            </ModalInfoWrapper>
+            <ModalInfoWrapper>
+              <p>Circulating Supply</p>
+              {circulatingSupply === null ? (
+                <Loader />
+              ) : (
+                <ModalItemValue>{formatAmount(circulatingSupply, 2)}</ModalItemValue>
+              )}
+            </ModalInfoWrapper>
+            <ModalInfoWrapper active>
+              <p>USDC Backing Per DEI</p>
+              {usdcBackingPerDei === null ? <Loader /> : <ModalItemValue>{usdcBackingPerDei}</ModalItemValue>}
+            </ModalInfoWrapper>
+          </ModalWrapper>
+        )
       default:
         return null
     }
@@ -491,9 +547,7 @@ export default function Stats() {
               <StatsItem
                 name="Total Supply"
                 value={formatAmount(totalSupply, 2)}
-                href={
-                  ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/token/' + DEI_ADDRESS[SupportedChainId.FANTOM]
-                }
+                href={getContractExplorerLink(DEI_ADDRESS[SupportedChainId.FANTOM])}
               />
               <StatsItem
                 name="Seigniorage"
@@ -503,16 +557,21 @@ export default function Stats() {
               <StatsItem
                 name="Circulating Supply"
                 value={formatAmount(circulatingSupply, 2)}
-                href={
-                  ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/token/' + DEI_ADDRESS[SupportedChainId.FANTOM]
-                }
+                onClick={() => handleDashboardModal(DASHBOARD_STATS_TITLES.DEI_CIRCULATING_SUPPLY)}
+                hasOnClick={true}
               />
               <StatsItem
                 name="Total Reserve Assets"
                 value={formatDollarAmount(totalUSDCReserves, 2)}
                 onClick={() => handleDashboardModal(DASHBOARD_STATS_TITLES.DEI_TOTAL_RESERVES)}
+                hasOnClick={true}
               />
-              <StatsItem name="USDC Backing Per DEI" value={usdcBackingPerDei} />
+              <StatsItem
+                name="USDC Backing Per DEI"
+                value={usdcBackingPerDei}
+                onClick={() => handleDashboardModal(DASHBOARD_STATS_TITLES.DEI_USDC_BACKING_PER_DEI)}
+                hasOnClick={true}
+              />
             </Info>
           </StatsWrapper>
           <StatsWrapper>
@@ -527,11 +586,13 @@ export default function Stats() {
                 name="Circulating Supply"
                 value={formatAmount(deusCirculatingSupply)}
                 onClick={() => handleDashboardModal(DASHBOARD_STATS_TITLES.DEUS_CIRCULATING_SUPPLY)}
+                hasOnClick={true}
               />
               <StatsItem
                 name="Total Supply"
                 value={formatAmount(deusTotalSupply)}
                 onClick={() => handleDashboardModal(DASHBOARD_STATS_TITLES.DEUS_TOTAL_SUPPLY)}
+                hasOnClick={true}
               />
               <StatsItem
                 name="Market Cap"
@@ -549,6 +610,7 @@ export default function Stats() {
                 name="Circulating Supply"
                 value={formatAmount(xDeusCirculatingSupply)}
                 onClick={() => handleDashboardModal(DASHBOARD_STATS_TITLES.XDEUS_CIRCULATING_SUPPLY)}
+                hasOnClick={true}
               />
               <StatsItem
                 name="Market Cap"

@@ -59,25 +59,9 @@ export const veDEUS: AddressMap = {
 }
 
 /* =====================================
-                PROTOCOL HOLDINGS ADDRESS
-===================================== */
-export const ProtocolHoldings1: AddressMap = {
-  [SupportedChainId.FANTOM]: '0x0b99207afbb08ec101b5691e7d5c6faadd09a89b',
-}
-
-export const ProtocolHoldings2: AddressMap = {
-  [SupportedChainId.FANTOM]: '0x68c102aba11f5e086c999d99620c78f5bc30ecd8',
-}
-
-/* =====================================
                 USDC RESERVE ADDRESS
 ===================================== */
-
-export const USDCReserves3: AddressMap = {
-  [SupportedChainId.FANTOM]: '0x37a7a2a5FCB0DF6B8138fec7730825E92f9D8207',
-}
-
-export const USDCReserves4: AddressMap = {
+export const USDCReserves1: AddressMap = {
   [SupportedChainId.FANTOM]: '0x0092fc463b969347f2F6d18a572BDf99F61B5e8F',
 }
 
@@ -90,48 +74,12 @@ export const Multicall2: AddressMap = {
   [SupportedChainId.ARBITRUM]: '0x7F55Ad3F5659aC8Eb07E545ab04a9Ca5863f7E12',
 }
 
-export const BaseV1Factory: AddressMap = {
-  [SupportedChainId.FANTOM]: '0x3faab499b519fdc5819e3d7ed0c26111904cbc28',
-}
-
-export const BaseV1Voter: AddressMap = {
-  [SupportedChainId.FANTOM]: '0xdC819F5d05a6859D2faCbB4A44E5aB105762dbaE',
-}
-
-export const BaseV1Minter: AddressMap = {
-  [SupportedChainId.FANTOM]: '0xC4209c19b183e72A037b2D1Fb11fbe522054A90D',
-}
-
-export const LenderManager: AddressMap = {
-  [SupportedChainId.FANTOM]: '0xc02f204bab0248c694516dbaf985d40718ed4f86',
-}
-
-export const SolidAddress: AddressMap = {
-  [SupportedChainId.FANTOM]: '0xDE12c7959E1a72bbe8a5f7A1dc8f8EeF9Ab011B3',
-}
-
-export const Locker: AddressMap = {
-  [SupportedChainId.FANTOM]: '0xDE12c7959E1a72bbe8a5f7A1dc8f8EeF9Ab011B3',
-}
-
-export const SolidexLpDepositor: AddressMap = {
-  [SupportedChainId.FANTOM]: '0x26E1A0d851CF28E697870e1b7F053B605C8b060F',
-}
-
-export const Reimburse: AddressMap = {
-  [SupportedChainId.FANTOM]: '0x85B6996ab768600C14dA1464205bd6b3a864417D',
-}
-
 export const veDist: AddressMap = {
   [SupportedChainId.FANTOM]: '0x09cE8C8E2704E84750E9c1a4F54A30eF60aF0073',
 }
 
 export const DeiBonder: AddressMap = {
   [SupportedChainId.FANTOM]: '0x958C24d5cDF94fAF47cF4d66400Af598Dedc6e62',
-}
-
-export const MintProxy: AddressMap = {
-  [SupportedChainId.FANTOM]: '',
 }
 
 export const CollateralPool: AddressMap = {
