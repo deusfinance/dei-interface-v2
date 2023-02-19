@@ -10,9 +10,15 @@ export default function useDeusMarketCapStats(): {
   deusCirculatingSupply: number
   deusTotalSupply: number
   deusMarketCap: number
+  deusNonCirculatingSupply: number
+  deusSupplyInBridges: number
+  deusSupplyInVeDeusContract: number
+  deusTotalSupplyOnChain: number
   xDeusPrice: number
   xDeusCirculatingSupply: number
   xDeusMarketCap: number
+  xDeusNonCirculatingSupply: number
+  xDeusTotalSupply: number
   combinedSupply: number
   combinedMarketCap: number
   combinedProjectedSupply: number
@@ -29,27 +35,45 @@ export default function useDeusMarketCapStats(): {
   const [combinedMarketCap, setCombinedMarketCap] = useState(0)
   const [combinedProjectedSupply, setCombinedProjectedSupply] = useState(0)
   const [inflationRate, setInflationRate] = useState(0)
+  const [deusNonCirculatingSupply, setDeusNonCirculatingSupply] = useState(0)
+  const [deusSupplyInBridges, setDeusSupplyInBridges] = useState(0)
+  const [deusSupplyInVeDeusContract, setDeusSupplyInVeDeusContract] = useState(0)
+  const [deusTotalSupplyOnChain, setDeusTotalSupplyOnChain] = useState(0)
+  const [xDeusNonCirculatingSupply, setXDeusNonCirculatingSupply] = useState(0)
+  const [xDeusTotalSupply, setXDeusTotalSupply] = useState(0)
 
   useEffect(() => {
     const fetchStats = async () => {
       const response = await makeHttpRequest(DEUS_MARKETCAP_API)
-      setDeusPrice(parseFloat(response.price.deus))
-      setDeusCirculatingSupply(toBN(formatUnits(response.result.deus.total.circulatingSupply, 18)).toNumber())
-      setDeusTotalSupply(toBN(formatUnits(response.result.deus.total.totalSupply, 18)).toNumber())
-      setDeusMarketCap(parseFloat(response.result.deus.total.marketCap))
+      setDeusPrice(parseFloat(response.price.deus ?? 0))
+      setDeusCirculatingSupply(toBN(formatUnits(response.result.deus.total.circulatingSupply ?? 0, 18)).toNumber())
+      setDeusTotalSupply(toBN(formatUnits(response.result.deus.total.totalSupply ?? 0, 18)).toNumber())
+      setDeusMarketCap(parseFloat(response.result.deus.total.marketCap ?? 0))
+      setDeusNonCirculatingSupply(
+        toBN(formatUnits(response.result.deus.total.nonCirculatingSupply ?? 0, 18)).toNumber()
+      )
+      setDeusSupplyInBridges(toBN(formatUnits(response.result.deus.total.supplyInBridges ?? 0, 18)).toNumber())
+      setDeusSupplyInVeDeusContract(
+        toBN(formatUnits(response.result.deus.total.supplyInVeDeusContract ?? 0, 18)).toNumber()
+      )
+      setDeusTotalSupplyOnChain(toBN(formatUnits(response.result.deus.total.totalSupplyOnChain ?? 0, 18)).toNumber())
       setXDeusPrice(parseFloat(response.price.xdeus))
-      setXDeusCirculatingSupply(toBN(formatUnits(response.result.xdeus.total.circulatingSupply, 18)).toNumber())
-      setXDeusMarketCap(parseFloat(response.result.xdeus.total.marketCap))
+      setXDeusCirculatingSupply(toBN(formatUnits(response.result.xdeus.total.circulatingSupply ?? 0, 18)).toNumber())
+      setXDeusMarketCap(parseFloat(response.result.xdeus.total.marketCap ?? 0))
+      setXDeusNonCirculatingSupply(
+        toBN(formatUnits(response.result.xdeus.total.nonCirculatingSupply ?? 0, 18)).toNumber()
+      )
+      setXDeusTotalSupply(toBN(formatUnits(response.result.xdeus.total.totalSupply ?? 0, 18)).toNumber())
       setCombinedSupply(
-        toBN(formatUnits(response.result.deus.total.circulatingSupply, 18)).toNumber() +
-          toBN(formatUnits(response.result.xdeus.total.circulatingSupply, 18)).toNumber()
+        toBN(formatUnits(response.result.deus.total.circulatingSupply ?? 0, 18)).toNumber() +
+          toBN(formatUnits(response.result.xdeus.total.circulatingSupply ?? 0, 18)).toNumber()
       )
       setCombinedMarketCap(
-        parseFloat(response.result.deus.total.marketCap) + parseFloat(response.result.xdeus.total.marketCap)
+        parseFloat(response.result.deus.total.marketCap ?? 0) + parseFloat(response.result.xdeus.total.marketCap ?? 0)
       )
       setCombinedProjectedSupply(
-        (toBN(formatUnits(response.result.deus.total.circulatingSupply, 18)).toNumber() +
-          toBN(formatUnits(response.result.xdeus.total.circulatingSupply, 18)).toNumber()) *
+        (toBN(formatUnits(response.result.deus.total.circulatingSupply ?? 0, 18)).toNumber() +
+          toBN(formatUnits(response.result.xdeus.total.circulatingSupply ?? 0, 18)).toNumber()) *
           1.1822
       )
       setInflationRate(18.22)
@@ -62,9 +86,15 @@ export default function useDeusMarketCapStats(): {
     deusCirculatingSupply,
     deusTotalSupply,
     deusMarketCap,
+    deusNonCirculatingSupply,
+    deusSupplyInBridges,
+    deusSupplyInVeDeusContract,
+    deusTotalSupplyOnChain,
     xDeusPrice,
     xDeusCirculatingSupply,
     xDeusMarketCap,
+    xDeusNonCirculatingSupply,
+    xDeusTotalSupply,
     combinedSupply,
     combinedMarketCap,
     combinedProjectedSupply,

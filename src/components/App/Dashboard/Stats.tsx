@@ -15,10 +15,11 @@ import StatsItem from './StatsItem'
 import Chart from './Chart'
 import { CollateralPool, DEI_ADDRESS, USDCReserves1 } from 'constants/addresses'
 import { SupportedChainId } from 'constants/chains'
-import { Loader } from 'components/Icons'
+import { Loader, Info as InfoImage, Link } from 'components/Icons'
 import { ExternalLink } from 'components/Link'
 import ExternalLinkIcon from '/public/static/images/pages/common/down.svg'
 import useDeusMarketCapStats from 'hooks/useMarketCapStats'
+import { ToolTip } from 'components/ToolTip'
 import { ExplorerDataType, getExplorerLink } from 'utils/explorers'
 
 const Wrapper = styled(RowBetween)`
@@ -134,7 +135,6 @@ const ModalWrapper = styled.div`
   display: flex;
   flex-flow: column nowrap;
   justify-content: flex-start;
-  font-family: 'Inter';
   font-size: 14px;
   line-height: 20px;
   gap: 8px;
@@ -152,6 +152,7 @@ const ModalWrapper = styled.div`
 
 const ModalInfoWrapper = styled(RowBetween)<{
   active?: boolean
+  hasOnClick?: boolean
 }>`
   align-items: center;
   margin-top: 1px;
@@ -175,6 +176,18 @@ const ModalInfoWrapper = styled(RowBetween)<{
     `
     border: 1px solid ${theme.text1};
   `}
+
+  ${({ hasOnClick }) =>
+    hasOnClick &&
+    `
+    &:hover{
+      cursor: pointer;
+    }
+  `}
+`
+
+const ModalText = styled.div`
+  color: ${({ theme }) => theme.yellow3};
 `
 
 const ModalItemValue = styled.div`
@@ -192,12 +205,31 @@ const Icon = styled(Image)`
   margin-left: 4px;
 `
 
-enum DeiStatsModalType {
-  TOTAL_SUPPLY = 'Total Supply',
-  SEIGNIORAGE_SUPPLY = 'Seigniorage',
-  CIRCULATING_SUPPLY = 'Circulating Supply',
-  TOTAL_RESERVE_ASSETS = 'Total Reserve Assets',
-  USDC_BACKING_PER_DEI = 'USDC Backing Per DEI',
+const CustomTooltip = styled(ToolTip)`
+  max-width: 600px !important;
+  font-size: 0.8rem !important;
+`
+
+const InfoIcon = styled(InfoImage)`
+  margin-left: 4px;
+  color: ${({ theme }) => theme.text1} !important;
+`
+
+const ExtLink = styled(ExternalLink)`
+  display: flex;
+
+  &:hover {
+    cursor: pointer !important;
+  }
+`
+
+enum DASHBOARD_STATS_TITLES {
+  DEI_TOTAL_RESERVES = 'Total Reserve Assets',
+  DEUS_CIRCULATING_SUPPLY = 'Deus Circulating Supply',
+  DEUS_TOTAL_SUPPLY = 'Deus Total Supply',
+  XDEUS_CIRCULATING_SUPPLY = 'xDEUS Circulating Supply',
+  DEI_CIRCULATING_SUPPLY = 'DEI Circulating Supply',
+  DEI_USDC_BACKING_PER_DEI = 'USDC Backing per DEI',
 }
 
 const getContractExplorerLink = (address: string, dataType = ExplorerDataType.TOKEN) =>
@@ -221,8 +253,14 @@ export default function Stats() {
     deusCirculatingSupply,
     deusTotalSupply,
     deusMarketCap,
+    deusNonCirculatingSupply,
+    deusSupplyInBridges,
+    deusSupplyInVeDeusContract,
+    deusTotalSupplyOnChain,
     xDeusPrice,
     xDeusCirculatingSupply,
+    xDeusNonCirculatingSupply,
+    xDeusTotalSupply,
     xDeusMarketCap,
     combinedSupply,
     combinedMarketCap,
@@ -230,95 +268,206 @@ export default function Stats() {
     inflationRate,
   } = useDeusMarketCapStats()
 
-  const [deiStatType, setDeiStatType] = useState(DeiStatsModalType.TOTAL_SUPPLY)
+  const [modalId, setModalId] = useState(DASHBOARD_STATS_TITLES.DEI_TOTAL_RESERVES)
+  const [toggleDashboardModal, setToggleDashboardModal] = useState(false)
+  //const [toggleInfoModal, setToggleInfoModal] = useState(false)
 
-  function getTotalReserveModalBody() {
-    return (
-      <ModalWrapper>
-        <div>DEI Total Reserve Assets are held in multiple reserve contracts to isolate risk for security reasons.</div>
-        <div style={{ marginTop: '16px' }}>
-          Below is a list of current reserve contracts and their holdings in USDC:
-        </div>
-        <ModalInfoWrapper>
-          <a
-            href={getContractExplorerLink(USDCReserves1[SupportedChainId.FANTOM], ExplorerDataType.ADDRESS)}
-            target={'_blank'}
-            rel={'noreferrer'}
-          >
-            Reserves 1
-          </a>
-          {usdcReserves1 === null ? <Loader /> : <ModalItemValue>{formatAmount(usdcReserves1, 2)}</ModalItemValue>}
-        </ModalInfoWrapper>
-
-        <ModalInfoWrapper>
-          <a
-            href={getContractExplorerLink(CollateralPool[SupportedChainId.FANTOM], ExplorerDataType.ADDRESS)}
-            target={'_blank'}
-            rel={'noreferrer'}
-          >
-            Collateral Pool
-          </a>
-          {usdcPoolReserves === null ? (
-            <Loader />
-          ) : (
-            <ModalItemValue>{formatAmount(usdcPoolReserves, 2)}</ModalItemValue>
-          )}
-        </ModalInfoWrapper>
-        <ModalInfoWrapper active>
-          <p>Total USDC holdings</p>
-          <ModalItemValue>{formatAmount(totalUSDCReserves, 2)}</ModalItemValue>
-        </ModalInfoWrapper>
-      </ModalWrapper>
-    )
+  function getModalHeader() {
+    return <ModalHeader title={modalId} onClose={() => setToggleDashboardModal(false)} />
   }
 
-  const [toggleDashboardModal, setToggleDashboardModal] = useState(false)
-
-  const usdcBackingPerDei = useMemo(() => {
-    if (collateralRatio > 100) return '100%'
-    else if (collateralRatio < 90) return '90%'
-    return `${formatAmount(collateralRatio, 1).toString()}%`
-  }, [collateralRatio])
-
-  function getModalContent() {
-    if (deiStatType == DeiStatsModalType.TOTAL_RESERVE_ASSETS) {
-      return (
-        <>
-          <ModalHeader
-            title={DeiStatsModalType.TOTAL_RESERVE_ASSETS.toString()}
-            onClose={() => setToggleDashboardModal(false)}
-          />
-          {getTotalReserveModalBody()}
-        </>
-      )
-    }
-
-    if (deiStatType == DeiStatsModalType.CIRCULATING_SUPPLY) {
-      return (
-        <>
-          <ModalHeader
-            title={DeiStatsModalType.CIRCULATING_SUPPLY.toString()}
-            onClose={() => setToggleDashboardModal(false)}
-          />
+  function getModalBody() {
+    switch (modalId) {
+      case DASHBOARD_STATS_TITLES.DEI_TOTAL_RESERVES:
+        return (
           <ModalWrapper>
-            <div>There are currently no contracts that are excluded from circulating supply, the formula is:</div>
-            <div style={{ marginTop: '10px', marginBottom: '30px' }}>TotalSupplyFantom = CirculatingSupply</div>
+            <div>
+              DEI Total Reserve Assets are held in multiple reserve contracts to isolate risk for security reasons.
+            </div>
+            <div style={{ marginTop: '16px' }}>
+              Below is a list of current reserve contracts and their holdings in USDC:
+            </div>
+            <ModalInfoWrapper>
+              <a
+                href={getContractExplorerLink(USDCReserves1[SupportedChainId.FANTOM], ExplorerDataType.ADDRESS)}
+                target={'_blank'}
+                rel={'noreferrer'}
+              >
+                Reserves 1
+              </a>
+              {usdcReserves1 === null ? <Loader /> : <ModalItemValue>{formatAmount(usdcReserves1, 2)}</ModalItemValue>}
+            </ModalInfoWrapper>
+
+            <ModalInfoWrapper>
+              <a
+                href={getContractExplorerLink(CollateralPool[SupportedChainId.FANTOM], ExplorerDataType.ADDRESS)}
+                target={'_blank'}
+                rel={'noreferrer'}
+              >
+                Collateral Pool
+              </a>
+              {usdcPoolReserves === null ? (
+                <Loader />
+              ) : (
+                <ModalItemValue>{formatAmount(usdcPoolReserves, 2)}</ModalItemValue>
+              )}
+            </ModalInfoWrapper>
             <ModalInfoWrapper active>
-              {DeiStatsModalType.CIRCULATING_SUPPLY.toString()}
-              <ModalItemValue>{formatAmount(circulatingSupply, 2)}</ModalItemValue>
+              <p>Total USDC holdings</p>
+              <ModalItemValue>{formatAmount(totalUSDCReserves, 2)}</ModalItemValue>
             </ModalInfoWrapper>
           </ModalWrapper>
-        </>
-      )
-    }
-
-    if (deiStatType == DeiStatsModalType.USDC_BACKING_PER_DEI) {
-      return (
-        <>
-          <ModalHeader
-            title={DeiStatsModalType.USDC_BACKING_PER_DEI.toString()}
-            onClose={() => setToggleDashboardModal(false)}
-          />
+        )
+      case DASHBOARD_STATS_TITLES.DEUS_CIRCULATING_SUPPLY:
+        return (
+          <ModalWrapper>
+            <div>DEUS Circulating Supply is calculated as:</div>
+            <ModalText>Circulating Supply = Total Supply - Non Circulating Supply</ModalText>
+            <ModalInfoWrapper hasOnClick={true}>
+              <p onClick={() => handleDashboardModal(DASHBOARD_STATS_TITLES.DEUS_TOTAL_SUPPLY)}>
+                Total Supply
+                <Link style={{ marginTop: '6px', marginLeft: '6px' }} />
+              </p>
+              {deusTotalSupply === null ? (
+                <Loader />
+              ) : (
+                <ModalItemValue>{formatAmount(deusTotalSupply, 2, undefined, true)}</ModalItemValue>
+              )}
+            </ModalInfoWrapper>
+            <ModalInfoWrapper>
+              <p
+                style={{ display: 'flex' }}
+                data-for="id"
+                data-tip="Balance held in <br/>Rewarders, Gnosis wallets etc"
+              >
+                Non Circulating Supply
+                <span style={{ marginTop: '2px' }}>
+                  <InfoIcon size={12} />
+                  <CustomTooltip id="id" />
+                </span>
+              </p>
+              {deusNonCirculatingSupply === null ? (
+                <Loader />
+              ) : (
+                <ModalItemValue>{formatAmount(deusNonCirculatingSupply, 2, undefined, true)}</ModalItemValue>
+              )}
+            </ModalInfoWrapper>
+            <ModalInfoWrapper active>
+              <p>Circulating Supply</p>
+              {deusCirculatingSupply === null ? (
+                <Loader />
+              ) : (
+                <ModalItemValue>{formatAmount(deusCirculatingSupply, 2, undefined, true)}</ModalItemValue>
+              )}
+            </ModalInfoWrapper>
+          </ModalWrapper>
+        )
+      case DASHBOARD_STATS_TITLES.DEUS_TOTAL_SUPPLY:
+        return (
+          <ModalWrapper>
+            <div>DEUS Total Supply is calculated as:</div>
+            <ModalText>
+              Total Supply = Total Supply across all chains - Balance held in Bridge contracts - Balance held in
+              deprecated veDeus contract
+            </ModalText>
+            <ModalInfoWrapper>
+              <p>Total Supply across all chains</p>
+              {deusTotalSupplyOnChain === null ? (
+                <Loader />
+              ) : (
+                <ModalItemValue>{formatAmount(deusTotalSupplyOnChain, 2, undefined, true)}</ModalItemValue>
+              )}
+            </ModalInfoWrapper>
+            <ModalInfoWrapper>
+              <p>Balance held in Bridge contracts</p>
+              {deusSupplyInBridges === null ? (
+                <Loader />
+              ) : (
+                <ModalItemValue>{formatAmount(deusSupplyInBridges, 2, undefined, true)}</ModalItemValue>
+              )}
+            </ModalInfoWrapper>
+            <ModalInfoWrapper>
+              <ExtLink
+                style={{ textDecoration: 'underline' }}
+                href="https://ftmscan.com/token/0xde5ed76e7c05ec5e4572cfc88d1acea165109e44?a=0x8b42c6cb07c8dd5fe5db3ac03693867afd11353d"
+              >
+                Balance in deprecated veDeus contract
+                <Link style={{ marginTop: '6px', marginLeft: '6px' }} />
+              </ExtLink>
+              {deusSupplyInVeDeusContract === null ? (
+                <Loader />
+              ) : (
+                <ModalItemValue>{formatAmount(deusSupplyInVeDeusContract, 2, undefined, true)}</ModalItemValue>
+              )}
+            </ModalInfoWrapper>
+            <ModalInfoWrapper active>
+              <p>Total Supply</p>
+              {deusTotalSupply === null ? (
+                <Loader />
+              ) : (
+                <ModalItemValue>{formatAmount(deusTotalSupply, 2, undefined, true)}</ModalItemValue>
+              )}
+            </ModalInfoWrapper>
+          </ModalWrapper>
+        )
+      case DASHBOARD_STATS_TITLES.XDEUS_CIRCULATING_SUPPLY:
+        return (
+          <ModalWrapper>
+            <div>xDEUS Circulating Supply is calculated as:</div>
+            <ModalText>Circulating Supply = Total Supply - Non Circulating Supply</ModalText>
+            <ModalInfoWrapper>
+              <p>Total Supply</p>
+              {xDeusTotalSupply === null ? (
+                <Loader />
+              ) : (
+                <ModalItemValue>{formatAmount(xDeusTotalSupply, 2, undefined, true)}</ModalItemValue>
+              )}
+            </ModalInfoWrapper>
+            <ModalInfoWrapper>
+              <p
+                style={{ display: 'flex' }}
+                data-for="id"
+                data-tip="Balance held in <br/>MultiSig, Rewarder wallets etc"
+              >
+                Non Circulating Supply
+                <span style={{ marginTop: '2px' }}>
+                  <InfoIcon size={12} />
+                  <CustomTooltip id="id" />
+                </span>
+              </p>
+              {xDeusNonCirculatingSupply === null ? (
+                <Loader />
+              ) : (
+                <ModalItemValue>{formatAmount(xDeusNonCirculatingSupply, 2, undefined, true)}</ModalItemValue>
+              )}
+            </ModalInfoWrapper>
+            <ModalInfoWrapper active>
+              <p>Circulating Supply</p>
+              {xDeusCirculatingSupply === null ? (
+                <Loader />
+              ) : (
+                <ModalItemValue>{formatAmount(xDeusCirculatingSupply, 2, undefined, true)}</ModalItemValue>
+              )}
+            </ModalInfoWrapper>
+          </ModalWrapper>
+        )
+      case DASHBOARD_STATS_TITLES.DEI_CIRCULATING_SUPPLY:
+        return (
+          <ModalWrapper>
+            <div>There are currently no contracts that are excluded from circulating supply, the formula is:</div>
+            <ModalText>Total Supply on Fantom = Circulating Supply</ModalText>
+            <ModalInfoWrapper active>
+              <p>Circulating Supply</p>
+              {circulatingSupply === null ? (
+                <Loader />
+              ) : (
+                <ModalItemValue>{formatAmount(circulatingSupply, 2)}</ModalItemValue>
+              )}
+            </ModalInfoWrapper>
+          </ModalWrapper>
+        )
+      case DASHBOARD_STATS_TITLES.DEI_USDC_BACKING_PER_DEI:
+        return (
           <ModalWrapper>
             <div>
               USDC backing per DEI is calculated by taking the {`"Total Reserve Assets"`} USDC amount (this includes ALL
@@ -330,26 +479,53 @@ export default function Stats() {
               A list of excluded supply contracts can be found when clicking on circulating supply element on the left
               of the Dashboard.
             </div>
-            <div style={{ marginTop: '10px', marginBottom: '30px' }}>
-              The formula: TotalReserveAssets / CirculatingSupply{' '}
-            </div>
+            <ModalText>USDC Backing Per DEI = Total Reserve Assets / Circulating Supply</ModalText>
             <ModalInfoWrapper>
-              {DeiStatsModalType.TOTAL_RESERVE_ASSETS.toString()}
-              <ModalItemValue>{formatAmount(totalUSDCReserves)}</ModalItemValue>
+              <p>Total Reserve Assets</p>
+              {totalUSDCReserves === null ? (
+                <Loader />
+              ) : (
+                <ModalItemValue>{formatAmount(totalUSDCReserves)}</ModalItemValue>
+              )}
             </ModalInfoWrapper>
             <ModalInfoWrapper>
-              {DeiStatsModalType.CIRCULATING_SUPPLY.toString()}
-              <ModalItemValue>{formatAmount(circulatingSupply, 2)}</ModalItemValue>
+              <p>Circulating Supply</p>
+              {circulatingSupply === null ? (
+                <Loader />
+              ) : (
+                <ModalItemValue>{formatAmount(circulatingSupply, 2)}</ModalItemValue>
+              )}
             </ModalInfoWrapper>
             <ModalInfoWrapper active>
-              {DeiStatsModalType.USDC_BACKING_PER_DEI.toString()}
-              <ModalItemValue>{usdcBackingPerDei}</ModalItemValue>
+              <p>USDC Backing Per DEI</p>
+              {usdcBackingPerDei === null ? <Loader /> : <ModalItemValue>{usdcBackingPerDei}</ModalItemValue>}
             </ModalInfoWrapper>
           </ModalWrapper>
-        </>
-      )
+        )
+      default:
+        return null
     }
   }
+
+  function getModalContent() {
+    return (
+      <>
+        {getModalHeader()}
+        {getModalBody()}
+      </>
+    )
+  }
+
+  function handleDashboardModal(id: DASHBOARD_STATS_TITLES) {
+    setModalId(id)
+    setToggleDashboardModal(true)
+  }
+
+  const usdcBackingPerDei = useMemo(() => {
+    if (collateralRatio > 100) return '100%'
+    else if (collateralRatio < 90) return '90%'
+    return `${formatAmount(collateralRatio, 1).toString()}%`
+  }, [collateralRatio])
 
   return (
     <>
@@ -381,26 +557,20 @@ export default function Stats() {
               <StatsItem
                 name="Circulating Supply"
                 value={formatAmount(circulatingSupply, 2)}
-                onClick={() => {
-                  setToggleDashboardModal(true)
-                  setDeiStatType(DeiStatsModalType.CIRCULATING_SUPPLY)
-                }}
+                onClick={() => handleDashboardModal(DASHBOARD_STATS_TITLES.DEI_CIRCULATING_SUPPLY)}
+                hasOnClick={true}
               />
               <StatsItem
                 name="Total Reserve Assets"
                 value={formatDollarAmount(totalUSDCReserves, 2)}
-                onClick={() => {
-                  setDeiStatType(DeiStatsModalType.TOTAL_RESERVE_ASSETS)
-                  setToggleDashboardModal(true)
-                }}
+                onClick={() => handleDashboardModal(DASHBOARD_STATS_TITLES.DEI_TOTAL_RESERVES)}
+                hasOnClick={true}
               />
               <StatsItem
                 name="USDC Backing Per DEI"
                 value={usdcBackingPerDei}
-                onClick={() => {
-                  setDeiStatType(DeiStatsModalType.USDC_BACKING_PER_DEI)
-                  setToggleDashboardModal(true)
-                }}
+                onClick={() => handleDashboardModal(DASHBOARD_STATS_TITLES.DEI_USDC_BACKING_PER_DEI)}
+                hasOnClick={true}
               />
             </Info>
           </StatsWrapper>
@@ -412,27 +582,64 @@ export default function Stats() {
                 value={formatDollarAmount(deusPrice, 2)}
                 href={'https://www.coingecko.com/en/coins/deus-finance'}
               />
-              <StatsItem name="Circulating Supply" value={formatAmount(deusCirculatingSupply)} />
-              <StatsItem name="Total Supply" value={formatAmount(deusTotalSupply)} />
-              <StatsItem name="Market Cap" value={formatAmount(deusMarketCap)} />
+              <StatsItem
+                name="Circulating Supply"
+                value={formatAmount(deusCirculatingSupply)}
+                onClick={() => handleDashboardModal(DASHBOARD_STATS_TITLES.DEUS_CIRCULATING_SUPPLY)}
+                hasOnClick={true}
+              />
+              <StatsItem
+                name="Total Supply"
+                value={formatAmount(deusTotalSupply)}
+                onClick={() => handleDashboardModal(DASHBOARD_STATS_TITLES.DEUS_TOTAL_SUPPLY)}
+                hasOnClick={true}
+              />
+              <StatsItem
+                name="Market Cap"
+                value={formatAmount(deusMarketCap)}
+                hasToolTip={true}
+                toolTipInfo={'Market Cap = Circulating Supply * Price'}
+              />
             </Info>
           </StatsWrapper>
           <StatsWrapper>
             <DeusTitle>xDEUS Stats</DeusTitle>
             <Info>
               <StatsItem name="xDEUS Price" value={formatDollarAmount(xDeusPrice)} />
-              <StatsItem name="Circulating Supply" value={formatAmount(xDeusCirculatingSupply)} />
-              <StatsItem name="Market Cap" value={formatDollarAmount(xDeusMarketCap)} />
+              <StatsItem
+                name="Circulating Supply"
+                value={formatAmount(xDeusCirculatingSupply)}
+                onClick={() => handleDashboardModal(DASHBOARD_STATS_TITLES.XDEUS_CIRCULATING_SUPPLY)}
+                hasOnClick={true}
+              />
+              <StatsItem
+                name="Market Cap"
+                value={formatDollarAmount(xDeusMarketCap)}
+                hasToolTip={true}
+                toolTipInfo={'Market Cap = Circulating Supply * Price'}
+              />
             </Info>
           </StatsWrapper>
           <StatsWrapper>
             <DeusTitle>xDEUS and DEUS Combined Stats</DeusTitle>
             <Info>
-              <StatsItem name="Combined Supply" value={formatAmount(combinedSupply, 2, undefined, true)} />
-              <StatsItem name="Combined Market Cap" value={formatAmount(combinedMarketCap)} />
+              <StatsItem
+                name="Combined Supply"
+                value={formatAmount(combinedSupply, 2, undefined, true)}
+                hasToolTip={true}
+                toolTipInfo={'Combined Supply = DEUS Circulating Supply + xDEUS Circulating Supply'}
+              />
+              <StatsItem
+                name="Combined Market Cap"
+                value={formatAmount(combinedMarketCap)}
+                hasToolTip={true}
+                toolTipInfo={'Combined Market Cap = DEUS Market Cap + xDEUS Market Cap'}
+              />
               <StatsItem
                 name="Projected Combined Supply in 1yr"
                 value={formatAmount(combinedProjectedSupply, 2, undefined, true)}
+                hasToolTip={true}
+                toolTipInfo={'Projected Supply = Combined Supply * (1 + Inflation Rate)'}
               />
               <StatsItem name="Inflation Rate" value={formatAmount(inflationRate) + '%'} />
             </Info>
@@ -453,6 +660,14 @@ export default function Stats() {
       >
         {getModalContent()}
       </Modal>
+      {/* <Modal
+        width="400px"
+        isOpen={toggleInfoModal}
+        onBackgroundClick={() => setToggleInfoModal(false)}
+        onEscapeKeydown={() => setToggleInfoModal(false)}
+      >
+        {getModalContent()}
+      </Modal> */}
     </>
   )
 }
