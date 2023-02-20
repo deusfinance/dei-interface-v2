@@ -60,12 +60,15 @@ const StatsWrapper = styled.div`
 
 const Info = styled(RowBetween)`
   width: 100%;
-
   gap: 16px 0;
   flex-wrap: wrap;
+  justify-content: start;
   & > * {
     margin-top: 16px;
     &:nth-child(3n) {
+      border-right: none;
+    }
+    &:last-child {
       border-right: none;
     }
   }
@@ -208,6 +211,7 @@ export default function Stats() {
     combinedMarketCap,
     combinedProjectedSupply,
     inflationRate,
+    emissionPerWeek,
   } = useDeusMarketCapStats()
 
   function getModalBody() {
@@ -356,6 +360,7 @@ export default function Stats() {
                 value={formatAmount(combinedProjectedSupply, 2, undefined, true)}
               />
               <StatsItem name="Inflation Rate" value={formatAmount(inflationRate) + '%'} />
+              <StatsItem name="Combined emissions per week" value={formatAmount(emissionPerWeek)} />
             </Info>
           </StatsWrapper>
         </AllStats>

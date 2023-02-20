@@ -6,6 +6,8 @@ import { useDeusPrice } from './useCoingeckoPrice'
 
 const DEUS_MARKETCAP_API = 'https://info.deus.finance/info/getMarketCap'
 
+const DEUS_EMISSION_API = 'https://info.deus.finance/info/deusPerWeek'
+
 export default function useDeusMarketCapStats(): {
   deusPrice: number
   deusCirculatingSupply: number
@@ -18,6 +20,7 @@ export default function useDeusMarketCapStats(): {
   combinedMarketCap: number
   combinedProjectedSupply: number
   inflationRate: number
+  emissionPerWeek: number
 } {
   const [deusPrice, setDeusPrice] = useState(0)
   const [deusCirculatingSupply, setDeusCirculatingSupply] = useState(0)
@@ -30,6 +33,13 @@ export default function useDeusMarketCapStats(): {
   const [combinedMarketCap, setCombinedMarketCap] = useState(0)
   const [combinedProjectedSupply, setCombinedProjectedSupply] = useState(0)
   const [inflationRate, setInflationRate] = useState(0)
+  const [deusNonCirculatingSupply, setDeusNonCirculatingSupply] = useState(0)
+  const [deusSupplyInBridges, setDeusSupplyInBridges] = useState(0)
+  const [deusSupplyInVeDeusContract, setDeusSupplyInVeDeusContract] = useState(0)
+  const [deusTotalSupplyOnChain, setDeusTotalSupplyOnChain] = useState(0)
+  const [xDeusNonCirculatingSupply, setXDeusNonCirculatingSupply] = useState(0)
+  const [xDeusTotalSupply, setXDeusTotalSupply] = useState(0)
+  const [emissionPerWeek, setEmissionPerWeek] = useState(0)
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -50,15 +60,16 @@ export default function useDeusMarketCapStats(): {
       setCombinedMarketCap(
         parseFloat(response.result.deus.total.marketCap) + parseFloat(response.result.xdeus.total.marketCap)
       )
-      setCombinedProjectedSupply(
-        (toBN(formatUnits(response.result.deus.total.circulatingSupply, 18)).toNumber() +
-          toBN(formatUnits(response.result.xdeus.total.circulatingSupply, 18)).toNumber()) *
-          1.2567
-      )
-      setInflationRate(25.67)
+    }
+    const fetchEmissionStats = async () => {
+      const response = await makeHttpRequest(DEUS_EMISSION_API)
+      setEmissionPerWeek(response)
+      setCombinedProjectedSupply(combinedSupply + (response / 7) * 365)
+      setInflationRate(100 * (((response / 7) * 365) / combinedSupply))
     }
     fetchStats()
-  }, [])
+    fetchEmissionStats()
+  }, [combinedSupply])
 
   return {
     deusPrice,
@@ -72,5 +83,6 @@ export default function useDeusMarketCapStats(): {
     combinedMarketCap,
     combinedProjectedSupply,
     inflationRate,
+    emissionPerWeek,
   }
 }
