@@ -5,6 +5,8 @@ import { toBN } from 'utils/numbers'
 
 const DEUS_MARKETCAP_API = 'https://info.deus.finance/info/getMarketCap'
 
+const DEUS_EMISSION_API = 'https://info.deus.finance/info/deusPerWeek'
+
 export default function useDeusMarketCapStats(): {
   deusPrice: number
   deusCirculatingSupply: number
@@ -23,6 +25,7 @@ export default function useDeusMarketCapStats(): {
   combinedMarketCap: number
   combinedProjectedSupply: number
   inflationRate: number
+  emissionPerWeek: number
 } {
   const [deusPrice, setDeusPrice] = useState(0)
   const [deusCirculatingSupply, setDeusCirculatingSupply] = useState(0)
@@ -41,6 +44,7 @@ export default function useDeusMarketCapStats(): {
   const [deusTotalSupplyOnChain, setDeusTotalSupplyOnChain] = useState(0)
   const [xDeusNonCirculatingSupply, setXDeusNonCirculatingSupply] = useState(0)
   const [xDeusTotalSupply, setXDeusTotalSupply] = useState(0)
+  const [emissionPerWeek, setEmissionPerWeek] = useState(0)
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -71,15 +75,16 @@ export default function useDeusMarketCapStats(): {
       setCombinedMarketCap(
         parseFloat(response.result.deus.total.marketCap ?? 0) + parseFloat(response.result.xdeus.total.marketCap ?? 0)
       )
-      setCombinedProjectedSupply(
-        (toBN(formatUnits(response.result.deus.total.circulatingSupply ?? 0, 18)).toNumber() +
-          toBN(formatUnits(response.result.xdeus.total.circulatingSupply ?? 0, 18)).toNumber()) *
-          1.1822
-      )
-      setInflationRate(18.22)
+    }
+    const fetchEmissionStats = async () => {
+      const response = await makeHttpRequest(DEUS_EMISSION_API)
+      setEmissionPerWeek(response)
+      setCombinedProjectedSupply(combinedSupply + (response / 7) * 365)
+      setInflationRate(100 * (((response / 7) * 365) / combinedSupply))
     }
     fetchStats()
-  }, [])
+    fetchEmissionStats()
+  }, [combinedSupply])
 
   return {
     deusPrice,
@@ -99,5 +104,6 @@ export default function useDeusMarketCapStats(): {
     combinedMarketCap,
     combinedProjectedSupply,
     inflationRate,
+    emissionPerWeek,
   }
 }

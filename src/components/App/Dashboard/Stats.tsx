@@ -63,12 +63,15 @@ const StatsWrapper = styled.div`
 
 const Info = styled(RowBetween)`
   width: 100%;
-
   gap: 16px 0;
   flex-wrap: wrap;
+  justify-content: start;
   & > * {
     margin-top: 16px;
     &:nth-child(3n) {
+      border-right: none;
+    }
+    &:last-child {
       border-right: none;
     }
   }
@@ -266,6 +269,7 @@ export default function Stats() {
     combinedMarketCap,
     combinedProjectedSupply,
     inflationRate,
+    emissionPerWeek,
   } = useDeusMarketCapStats()
 
   const [modalId, setModalId] = useState(DASHBOARD_STATS_TITLES.DEI_TOTAL_RESERVES)
@@ -642,6 +646,7 @@ export default function Stats() {
                 toolTipInfo={'Projected Supply = Combined Supply * (1 + Inflation Rate)'}
               />
               <StatsItem name="Inflation Rate" value={formatAmount(inflationRate) + '%'} />
+              <StatsItem name="Combined emissions per week" value={formatAmount(emissionPerWeek)} />
             </Info>
           </StatsWrapper>
         </AllStats>
