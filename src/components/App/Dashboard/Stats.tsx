@@ -220,7 +220,7 @@ const InfoIcon = styled(InfoImage)`
 
 const ExtLink = styled(ExternalLink)`
   display: flex;
-
+  text-decoration: underline;
   &:hover {
     cursor: pointer !important;
   }
@@ -233,6 +233,7 @@ enum DASHBOARD_STATS_TITLES {
   XDEUS_CIRCULATING_SUPPLY = 'xDEUS Circulating Supply',
   DEI_CIRCULATING_SUPPLY = 'DEI Circulating Supply',
   DEI_USDC_BACKING_PER_DEI = 'USDC Backing per DEI',
+  DEUS_TOTAL_SUPPLY_ALL_CHAINS = 'Deus Total Supply across all chains',
 }
 
 const getContractExplorerLink = (address: string, dataType = ExplorerDataType.TOKEN) =>
@@ -270,6 +271,7 @@ export default function Stats() {
     combinedProjectedSupply,
     inflationRate,
     emissionPerWeek,
+    deusSupplyAllChain,
   } = useDeusMarketCapStats()
 
   const [modalId, setModalId] = useState(DASHBOARD_STATS_TITLES.DEI_TOTAL_RESERVES)
@@ -327,8 +329,11 @@ export default function Stats() {
           <ModalWrapper>
             <div>DEUS Circulating Supply is calculated as:</div>
             <ModalText>Circulating Supply = Total Supply - Non Circulating Supply</ModalText>
-            <ModalInfoWrapper hasOnClick={true}>
-              <p onClick={() => handleDashboardModal(DASHBOARD_STATS_TITLES.DEUS_TOTAL_SUPPLY)}>
+            <ModalInfoWrapper
+              hasOnClick={true}
+              onClick={() => handleDashboardModal(DASHBOARD_STATS_TITLES.DEUS_TOTAL_SUPPLY)}
+            >
+              <p>
                 Total Supply
                 <Link style={{ marginTop: '6px', marginLeft: '6px' }} />
               </p>
@@ -374,8 +379,14 @@ export default function Stats() {
               Total Supply = Total Supply across all chains - Balance held in Bridge contracts - Balance held in
               deprecated veDeus contract
             </ModalText>
-            <ModalInfoWrapper>
-              <p>Total Supply across all chains</p>
+            <ModalInfoWrapper
+              hasOnClick={true}
+              onClick={() => handleDashboardModal(DASHBOARD_STATS_TITLES.DEUS_TOTAL_SUPPLY_ALL_CHAINS)}
+            >
+              <p>
+                Total Supply across all chains
+                <Link style={{ marginTop: '6px', marginLeft: '6px' }} />
+              </p>
               {deusTotalSupplyOnChain === null ? (
                 <Loader />
               ) : (
@@ -391,10 +402,7 @@ export default function Stats() {
               )}
             </ModalInfoWrapper>
             <ModalInfoWrapper>
-              <ExtLink
-                style={{ textDecoration: 'underline' }}
-                href="https://ftmscan.com/token/0xde5ed76e7c05ec5e4572cfc88d1acea165109e44?a=0x8b42c6cb07c8dd5fe5db3ac03693867afd11353d"
-              >
+              <ExtLink href="https://ftmscan.com/token/0xde5ed76e7c05ec5e4572cfc88d1acea165109e44?a=0x8b42c6cb07c8dd5fe5db3ac03693867afd11353d">
                 Balance in deprecated veDeus contract
                 <Link style={{ marginTop: '6px', marginLeft: '6px' }} />
               </ExtLink>
@@ -420,7 +428,10 @@ export default function Stats() {
             <div>xDEUS Circulating Supply is calculated as:</div>
             <ModalText>Circulating Supply = Total Supply - Non Circulating Supply</ModalText>
             <ModalInfoWrapper>
-              <p>Total Supply</p>
+              <ExtLink href="https://ftmscan.com/token/0x953Cd009a490176FcEB3a26b9753e6F01645ff28">
+                Total Supply
+                <Link style={{ marginTop: '6px', marginLeft: '6px' }} />
+              </ExtLink>
               {xDeusTotalSupply === null ? (
                 <Loader />
               ) : (
@@ -504,6 +515,31 @@ export default function Stats() {
               <p>USDC Backing Per DEI</p>
               {usdcBackingPerDei === null ? <Loader /> : <ModalItemValue>{usdcBackingPerDei}</ModalItemValue>}
             </ModalInfoWrapper>
+          </ModalWrapper>
+        )
+      case DASHBOARD_STATS_TITLES.DEUS_TOTAL_SUPPLY_ALL_CHAINS:
+        return (
+          <ModalWrapper>
+            <p>
+              Deus is available on {deusSupplyAllChain.length - 1} chains. Below is the breakup of Deus total supply
+              across various chains
+            </p>
+            {deusSupplyAllChain.length > 0 &&
+              deusSupplyAllChain.map((data, index) => {
+                return (
+                  <ModalInfoWrapper key={index} active={index === deusSupplyAllChain.length - 1}>
+                    {data.chainLink ? (
+                      <ExtLink href={data.chainLink}>
+                        {data.chainName.toUpperCase()}
+                        <Link style={{ marginTop: '6px', marginLeft: '6px' }} />
+                      </ExtLink>
+                    ) : (
+                      <>{data.chainName.toUpperCase()}</>
+                    )}
+                    <ModalItemValue>{formatAmount(data.chainSupply, 2, undefined, true)}</ModalItemValue>
+                  </ModalInfoWrapper>
+                )
+              })}
           </ModalWrapper>
         )
       default:
@@ -665,14 +701,6 @@ export default function Stats() {
       >
         {getModalContent()}
       </Modal>
-      {/* <Modal
-        width="400px"
-        isOpen={toggleInfoModal}
-        onBackgroundClick={() => setToggleInfoModal(false)}
-        onEscapeKeydown={() => setToggleInfoModal(false)}
-      >
-        {getModalContent()}
-      </Modal> */}
     </>
   )
 }
