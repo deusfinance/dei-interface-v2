@@ -18,7 +18,6 @@ import { SupportedChainId } from 'constants/chains'
 import { ChainInfo } from 'constants/chainInfo'
 import { Loader, Info as InfoImage, Link } from 'components/Icons'
 import { ExternalLink } from 'components/Link'
-import ExternalLinkIcon from '/public/static/images/pages/common/down.svg'
 import useDeusMarketCapStats from 'hooks/useMarketCapStats'
 import { ToolTip } from 'components/ToolTip'
 
@@ -150,7 +149,7 @@ const ModalWrapper = styled.div`
   }
 `
 
-const ModalInfoWrapper = styled(RowBetween)<{ active?: boolean }>`
+const ModalInfoWrapper = styled(RowBetween)<{ active?: boolean; hasOnClick?: boolean }>`
   align-items: center;
   margin-top: 1px;
   white-space: nowrap;
@@ -172,6 +171,11 @@ const ModalInfoWrapper = styled(RowBetween)<{ active?: boolean }>`
     active &&
     `
     border: 1px solid ${theme.text1};
+  `}
+  ${({ hasOnClick }) =>
+    hasOnClick &&
+    `
+    cursor: pointer;
   `}
 `
 
@@ -210,6 +214,9 @@ enum DASHBOARD_STATS_TITLES {
   DEUS_CIRCULATING_SUPPLY = 'Deus Circulating Supply',
   DEUS_TOTAL_SUPPLY = 'Deus Total Supply',
   XDEUS_CIRCULATING_SUPPLY = 'xDEUS Circulating Supply',
+  DEI_CIRCULATING_SUPPLY = 'DEI Circulating Supply',
+  DEI_USDC_BACKING_PER_DEI = 'USDC Backing per DEI',
+  DEUS_TOTAL_SUPPLY_ALL_CHAINS = 'Deus Total Supply across all chains',
 }
 
 export default function Stats() {
@@ -247,6 +254,7 @@ export default function Stats() {
     combinedProjectedSupply,
     inflationRate,
     emissionPerWeek,
+    deusSupplyAllChain,
   } = useDeusMarketCapStats()
 
   const [modalId, setModalId] = useState(DASHBOARD_STATS_TITLES.DEI_TOTAL_RESERVES)
@@ -323,8 +331,11 @@ export default function Stats() {
           <ModalWrapper>
             <div>DEUS Circulating Supply is calculated as:</div>
             <ModalText>Circulating Supply = Total Supply - Non Circulating Supply</ModalText>
-            <ModalInfoWrapper>
-              <p onClick={() => handleDashboardModal(DASHBOARD_STATS_TITLES.DEUS_TOTAL_SUPPLY)}>
+            <ModalInfoWrapper
+              hasOnClick={true}
+              onClick={() => handleDashboardModal(DASHBOARD_STATS_TITLES.DEUS_TOTAL_SUPPLY)}
+            >
+              <p>
                 Total Supply
                 <Link style={{ marginTop: '6px', marginLeft: '6px' }} />
               </p>
@@ -370,8 +381,14 @@ export default function Stats() {
               Total Supply = Total Supply across all chains - Balance held in Bridge contracts - Balance held in
               deprecated veDeus contract
             </ModalText>
-            <ModalInfoWrapper>
-              <p>Total Supply across all chains</p>
+            <ModalInfoWrapper
+              hasOnClick={true}
+              onClick={() => handleDashboardModal(DASHBOARD_STATS_TITLES.DEUS_TOTAL_SUPPLY_ALL_CHAINS)}
+            >
+              <p>
+                Total Supply across all chains
+                <Link style={{ marginTop: '6px', marginLeft: '6px' }} />
+              </p>
               {deusTotalSupplyOnChain === null ? (
                 <Loader />
               ) : (
@@ -388,7 +405,7 @@ export default function Stats() {
             </ModalInfoWrapper>
             <ModalInfoWrapper>
               <ExtLink href="https://ftmscan.com/token/0xde5ed76e7c05ec5e4572cfc88d1acea165109e44?a=0x8b42c6cb07c8dd5fe5db3ac03693867afd11353d">
-                <p>Balance in deprecated veDeus contract</p>
+                Balance in deprecated veDeus contract
                 <Link style={{ marginTop: '6px', marginLeft: '6px' }} />
               </ExtLink>
               {deusSupplyInVeDeusContract === null ? (
@@ -413,7 +430,10 @@ export default function Stats() {
             <div>xDEUS Circulating Supply is calculated as:</div>
             <ModalText>Circulating Supply = Total Supply - Non Circulating Supply</ModalText>
             <ModalInfoWrapper>
-              <p>Total Supply</p>
+              <ExtLink href="https://ftmscan.com/token/0x953Cd009a490176FcEB3a26b9753e6F01645ff28">
+                Total Supply
+                <Link style={{ marginTop: '6px', marginLeft: '6px' }} />
+              </ExtLink>
               {xDeusTotalSupply === null ? (
                 <Loader />
               ) : (
@@ -446,6 +466,82 @@ export default function Stats() {
                 <ModalItemValue>{formatAmount(xDeusCirculatingSupply, 2, undefined, true)}</ModalItemValue>
               )}
             </ModalInfoWrapper>
+          </ModalWrapper>
+        )
+      case DASHBOARD_STATS_TITLES.DEI_CIRCULATING_SUPPLY:
+        return (
+          <ModalWrapper>
+            <div>There are currently no contracts that are excluded from circulating supply, the formula is:</div>
+            <ModalText>Total Supply on Fantom = Circulating Supply</ModalText>
+            <ModalInfoWrapper active>
+              <p>Circulating Supply</p>
+              {circulatingSupply === null ? (
+                <Loader />
+              ) : (
+                <ModalItemValue>{formatAmount(circulatingSupply, 2)}</ModalItemValue>
+              )}
+            </ModalInfoWrapper>
+          </ModalWrapper>
+        )
+      case DASHBOARD_STATS_TITLES.DEI_USDC_BACKING_PER_DEI:
+        return (
+          <ModalWrapper>
+            <div>
+              USDC backing per DEI is calculated by taking the {`"Total Reserve Assets"`} USDC amount (this includes ALL
+              reserve wallets that are listed on {`"Total Reserve Assets"`}) <br /> divided by the Circulating Supply,
+              the Circulating Supply is calculated by removing all non-circulating contracts (like Bridges or Protocol
+              Owned liquidity)
+            </div>
+            <div>
+              A list of excluded supply contracts can be found when clicking on circulating supply element on the left
+              of the Dashboard.
+            </div>
+            <ModalText>USDC Backing Per DEI = Total Reserve Assets / Circulating Supply</ModalText>
+            <ModalInfoWrapper>
+              <p>Total Reserve Assets</p>
+              {totalUSDCReserves === null ? (
+                <Loader />
+              ) : (
+                <ModalItemValue>{formatAmount(totalUSDCReserves)}</ModalItemValue>
+              )}
+            </ModalInfoWrapper>
+            <ModalInfoWrapper>
+              <p>Circulating Supply</p>
+              {circulatingSupply === null ? (
+                <Loader />
+              ) : (
+                <ModalItemValue>{formatAmount(circulatingSupply, 2)}</ModalItemValue>
+              )}
+            </ModalInfoWrapper>
+            <ModalInfoWrapper active>
+              <p>USDC Backing Per DEI</p>
+              {usdcBackingPerDei === null ? <Loader /> : <ModalItemValue>{usdcBackingPerDei}</ModalItemValue>}
+            </ModalInfoWrapper>
+          </ModalWrapper>
+        )
+      case DASHBOARD_STATS_TITLES.DEUS_TOTAL_SUPPLY_ALL_CHAINS:
+        return (
+          <ModalWrapper>
+            <p>
+              Deus is available on {deusSupplyAllChain.length - 1} chains. Below is the breakup of Deus total supply
+              across various chains
+            </p>
+            {deusSupplyAllChain.length > 0 &&
+              deusSupplyAllChain.map((data, index) => {
+                return (
+                  <ModalInfoWrapper key={index} active={index === deusSupplyAllChain.length - 1}>
+                    {data.chainLink ? (
+                      <ExtLink href={data.chainLink}>
+                        {data.chainName.toUpperCase()}
+                        <Link style={{ marginTop: '6px', marginLeft: '6px' }} />
+                      </ExtLink>
+                    ) : (
+                      <>{data.chainName.toUpperCase()}</>
+                    )}
+                    <ModalItemValue>{formatAmount(data.chainSupply, 2, undefined, true)}</ModalItemValue>
+                  </ModalInfoWrapper>
+                )
+              })}
           </ModalWrapper>
         )
       default:
@@ -598,14 +694,6 @@ export default function Stats() {
       >
         {getModalContent()}
       </Modal>
-      {/* <Modal
-        width="400px"
-        isOpen={toggleInfoModal}
-        onBackgroundClick={() => setToggleInfoModal(false)}
-        onEscapeKeydown={() => setToggleInfoModal(false)}
-      >
-        {getModalContent()}
-      </Modal> */}
     </>
   )
 }
