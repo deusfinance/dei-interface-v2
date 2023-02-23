@@ -13,13 +13,14 @@ import { Modal, ModalHeader } from 'components/Modal'
 import { RowBetween } from 'components/Row'
 import StatsItem from './StatsItem'
 import Chart from './Chart'
-import { CollateralPool, DEI_ADDRESS, escrow, USDCReserves3 } from 'constants/addresses'
+import { CollateralPool, DEI_ADDRESS, escrow, USDCReserves1, USDCReserves3 } from 'constants/addresses'
 import { SupportedChainId } from 'constants/chains'
 import { ChainInfo } from 'constants/chainInfo'
 import { Loader, Info as InfoImage, Link } from 'components/Icons'
 import { ExternalLink } from 'components/Link'
 import useDeusMarketCapStats from 'hooks/useMarketCapStats'
 import { ToolTip } from 'components/ToolTip'
+import { ExplorerDataType, getExplorerLink } from 'utils/explorers'
 
 const Wrapper = styled(RowBetween)`
   background: ${({ theme }) => theme.bg0};
@@ -220,6 +221,9 @@ enum DASHBOARD_STATS_TITLES {
   DEUS_TOTAL_SUPPLY_ALL_CHAINS = 'Deus Total Supply across all chains',
 }
 
+const getContractExplorerLink = (address: string, dataType = ExplorerDataType.TOKEN) =>
+  getExplorerLink(SupportedChainId.FANTOM, dataType, address)
+
 export default function Stats() {
   //const deusPrice = useDeusPrice()
   const {
@@ -227,10 +231,8 @@ export default function Stats() {
     collateralRatio,
     circulatingSupply,
     totalUSDCReserves,
-    totalProtocolHoldings,
-    usdcReserves3,
+    usdcReserves1,
     usdcPoolReserves,
-    escrowReserve,
     seigniorage,
   } = useDeiStats()
 
@@ -271,41 +273,26 @@ export default function Stats() {
       case DASHBOARD_STATS_TITLES.DEI_TOTAL_RESERVES:
         return (
           <ModalWrapper>
-            <div>DEI Total Reserve Assets are held in three wallets.</div>
-            <div>Below is the USDC holdings in each wallet.</div>
+            <div>
+              DEI Total Reserve Assets are held in multiple reserve contracts to isolate risk for security reasons.
+            </div>
+            <div style={{ marginTop: '16px' }}>
+              Below is a list of current reserve contracts and their holdings in USDC:
+            </div>
             <ModalInfoWrapper>
               <a
-                href={
-                  ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl +
-                  '/address/' +
-                  USDCReserves3[SupportedChainId.FANTOM]
-                }
+                href={getContractExplorerLink(USDCReserves1[SupportedChainId.FANTOM], ExplorerDataType.ADDRESS)}
                 target={'_blank'}
                 rel={'noreferrer'}
               >
                 Reserves 1
               </a>
-              {usdcReserves3 === null ? <Loader /> : <ModalItemValue>{formatAmount(usdcReserves3, 2)}</ModalItemValue>}
+              {usdcReserves1 === null ? <Loader /> : <ModalItemValue>{formatAmount(usdcReserves1, 2)}</ModalItemValue>}
             </ModalInfoWrapper>
+
             <ModalInfoWrapper>
               <a
-                href={
-                  ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/address/' + escrow[SupportedChainId.FANTOM]
-                }
-                target={'_blank'}
-                rel={'noreferrer'}
-              >
-                Reserves 2
-              </a>
-              {escrowReserve === null ? <Loader /> : <ModalItemValue>{formatAmount(escrowReserve, 2)}</ModalItemValue>}
-            </ModalInfoWrapper>
-            <ModalInfoWrapper>
-              <a
-                href={
-                  ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl +
-                  '/address/' +
-                  CollateralPool[SupportedChainId.FANTOM]
-                }
+                href={getContractExplorerLink(CollateralPool[SupportedChainId.FANTOM], ExplorerDataType.ADDRESS)}
                 target={'_blank'}
                 rel={'noreferrer'}
               >
@@ -319,11 +306,7 @@ export default function Stats() {
             </ModalInfoWrapper>
             <ModalInfoWrapper active>
               <p>Total USDC holdings</p>
-              {totalProtocolHoldings === null ? (
-                <Loader />
-              ) : (
-                <ModalItemValue>{formatAmount(usdcPoolReserves + usdcReserves3 + escrowReserve, 2)}</ModalItemValue>
-              )}
+              <ModalItemValue>{formatAmount(totalUSDCReserves, 2)}</ModalItemValue>
             </ModalInfoWrapper>
           </ModalWrapper>
         )
