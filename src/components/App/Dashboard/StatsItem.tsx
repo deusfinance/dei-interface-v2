@@ -25,6 +25,10 @@ const Item = styled.div`
     content: '';
     border-right: none !important;
   }
+  &:last-child:after {
+    content: '';
+    border-right: none !important;
+  }
   ${({ theme }) => theme.mediaWidth.upToMedium`
     padding:0 12px;
     width: 30%;
