@@ -8,7 +8,7 @@ const DEUS_MARKETCAP_API = 'https://info.deus.finance/info/getMarketCap'
 
 const DEUS_EMISSION_API = 'https://info.deus.finance/info/deusPerWeek'
 
-const TOKEN_CHAIN_EXPLORER_LINK = {
+const TOKEN_CHAIN_EXPLORER_LINK: Record<string, string> = {
   arbitrum: 'https://arbiscan.io/token/' + DEUS_TOKEN.address,
   bsc: 'https://bscscan.com/token/' + DEUS_TOKEN.address,
   fantom: 'https://ftmscan.com/token/' + DEUS_TOKEN.address,
@@ -57,11 +57,13 @@ export default function useDeusMarketCapStats(): {
   const [xDeusNonCirculatingSupply, setXDeusNonCirculatingSupply] = useState(0)
   const [xDeusTotalSupply, setXDeusTotalSupply] = useState(0)
   const [emissionPerWeek, setEmissionPerWeek] = useState(0)
-  const [deusSupplyAllChain, setDeusSupplyAllChain] = useState([{}])
+  const [deusSupplyAllChain, setDeusSupplyAllChain] = useState([
+    { chainName: 'fantom', chainSupply: '0', chainLink: TOKEN_CHAIN_EXPLORER_LINK['fantom'] },
+  ])
 
   useEffect(() => {
     const fetchStats = async () => {
-      const chainData: { chainName: string; chainSupply: any }[] = []
+      const chainData: { chainName: string; chainSupply: any; chainLink: string }[] = []
       const response = await makeHttpRequest(DEUS_MARKETCAP_API)
       setDeusPrice(parseFloat(response.price.deus ?? 0))
       setDeusCirculatingSupply(toBN(formatUnits(response.result.deus.total.circulatingSupply ?? 0, 18)).toNumber())
