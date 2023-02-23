@@ -1,12 +1,14 @@
-import { ExternalLink } from 'components/Link'
 import styled from 'styled-components'
+import Link from 'next/link'
+
+import ExternalLinkIcon from '/public/static/images/pages/stake/down.svg'
+// import MigrationHeaderIcon from '/public/static/images/pages/dashboard/migration-header.svg'
+
+import { ExternalLink } from 'components/Link'
 import { PrimaryButton } from 'components/Button'
 import { Row, RowBetween } from 'components/Row'
 import Column from 'components/Column'
 import ImageWithFallback from 'components/ImageWithFallback'
-import ExternalLinkIcon from '/public/static/images/pages/stake/down.svg'
-import Link from 'next/link'
-// import MigrationHeaderIcon from '/public/static/images/pages/dashboard/migration-header.svg'
 
 const NotificationBoxContainer = styled(RowBetween)`
   padding: 20px;
@@ -63,6 +65,7 @@ const ButtonText = styled.span`
   white-space: nowrap;
   color: ${({ theme }) => theme.text1};
   align-items: center;
+  justify-content: center;
   border-radius: 12px;
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     font-size: 14px;
@@ -76,6 +79,7 @@ const ButtonText = styled.span`
 const GradientButton = styled(PrimaryButton)`
   padding: 2px;
   width: fit-content;
+  min-width: 200px;
   border-radius: 12px;
   display: flex;
   justify-content: flex-end;
@@ -98,7 +102,7 @@ const NotificationBox = ({
         <NotificationBoxHeaderContainer>
           <Column>
             <NotificationBoxHeader>
-              <p>Migrate form {source} to </p>
+              <p>Migrate from {source} to </p>
               <p>{destination}</p>
             </NotificationBoxHeader>
             <NotificationBoxLink href={readMore}>

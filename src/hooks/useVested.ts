@@ -5,10 +5,10 @@ import utc from 'dayjs/plugin/utc'
 import BigNumber from 'bignumber.js'
 
 import { useDeusMetrics } from 'state/dashboard/hooks'
+import { useDeusPrice } from 'state/dashboard/hooks'
 import { useSingleContractMultipleMethods } from 'state/multicall/hooks'
 import { useSupportedChainId } from './useSupportedChainId'
 import { useVeDeusContract } from './useContract'
-import { useDeusPrice } from './useCoingeckoPrice'
 
 dayjs.extend(utc)
 

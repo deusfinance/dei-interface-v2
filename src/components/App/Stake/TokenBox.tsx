@@ -1,10 +1,10 @@
-import { Token } from '@sushiswap/core-sdk'
-import ImageWithFallback from 'components/ImageWithFallback'
-import { useCurrencyLogos } from 'hooks/useCurrencyLogo'
-import useWeb3React from 'hooks/useWeb3'
 import { isMobile } from 'react-device-detect'
 import styled, { useTheme } from 'styled-components'
-import { SupportedChainId } from 'constants/chains'
+import { Token } from '@sushiswap/core-sdk'
+
+import { useCurrencyLogos } from 'hooks/useCurrencyLogo'
+
+import ImageWithFallback from 'components/ImageWithFallback'
 
 const TokenCell = styled.div`
   display: flex;
@@ -80,7 +80,6 @@ export default function TokenBox({
   const tokensAddress = tokens.map((token) => token.address)
   const logos = useCurrencyLogos(tokensAddress)
   const theme = useTheme()
-  const { chainId } = useWeb3React()
 
   return (
     <TokenCell>
@@ -100,14 +99,14 @@ export default function TokenBox({
       </MultipleImageWrapper>
       <TokensWrap>
         <span style={{ textAlign: 'left' }}>{title}</span>
-        {active && chainId === SupportedChainId.FANTOM ? (
+        {active ? (
           <div>
             <span style={{ color: theme.blue2 }}>{chain}</span>
             <span> | </span>
             <span style={{ color: theme.green1 }}>Live</span>
           </div>
         ) : (
-          <span style={{ color: theme.red1 }}>{!active ? 'Inactive' : 'Wrong Network'}</span>
+          <span style={{ color: theme.red1 }}>Inactive</span>
         )}
       </TokensWrap>
     </TokenCell>

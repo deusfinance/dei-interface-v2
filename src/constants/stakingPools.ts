@@ -229,7 +229,7 @@ export const Stakings: StakingType[] = [
   },
   {
     id: 2,
-    name: 'DEUS-xDEUS',
+    name: 'xDEUS-DEUS',
     rewardTokens: [XDEUS_TOKEN, DEUS_TOKEN],
     token: DEUS_VDEUS_LP_TOKEN,
     aprHook: useGetApy,
@@ -246,8 +246,8 @@ export const Stakings: StakingType[] = [
   },
   {
     id: 3,
-    name: 'vDEUS (ERC20)',
-    rewardTokens: [DEUS_TOKEN],
+    name: 'xDEUS',
+    rewardTokens: [XDEUS_TOKEN],
     token: XDEUS_TOKEN,
     aprHook: useGetApy,
     tvlHook: useGetTvl,

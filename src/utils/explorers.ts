@@ -4,6 +4,7 @@ import { FALLBACK_CHAIN_ID, SupportedChainId } from 'constants/chains'
 export enum ExplorerDataType {
   TRANSACTION = 'transaction',
   ADDRESS = 'address',
+  TOKEN = 'token',
 }
 
 /**
