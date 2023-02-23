@@ -197,6 +197,7 @@ const ModalItemValue = styled.div`
 
 const CustomTooltip = styled(ToolTip)`
   max-width: 600px !important;
+  font-size: 0.8rem !important;
 `
 
 const InfoIcon = styled(InfoImage)`
@@ -206,6 +207,7 @@ const InfoIcon = styled(InfoImage)`
 
 const ExtLink = styled(ExternalLink)`
   display: flex;
+  text-decoration: underline;
 `
 
 enum DASHBOARD_STATS_TITLES {
