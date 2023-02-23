@@ -384,5 +384,5 @@ export function useGetDeusApy(pool: LiquidityType, stakingPool: StakingType): nu
 // }
 
 export function getUserStakingPools(): StakingType[] {
-  return Stakings.filter((pool) => parseInt(useUserInfo(pool).depositAmount) > 0)
+  return Stakings.filter((pool) => parseFloat(useUserInfo(pool).depositAmount) > 0)
 }
