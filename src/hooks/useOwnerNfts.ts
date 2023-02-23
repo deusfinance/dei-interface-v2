@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { formatUnits } from '@ethersproject/units'
 
 import ERC721_ABI from 'constants/abi/ERC721.json'
-import { DeiBondRedeemNFT, veDEUS } from 'constants/addresses'
+import { DeiBondRedeemNFT, veDEUS, vDeusNFT } from 'constants/addresses'
 import { toBN } from 'utils/numbers'
 
 import { useSingleContractMultipleData, useSingleContractMultipleMethods } from 'state/multicall/hooks'
@@ -69,5 +69,11 @@ export function useOwnerVeDeusNFTs(): { results: number[]; isLoading: boolean } 
 export function useOwnerBondNFTs(): { results: number[]; isLoading: boolean } {
   const { chainId } = useWeb3React()
   const address = useMemo(() => (chainId ? DeiBondRedeemNFT[chainId] : undefined), [chainId])
+  return useOwnerNfts(address)
+}
+
+export function useOwnerVDeusNFT(): { results: number[]; isLoading: boolean } {
+  const { chainId } = useWeb3React()
+  const address = useMemo(() => (chainId ? vDeusNFT[chainId] : undefined), [chainId])
   return useOwnerNfts(address)
 }

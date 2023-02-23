@@ -58,6 +58,13 @@ export const veDEUS: AddressMap = {
 }
 
 /* =====================================
+                vDEUS ADDRESS (ERC721)
+===================================== */
+export const vDeusNFT: AddressMap = {
+  [SupportedChainId.FANTOM]: '0x980c39133a1a4e83e41d652619adf8aa18b95c8b',
+}
+
+/* =====================================
                 PROTOCOL HOLDINGS ADDRESS
 ===================================== */
 export const ProtocolHoldings1: AddressMap = {
