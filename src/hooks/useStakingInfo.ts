@@ -10,7 +10,7 @@ import { SupportedChainId } from 'constants/chains'
 import { useVDeusMultiRewarderERC20Contract } from './useContract'
 // import { StablePoolType } from 'constants/sPools'
 // import { usePoolBalances } from './useStablePoolInfo'
-import { LiquidityPool, LiquidityType, StakingType, StakingVersion } from 'constants/stakingPools'
+import { LiquidityPool, LiquidityType, Stakings, StakingType, StakingVersion } from 'constants/stakingPools'
 import { Token } from '@sushiswap/core-sdk'
 import BigNumber from 'bignumber.js'
 import { usePoolBalances } from './useStablePoolInfo'
@@ -382,3 +382,7 @@ export function useGetDeusApy(pool: LiquidityType, stakingPool: StakingType): nu
 // export function useNFTGetApy(stakingPool: StakingType): number {
 //   return stakingPool.pid === 0 ? 10 : stakingPool.pid === 1 ? 20 : 40
 // }
+
+export function getUserStakingPools(): StakingType[] {
+  return Stakings.filter((pool) => parseInt(useUserInfo(pool).depositAmount) > 0)
+}

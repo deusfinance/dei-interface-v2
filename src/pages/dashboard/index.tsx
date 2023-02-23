@@ -1,8 +1,7 @@
-import React, { useMemo, useState } from 'react'
+import React, { useMemo } from 'react'
 import styled from 'styled-components'
 
 import { useWeb3NavbarOption } from 'state/web3navbar/hooks'
-import { Stakings } from 'constants/stakingPools'
 import { useOwnerBondNFTs, useOwnerVDeusNFT, useOwnerVeDeusNFTs } from 'hooks/useOwnerNfts'
 
 import { Container } from 'components/App/StableCoin'
@@ -11,6 +10,7 @@ import Stats from 'components/App/Dashboard/Stats'
 import NotificationBox from 'components/App/Dashboard/NotificationBox'
 import Account from 'components/App/Dashboard/Account'
 import Staking from 'components/App/Dashboard/Staking'
+import { getUserStakingPools } from 'hooks/useStakingInfo'
 
 const Wrapper = styled(RowCenter)`
   max-width: 1300px;
@@ -40,8 +40,10 @@ export default function Dashboard() {
   const { results: userBDeiBondNFTs } = useOwnerBondNFTs()
 
   useWeb3NavbarOption({ network: true, wallet: true, reward: true })
-  const threshold = 2
-  const [results] = useState(() => Stakings.slice(0, Stakings.length > 2 ? threshold : Stakings.length))
+  //const threshold = 2
+  //const [results] = useState(() => Stakings.slice(0, Stakings.length > 2 ? threshold : Stakings.length))
+
+  const results = getUserStakingPools()
 
   const { userHasVDeusNFTs, userHasVeDeusNFTs, userHasBDeiBondNFTs } = useMemo(() => {
     return {

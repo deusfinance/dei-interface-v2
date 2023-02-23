@@ -235,7 +235,7 @@ const Account = () => {
                 round
               />
               {coin.info && (
-                <div style={{ marginLeft: '20px' }}>
+                <div style={{ margin: '0 20px' }}>
                   <ToolTip id="id" />
                   <ImageWithFallback
                     data-for="id"

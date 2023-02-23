@@ -2,6 +2,7 @@ import { formatUnits } from '@ethersproject/units'
 import { useEffect, useState } from 'react'
 import { makeHttpRequest } from 'utils/http'
 import { toBN } from 'utils/numbers'
+import { useDeusPrice } from './useCoingeckoPrice'
 
 const DEUS_MARKETCAP_API = 'https://info.deus.finance/info/getMarketCap'
 
@@ -33,6 +34,8 @@ export default function useDeusMarketCapStats(): {
   useEffect(() => {
     const fetchStats = async () => {
       const response = await makeHttpRequest(DEUS_MARKETCAP_API)
+      if (!response) return
+
       setDeusPrice(parseFloat(response.price.deus))
       setDeusCirculatingSupply(toBN(formatUnits(response.result.deus.total.circulatingSupply, 18)).toNumber())
       setDeusTotalSupply(toBN(formatUnits(response.result.deus.total.totalSupply, 18)).toNumber())
