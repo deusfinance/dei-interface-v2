@@ -197,7 +197,6 @@ const ModalItemValue = styled.div`
 
 const CustomTooltip = styled(ToolTip)`
   max-width: 600px !important;
-  font-size: 0.8rem !important;
 `
 
 const InfoIcon = styled(InfoImage)`
@@ -348,13 +347,13 @@ export default function Stats() {
             <ModalInfoWrapper>
               <p
                 style={{ display: 'flex' }}
-                data-for="id"
+                data-for="tooltip-id"
                 data-tip="Balance held in <br/>Rewarders, Gnosis wallets etc"
               >
                 Non Circulating Supply
                 <span style={{ marginTop: '2px' }}>
                   <InfoIcon size={12} />
-                  <CustomTooltip id="id" />
+                  <CustomTooltip id="tooltip-id" />
                 </span>
               </p>
               {deusNonCirculatingSupply === null ? (
@@ -443,13 +442,13 @@ export default function Stats() {
             <ModalInfoWrapper>
               <p
                 style={{ display: 'flex' }}
-                data-for="id"
+                data-for="tooltip-id"
                 data-tip="Balance held in <br/>MultiSig, Rewarder wallets etc"
               >
                 Non Circulating Supply
                 <span style={{ marginTop: '2px' }}>
                   <InfoIcon size={12} />
-                  <CustomTooltip id="id" />
+                  <CustomTooltip id="tooltip-id" />
                 </span>
               </p>
               {xDeusNonCirculatingSupply === null ? (

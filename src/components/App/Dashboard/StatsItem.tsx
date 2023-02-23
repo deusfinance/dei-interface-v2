@@ -118,12 +118,12 @@ export default function StatsItem({
           <LinkIconLogo style={{ marginTop: '6px' }} />
         </Value>
       ) : (
-        <Value data-for="id" data-tip={hasToolTip ? toolTipInfo : null}>
+        <Value data-for="stat-id" data-tip={hasToolTip ? toolTipInfo : null}>
           {value}
           {hasToolTip && (
             <span style={{ marginTop: '1px' }}>
               <InfoIcon size={12} />
-              <CustomTooltip id="id" />
+              <CustomTooltip id="stat-id" />
             </span>
           )}
         </Value>
