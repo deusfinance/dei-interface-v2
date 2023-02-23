@@ -79,15 +79,7 @@ export const ProtocolHoldings2: AddressMap = {
                 USDC RESERVES ADDRESS
 ===================================== */
 export const USDCReserves1: AddressMap = {
-  [SupportedChainId.FANTOM]: '0x083dee8e5ca1e100a9c9ec0744f461b3507e9376',
-}
-
-export const USDCReserves2: AddressMap = {
-  [SupportedChainId.FANTOM]: '0xfd74e924dc96c72ba52439e28ce780908a630d13',
-}
-
-export const USDCReserves3: AddressMap = {
-  [SupportedChainId.FANTOM]: '0x37a7a2a5FCB0DF6B8138fec7730825E92f9D8207',
+  [SupportedChainId.FANTOM]: '0x0092fc463b969347f2F6d18a572BDf99F61B5e8F',
 }
 
 /* =====================================
