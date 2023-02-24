@@ -1,18 +1,12 @@
 import { useMemo } from 'react'
 import { useERC20Contract, useMasterChefContract } from 'hooks/useContract'
-import {
-  useMultipleContractSingleData,
-  useSingleCallResult,
-  useSingleContractMultipleData,
-  useSingleContractMultipleMethods,
-} from 'state/multicall/hooks'
+import { useSingleContractMultipleMethods } from 'state/multicall/hooks'
 import { toBN } from 'utils/numbers'
 import useWeb3React from './useWeb3'
 import { formatUnits } from '@ethersproject/units'
 import { useDeiPrice, useDeusPrice } from './useCoingeckoPrice'
 import { MasterChefV2 } from 'constants/addresses'
 import { SupportedChainId } from 'constants/chains'
-import MasterChefV2_ABI from 'constants/abi/MasterChefV2.json'
 import { useVDeusMultiRewarderERC20Contract } from './useContract'
 // import { StablePoolType } from 'constants/sPools'
 // import { usePoolBalances } from './useStablePoolInfo'
@@ -23,7 +17,6 @@ import { usePoolBalances } from './useStablePoolInfo'
 import { useAverageBlockTime } from 'state/application/hooks'
 import { useVDeusStats } from './useVDeusStats'
 import { useBDeiStats } from './useBDeiStats'
-import { Interface } from '@ethersproject/abi'
 
 //TODO: should remove all and put it in /constants
 const pids = [0, 1]
