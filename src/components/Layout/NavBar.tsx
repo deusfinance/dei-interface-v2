@@ -177,7 +177,7 @@ export default function NavBar() {
           <Web3Status />
           <Menu />
         </MobileWrapper>
-        {showTopBanner && <RiskNotification onClose={setShowBanner} bg={'gray'} hasInfoIcon={true} text={bannerText} />}
+        {/* {showTopBanner && <RiskNotification onClose={setShowBanner} bg={'gray'} hasInfoIcon={true} text={bannerText} />} */}
       </>
     )
   }
@@ -218,7 +218,7 @@ export default function NavBar() {
             <Menu />
           </Items>
         </DefaultWrapper>
-        {showTopBanner && <RiskNotification onClose={setShowBanner} bg={'gray'} hasInfoIcon={true} text={bannerText} />}
+        {/* {showTopBanner && <RiskNotification onClose={setShowBanner} bg={'gray'} hasInfoIcon={true} text={bannerText} />} */}
       </>
     )
   }

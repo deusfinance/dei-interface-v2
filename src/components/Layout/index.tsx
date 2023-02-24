@@ -1,18 +1,25 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 
 import { useInjectedAddress } from 'hooks/useInjectedAddress'
 
-// import NavBar from './NavBar'
 import Slider from './Slider'
 import Warning from './Warning'
 import Web3Navbar from './Web3Navbar'
+import RiskNotification from 'components/InfoHeader'
+import { sendEvent } from 'components/analytics'
 
 const Wrapper = styled.div`
   display: flex;
   flex-flow: row nowrap;
   background: ${({ theme }) => theme.bg0};
   /* overflow: hidden; */
+`
+
+const VerticalWrapper = styled.div`
+  display: flex;
+  flex-flow: column nowrap;
+  background: ${({ theme }) => theme.bg0};
 `
 
 const Content = styled.div`
@@ -34,19 +41,32 @@ const Content = styled.div`
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const hasInjected = useInjectedAddress()
+  const showBanner = localStorage.getItem('risk_warning') === 'true' ? false : true
+  const [showTopBanner, setShowTopBanner] = useState(showBanner)
+  const bannerText = 'Users interacting with this software do so entirely at their own risk'
+
+  function setShowBanner(inp: boolean) {
+    if (!inp) {
+      localStorage.setItem('risk_warning', 'true')
+      setShowTopBanner(false)
+      sendEvent('click', { click_type: 'close_notification', click_action: 'risk_warning' })
+    }
+  }
 
   return (
-    <Wrapper>
-      {/* <NavBar /> */}
-      <Slider />
-      <div style={{ width: '100%' }}>
-        {hasInjected && (
-          <Warning message={`❌ You are in "READ-ONLY" mode. Please do not confirm any transactions! ❌ `} />
-        )}
-        <Web3Navbar />
-        <Content>{children}</Content>
-        {/* <Footer /> */}
-      </div>
-    </Wrapper>
+    <VerticalWrapper>
+      {showTopBanner && <RiskNotification onClose={setShowBanner} bg={'gray'} hasInfoIcon={true} text={bannerText} />}
+      <Wrapper>
+        <Slider />
+        <div style={{ width: '100%' }}>
+          {hasInjected && (
+            <Warning message={`❌ You are in "READ-ONLY" mode. Please do not confirm any transactions! ❌ `} />
+          )}
+          <Web3Navbar />
+          <Content>{children}</Content>
+          {/* <Footer /> */}
+        </div>
+      </Wrapper>
+    </VerticalWrapper>
   )
 }
