@@ -1,12 +1,18 @@
 import { useMemo } from 'react'
 import { useERC20Contract, useMasterChefContract } from 'hooks/useContract'
-import { useSingleContractMultipleMethods } from 'state/multicall/hooks'
+import {
+  useMultipleContractSingleData,
+  useSingleCallResult,
+  useSingleContractMultipleData,
+  useSingleContractMultipleMethods,
+} from 'state/multicall/hooks'
 import { toBN } from 'utils/numbers'
 import useWeb3React from './useWeb3'
 import { formatUnits } from '@ethersproject/units'
 import { useDeiPrice, useDeusPrice } from './useCoingeckoPrice'
 import { MasterChefV2 } from 'constants/addresses'
 import { SupportedChainId } from 'constants/chains'
+import MasterChefV2_ABI from 'constants/abi/MasterChefV2.json'
 import { useVDeusMultiRewarderERC20Contract } from './useContract'
 // import { StablePoolType } from 'constants/sPools'
 // import { usePoolBalances } from './useStablePoolInfo'
@@ -17,6 +23,7 @@ import { usePoolBalances } from './useStablePoolInfo'
 import { useAverageBlockTime } from 'state/application/hooks'
 import { useVDeusStats } from './useVDeusStats'
 import { useBDeiStats } from './useBDeiStats'
+import { Interface } from '@ethersproject/abi'
 
 //TODO: should remove all and put it in /constants
 const pids = [0, 1]
@@ -383,6 +390,26 @@ export function useGetDeusApy(pool: LiquidityType, stakingPool: StakingType): nu
 //   return stakingPool.pid === 0 ? 10 : stakingPool.pid === 1 ? 20 : 40
 // }
 
-export function getUserStakingPools(): StakingType[] {
-  return Stakings.filter((pool) => parseFloat(useUserInfo(pool).depositAmount) > 0)
+export function useDepositAmount(stakingPool: StakingType): number {
+  const contract = useMasterChefContract(stakingPool)
+  const { account } = useWeb3React()
+  const { pid } = stakingPool
+
+  const calls = !account
+    ? []
+    : [
+        {
+          methodName: 'userInfo',
+          callInputs: [pid.toString(), account],
+        },
+      ]
+
+  const [userInfo] = useSingleContractMultipleMethods(contract, calls)
+
+  return userInfo?.result ? toBN(formatUnits(userInfo.result[0].toString(), 18)).toNumber() : 0
+}
+
+export function useUserStakingPools(): StakingType[] {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  return Stakings.filter((pool) => useDepositAmount(pool) > 0)
 }
