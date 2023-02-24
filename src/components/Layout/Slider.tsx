@@ -495,7 +495,7 @@ export default function Slider() {
                 </Token>
                 {hasLegacyDei && legacyDeiPrice && (
                   <Token>
-                    Legacy DEI Price:
+                    Legacy DEI Price
                     <Price>
                       <LegacyDeiPriceWrap>
                         ${(+formatUnits(legacyDeiPrice, USDC_TOKEN.decimals))?.toFixed(3)}

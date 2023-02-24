@@ -1,8 +1,5 @@
 import React, { useMemo, useState } from 'react'
-import styled from 'styled-components'
-import Image from 'next/image'
-
-import BG_DASHBOARD from '/public/static/images/pages/dashboard/bg.svg'
+import styled, { useTheme } from 'styled-components'
 
 import { useDeiPrice } from 'state/dashboard/hooks'
 import { useDeiStats } from 'hooks/useDeiStats'
@@ -12,7 +9,6 @@ import { formatAmount, formatBalance, formatDollarAmount } from 'utils/numbers'
 import { Modal, ModalHeader } from 'components/Modal'
 import { RowBetween } from 'components/Row'
 import StatsItem from './StatsItem'
-import Chart from './Chart'
 import { CollateralPool, DEI_ADDRESS, USDCReserves1 } from 'constants/addresses'
 import { SupportedChainId } from 'constants/chains'
 import { ChainInfo } from 'constants/chainInfo'
@@ -21,6 +17,7 @@ import { ExternalLink } from 'components/Link'
 import useDeusMarketCapStats from 'hooks/useMarketCapStats'
 import { ToolTip } from 'components/ToolTip'
 import { ExplorerDataType, getExplorerLink } from 'utils/explorers'
+import MultipleChart from './MultipleChart'
 
 const Wrapper = styled(RowBetween)`
   background: ${({ theme }) => theme.bg0};
@@ -36,22 +33,27 @@ const Wrapper = styled(RowBetween)`
   `};
 `
 
-const ChartWrapper = styled.div`
-  /* border: 1px solid ${({ theme }) => theme.border1}; */
-  /* background-color: ${({ theme }) => theme.bg0}; */
-  border-radius: 12px;
-  width: 100%;
-  min-width: 200px;
-  min-height: 200px;
-  margin-left: 15px;
-  z-index: 1;
+const VerticalWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    flex-direction: column;
+  `};
+`
+
+const HorizontalWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
 `
 
 const AllStats = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 36px;
+  gap: 48px;
   ${({ theme }) => theme.mediaWidth.upToMedium`
     margin-bottom:25px;
   `};
@@ -119,18 +121,6 @@ export const DeusTitle = styled(Title)`
   background: ${({ theme }) => theme.deusColor};
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-`
-
-const BackgroundImageWrapper = styled.div`
-  position: absolute;
-  bottom: 0;
-  width: 50%;
-  height: 100%;
-  right: 10px;
-
-  ${({ theme }) => theme.mediaWidth.upToMedium`
-    display:none;
-  `};
 `
 
 const ModalWrapper = styled.div`
@@ -226,6 +216,7 @@ const getContractExplorerLink = (address: string, dataType = ExplorerDataType.TO
 
 export default function Stats() {
   //const deusPrice = useDeusPrice()
+  const theme = useTheme()
   const {
     totalSupply,
     collateralRatio,
@@ -557,69 +548,85 @@ export default function Stats() {
     <>
       <Wrapper>
         <AllStats>
-          <StatsWrapper>
-            <DeiTitleContainer>
-              <Title>DEI Stats</Title>
-            </DeiTitleContainer>
-            <Info>
-              <StatsItem
-                name="DEI Price"
-                value={formatDollarAmount(parseFloat(deiPrice), 3)}
-                href="https://www.coingecko.com/en/coins/dei-token"
-              />
-              <StatsItem
-                name="Total Supply"
-                value={formatAmount(totalSupply, 2)}
-                href={
-                  ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/token/' + DEI_ADDRESS[SupportedChainId.FANTOM]
-                }
-              />
-              <StatsItem
-                name="Seigniorage"
-                value={`${formatBalance(seigniorage, 2)}%`}
-                href={'https://docs.deus.finance/usddei/dei-stablecoin-overview'}
-              />
-              <StatsItem
-                name="Circulating Supply"
-                value={formatAmount(circulatingSupply, 2)}
-                href={
-                  ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl + '/token/' + DEI_ADDRESS[SupportedChainId.FANTOM]
-                }
-              />
-              <StatsItem
-                name="Total Reserve Assets"
-                value={formatDollarAmount(totalUSDCReserves, 2)}
-                onClick={() => handleDashboardModal(DASHBOARD_STATS_TITLES.DEI_TOTAL_RESERVES)}
-              />
-              <StatsItem name="USDC Backing Per DEI" value={usdcBackingPerDei} />
-            </Info>
-          </StatsWrapper>
-          <StatsWrapper>
-            <DeusTitle>DEUS Stats</DeusTitle>
-            <Info>
-              <StatsItem
-                name="DEUS Price"
-                value={formatDollarAmount(deusPrice, 2)}
-                href={'https://www.coingecko.com/en/coins/deus-finance'}
-              />
-              <StatsItem
-                name="Circulating Supply"
-                value={formatAmount(deusCirculatingSupply)}
-                onClick={() => handleDashboardModal(DASHBOARD_STATS_TITLES.DEUS_CIRCULATING_SUPPLY)}
-              />
-              <StatsItem
-                name="Total Supply"
-                value={formatAmount(deusTotalSupply)}
-                onClick={() => handleDashboardModal(DASHBOARD_STATS_TITLES.DEUS_TOTAL_SUPPLY)}
-              />
-              <StatsItem
-                name="Market Cap"
-                value={formatAmount(deusMarketCap)}
-                hasToolTip={true}
-                toolTipInfo={'Market Cap = Circulating Supply * Price'}
-              />
-            </Info>
-          </StatsWrapper>
+          <VerticalWrapper>
+            <HorizontalWrapper>
+              <StatsWrapper>
+                <DeiTitleContainer>
+                  <Title>DEI Stats</Title>
+                </DeiTitleContainer>
+                <Info>
+                  <StatsItem
+                    name="DEI Price"
+                    value={formatDollarAmount(parseFloat(deiPrice), 3)}
+                    href="https://www.coingecko.com/en/coins/dei-token"
+                  />
+                  <StatsItem
+                    name="Total Supply"
+                    value={formatAmount(totalSupply, 2)}
+                    href={
+                      ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl +
+                      '/token/' +
+                      DEI_ADDRESS[SupportedChainId.FANTOM]
+                    }
+                  />
+                  <StatsItem
+                    name="Seigniorage"
+                    value={`${formatBalance(seigniorage, 2)}%`}
+                    href={'https://docs.deus.finance/usddei/dei-stablecoin-overview'}
+                  />
+                  <StatsItem
+                    name="Circulating Supply"
+                    value={formatAmount(circulatingSupply, 2)}
+                    href={
+                      ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl +
+                      '/token/' +
+                      DEI_ADDRESS[SupportedChainId.FANTOM]
+                    }
+                  />
+                  <StatsItem
+                    name="Total Reserve Assets"
+                    value={formatDollarAmount(totalUSDCReserves, 2)}
+                    onClick={() => handleDashboardModal(DASHBOARD_STATS_TITLES.DEI_TOTAL_RESERVES)}
+                  />
+                  <StatsItem name="USDC Backing Per DEI" value={usdcBackingPerDei} />
+                </Info>
+              </StatsWrapper>
+              <StatsWrapper>
+                <DeusTitle>DEUS Stats</DeusTitle>
+                <Info>
+                  <StatsItem
+                    name="DEUS Price"
+                    value={formatDollarAmount(deusPrice, 2)}
+                    href={'https://www.coingecko.com/en/coins/deus-finance'}
+                  />
+                  <StatsItem
+                    name="Circulating Supply"
+                    value={formatAmount(deusCirculatingSupply)}
+                    onClick={() => handleDashboardModal(DASHBOARD_STATS_TITLES.DEUS_CIRCULATING_SUPPLY)}
+                  />
+                  <StatsItem
+                    name="Total Supply"
+                    value={formatAmount(deusTotalSupply)}
+                    onClick={() => handleDashboardModal(DASHBOARD_STATS_TITLES.DEUS_TOTAL_SUPPLY)}
+                  />
+                  <StatsItem
+                    name="Market Cap"
+                    value={formatAmount(deusMarketCap)}
+                    hasToolTip={true}
+                    toolTipInfo={'Market Cap = Circulating Supply * Price'}
+                  />
+                </Info>
+              </StatsWrapper>
+            </HorizontalWrapper>
+            <MultipleChart
+              primaryLabel="DEI Price"
+              secondaryLabel="DEI Supply"
+              primaryColor={theme.deiPrimaryColor}
+              secondaryColor={theme.deiSecondaryColor}
+              primaryID="deiPrice"
+              secondaryID="deiSupply"
+            />
+          </VerticalWrapper>
           <StatsWrapper>
             <DeusTitle>xDEUS Stats</DeusTitle>
             <Info>
@@ -663,12 +670,12 @@ export default function Stats() {
             </Info>
           </StatsWrapper>
         </AllStats>
-        <ChartWrapper>
+        {/* <ChartWrapper>
           <Chart />
-        </ChartWrapper>
-        <BackgroundImageWrapper>
+        </ChartWrapper> */}
+        {/* <BackgroundImageWrapper>
           <Image src={BG_DASHBOARD} alt="swap bg" layout="fill" objectFit="cover" />
-        </BackgroundImageWrapper>
+        </BackgroundImageWrapper> */}
       </Wrapper>
       <Modal
         width="500px"
