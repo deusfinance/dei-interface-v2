@@ -18,3 +18,8 @@ export const useDeiPrice = (): string => {
   const dashboardState = useDashboardState()
   return dashboardState.deiPrice.toString()
 }
+
+export const useXDeusPrice = (): string => {
+  const dashboardState = useDashboardState()
+  return dashboardState.xDeusPrice.toString()
+}

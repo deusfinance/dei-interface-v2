@@ -19,7 +19,7 @@ import Footer from 'components/Disclaimer'
 
 import { IconWrapper, VeDeus as VeDeusIcon, Bridge as BridgeIcon } from 'components/Icons'
 import { ArrowUpRight } from 'react-feather'
-import { useDeiPrice, useDeusPrice } from 'hooks/useCoingeckoPrice'
+import { useDeiPrice, useDeusPrice } from 'state/dashboard/hooks'
 import Column from 'components/Column'
 import { ExternalLink } from 'components/Link'
 import { formatUnits } from '@ethersproject/units'
@@ -358,7 +358,8 @@ const SidebarContent = styled.div<{ isOpen: boolean }>`
   position: relative;
   overflow-y: scroll;
   height: 100%;
-  width: ${({ isOpen }) => (isOpen ? '336px' : '74px')};
+  min-width: ${({ isOpen }) => (isOpen ? '300px' : '74px')};
+  width: '100%';
   top: 0px;
   left: 0px;
 `
@@ -367,11 +368,11 @@ export default function Slider() {
   const { account } = useWeb3React()
   const router = useRouter()
 
-  const DeiPrice = useDeiPrice()
-  const DeusPrice = useDeusPrice()
+  const deiPrice = useDeiPrice()
+  const deusPrice = useDeusPrice()
   const [isOpen, setOpen] = useState(true)
 
-  const LegacyDeiPrice = useFirebirdPrice({
+  const legacyDeiPrice = useFirebirdPrice({
     amount: '1000000000000000000',
     chainId: SupportedChainId.FANTOM.toString(),
     from: LegacyDEI_Address[SupportedChainId.FANTOM].toString(),
@@ -483,21 +484,21 @@ export default function Slider() {
                 <Token>
                   DEI Price
                   <Price>
-                    <DeiPriceWrap>{formatDollarAmount(parseFloat(DeiPrice), 3)}</DeiPriceWrap>
+                    <DeiPriceWrap>{formatDollarAmount(parseFloat(deiPrice), 3)}</DeiPriceWrap>
                   </Price>
                 </Token>
                 <Token>
                   DEUS Price
                   <Price>
-                    <DeusPriceWrap>{formatDollarAmount(parseFloat(DeusPrice), 2)}</DeusPriceWrap>
+                    <DeusPriceWrap>{formatDollarAmount(parseFloat(deusPrice), 2)}</DeusPriceWrap>
                   </Price>
                 </Token>
-                {hasLegacyDei && LegacyDeiPrice && (
+                {hasLegacyDei && legacyDeiPrice && (
                   <Token>
                     Legacy DEI Price:
                     <Price>
                       <LegacyDeiPriceWrap>
-                        ${(+formatUnits(LegacyDeiPrice, USDC_TOKEN.decimals))?.toFixed(3)}
+                        ${(+formatUnits(legacyDeiPrice, USDC_TOKEN.decimals))?.toFixed(3)}
                       </LegacyDeiPriceWrap>
                     </Price>
                   </Token>
@@ -511,7 +512,10 @@ export default function Slider() {
             <Column style={{ width: '100%' }}>
               <Data>
                 <CustomLink href={'https://docs.deus.finance'} passHref>
-                  <DataItems>Bug Bounty</DataItems>
+                  <DataItems>
+                    Bug Bounty
+                    <ArrowUpRight />
+                  </DataItems>
                 </CustomLink>
 
                 <CustomLink href={'https://docs.deus.finance'} passHref>

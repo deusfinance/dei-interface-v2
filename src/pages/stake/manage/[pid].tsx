@@ -59,7 +59,7 @@ export default function StakingPage() {
           </VStack>
         )}
         <VStack style={{ width: '100%' }}>
-          <AvailableLP pool={liquidityPool} />
+          {stakingPool.active && <AvailableLP pool={liquidityPool} />}
           <StakedLP pid={pidNumber} />
           <PoolShare pool={liquidityPool} />
           <PoolInfo pool={liquidityPool} />

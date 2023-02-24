@@ -99,15 +99,15 @@ export default function TokenBox({
       </MultipleImageWrapper>
       <TokensWrap>
         <span style={{ textAlign: 'left' }}>{title}</span>
-        {active ? (
-          <div>
-            <span style={{ color: theme.blue2 }}>{chain}</span>
-            <span> | </span>
-            <span style={{ color: theme.green1 }}>Live</span>
-          </div>
-        ) : (
-          <span style={{ color: theme.red1 }}>Inactive</span>
-        )}
+        <div>
+          <span style={{ color: theme.blue2 }}>{chain}</span>
+          <span> | </span>
+          {active ? (
+            <span style={{ color: theme.green1 }}>Active</span>
+          ) : (
+            <span style={{ color: theme.red1 }}>Inactive</span>
+          )}
+        </div>
       </TokensWrap>
     </TokenCell>
   )

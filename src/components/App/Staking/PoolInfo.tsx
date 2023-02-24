@@ -1,17 +1,20 @@
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
 
-import { usePoolBalances, usePoolInfo } from 'hooks/useStablePoolInfo'
+import { truncateAddress } from 'utils/address'
 import { formatAmount, formatDollarAmount } from 'utils/numbers'
 import { LiquidityType, Stakings } from 'constants/stakingPools'
-import Copy from 'components/Copy'
-import { truncateAddress } from 'utils/address'
-import Container from './common/Container'
-import { ContentTable, Label, TableHeader, Value, VStack } from './common/Layout'
-import { useDeiPrice, useDeusPrice } from 'hooks/useCoingeckoPrice'
+import { useDeiPrice, useDeusPrice } from 'state/dashboard/hooks'
+
+import { usePoolBalances, usePoolInfo } from 'hooks/useStablePoolInfo'
 import { useUserInfo } from 'hooks/useStakingInfo'
 import { useBDeiStats } from 'hooks/useBDeiStats'
 import { useVDeusStats } from 'hooks/useVDeusStats'
+
+import Copy from 'components/Copy'
+
+import Container from './common/Container'
+import { ContentTable, Label, TableHeader, Value, VStack } from './common/Layout'
 
 const Wrapper = styled(VStack)`
   padding: 12px;

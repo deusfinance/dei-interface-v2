@@ -4,13 +4,13 @@ import Column from 'components/Column'
 import { Row, RowBetween } from 'components/Row'
 import useWeb3React from 'hooks/useWeb3'
 import { useTokenBalances } from 'state/wallet/hooks'
+import { useDeiPrice, useDeusPrice, useXDeusPrice } from 'state/dashboard/hooks'
 import { DEI_TOKEN, BDEI_TOKEN, DEUS_TOKEN, XDEUS_TOKEN, LegacyDEI_TOKEN } from 'constants/tokens'
 import ImageWithFallback from 'components/ImageWithFallback'
 import { useCurrencyLogos } from 'hooks/useCurrencyLogo'
 import { isMobile } from 'react-device-detect'
 import { ToolTip } from 'components/ToolTip'
 import Exclamation from '/public/static/images/pages/swap/info.svg'
-import { useDeiPrice, useDeusPrice } from 'hooks/useCoingeckoPrice'
 import { usePoolBalances } from 'hooks/useStablePoolInfo'
 import { LiquidityPool } from 'constants/stakingPools'
 import { useFirebirdPrice } from 'hooks/useFirebirdPrice'
@@ -183,17 +183,18 @@ const Account = () => {
 
   const deiPrice = useDeiPrice()
   const deusPrice = useDeusPrice()
+  const xDeusPrice = useXDeusPrice()
 
   const DB_pool = LiquidityPool[0] // DEI-BDEI pool
-  const DX_pool = LiquidityPool[2] // DEUS-XDEUS pool
+  //const DX_pool = LiquidityPool[2] // DEUS-XDEUS pool
 
   const DB_poolBalances = usePoolBalances(DB_pool)
-  const DX_poolBalances = usePoolBalances(DX_pool)
+  //const DX_poolBalances = usePoolBalances(DX_pool)
 
   const bDEIPrice = ((DB_poolBalances[1] * Number(deiPrice)) / DB_poolBalances[0]).toFixed(2)
-  const XDEUSPrice = ((DX_poolBalances[1] * Number(deusPrice)) / DX_poolBalances[0]).toFixed(2)
+  //const XDEUSPrice = ((DX_poolBalances[1] * Number(deusPrice)) / DX_poolBalances[0]).toFixed(2)
 
-  const LegacyDeiPrice = useFirebirdPrice({
+  const legacyDeiPrice = useFirebirdPrice({
     amount: '1000000000000000000',
     chainId: SupportedChainId.FANTOM.toString(),
     from: LegacyDEI_Address[SupportedChainId.FANTOM].toString(),
@@ -208,8 +209,8 @@ const Account = () => {
     sum = sum + Number(coins[0]?.value) * Number(deiPrice) // Add DEI
     sum = sum + Number(coins[1]?.value) * Number(bDEIPrice) // Add bDEI
     sum = sum + Number(coins[2]?.value) * Number(deusPrice) // Add DEUS
-    sum = sum + Number(coins[3]?.value) * Number(XDEUSPrice) // Add XDEUS
-    sum = sum + Number(coins[4]?.value) * (Number(LegacyDeiPrice) * 1e-6) // Add LegacyDEI
+    sum = sum + Number(coins[3]?.value) * Number(xDeusPrice) // Add XDEUS
+    sum = sum + Number(coins[4]?.value) * (Number(legacyDeiPrice) * 1e-6) // Add LegacyDEI
     return sum ? sum : 0
   }
 

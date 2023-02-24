@@ -14,6 +14,7 @@ const initialState = {
   deusPrice: 0,
   deusCirculatingSupply: 0,
   deiPrice: 0,
+  xDeusPrice: 0,
 }
 
 export const fetchDeusPrice = createAsyncThunk<any>('dashboard/fetchDeusPrice', async () => {
@@ -21,6 +22,13 @@ export const fetchDeusPrice = createAsyncThunk<any>('dashboard/fetchDeusPrice', 
   const { href: url } = new URL(`/info/deus/price`, INFO_URL)
   const deusPrice = await makeHttpRequest(url)
   return deusPrice
+})
+
+export const fetchXDeusPrice = createAsyncThunk<any>('dashboard/fetchXDeusPrice', async () => {
+  // Destruct the response directly so if these params don't exist it will throw an error.
+  const { href: url } = new URL(`/info/xdeus/price`, INFO_URL)
+  const xdeusPrice = await makeHttpRequest(url)
+  return xdeusPrice
 })
 
 export const fetchDeiPrice = createAsyncThunk<any>('dashboard/fetchDeiPrice', async () => {
@@ -63,6 +71,20 @@ const dataSlice = createSlice({
       })
       .addCase(fetchDeiPrice.rejected, () => {
         console.log('Unable to fetch dei price info')
+        return {
+          ...initialState,
+          status: DashboardStatus.ERROR,
+        }
+      })
+      .addCase(fetchXDeusPrice.pending, (state) => {
+        state.status = DashboardStatus.LOADING
+      })
+      .addCase(fetchXDeusPrice.fulfilled, (state, { payload }) => {
+        state.status = DashboardStatus.OK
+        state.xDeusPrice = payload
+      })
+      .addCase(fetchXDeusPrice.rejected, () => {
+        console.log('Unable to fetch deus price info')
         return {
           ...initialState,
           status: DashboardStatus.ERROR,
