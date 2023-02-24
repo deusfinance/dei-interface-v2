@@ -10,7 +10,6 @@ import { Z_INDEX } from 'theme'
 import { sendEvent } from 'components/analytics'
 import Web3Network from 'components/Web3Network'
 import Web3Status from 'components/Web3Status'
-import RiskNotification from 'components/InfoHeader'
 import Menu from './Menu'
 import NavLogo from './NavLogo'
 
