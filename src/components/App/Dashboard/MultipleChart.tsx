@@ -455,8 +455,10 @@ export default function MultipleChart({
       setLowest(Math.floor(Math.min(...filteredData.map((obj) => parseInt(obj.value))) / 100) * 100) // min is rounded to nearest 100
       setHighest(Math.ceil(Math.max(...filteredData.map((obj) => parseInt(obj.value))) / 100) * 100) // max is rounded to nearest 100
     } else if (currentID === 'deiPrice') {
-      setLowest(Math.floor(Math.min(...filteredData.map((obj) => parseFloat(obj.value))) * 1000) / 1000) // min is rounded to nearest 0.0001
-      setHighest(Math.ceil(Math.max(...filteredData.map((obj) => parseFloat(obj.value))) * 1000) / 1000) // max is rounded to nearest 0.0001
+      setLowest(0.95)
+      setHighest(1.05)
+      //setLowest(Math.floor(Math.min(...filteredData.map((obj) => parseFloat(obj.value))) * 1000) / 1000) // min is rounded to nearest 0.0001
+      //setHighest(Math.ceil(Math.max(...filteredData.map((obj) => parseFloat(obj.value))) * 1000) / 1000) // max is rounded to nearest 0.0001
     }
   }, [filteredData, currentID])
 
@@ -480,7 +482,7 @@ export default function MultipleChart({
       const formattedValue =
         currentID === 'deiSupply'
           ? formatAmount(parseFloat(payload[0].value), 2)
-          : '$' + formatAmount(parseFloat(payload[0].value), 4)
+          : '$' + formatAmount(parseFloat(payload[0].value), 3)
       return (
         <div className="custom-tooltip">
           <p className="label">{`${currentTab}: ${formattedValue}`}</p>
@@ -494,7 +496,7 @@ export default function MultipleChart({
 
   const tickFomatter = (value: any): any => {
     if (currentID === 'deiSupply') return formatAmount(value, 0)
-    return formatAmount(value, 4)
+    return formatAmount(value, 3)
   }
 
   return (
