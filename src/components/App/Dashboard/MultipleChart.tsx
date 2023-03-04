@@ -248,7 +248,7 @@ export default function MultipleChart({
 
   const [loading, setLoading] = useState(true)
   const [chartData, setChartData] = useState<ChartData[]>(temp1Data)
-  const [currentTimeFrame, setCurrentTimeFrame] = useState('1M')
+  const [currentTimeFrame, setCurrentTimeFrame] = useState('1Y')
   const [currentTab, setCurrentTab] = useState(primaryLabel)
   const [lowest, setLowest] = useState(0)
   const [highest, setHighest] = useState(2400)
@@ -452,7 +452,7 @@ export default function MultipleChart({
   // lowest and highest values for the Y-axis
   useMemo(() => {
     if (currentID === 'deiSupply') {
-      setLowest(Math.floor(Math.min(...filteredData.map((obj) => parseInt(obj.value))) / 100) * 100) // min is rounded to nearest 100
+      setLowest(Math.floor(Math.min(...filteredData.map((obj) => parseInt(obj.value))) / 100) * 100 * 0.5) // min is rounded to nearest 100
       setHighest(Math.ceil(Math.max(...filteredData.map((obj) => parseInt(obj.value))) / 100) * 100) // max is rounded to nearest 100
     } else if (currentID === 'deiPrice') {
       setLowest(0.95)
