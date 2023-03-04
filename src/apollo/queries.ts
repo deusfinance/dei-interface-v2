@@ -28,6 +28,11 @@ export interface Voucher {
   timestamp: string
 }
 
+export interface ChartData {
+  timestamp: string
+  value: string
+}
+
 export const VOUCHER_DETAILS = gql`
   query getVoucherDetails($currentTokenId: BigInt!) {
     redeems(where: { currentTokenId: $currentTokenId }, orderBy: timestamp, orderDirection: desc) {
@@ -94,6 +99,100 @@ export const SUBGRAPH_HEALTH = gql`
           number
         }
       }
+    }
+  }
+`
+
+export const ECOSYSTEM_STATS = gql`
+  query getAllStats($skip: Int!, $timestamp: Int!) {
+    hourlyDEISupplySnapshots(
+      first: 1000
+      skip: $skip
+      where: { timestamp_lt: $timestamp }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      timestamp
+      deiSupply
+      collaterizationRatio
+      totalUSDCReserves
+    }
+
+    dailyDEISupplySnapshots(
+      first: 1000
+      skip: $skip
+      where: { timestamp_lt: $timestamp }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      timestamp
+      deiSupply
+      collaterizationRatio
+      totalUSDCReserves
+    }
+  }
+`
+
+export const HOURLY_ECOSYSTEM_STATS = gql`
+  query getAllStats($skip: Int!, $timestamp: Int!) {
+    hourlyDEISupplySnapshots(
+      first: 1000
+      skip: $skip
+      where: { timestamp_lt: $timestamp }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      timestamp
+      deiSupply
+      collaterizationRatio
+      totalUSDCReserves
+    }
+  }
+`
+
+export const DAILY_ECOSYSTEM_STATS = gql`
+  query getAllStats($skip: Int!, $timestamp: Int!) {
+    dailyDEISupplySnapshots(
+      first: 1000
+      skip: $skip
+      where: { timestamp_lt: $timestamp }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      timestamp
+      deiSupply
+      collaterizationRatio
+      totalUSDCReserves
+    }
+  }
+`
+
+export const HOURLY_DEI_PRICE_STATS = gql`
+  query getHourlyStats($skip: Int!, $timestamp: Int!) {
+    hourlyDeiTokenPriceSnapshots(
+      first: 1000
+      skip: $skip
+      where: { timestamp_lt: $timestamp }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      timestamp
+      deiPrice
+    }
+  }
+`
+
+export const DAILY_DEI_PRICE_STATS = gql`
+  query getDailyStats($skip: Int!, $timestamp: Int!) {
+    dailyDeiTokenPriceSnapshots(
+      first: 1000
+      skip: $skip
+      where: { timestamp_lt: $timestamp }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      timestamp
+      deiPrice
     }
   }
 `

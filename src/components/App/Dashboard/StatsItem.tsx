@@ -10,7 +10,19 @@ const Item = styled.div<{ hasOnClick?: any }>`
   white-space: nowrap;
   width: 33%;
   min-width: 130px;
-
+  path {
+    fill: ${({ theme }) => theme.text2};
+  }
+  position: relative;
+  &:after {
+    content: '';
+    position: absolute;
+    display: flex;
+    height: 100%;
+    width: 1px;
+    right: 24px;
+    top: 0;
+  }
   ${({ theme }) => theme.mediaWidth.upToMedium`
     padding:0 12px;
     width: 50%;
