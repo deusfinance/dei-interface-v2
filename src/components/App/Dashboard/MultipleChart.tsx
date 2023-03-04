@@ -1,5 +1,12 @@
+import { getDeiPriceStatsApolloClient } from 'apollo/client/deiPriceStats'
 import { getEcosystemStatsApolloClient } from 'apollo/client/ecosystemStats'
-import { ChartData, DAILY_ECOSYSTEM_STATS, HOURLY_ECOSYSTEM_STATS } from 'apollo/queries'
+import {
+  ChartData,
+  DAILY_DEI_PRICE_STATS,
+  DAILY_ECOSYSTEM_STATS,
+  HOURLY_DEI_PRICE_STATS,
+  HOURLY_ECOSYSTEM_STATS,
+} from 'apollo/queries'
 import Dropdown from 'components/DropDown'
 import { FALLBACK_CHAIN_ID } from 'constants/chains'
 import useWeb3React from 'hooks/useWeb3'
@@ -258,30 +265,58 @@ export default function MultipleChart({
     async (skip: number, timestamp: number) => {
       try {
         // query subgraph and fetch all entities at once
-        const client = getEcosystemStatsApolloClient(chainId)
-        if (!client) return []
+        if (currentID === 'deiSupply') {
+          const deiSupplyClient = getEcosystemStatsApolloClient(chainId)
+          if (!deiSupplyClient) return []
 
-        if (
-          currentTimeFrame === '4H' ||
-          currentTimeFrame === '8H' ||
-          currentTimeFrame === '1D' ||
-          currentTimeFrame === '1W'
-        ) {
-          const { data } = await client.query({
-            query: HOURLY_ECOSYSTEM_STATS,
-            variables: { skip, timestamp },
-            fetchPolicy: 'no-cache',
-          })
+          if (
+            currentTimeFrame === '4H' ||
+            currentTimeFrame === '8H' ||
+            currentTimeFrame === '1D' ||
+            currentTimeFrame === '1W'
+          ) {
+            const { data } = await deiSupplyClient.query({
+              query: HOURLY_ECOSYSTEM_STATS,
+              variables: { skip, timestamp },
+              fetchPolicy: 'no-cache',
+            })
 
-          return data
+            return data
+          } else {
+            const { data } = await deiSupplyClient.query({
+              query: DAILY_ECOSYSTEM_STATS,
+              variables: { skip, timestamp },
+              fetchPolicy: 'no-cache',
+            })
+
+            return data
+          }
         } else {
-          const { data } = await client.query({
-            query: DAILY_ECOSYSTEM_STATS,
-            variables: { skip, timestamp },
-            fetchPolicy: 'no-cache',
-          })
+          const deiPriceClient = getDeiPriceStatsApolloClient(chainId)
+          if (!deiPriceClient) return []
 
-          return data
+          if (
+            currentTimeFrame === '4H' ||
+            currentTimeFrame === '8H' ||
+            currentTimeFrame === '1D' ||
+            currentTimeFrame === '1W'
+          ) {
+            const { data } = await deiPriceClient.query({
+              query: HOURLY_DEI_PRICE_STATS,
+              variables: { skip, timestamp },
+              fetchPolicy: 'no-cache',
+            })
+
+            return data
+          } else {
+            const { data } = await deiPriceClient.query({
+              query: DAILY_DEI_PRICE_STATS,
+              variables: { skip, timestamp },
+              fetchPolicy: 'no-cache',
+            })
+
+            return data
+          }
         }
       } catch (error) {
         console.log(`Unable to query data from The Graph Network`)
@@ -289,7 +324,7 @@ export default function MultipleChart({
         return []
       }
     },
-    [chainId, currentTimeFrame]
+    [chainId, currentTimeFrame, currentID]
   )
 
   const fetchData = useCallback(async () => {
@@ -313,6 +348,22 @@ export default function MultipleChart({
             return data.dailyDEISupplySnapshots.map((obj: { deiSupply: any; timestamp: any }) => ({
               timestamp: obj.timestamp,
               value: obj.deiSupply,
+            })) as ChartData[]
+        case 'deiPrice':
+          if (
+            currentTimeFrame === '4H' ||
+            currentTimeFrame === '8H' ||
+            currentTimeFrame === '1D' ||
+            currentTimeFrame === '1W'
+          )
+            return data.hourlyDeiTokenPriceSnapshots.map((obj: { deiPrice: any; timestamp: any }) => ({
+              timestamp: obj.timestamp,
+              value: obj.deiPrice,
+            })) as ChartData[]
+          else
+            return data.dailyDeiTokenPriceSnapshots.map((obj: { deiPrice: any; timestamp: any }) => ({
+              timestamp: obj.timestamp,
+              value: obj.deiPrice,
             })) as ChartData[]
         default:
           console.error('Invalid timeframe selected. Defaulting to daily snapshot data.')
@@ -400,14 +451,14 @@ export default function MultipleChart({
 
   // lowest and highest values for the Y-axis
   useMemo(() => {
-    // if (currentID == 'deiMintingRatio') {
-    //   setLowest(0)
-    //   setHighest(100)
-    // } else {
-    setLowest(Math.floor(Math.min(...filteredData.map((obj) => parseInt(obj.value))) / 100) * 100) // min is rounded to nearest 100
-    setHighest(Math.ceil(Math.max(...filteredData.map((obj) => parseInt(obj.value))) / 100) * 100) // max is rounded to nearest 100
-    //}
-  }, [filteredData])
+    if (currentID === 'deiSupply') {
+      setLowest(Math.floor(Math.min(...filteredData.map((obj) => parseInt(obj.value))) / 100) * 100) // min is rounded to nearest 100
+      setHighest(Math.ceil(Math.max(...filteredData.map((obj) => parseInt(obj.value))) / 100) * 100) // max is rounded to nearest 100
+    } else if (currentID === 'deiPrice') {
+      setLowest(Math.floor(Math.min(...filteredData.map((obj) => parseFloat(obj.value))) * 1000) / 1000) // min is rounded to nearest 0.0001
+      setHighest(Math.ceil(Math.max(...filteredData.map((obj) => parseFloat(obj.value))) * 1000) / 1000) // max is rounded to nearest 0.0001
+    }
+  }, [filteredData, currentID])
 
   const CustomTooltip = ({ payload }: { payload: any }) => {
     if (payload && payload.length) {
@@ -426,7 +477,10 @@ export default function MultipleChart({
         ':' +
         date.getMinutes() +
         ' Hr(s)'
-      const formattedValue = formatAmount(parseFloat(payload[0].value), 2)
+      const formattedValue =
+        currentID === 'deiSupply'
+          ? formatAmount(parseFloat(payload[0].value), 2)
+          : '$' + formatAmount(parseFloat(payload[0].value), 4)
       return (
         <div className="custom-tooltip">
           <p className="label">{`${currentTab}: ${formattedValue}`}</p>
@@ -440,7 +494,7 @@ export default function MultipleChart({
 
   const tickFomatter = (value: any): any => {
     if (currentID === 'deiSupply') return formatAmount(value, 0)
-    return value
+    return formatAmount(value, 4)
   }
 
   return (

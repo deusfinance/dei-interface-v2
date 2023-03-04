@@ -9,7 +9,7 @@ const Item = styled.div<{ hasOnClick?: any }>`
   border-right: 1px solid ${({ theme }) => theme.border1};
   white-space: nowrap;
   width: 33%;
-  min-width: 180px;
+  min-width: 130px;
   path {
     fill: ${({ theme }) => theme.text2};
   }
@@ -20,13 +20,8 @@ const Item = styled.div<{ hasOnClick?: any }>`
     display: flex;
     height: 100%;
     width: 1px;
-    border-right: 1px solid ${({ theme }) => theme.border1};
     right: 24px;
     top: 0;
-  }
-  &:last-child:after {
-    content: '';
-    border-right: none !important;
   }
   ${({ theme }) => theme.mediaWidth.upToMedium`
     padding:0 12px;

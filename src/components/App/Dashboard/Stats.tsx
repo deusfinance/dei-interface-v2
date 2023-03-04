@@ -46,6 +46,7 @@ const VerticalWrapper = styled.div`
 const HorizontalWrapper = styled.div`
   display: flex;
   flex-direction: column;
+  justify-content: space-evenly;
   gap: 48px;
 `
 

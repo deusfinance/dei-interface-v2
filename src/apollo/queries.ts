@@ -166,3 +166,33 @@ export const DAILY_ECOSYSTEM_STATS = gql`
     }
   }
 `
+
+export const HOURLY_DEI_PRICE_STATS = gql`
+  query getHourlyStats($skip: Int!, $timestamp: Int!) {
+    hourlyDeiTokenPriceSnapshots(
+      first: 1000
+      skip: $skip
+      where: { timestamp_lt: $timestamp }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      timestamp
+      deiPrice
+    }
+  }
+`
+
+export const DAILY_DEI_PRICE_STATS = gql`
+  query getDailyStats($skip: Int!, $timestamp: Int!) {
+    dailyDeiTokenPriceSnapshots(
+      first: 1000
+      skip: $skip
+      where: { timestamp_lt: $timestamp }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      timestamp
+      deiPrice
+    }
+  }
+`
