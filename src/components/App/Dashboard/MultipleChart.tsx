@@ -14,7 +14,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { isMobile } from 'react-device-detect'
 import { ResponsiveContainer, YAxis, AreaChart, Area, CartesianGrid, Tooltip } from 'recharts'
 import styled, { useTheme } from 'styled-components'
-import { formatAmount } from 'utils/numbers'
+import { formatAmount, formatDollarAmount } from 'utils/numbers'
 
 const Wrapper = styled.div`
   display: flex;
@@ -496,7 +496,7 @@ export default function MultipleChart({
 
   const tickFomatter = (value: any): any => {
     if (currentID === 'deiSupply') return formatAmount(value, 0)
-    return formatAmount(value, 3)
+    return formatDollarAmount(value, 3)
   }
 
   return (
