@@ -452,8 +452,8 @@ export default function MultipleChart({
   // lowest and highest values for the Y-axis
   useMemo(() => {
     if (currentID === 'deiSupply') {
-      setLowest(Math.floor(Math.min(...filteredData.map((obj) => parseInt(obj.value))) / 100) * 100 * 0.5) // min is rounded to nearest 100
-      setHighest(Math.ceil(Math.max(...filteredData.map((obj) => parseInt(obj.value))) / 100) * 100) // max is rounded to nearest 100
+      setLowest(Math.floor(Math.min(...filteredData.map((obj) => parseInt(obj.value))) / 100000) * 100000 * 0.5) // min is rounded to nearest 50% of 100k
+      setHighest(Math.ceil(Math.max(...filteredData.map((obj) => parseInt(obj.value))) / 100000) * 100000) // max is rounded to nearest 100k
     } else if (currentID === 'deiPrice') {
       setLowest(0.95)
       setHighest(1.05)
