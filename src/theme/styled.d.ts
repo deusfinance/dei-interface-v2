@@ -70,6 +70,8 @@ export interface Colors {
   deiColor: Color
   deiLegacyColor: Color
   cLqdrColor: Color
+  deiPrimaryColor: Color
+  deiSecondaryColor: Color
 }
 
 export type Shadow = string

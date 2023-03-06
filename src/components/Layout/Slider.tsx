@@ -10,10 +10,8 @@ import ImageWithFallback from 'components/ImageWithFallback'
 
 import { Z_INDEX } from 'theme'
 
-import { sendEvent } from 'components/analytics'
 import Web3Network from 'components/Web3Network'
 import Web3Status from 'components/Web3Status'
-import RiskNotification from 'components/InfoHeader'
 import Menu from './Menu'
 import NavLogo2 from './NavLogo2'
 import { Row as RowWrapper, RowEnd, RowStart } from 'components/Row'
@@ -21,7 +19,7 @@ import Footer from 'components/Disclaimer'
 
 import { IconWrapper, VeDeus as VeDeusIcon, Bridge as BridgeIcon } from 'components/Icons'
 import { ArrowUpRight } from 'react-feather'
-import { useDeiPrice, useDeusPrice } from 'hooks/useCoingeckoPrice'
+import { useDeiPrice, useDeusPrice } from 'state/dashboard/hooks'
 import Column from 'components/Column'
 import { ExternalLink } from 'components/Link'
 import { formatUnits } from '@ethersproject/units'
@@ -357,10 +355,11 @@ const CustomLink = styled(ExternalLink)`
   font-family: 'IBM Plex Mono';
 `
 const SidebarContent = styled.div<{ isOpen: boolean }>`
-  position: fixed;
+  position: relative;
   overflow-y: scroll;
   height: 100%;
-  width: ${({ isOpen }) => (isOpen ? '336px' : '74px')};
+  min-width: ${({ isOpen }) => (isOpen ? '300px' : '74px')};
+  width: '100%';
   top: 0px;
   left: 0px;
 `
@@ -369,14 +368,11 @@ export default function Slider() {
   const { account } = useWeb3React()
   const router = useRouter()
 
-  const showBanner = localStorage.getItem('risk_warning') === 'true' ? false : true
-  const [showTopBanner, setShowTopBanner] = useState(showBanner)
-  const bannerText = 'Users interacting with this software do so entirely at their own risk'
-  const DeiPrice = useDeiPrice()
-  const DeusPrice = useDeusPrice()
+  const deiPrice = useDeiPrice()
+  const deusPrice = useDeusPrice()
   const [isOpen, setOpen] = useState(true)
 
-  const LegacyDeiPrice = useFirebirdPrice({
+  const legacyDeiPrice = useFirebirdPrice({
     amount: '1000000000000000000',
     chainId: SupportedChainId.FANTOM.toString(),
     from: LegacyDEI_Address[SupportedChainId.FANTOM].toString(),
@@ -389,14 +385,6 @@ export default function Slider() {
   const LegacyDeiBalance = useTokenBalance(account ?? undefined, LegacyDEI_TOKEN ?? undefined)
   const hasLegacyDei = !!Number(LegacyDeiBalance?.toSignificant(6))
 
-  function setShowBanner(inp: boolean) {
-    if (!inp) {
-      localStorage.setItem('risk_warning', 'true')
-      setShowTopBanner(false)
-      sendEvent('click', { click_type: 'close_notification', click_action: 'risk_warning' })
-    }
-  }
-
   function getMobileContent() {
     return (
       <>
@@ -406,7 +394,6 @@ export default function Slider() {
           <Web3Status />
           <Menu />
         </MobileWrapper>
-        {showTopBanner && <RiskNotification onClose={setShowBanner} bg={'gray'} hasInfoIcon={true} text={bannerText} />}
       </>
     )
   }
@@ -497,21 +484,21 @@ export default function Slider() {
                 <Token>
                   DEI Price
                   <Price>
-                    <DeiPriceWrap>{formatDollarAmount(parseFloat(DeiPrice), 3)}</DeiPriceWrap>
+                    <DeiPriceWrap>{formatDollarAmount(parseFloat(deiPrice), 3)}</DeiPriceWrap>
                   </Price>
                 </Token>
                 <Token>
                   DEUS Price
                   <Price>
-                    <DeusPriceWrap>{formatDollarAmount(parseFloat(DeusPrice), 2)}</DeusPriceWrap>
+                    <DeusPriceWrap>{formatDollarAmount(parseFloat(deusPrice), 2)}</DeusPriceWrap>
                   </Price>
                 </Token>
-                {hasLegacyDei && LegacyDeiPrice && (
+                {hasLegacyDei && legacyDeiPrice && (
                   <Token>
-                    Legacy DEI Price:
+                    Legacy DEI Price
                     <Price>
                       <LegacyDeiPriceWrap>
-                        ${(+formatUnits(LegacyDeiPrice, USDC_TOKEN.decimals))?.toFixed(3)}
+                        ${(+formatUnits(legacyDeiPrice, USDC_TOKEN.decimals))?.toFixed(3)}
                       </LegacyDeiPriceWrap>
                     </Price>
                   </Token>
@@ -525,7 +512,10 @@ export default function Slider() {
             <Column style={{ width: '100%' }}>
               <Data>
                 <CustomLink href={'https://docs.deus.finance'} passHref>
-                  <DataItems>Bug Bounty</DataItems>
+                  <DataItems>
+                    Bug Bounty
+                    <ArrowUpRight />
+                  </DataItems>
                 </CustomLink>
 
                 <CustomLink href={'https://docs.deus.finance'} passHref>
@@ -549,9 +539,6 @@ export default function Slider() {
               </div>
             </Column>
           </NavLinkContainer>
-          {showTopBanner && (
-            <RiskNotification onClose={setShowBanner} bg={'gray'} hasInfoIcon={true} text={bannerText} />
-          )}
         </SidebarContent>
       </Wrapper>
     )

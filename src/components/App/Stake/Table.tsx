@@ -389,7 +389,7 @@ const TableRowMiniContent = ({
           <MiniTopBorderWrap active={!chainIdError}>
             <TopBorder
               {...(version !== StakingVersion.EXTERNAL && {
-                onClick: active && !chainIdError ? handleClick : undefined,
+                onClick: !chainIdError ? handleClick : undefined,
               })}
             >
               {!account ? (
@@ -474,7 +474,7 @@ export const TableRowLargeContent = ({
       <Cell width={'20%'} style={{ padding: '5px 10px' }}>
         <TopBorderWrap
           active={!chainIdError}
-          {...(version !== StakingVersion.EXTERNAL && { onClick: active && !chainIdError ? handleClick : undefined })}
+          {...(version !== StakingVersion.EXTERNAL && { onClick: !chainIdError ? handleClick : undefined })}
         >
           <TopBorder>
             {!account ? (

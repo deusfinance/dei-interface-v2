@@ -7,7 +7,7 @@ const Item = styled.div`
   display: inline-block;
   white-space: nowrap;
   width: 33%;
-  min-width: 130px;
+  min-width: 180px;
   path {
     fill: ${({ theme }) => theme.text2};
   }
@@ -21,10 +21,6 @@ const Item = styled.div`
     border-right: 1px solid ${({ theme }) => theme.border1};
     right: 24px;
     top: 0;
-  }
-  &:nth-child(3n):after {
-    content: '';
-    border-right: none !important;
   }
   &:last-child:after {
     content: '';

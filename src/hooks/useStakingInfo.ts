@@ -4,7 +4,7 @@ import { useSingleContractMultipleMethods } from 'state/multicall/hooks'
 import { toBN } from 'utils/numbers'
 import useWeb3React from './useWeb3'
 import { formatUnits } from '@ethersproject/units'
-import { useDeiPrice, useDeusPrice } from './useCoingeckoPrice'
+import { useDeiPrice, useDeusPrice } from 'state/dashboard/hooks'
 import { MasterChefV2 } from 'constants/addresses'
 import { SupportedChainId } from 'constants/chains'
 import { useVDeusMultiRewarderERC20Contract } from './useContract'
@@ -383,6 +383,26 @@ export function useGetDeusApy(pool: LiquidityType, stakingPool: StakingType): nu
 //   return stakingPool.pid === 0 ? 10 : stakingPool.pid === 1 ? 20 : 40
 // }
 
-export function getUserStakingPools(): StakingType[] {
-  return Stakings.filter((pool) => parseFloat(useUserInfo(pool).depositAmount) > 0)
+export function useDepositAmount(stakingPool: StakingType): number {
+  const contract = useMasterChefContract(stakingPool)
+  const { account } = useWeb3React()
+  const { pid } = stakingPool
+
+  const calls = !account
+    ? []
+    : [
+        {
+          methodName: 'userInfo',
+          callInputs: [pid.toString(), account],
+        },
+      ]
+
+  const [userInfo] = useSingleContractMultipleMethods(contract, calls)
+
+  return userInfo?.result ? toBN(formatUnits(userInfo.result[0].toString(), 18)).toNumber() : 0
+}
+
+export function useUserStakingPools(): StakingType[] {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  return Stakings.filter((pool) => useDepositAmount(pool) > 0)
 }

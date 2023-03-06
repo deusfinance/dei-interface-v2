@@ -10,7 +10,7 @@ import Stats from 'components/App/Dashboard/Stats'
 import NotificationBox from 'components/App/Dashboard/NotificationBox'
 import Account from 'components/App/Dashboard/Account'
 import Staking from 'components/App/Dashboard/Staking'
-import { getUserStakingPools } from 'hooks/useStakingInfo'
+import { useUserStakingPools } from 'hooks/useStakingInfo'
 
 const Wrapper = styled(RowCenter)`
   max-width: 1300px;
@@ -43,7 +43,7 @@ export default function Dashboard() {
   //const threshold = 2
   //const [results] = useState(() => Stakings.slice(0, Stakings.length > 2 ? threshold : Stakings.length))
 
-  const results = getUserStakingPools()
+  const results = useUserStakingPools()
 
   const { userHasVDeusNFTs, userHasVeDeusNFTs, userHasBDeiBondNFTs } = useMemo(() => {
     return {
