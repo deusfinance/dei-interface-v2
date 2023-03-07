@@ -79,6 +79,10 @@ const MobileWrapper = styled(Wrapper)`
   display: flex;
   flex-flow: row nowrap;
   justify-content: space-between;
+
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    display: none;
+  `};
 `
 
 const Routes = styled.div`

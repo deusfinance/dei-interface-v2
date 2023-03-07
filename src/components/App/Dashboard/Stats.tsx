@@ -79,6 +79,7 @@ const Info = styled(RowBetween)`
     }
   }
   ${({ theme }) => theme.mediaWidth.upToMedium`
+  justify-content: space-between;
     margin:unset;
       & > * {
       &:nth-child(3n) {
@@ -122,6 +123,9 @@ export const DeusTitle = styled(Title)`
   background: ${({ theme }) => theme.deusColor};
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    align-self: center;
+  `};
 `
 
 const ModalWrapper = styled.div`

@@ -2,27 +2,20 @@ import { StakingType } from 'constants/stakingPools'
 import styled from 'styled-components'
 import { RowBetween } from 'components/Row'
 import Link from 'next/link'
-import Table from './Table'
+import Table from '../Stake/Table'
 
 const Container = styled.div`
   margin-top: 16px;
   border-radius: 12px;
   overflow: hidden;
   background-color: ${({ theme }) => theme.bg1};
-  padding: 12px 24px;
-  tr {
-    border-radius: 12px;
-    margin-bottom: 12px;
-    background-color: ${({ theme }) => theme.bg3} !important;
-    ${({ theme }) => theme.mediaWidth.upToSmall`
-    background-color: transparent !important;
-  `};
   }
 `
 const Header = styled(RowBetween)`
   margin-top: 8px;
-  margin-bottom: 20px;
+  margin-bottom: 8px;
   font-family: 'Inter';
+  padding: 12px 24px;
   p {
     font-size: 20px;
     color: ${({ theme }) => theme.text1};
@@ -49,7 +42,7 @@ const Staking = ({ stakings }: StakingProps) => {
         <p>My Stakings</p>
         <Link href="/stake">View All</Link>
       </Header>
-      <Table stakings={stakings} />
+      <Table stakings={stakings} hideFooter={true} />
     </Container>
   )
 }

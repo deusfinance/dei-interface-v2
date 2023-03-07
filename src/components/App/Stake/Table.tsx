@@ -28,7 +28,7 @@ import TokenBox from 'components/App/Stake/TokenBox'
 import RewardBox from 'components/App/Stake/RewardBox'
 import { useRouter } from 'next/router'
 import { ExternalLink } from 'components/Link'
-import { HStack } from '../Staking/common/Layout'
+import { Divider, HStack } from '../Staking/common/Layout'
 import SPOOKY_SWAP_IMG from '/public/static/images/pages/stake/spooky.svg'
 import BEETHOVEN_IMG from '/public/static/images/pages/stake/beethoven.svg'
 // import SOLIDLY_IMG from '/public/static/images/pages/stake/solid.png'
@@ -112,6 +112,9 @@ const Value = styled.div`
 
 const ZebraStripesRow = styled(Row)<{ isEven?: boolean }>`
   background: ${({ theme }) => theme.bg1};
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    gap: 2px;
+  `};
   ${({ theme }) => theme.mediaWidth.upToSmall`
     background:none;
   `};
@@ -171,7 +174,15 @@ interface TableRowItemProps {
 const TableRowItem = ({ index, stakingPool, isMobile }: TableRowItemProps) => (
   <TableRow index={index} staking={stakingPool} isMobile={isMobile} />
 )
-export default function Table({ isMobile, stakings }: { isMobile?: boolean; stakings: StakingType[] }) {
+export default function Table({
+  isMobile,
+  stakings,
+  hideFooter,
+}: {
+  isMobile?: boolean
+  stakings: StakingType[]
+  hideFooter?: boolean
+}) {
   const [offset, setOffset] = useState(0)
   const { account } = useWeb3React()
 
@@ -195,7 +206,10 @@ export default function Table({ isMobile, stakings }: { isMobile?: boolean; stak
         <tbody>
           {paginatedItems.length > 0 &&
             paginatedItems.map((stakingPool: StakingType, index) => (
-              <TableRowItem key={stakingPool.id} index={index} stakingPool={stakingPool} isMobile={isMobile} />
+              <>
+                <Divider backgroundColor="#101116" />
+                <TableRowItem key={stakingPool.id} index={index} stakingPool={stakingPool} isMobile={isMobile} />
+              </>
             ))}
         </tbody>
         {paginatedItems.length === 0 && (
@@ -225,12 +239,14 @@ export default function Table({ isMobile, stakings }: { isMobile?: boolean; stak
           </tbody>
         )}
       </TableWrapper>
-      <PaginationWrapper>
-        {/* {paginatedItems.length > 0 && (
+      {!hideFooter && (
+        <PaginationWrapper>
+          {/* {paginatedItems.length > 0 && (
           <Pagination count={stakings.length} pageCount={pageCount} onPageChange={onPageChange} />
         )} */}
-        {paginatedItems.length} of {stakings.length} Stakings
-      </PaginationWrapper>
+          {paginatedItems.length} of {stakings.length} Stakings
+        </PaginationWrapper>
+      )}
     </Wrapper>
   )
 }
@@ -718,6 +734,6 @@ function TableRow({ staking, index, isMobile }: { staking: StakingType; index: n
   return (
     // <ZebraStripesRow isEven={index % 2 === 0}>
     <TableRowContent stakingPool={staking} />
-    // </ZebraStripesRow>
+    //</ZebraStripesRow>
   )
 }
