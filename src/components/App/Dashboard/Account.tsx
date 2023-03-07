@@ -32,8 +32,8 @@ const Wrapper = styled(RowBetween)`
 `
 const AccountPowerWrapper = styled(Column)`
   row-gap: 23px;
-  align-self: center;
   & > p:first-of-type {
+    width: 100%;
     font-family: 'Inter';
     font-size: 1.25rem;
     color: ${({ theme }) => theme.text1};
@@ -52,6 +52,11 @@ const AccountPowerWrapper = styled(Column)`
       margin-left: 1ch;
     }
   }
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+`};
 `
 const CoinInfoWrapper = styled(Row)`
   width: fit-content;
@@ -109,11 +114,6 @@ const CoinItem = styled(Column)`
     content: '';
     display: none;
   }
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    &:after {
-    display: none !important;
-  }
-  `};
 `
 
 enum COLOR_TYPE {
