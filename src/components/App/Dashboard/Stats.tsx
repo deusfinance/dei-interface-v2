@@ -285,6 +285,27 @@ export default function Stats() {
             <div style={{ marginTop: '16px' }}>
               Below is a list of current reserve contracts and their holdings in USDC:
             </div>
+            <div>----------------------------------------------------</div>
+            <span>
+              The DEUS team is actively monitoring the USDC situation:
+              <ExternalLink
+                href="https://twitter.com/WatcherGuru/status/1634263195706863618"
+                style={{ textDecoration: 'underline', display: 'inline', marginLeft: '4px' }}
+              >
+                resource
+              </ExternalLink>
+            </span>
+            <span>
+              We started reducing the USDC exposure of DEI, by diversifying the backing into multiple stables. reserves
+              will be updated afterwards accordingly to reflect Live backing status. For more information join the
+              <ExternalLink
+                style={{ textDecoration: 'underline', display: 'inline', marginLeft: '8px' }}
+                href="https://discord.com/invite/deusfinance"
+              >
+                Discord
+              </ExternalLink>
+            </span>
+            <div>----------------------------------------------------</div>
             <ModalInfoWrapper>
               <a
                 href={getContractExplorerLink(USDCReserves1[SupportedChainId.FANTOM], ExplorerDataType.ADDRESS)}
@@ -295,7 +316,6 @@ export default function Stats() {
               </a>
               {usdcReserves1 === null ? <Loader /> : <ModalItemValue>{formatAmount(usdcReserves1, 2)}</ModalItemValue>}
             </ModalInfoWrapper>
-
             <ModalInfoWrapper>
               <a
                 href={getContractExplorerLink(CollateralPool[SupportedChainId.FANTOM], ExplorerDataType.ADDRESS)}

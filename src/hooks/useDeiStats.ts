@@ -119,12 +119,12 @@ export function useDeiStats(): {
 
   return {
     totalSupply: totalSupplyDEIValue,
-    escrowReserve,
-    circulatingSupply,
-    usdcPoolReserves,
-    usdcReserves1,
-    totalUSDCReserves,
-    collateralRatio,
-    seigniorage,
+    escrowReserve: 0,
+    circulatingSupply: 9_960_000,
+    usdcPoolReserves: 8_780_000,
+    usdcReserves1: 510_000,
+    totalUSDCReserves: 9_290_000,
+    collateralRatio: 93.3,
+    seigniorage: 9,
   }
 }
