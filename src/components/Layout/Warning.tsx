@@ -9,6 +9,6 @@ const Wrapper = styled.div`
   font-weight: 600;
 `
 
-export default function Warning({ message }: { message: string }) {
-  return <Wrapper>{message}</Wrapper>
+export default function Warning({ children }: { children: React.ReactNode }) {
+  return <Wrapper>{children}</Wrapper>
 }

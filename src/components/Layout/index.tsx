@@ -6,6 +6,7 @@ import { useInjectedAddress } from 'hooks/useInjectedAddress'
 import NavBar from './NavBar'
 import Warning from './Warning'
 import Footer from 'components/Disclaimer'
+import { ExternalLink } from 'components/Link'
 
 const Wrapper = styled.div`
   display: flex;
@@ -36,8 +37,28 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <Wrapper>
       <NavBar />
       {hasInjected && (
-        <Warning message={`❌ You are in "READ-ONLY" mode. Please do not confirm any transactions! ❌ `} />
+        <Warning>{`❌ You are in "READ-ONLY" mode. Please do not confirm any transactions! ❌ `}</Warning>
       )}
+      <Warning>
+        <>
+          The DEUS team is actively monitoring the{' '}
+          <ExternalLink
+            href="https://twitter.com/WatcherGuru/status/1634263195706863618"
+            style={{ textDecoration: 'underline', display: 'inline', color: 'black' }}
+          >
+            USDC situation
+          </ExternalLink>
+          . We started to actively diversify USDC backing of DEI into multiple stables. For more info, Read announcement
+          on{' '}
+          <ExternalLink
+            style={{ textDecoration: 'underline', display: 'inline', color: 'black' }}
+            href="https://discord.com/invite/deusfinance"
+          >
+            Discord
+          </ExternalLink>
+          .
+        </>
+      </Warning>
       <Content>{children}</Content>
       <Footer />
     </Wrapper>
