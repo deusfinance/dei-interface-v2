@@ -48,8 +48,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           >
             USDC situation
           </ExternalLink>
-          . We started to actively diversify USDC backing of DEI into multiple stables. For more info, Read announcement
-          on{' '}
+          . We started to actively diversify USDC backing of DEI into multiple stables. For more info, read the
+          announcement on{' '}
           <ExternalLink
             style={{ textDecoration: 'underline', display: 'inline', color: 'black' }}
             href="https://discord.com/invite/deusfinance"
