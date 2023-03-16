@@ -27,6 +27,7 @@ const Item = styled.div`
     border-right: none !important;
   }
   ${({ theme }) => theme.mediaWidth.upToMedium`
+  min-width: 130px;
     padding:0 12px;
     width: 30%;
     &:nth-child(3n){

@@ -24,10 +24,16 @@ const Wrapper = styled(RowBetween)`
   border-radius: 12px;
   font-family: 'Inter';
   margin-top: 16px;
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 24px;
+  `};
 `
 const AccountPowerWrapper = styled(Column)`
   row-gap: 23px;
   & > p:first-of-type {
+    width: 100%;
     font-family: 'Inter';
     font-size: 1.25rem;
     color: ${({ theme }) => theme.text1};
@@ -46,6 +52,11 @@ const AccountPowerWrapper = styled(Column)`
       margin-left: 1ch;
     }
   }
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+`};
 `
 const CoinInfoWrapper = styled(Row)`
   width: fit-content;
@@ -57,16 +68,11 @@ const CoinInfoWrapper = styled(Row)`
   grid-template-columns: repeat(5, 1fr);
   margin-left: 150px;
   ${({ theme }) => theme.mediaWidth.upToMedium`
-      grid-template-columns: repeat(3, 1fr);
-      margin-left: 100px;
+      margin-left: 0px;
       row-gap:24px;
-
   `};
   ${({ theme }) => theme.mediaWidth.upToSmall`
-      grid-template-columns: repeat(2, 1fr);
-  `};
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-      grid-template-columns: repeat(1, 1fr);
+      grid-template-columns: repeat(3, 1fr);
   `};
 `
 const CoinName = styled.p`
@@ -108,25 +114,6 @@ const CoinItem = styled(Column)`
     content: '';
     display: none;
   }
-  ${({ theme }) => theme.mediaWidth.upToMedium`
-     &:nth-child(3n):after {
-    content: '';
-    display: none;
-  }
-  `};
-  ${({ theme }) => theme.mediaWidth.upToSmall`
-       &:nth-child(3n):after {
-    display: inline-block;
-  }
-       &:nth-child(2n):after {
-    display: none;
-  }
-  `};
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    &:after {
-    display: none !important;
-  }
-  `};
 `
 
 enum COLOR_TYPE {
