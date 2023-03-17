@@ -9,7 +9,7 @@ import { formatAmount, formatBalance, formatDollarAmount } from 'utils/numbers'
 import { Modal, ModalHeader } from 'components/Modal'
 import { RowBetween } from 'components/Row'
 import StatsItem from './StatsItem'
-import { CollateralPool, DEI_ADDRESS, USDCReserves1 } from 'constants/addresses'
+import { CollateralPool, DEI_ADDRESS, MultiSigReservesPool, USDCReserves1 } from 'constants/addresses'
 import { SupportedChainId } from 'constants/chains'
 import { ChainInfo } from 'constants/chainInfo'
 import { Loader, Info as InfoImage, Link } from 'components/Icons'
@@ -216,8 +216,8 @@ enum DASHBOARD_STATS_TITLES {
   DEUS_TOTAL_SUPPLY_ALL_CHAINS = 'Deus Total Supply across all chains',
 }
 
-const getContractExplorerLink = (address: string, dataType = ExplorerDataType.TOKEN) =>
-  getExplorerLink(SupportedChainId.FANTOM, dataType, address)
+const getContractExplorerLink = (address: string, dataType = ExplorerDataType.TOKEN, chain?: SupportedChainId) =>
+  getExplorerLink(chain ? chain : SupportedChainId.FANTOM, dataType, address)
 
 export default function Stats() {
   //const deusPrice = useDeusPrice()
@@ -229,6 +229,7 @@ export default function Stats() {
     totalUSDCReserves,
     usdcReserves1,
     usdcPoolReserves,
+    multiSigReserves,
     seigniorage,
   } = useDeiStats()
 
@@ -272,9 +273,7 @@ export default function Stats() {
             <div>
               DEI Total Reserve Assets are held in multiple reserve contracts to isolate risk for security reasons.
             </div>
-            <div style={{ marginTop: '16px' }}>
-              Below is a list of current reserve contracts and their holdings in USDC:
-            </div>
+            <div style={{ marginTop: '16px' }}>Below is a list of current reserve contracts and their holdings:</div>
             <ModalInfoWrapper>
               <a
                 href={getContractExplorerLink(USDCReserves1[SupportedChainId.FANTOM], ExplorerDataType.ADDRESS)}
@@ -298,6 +297,24 @@ export default function Stats() {
                 <Loader />
               ) : (
                 <ModalItemValue>{formatAmount(usdcPoolReserves, 2)}</ModalItemValue>
+              )}
+            </ModalInfoWrapper>
+            <ModalInfoWrapper>
+              <a
+                href={getContractExplorerLink(
+                  MultiSigReservesPool[SupportedChainId.MAINNET],
+                  ExplorerDataType.ADDRESS,
+                  SupportedChainId.MAINNET
+                )}
+                target={'_blank'}
+                rel={'noreferrer'}
+              >
+                New MultiSig Pool
+              </a>
+              {multiSigReserves === null ? (
+                <Loader />
+              ) : (
+                <ModalItemValue>{formatAmount(multiSigReserves, 2)}</ModalItemValue>
               )}
             </ModalInfoWrapper>
             <ModalInfoWrapper active>

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ReactNode } from 'react'
 import styled from 'styled-components'
 
 const Wrapper = styled.div`
@@ -9,6 +9,6 @@ const Wrapper = styled.div`
   font-weight: 600;
 `
 
-export default function Warning({ message }: { message: string }) {
-  return <Wrapper>{message}</Wrapper>
+export default function Warning({ children }: { children: ReactNode }) {
+  return <Wrapper>{children}</Wrapper>
 }

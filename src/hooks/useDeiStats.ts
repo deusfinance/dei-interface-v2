@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { formatUnits } from '@ethersproject/units'
 
 import { escrow, USDCReserves1 } from 'constants/addresses'
@@ -11,6 +11,9 @@ import { useAnyDEIContract, useERC20Contract } from 'hooks/useContract'
 import { CollateralPool } from '../constants/addresses'
 import { useUnclaimedCollateralAmount } from '../state/dei/hooks'
 import { useGetCollateralRatios } from 'hooks/useRedemptionPage'
+import { makeHttpRequest } from 'utils/http'
+
+const DEI_RESERVES_API = 'https://info.deus.finance/info/dei/reserves'
 
 export function useDeiStats(): {
   totalSupply: number
@@ -19,6 +22,7 @@ export function useDeiStats(): {
   usdcPoolReserves: number
   totalUSDCReserves: number
   collateralRatio: number
+  multiSigReserves: number
   usdcReserves1: number
   seigniorage: number
 } {
@@ -29,6 +33,7 @@ export function useDeiStats(): {
   const escrowAddress = escrow[SupportedChainId.FANTOM]
   const unclaimedCollateralAmount = useUnclaimedCollateralAmount()
   const anyDEIContract = useAnyDEIContract()
+  const [totalUSDCReserves, setTotalUSDCReserves] = useState(0)
 
   const anyDEIcall = useMemo(
     () => [
@@ -105,9 +110,14 @@ export function useDeiStats(): {
     }
   }, [usdcPoolBalance?.result, unclaimedCollateralAmount, escrowBalance?.result, usdcBalance4?.result])
 
-  const totalUSDCReserves = useMemo(
-    () => usdcPoolReserves + escrowReserve + usdcReserves1,
-    [usdcPoolReserves, escrowReserve, usdcReserves1]
+  // const totalUSDCReserves = useMemo(
+  //   () => usdcPoolReserves + escrowReserve + usdcReserves1,
+  //   [usdcPoolReserves, escrowReserve, usdcReserves1]
+  // )
+
+  const multiSigReserves = useMemo(
+    () => totalUSDCReserves - usdcPoolReserves - usdcReserves1,
+    [totalUSDCReserves, usdcPoolReserves, usdcReserves1]
   )
 
   const collateralRatio = useMemo(() => {
@@ -117,6 +127,14 @@ export function useDeiStats(): {
   const { mintCollateralRatio, redeemCollateralRatio } = useGetCollateralRatios()
   const seigniorage = Number(mintCollateralRatio) - Number(redeemCollateralRatio)
 
+  useEffect(() => {
+    const fetchStats = async () => {
+      const response = await makeHttpRequest(DEI_RESERVES_API)
+      setTotalUSDCReserves(parseFloat(response ?? 0))
+    }
+    fetchStats()
+  }, [])
+
   return {
     totalSupply: totalSupplyDEIValue,
     escrowReserve,
@@ -124,6 +142,7 @@ export function useDeiStats(): {
     usdcPoolReserves,
     usdcReserves1,
     totalUSDCReserves,
+    multiSigReserves,
     collateralRatio,
     seigniorage,
   }
