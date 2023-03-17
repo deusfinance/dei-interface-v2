@@ -60,7 +60,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <Slider />
         <div style={{ width: '100%' }}>
           {hasInjected && (
-            <Warning message={`❌ You are in "READ-ONLY" mode. Please do not confirm any transactions! ❌ `} />
+            <Warning>{`❌ You are in "READ-ONLY" mode. Please do not confirm any transactions! ❌ `}</Warning>
           )}
           <Web3Navbar />
           <Content>{children}</Content>

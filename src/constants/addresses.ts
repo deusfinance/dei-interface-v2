@@ -166,6 +166,9 @@ export const escrow: AddressMap = {
   [SupportedChainId.FANTOM]: '0xFb05aedf0caC43C6ce291D2d1be1eab568D155B4',
 }
 
+export const MultiSigReservesPool: AddressMap = {
+  [SupportedChainId.MAINNET]: '0x5B598261c2A8a9B2fb564Ff26BE93B79A87e554D',
+}
 /* =====================================
                 LQDR Tokens ADDRESS
 ===================================== */
