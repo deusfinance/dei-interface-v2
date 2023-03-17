@@ -39,7 +39,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       {hasInjected && (
         <Warning>{`❌ You are in "READ-ONLY" mode. Please do not confirm any transactions! ❌ `}</Warning>
       )}
-      <Warning>
+      {/* <Warning>
         <>
           The DEUS team is actively monitoring the{' '}
           <ExternalLink
@@ -58,7 +58,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </ExternalLink>
           .
         </>
-      </Warning>
+      </Warning> */}
       <Content>{children}</Content>
       <Footer />
     </Wrapper>
