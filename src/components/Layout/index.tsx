@@ -6,7 +6,6 @@ import { useInjectedAddress } from 'hooks/useInjectedAddress'
 import NavBar from './NavBar'
 import Warning from './Warning'
 import Footer from 'components/Disclaimer'
-import { ExternalLink } from 'components/Link'
 
 const Wrapper = styled.div`
   display: flex;
