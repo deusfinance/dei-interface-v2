@@ -12,10 +12,16 @@ export default function usePoolStats(): { name: string; value: number | string; 
   const { collateralRatio } = useDeiStats()
   const deusPrice = useDeusPrice()
 
+  const usdcBackingPerDei = useMemo(() => {
+    if (collateralRatio > 100) return '100%'
+    else if (collateralRatio < 90) return '90%'
+    return `${formatAmount(collateralRatio, 1).toString()}%`
+  }, [collateralRatio])
+
   return useMemo(
     () => [
       { name: 'DEI Price', value: '$1.00' },
-      { name: 'Collateral Ratio', value: formatAmount(collateralRatio, 2) + '%' ?? '-' },
+      { name: 'Collateral Ratio', value: usdcBackingPerDei ?? '-' },
       { name: 'DEUS Price', value: formatDollarAmount(parseFloat(deusPrice), 2) ?? '-' },
       {
         name: 'Pool(V3)',
@@ -23,6 +29,6 @@ export default function usePoolStats(): { name: string; value: number | string; 
         link: CollateralPool[SupportedChainId.FANTOM],
       },
     ],
-    [collateralRatio, deusPrice]
+    [usdcBackingPerDei, deusPrice]
   )
 }
