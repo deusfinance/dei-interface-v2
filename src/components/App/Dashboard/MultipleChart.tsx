@@ -266,7 +266,7 @@ export default function MultipleChart({
       try {
         // query subgraph and fetch all entities at once
         if (currentID === 'deiSupply') {
-          const deiSupplyClient = getEcosystemStatsApolloClient(chainId)
+          const deiSupplyClient = getEcosystemStatsApolloClient(FALLBACK_CHAIN_ID)
           if (!deiSupplyClient) return []
 
           if (
@@ -292,7 +292,7 @@ export default function MultipleChart({
             return data
           }
         } else {
-          const deiPriceClient = getDeiPriceStatsApolloClient(chainId)
+          const deiPriceClient = getDeiPriceStatsApolloClient(FALLBACK_CHAIN_ID)
           if (!deiPriceClient) return []
 
           if (
