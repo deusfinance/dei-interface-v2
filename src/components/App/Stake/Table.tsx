@@ -90,7 +90,7 @@ const PaginationWrapper = styled.div`
   padding-block: 19px;
   text-align: center;
   color: ${({ theme }) => theme.text2};
-  font-family: 'IBM Plex Mono';
+  font-family: 'Inter';
 `
 
 const Name = styled.div`

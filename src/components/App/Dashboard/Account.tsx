@@ -82,7 +82,7 @@ const CoinName = styled.p`
   margin-right: 6px;
 `
 const CoinValue = styled.div<{ colorType: COLOR_TYPE }>`
-font-family: 'IBM Plex Mono';
+font-family: 'Inter';
 font-weight: 500;
 font-size: 14px;
    background-image:${({ colorType }) =>

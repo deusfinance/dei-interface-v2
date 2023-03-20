@@ -17,8 +17,8 @@ import NavLogo2 from './NavLogo2'
 import { Row as RowWrapper, RowEnd, RowStart } from 'components/Row'
 import Footer from 'components/Disclaimer'
 
-import { IconWrapper, VeDeus as VeDeusIcon, Bridge as BridgeIcon } from 'components/Icons'
-import { ArrowUpRight } from 'react-feather'
+import { IconWrapper, VeDeus as VeDeusIcon, Bridge as BridgeIcon, ChevronLeft } from 'components/Icons'
+import { ArrowUpRight, ChevronRight } from 'react-feather'
 import { useDeiPrice, useDeusPrice } from 'state/dashboard/hooks'
 import Column from 'components/Column'
 import { ExternalLink } from 'components/Link'
@@ -35,12 +35,12 @@ import { ROUTES } from './constants'
 const Wrapper = styled.div<{ isOpen?: boolean }>`
   transition: width 0.25s;
   gap: 5px;
-  width: ${({ isOpen }) => (isOpen ? '450px' : '74px')};
+  width: ${({ isOpen }) => (isOpen ? '336px' : '66px')};
   display: flex;
   flex-direction: column;
   z-index: ${Z_INDEX.fixed};
   background: ${({ theme }) => theme.bg0};
-  border-right: 2px solid ${({ theme }) => theme.bg3};
+  border-right: 2px solid ${({ theme }) => theme.bg1};
   justify-content: space-between;
   ${({ theme }) => theme.mediaWidth.upToSmall`
     padding: 0px 1.25rem;
@@ -50,29 +50,15 @@ const Wrapper = styled.div<{ isOpen?: boolean }>`
   `};
 `
 
-const DefaultWrapper = styled(Wrapper)`
+const DefaultWrapper = styled.div`
   display: flex;
-  justify-content: flex-start !important;
+  justify-content: flex-start;
   flex-direction: row;
   align-items: center;
-  font-family: 'Inter';
-  font-size: 16px;
-  line-height: 19px;
   height: 62px;
   position: absolute;
-  top: 0px;
   background: ${({ theme }) => theme.bg0};
-
-  border-bottom: 2px solid ${({ theme }) => theme.bg3};
-
-  & > * {
-    &:first-child {
-      flex: 1;
-    }
-    &:last-child {
-      flex: 1;
-    }
-  }
+  border-bottom: 2px solid ${({ theme }) => theme.bg1};
 `
 
 const MobileWrapper = styled(Wrapper)`
@@ -153,17 +139,17 @@ const SimpleLinkWrapper = styled(RowWrapper)<{ active?: boolean; isOpen?: boolea
   transition: width 0.25s;
   margin-bottom: 16px;
   border-radius: 8px;
-  width: ${({ isOpen }) => (isOpen ? '312px' : '50px')};
+  width: ${({ isOpen }) => (isOpen ? '312px' : '42px')};
   height: 42px;
   cursor: pointer;
   opacity: 1;
-  padding: 12px 16px;
+  padding: 12px;
   &:hover {
     background: ${({ theme }) => theme.bg1};
   }
-  ${({ active, theme }) =>
+  ${({ active }) =>
     active &&
-    `background: ${theme.bg1};
+    `background: #0D0D0D;
     font-weight: 600;
 `};
   &.last {
@@ -191,7 +177,7 @@ const NavLink = styled.div<{ active: boolean }>`
   font-size: 1rem;
   padding: 0.25rem 1rem;
   color: ${({ theme }) => theme.text1};
-  font-family: 'IBM Plex Mono';
+  font-family: 'Inter';
   font-style: normal;
   font-weight: ${({ active }) => (active ? '700' : '500')};
   font-size: 20px;
@@ -218,7 +204,7 @@ const PricesWrap = styled(Row)`
 `
 
 const Price = styled(RowEnd)`
-  font-family: 'IBM Plex Mono';
+  font-family: 'Inter';
   font-style: normal;
   font-weight: 600;
   font-size: 14px;
@@ -254,7 +240,7 @@ const LegacyDeiPriceWrap = styled.div`
 `
 
 const Token = styled.div`
-  font-family: 'IBM Plex Mono';
+  font-family: 'Inter';
   font-style: normal;
   font-weight: 500;
   font-size: 14px;
@@ -279,7 +265,7 @@ const Data = styled.div`
   margin-top: 70px;
   padding: 28px;
   padding-bottom: 0px;
-  font-family: 'IBM Plex Mono';
+  font-family: 'Inter';
   font-style: normal;
   font-weight: 500;
   font-size: 16px;
@@ -356,13 +342,32 @@ const CustomLink = styled(ExternalLink)`
   }
   font-size: 1rem;
   font-weight: medium;
-  font-family: 'IBM Plex Mono';
+  font-family: 'Inter';
 `
+
+const MenuHideButton = styled.button`
+  margin-left: -36px;
+  padding: 12px 0px;
+  max-width: 25px;
+  max-height: 40px;
+  background: ${({ theme }) => theme.bg1};
+  border-radius: 8px 0px 0px 8px;
+`
+
+const MenuOpenButton = styled.button`
+  margin-left: -36px;
+  padding: 12px 0px;
+  max-width: 25px;
+  max-height: 40px;
+  background: ${({ theme }) => theme.bg1};
+  border-radius: 0px 8px 8px 0px;
+`
+
 const SidebarContent = styled.div<{ isOpen: boolean }>`
   position: relative;
   overflow-y: scroll;
   height: 100%;
-  min-width: ${({ isOpen }) => (isOpen ? '300px' : '74px')};
+  min-width: ${({ isOpen }) => (isOpen ? '300px' : '62px')};
   width: '100%';
   top: 0px;
   left: 0px;
@@ -393,7 +398,7 @@ export default function Slider() {
     return (
       <>
         <MobileWrapper>
-          <NavLogo2 />
+          <NavLogo2 isOpen={false} />
           <Web3Network />
           <Web3Status />
           <Menu />
@@ -406,13 +411,21 @@ export default function Slider() {
     return (
       <Wrapper isOpen={isOpen}>
         <SidebarContent isOpen={isOpen}>
-          <DefaultWrapper isOpen>
-            <BurgerMenuButton isOpen={isOpen} onClick={() => setOpen((prev) => !prev)}>
-              <span />
-              <span />
-              <span />
-            </BurgerMenuButton>
-            <NavLogo2 />
+          <DefaultWrapper>
+            <NavLogo2 isOpen={isOpen} />
+            {!isOpen ? (
+              <MenuHideButton onClick={() => setOpen((prev) => !prev)}>
+                <IconWrapper>
+                  <ChevronLeft color="#6F7074"></ChevronLeft>
+                </IconWrapper>
+              </MenuHideButton>
+            ) : (
+              <MenuOpenButton onClick={() => setOpen((prev) => !prev)}>
+                <IconWrapper>
+                  <ChevronRight color="#6F7074"></ChevronRight>
+                </IconWrapper>
+              </MenuOpenButton>
+            )}
           </DefaultWrapper>
           <Column style={{ position: 'relative', top: '62px' }}>
             <Routes>
@@ -426,7 +439,7 @@ export default function Slider() {
                   <Link href={route.path} passHref>
                     <MenuItemLinkContainer>
                       <IconWrapper disable={router.asPath !== route.path}>
-                        <route.icon size={20} {...(route.path === '/swap' && { color: '#EBEBEC' })} />
+                        <route.icon size={18} {...(route.path === '/swap' && { color: '#EBEBEC' })} />
                       </IconWrapper>
                       <NavLinkContainer isOpen={isOpen} isInternal={true}>
                         <NavLink active={router.asPath === route.path}>{route.title}</NavLink>

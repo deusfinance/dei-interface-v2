@@ -49,7 +49,7 @@ const ConfirmButton = styled(PrimaryButton)`
 `
 
 const WarningText = styled.span`
-  font-family: 'IBM Plex Mono';
+  font-family: 'Inter';
   font-weight: 500;
   color: ${({ theme }) => theme.warning};
 `

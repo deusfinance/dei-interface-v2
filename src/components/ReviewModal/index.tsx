@@ -111,7 +111,7 @@ export const Title = styled.div`
   direction: row;
   justify-content: space-between;
 
-  font-family: 'IBM Plex Mono';
+  font-family: 'Inter';
   font-style: normal;
   font-weight: 400;
   font-size: 12px;

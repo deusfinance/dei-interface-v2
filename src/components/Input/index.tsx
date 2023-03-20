@@ -16,7 +16,7 @@ export const InputField = styled.input<{
   border: none;
   background: transparent;
   font-size: 1.1rem;
-  font-family: 'IBM Plex Mono';
+  font-family: 'Inter';
   color: ${({ theme }) => theme.text1};
   text-align: left;
   font-size: 24px;

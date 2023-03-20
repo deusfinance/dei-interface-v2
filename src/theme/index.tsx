@@ -144,8 +144,8 @@ function colors(themeName: SupportedThemes): Colors {
       text4: '#B2B9D2',
 
       // backgrounds / greys
-      bg0: '#101116',
-      bg1: '#14161C',
+      bg0: '#141414',
+      bg1: '#1A1B1B',
       bg2: '#181A1F',
       bg3: '#1B1D24',
       bg4: '#23252C',
@@ -154,7 +154,7 @@ function colors(themeName: SupportedThemes): Colors {
 
       // borders
       border1: '#23252C',
-      border2: '#101116',
+      border2: '#141414',
       border3: '#2E2F33',
 
       //specialty colors
@@ -339,7 +339,7 @@ export const ThemedGlobalStyle = createGlobalStyle`
   }
 
   body {
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: 'Inter';
     font-weight:400;
     background: ${({ theme }) => theme.bg4};
   }
@@ -371,7 +371,7 @@ export const ThemedGlobalStyle = createGlobalStyle`
 
   /* Firefox */
   input[type=number] {
-    font-family: 'IBM Plex Mono';
+    font-family: 'Inter';
     -moz-appearance: textfield;
   }
 `

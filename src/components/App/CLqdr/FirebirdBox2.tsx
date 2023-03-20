@@ -38,7 +38,7 @@ const LittleIcon = styled.div`
 
 const Text = styled.div`
   font-weight: 500;
-  font-family: 'IBM Plex Mono';
+  font-family: 'Inter';
   font-size: 14px;
   text-align: center;
   margin-top: 12px;
