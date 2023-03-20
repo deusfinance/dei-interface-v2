@@ -64,14 +64,20 @@ export default function Dashboard() {
   const { totalSupply, totalUSDCReserves, collateralRatio } = useDeiStats()
   const deiPrice = useDeiPrice()
 
+  const usdcBackingPerDei = useMemo(() => {
+    if (collateralRatio > 100) return '100%'
+    else if (collateralRatio < 90) return '90%'
+    return `${formatAmount(collateralRatio, 1).toString()}%`
+  }, [collateralRatio])
+
   const items = useMemo(
     () => [
       { name: 'DEI Price', value: formatDollarAmount(parseFloat(deiPrice), 3) ?? '$1.00' },
       { name: 'DEI Total Supply', value: formatAmount(totalSupply, 2) ?? '-' },
-      { name: 'Collateral Ratio', value: formatAmount(collateralRatio, 1) + '%' },
+      { name: 'Collateral Ratio', value: usdcBackingPerDei ?? '-' },
       { name: 'Total USDC Holdings', value: formatAmount(totalUSDCReserves, 2) },
     ],
-    [deiPrice, totalSupply, collateralRatio, totalUSDCReserves]
+    [deiPrice, totalSupply, usdcBackingPerDei, totalUSDCReserves]
   )
 
   return (
