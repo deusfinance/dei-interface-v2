@@ -14,7 +14,7 @@ export const useDeusPrice = (): string => {
   return dashboardState.deusPrice.toString()
 }
 
-export const useDeiPrice = (): string => {
-  const dashboardState = useDashboardState()
-  return dashboardState.deiPrice.toString()
-}
+// export const useDeiPrice = (): string => {
+//   const dashboardState = useDashboardState()
+//   return dashboardState.deiPrice.toString()
+// }
