@@ -1,7 +1,8 @@
 import React, { useMemo, useState } from 'react'
 import styled, { useTheme } from 'styled-components'
 
-import { useDeiPrice } from 'state/dashboard/hooks'
+//import { useDeiPrice } from 'state/dashboard/hooks'
+import { useDeiPrice } from 'hooks/useCoingeckoPrice'
 import { useDeiStats } from 'hooks/useDeiStats'
 
 import { formatAmount, formatBalance, formatDollarAmount } from 'utils/numbers'
