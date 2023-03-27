@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
@@ -7,7 +7,6 @@ import { isMobileOnly as isMobile } from 'react-device-detect'
 import routes from 'constants/files/routes.json'
 import { Z_INDEX } from 'theme'
 
-import { sendEvent } from 'components/analytics'
 import Web3Network from 'components/Web3Network'
 import Web3Status from 'components/Web3Status'
 import Menu from './Menu'
@@ -155,18 +154,6 @@ const NavLink = styled.div<{
 export default function NavBar() {
   const router = useRouter()
 
-  const showBanner = localStorage.getItem('risk_warning') === 'true' ? false : true
-  const [showTopBanner, setShowTopBanner] = useState(showBanner)
-  const bannerText = 'Users interacting with this software do so entirely at their own risk'
-
-  function setShowBanner(inp: boolean) {
-    if (!inp) {
-      localStorage.setItem('risk_warning', 'true')
-      setShowTopBanner(false)
-      sendEvent('click', { click_type: 'close_notification', click_action: 'risk_warning' })
-    }
-  }
-
   function getMobileContent() {
     return (
       <>
@@ -176,17 +163,9 @@ export default function NavBar() {
           <Web3Status />
           <Menu />
         </MobileWrapper>
-        {/* {showTopBanner && <RiskNotification onClose={setShowBanner} bg={'gray'} hasInfoIcon={true} text={bannerText} />} */}
       </>
     )
   }
-
-  // function isSubItemChosen(item: Array<any>) {
-  //   for (let i = 0; i < item.length; i++) {
-  //     if (item[i].path === router.route) return true
-  //   }
-  //   return false
-  // }
 
   function getDefaultContent() {
     return (

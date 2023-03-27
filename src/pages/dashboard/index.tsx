@@ -9,7 +9,7 @@ import { RowCenter } from 'components/Row'
 import Stats from 'components/App/Dashboard/Stats'
 import NotificationBox from 'components/App/Dashboard/NotificationBox'
 import Account from 'components/App/Dashboard/Account'
-import Staking from 'components/App/Dashboard/Staking'
+import UserStaking from 'components/App/Dashboard/UserStaking'
 import { useUserStakingPools } from 'hooks/useStakingInfo'
 
 const Wrapper = styled(RowCenter)`
@@ -60,28 +60,17 @@ export default function Dashboard() {
           <NotificationBox
             source="vDEUS NFT"
             destination="xDEUS"
-            readMore=""
             migrationLink="https://legacy.dei.finance/vdeus/new"
           />
         )}
         {userHasVeDeusNFTs && (
-          <NotificationBox
-            source="veDEUS"
-            destination="xDEUS"
-            readMore=""
-            migrationLink="https://app.deus.finance/vest"
-          />
+          <NotificationBox source="veDEUS" destination="xDEUS" migrationLink="https://app.deus.finance/vest" />
         )}
         {userHasBDeiBondNFTs && (
-          <NotificationBox
-            source="DEI Bond NFT"
-            destination="DEI"
-            readMore=""
-            migrationLink="https://app.dei.finance/bond"
-          />
+          <NotificationBox source="DEI Bond NFT" destination="DEI" migrationLink="https://app.dei.finance/bond" />
         )}
         <Account />
-        {results.length !== 0 && <Staking stakings={results} />}
+        {results.length !== 0 && <UserStaking stakings={results} />}
         <Stats />
       </Wrapper>
     </Container>

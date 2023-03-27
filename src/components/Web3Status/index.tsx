@@ -9,39 +9,17 @@ import { TransactionDetails } from 'state/transactions/reducer'
 import { truncateAddress } from 'utils/account'
 
 import WalletModal from 'components/WalletModal'
-import { NavButton } from 'components/Button'
+import { NavButton, PrimaryButton } from 'components/Button'
 import { Connected as ConnectedIcon } from 'components/Icons'
 import { FALLBACK_CHAIN_ID, SolidlyChains } from 'constants/chains'
 import useRpcChangerCallback from 'hooks/useRpcChangerCallback'
-import { RowCenter } from 'components/Row'
 
-const ConnectButtonWrap = styled.div`
-  border: none;
-  background: ${({ theme }) => theme.specialBG1};
-  padding: 1px;
+const ConnectButton = styled(PrimaryButton)`
   border-radius: 8px;
-  width: 148px;
-  height: 36px;
-
-  &:hover,
-  &:focus {
-    border: none;
-    cursor: pointer;
-  }
-`
-
-const ConnectButton = styled(RowCenter)`
-  border-radius: 8px;
-  background: ${({ theme }) => theme.bg2};
-  height: 100%;
-  width: 100%;
-  white-space: nowrap;
-`
-
-const ConnectButtonText = styled.span`
-  background: -webkit-linear-gradient(0deg, #e29d52 -10.26%, #de4a7b 80%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  font-size: 12px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.bg0};
+  padding: 12px 38px;
 `
 
 const ConnectedButton = styled(NavButton)`
@@ -54,21 +32,18 @@ const ConnectedButton = styled(NavButton)`
 
 const ErrorButton = styled(NavButton)`
   background: ${({ theme }) => theme.red1};
-  border-color: ${({ theme }) => theme.text1};
+  border-color: 1px solid ${({ theme }) => theme.red1};
   color: white;
+
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 38px;
 
   &:hover,
   &:focus {
     cursor: pointer;
     border: 1px solid ${({ theme }) => theme.text1};
   }
-`
-
-const Text = styled.p`
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-weight: bold;
 `
 
 // We want the latest one to come first, so return negative if a is after b
@@ -87,32 +62,22 @@ function Web3StatusInner() {
   }, [chainId, account])
 
   if (showCallbackError) {
-    return (
-      <ErrorButton onClick={() => rpcChangerCallback(FALLBACK_CHAIN_ID)}>
-        <Text>Wrong Network</Text>
-      </ErrorButton>
-    )
+    return <ErrorButton onClick={() => rpcChangerCallback(FALLBACK_CHAIN_ID)}>Wrong Network</ErrorButton>
   } else if (account) {
     return (
       <ConnectedButton onClick={toggleWalletModal}>
         <ConnectedIcon />
-        <Text>{truncateAddress(account)}</Text>
+        {truncateAddress(account)}
       </ConnectedButton>
     )
   } else if (error) {
     return (
       <ErrorButton onClick={toggleWalletModal}>
-        <Text>{error instanceof UnsupportedChainIdError ? 'Wrong Network' : 'Error'}</Text>
+        {error instanceof UnsupportedChainIdError ? 'Wrong Network' : 'Error'}
       </ErrorButton>
     )
   } else {
-    return (
-      <ConnectButtonWrap onClick={toggleWalletModal}>
-        <ConnectButton>
-          <ConnectButtonText>Connect Wallet</ConnectButtonText>
-        </ConnectButton>
-      </ConnectButtonWrap>
-    )
+    return <ConnectButton onClick={toggleWalletModal}>Connect Wallet</ConnectButton>
   }
 }
 

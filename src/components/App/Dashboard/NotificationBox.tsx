@@ -1,41 +1,28 @@
 import styled from 'styled-components'
 import Link from 'next/link'
 
-import ExternalLinkIcon from '/public/static/images/pages/stake/down.svg'
-// import MigrationHeaderIcon from '/public/static/images/pages/dashboard/migration-header.svg'
-
 import { ExternalLink } from 'components/Link'
 import { PrimaryButton } from 'components/Button'
 import { Row, RowBetween } from 'components/Row'
 import Column from 'components/Column'
-import ImageWithFallback from 'components/ImageWithFallback'
 
 const NotificationBoxContainer = styled(RowBetween)`
   padding: 20px;
   border-radius: 12px;
   padding: 2px;
-  background-image: linear-gradient(90deg, rgba(224, 151, 76, 0.52) 0%, rgba(201, 63, 111, 0.52) 100%);
+  background-image: linear-gradient(90deg, #359ecc 0%, #31b0a9 93.4%);
 `
 const NotificationBoxWrapper = styled(RowBetween)`
-  padding: 20px 25px;
+  padding: 16px;
   border-radius: 12px;
-  background-color: ${({ theme }) => theme.bg3};
+  background-color: ${({ theme }) => theme.bg1};
 `
 const NotificationBoxHeaderContainer = styled(Row)``
 
 const NotificationBoxHeader = styled(Row)`
   font-size: 1rem;
   font-weight: 600;
-  & > p:first-of-type {
-    color: ${({ theme }) => theme.text1};
-  }
-  & > p:last-of-type {
-    background-image: linear-gradient(to right, #0badf4, #30efe4);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-left: 1ch;
-  }
+  color: ${({ theme }) => theme.text1};
 `
 const NotificationBoxLink = styled(ExternalLink)`
   display: flex;
@@ -51,14 +38,12 @@ const NotificationBoxLink = styled(ExternalLink)`
     text-decoration: underline;
   }
 `
-const NotificationBoxHeaderImage = styled.div`
-  transform: translateY(20px);
-`
+
 const ButtonText = styled.span`
   display: flex;
   font-family: 'Inter';
-  font-weight: 600;
-  font-size: 15px;
+  font-weight: 700;
+  font-size: 14px;
   height: 100%;
   width: 100%;
   background: ${({ theme }) => theme.bg1};
@@ -71,7 +56,7 @@ const ButtonText = styled.span`
     font-size: 14px;
   `}
   &>p {
-    background: -webkit-linear-gradient(0deg, #eea85f 0%, #ef3677 100%);
+    background: -webkit-linear-gradient(90deg, #0badf4 0%, #30efe4 93.4%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
@@ -88,12 +73,10 @@ const GradientButton = styled(PrimaryButton)`
 const NotificationBox = ({
   source,
   destination,
-  readMore,
   migrationLink,
 }: {
   source: string
   destination: string
-  readMore: string
   migrationLink: string
 }) => {
   return (
@@ -102,22 +85,15 @@ const NotificationBox = ({
         <NotificationBoxHeaderContainer>
           <Column>
             <NotificationBoxHeader>
-              <p>Migrate from {source} to </p>
-              <p>{destination}</p>
+              <p>You still have some old {source}</p>
             </NotificationBoxHeader>
-            <NotificationBoxLink href={readMore}>
-              read more about {destination}
-              <ImageWithFallback alt="arrow" width={8} height={8} src={ExternalLinkIcon} />
-            </NotificationBoxLink>
+            <NotificationBoxLink>{`Migrate them to ${destination}, don't get left behind!`}</NotificationBoxLink>
           </Column>
-          <NotificationBoxHeaderImage>
-            {/* <ImageWithFallback src={MigrationHeaderIcon} alt="migration" height={68} width={120} /> */}
-          </NotificationBoxHeaderImage>
         </NotificationBoxHeaderContainer>
         <Column href={migrationLink} as={migrationLink.startsWith('/') ? Link : ExternalLink}>
           <GradientButton>
             <ButtonText>
-              <p style={{ padding: '18px 23px' }}>Migrate to {destination}</p>
+              <p style={{ padding: '16px 32px' }}>Migrate to {destination}</p>
             </ButtonText>
           </GradientButton>
         </Column>

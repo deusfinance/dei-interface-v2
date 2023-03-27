@@ -7,8 +7,7 @@ import styled from 'styled-components'
 const TokenCell = styled.div<{ hasReward: boolean }>`
   display: flex;
   flex-flow: row nowrap;
-  align-items: flex-start;
-  margin-top: 12px;
+  align-items: center;
   flex-direction: ${({ hasReward }) => (hasReward ? 'column' : 'row')};
   gap: 25px;
 `
@@ -40,6 +39,11 @@ export default function RewardBox({ tokens, rewardAmounts }: { tokens: Token[]; 
       {tokens.map((token, index) => {
         return (
           <TokenWrap key={index}>
+            <DeusText hasReward={!!rewardAmounts.find((value) => value !== 0)}>
+              {rewardAmounts[index] !== 0 &&
+                !Object.is(Number(rewardAmounts[index]), NaN) &&
+                Number(rewardAmounts[index]).toFixed(2)}
+            </DeusText>
             <ImageWithFallback
               src={logos[index]}
               width={getImageSize()}
@@ -47,12 +51,6 @@ export default function RewardBox({ tokens, rewardAmounts }: { tokens: Token[]; 
               alt={`${token?.symbol} Logo`}
               round
             />
-            <DeusText hasReward={!!rewardAmounts.find((value) => value !== 0)}>
-              {rewardAmounts[index] !== 0 &&
-                !Object.is(Number(rewardAmounts[index]), NaN) &&
-                Number(rewardAmounts[index]).toFixed(2)}
-              {' ' + token.name}
-            </DeusText>
           </TokenWrap>
         )
       })}

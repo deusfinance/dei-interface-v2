@@ -107,14 +107,14 @@ const PrimaryLabel = styled.div<{
   border: 1px solid ${({ theme }) => theme.border1};
   border-right: 1px solid transparent;
   color: ${({ theme }) => theme.text2};
-  background: ${({ theme }) => theme.bg3};
+  background: ${({ theme }) => theme.bg0};
 
   ${({ active, theme }) =>
     active &&
     ` 
         color: ${theme.text1};
         backdrop-filter: blur(12px);
-        background: ${theme.bg2};
+        background: ${theme.bg4};
     `}
 
   &: hover {
@@ -131,14 +131,14 @@ const SecondaryLabel = styled.div<{
   border-left: 1px solid transparent;
   border: 1px solid ${({ theme }) => theme.border1};
   color: ${({ theme }) => theme.text2};
-  background: ${({ theme }) => theme.bg3};
+  background: ${({ theme }) => theme.bg0};
 
   ${({ active, theme }) =>
     active &&
     ` 
         color: ${theme.text1};
         backdrop-filter: blur(12px);
-        background: ${theme.bg2};
+        background: ${theme.bg4};
     `}
 
   &: hover {

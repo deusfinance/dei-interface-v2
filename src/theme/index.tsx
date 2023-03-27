@@ -85,7 +85,7 @@ function colors(themeName: SupportedThemes): Colors {
       border3: 'rgba(99, 126, 161, 0.2)',
 
       //specialty colors
-      specialBG1: 'linear-gradient(90deg, #ffb56c 0%, #ff538f 100%)',
+      specialBG1: 'linear-gradient(90deg, #0BADF4 0%, #30EFE4 93.4%)',
       specialBG2:
         'linear-gradient(90deg, rgba(81, 171, 255, 0.1) 0%, rgba(22, 72, 250, 0.1) 100%), linear-gradient(0deg, #FFFFFF, #FFFFFF)',
 
@@ -150,15 +150,15 @@ function colors(themeName: SupportedThemes): Colors {
       bg3: '#1B1D24',
       bg4: '#23252C',
       bg5: '#181818', //TEST
-      bg6: '#8F939C',
+      bg6: '#7F7F80',
 
       // borders
-      border1: '#23252C',
-      border2: '#141414',
+      border1: '#1B1B1B',
+      border2: '#353639',
       border3: '#2E2F33',
 
       //specialty colors
-      specialBG1: 'linear-gradient(90deg, #ffb56c 0%, #ff538f 100%)',
+      specialBG1: 'linear-gradient(90deg, #0BADF4 0%, #30EFE4 93.4%)',
       specialBG2: '#14181E',
 
       // primary colors
@@ -168,7 +168,7 @@ function colors(themeName: SupportedThemes): Colors {
       primary4: 'linear-gradient(92.33deg, #DE4A7B -10.26%, #E29D52 80%)',
       primary5: 'linear-gradient(-92.33deg, #421D2D -10.26%, #493625 80%)',
       primary6: 'linear-gradient(-90deg, #B63562 10%, #CF8D49 90%)',
-      primary7: 'linear-gradient(90deg, #ff538f 10%, #ffb56c 90%)',
+      primary7: 'linear-gradient(90deg, #30EFE4 10%, #0BADF4 90%)',
       primary8: 'linear-gradient(90deg, #F78C2A 0%, #F34038 100%)',
       // color text
       primaryText1: '#1749FA',

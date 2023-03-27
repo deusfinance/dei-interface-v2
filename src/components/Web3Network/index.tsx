@@ -12,6 +12,7 @@ const Button = styled(NavButton)`
   background: ${({ theme }) => theme.bg1};
   justify-content: space-between;
   gap: 5px;
+  padding: 0px 4px;
 
   &:focus,
   &:hover {
@@ -49,8 +50,8 @@ export default function Web3Network() {
 
   return (
     <Button>
-      <Image src={Chain.logoUrl} alt={Chain.label} width={20} height={20} />
-      <Text>{Chain.label}</Text>
+      <Image src={Chain.logoUrl} alt={Chain.label} width={28} height={28} />
+      {/* <Text>{Chain.label}</Text> */}
     </Button>
   )
 }

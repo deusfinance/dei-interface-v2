@@ -10,12 +10,10 @@ const TokenCell = styled.div`
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
-  flex-basis: 18%;
-  margin-left: 15px;
 
   & > * {
     &:first-child {
-      margin-right: 8px;
+      margin-right: 12px;
     }
   }
   ${({ theme }) => theme.mediaWidth.upToSmall`
@@ -37,7 +35,6 @@ export const MultipleImageWrapper = styled.div<{ isSingle?: boolean }>`
   flex-flow: row nowrap;
   align-items: center;
   justify-content: center;
-  padding-right: ${({ isSingle }) => (isSingle ? '20px' : '0')};
 
   & > * {
     &:nth-child(2) {
@@ -63,7 +60,7 @@ export const MultipleImageWrapper = styled.div<{ isSingle?: boolean }>`
 `
 
 function getImageSize() {
-  return isMobile ? 22 : 30
+  return isMobile ? 20 : 24
 }
 
 export default function TokenBox({
@@ -93,21 +90,13 @@ export default function TokenBox({
               alt={`Logo`}
               key={index}
               round
+              border
             />
           )
         })}
       </MultipleImageWrapper>
       <TokensWrap>
         <span style={{ textAlign: 'left' }}>{title}</span>
-        <div>
-          <span style={{ color: theme.blue2 }}>{chain}</span>
-          <span> | </span>
-          {active ? (
-            <span style={{ color: theme.green1 }}>Active</span>
-          ) : (
-            <span style={{ color: theme.red1 }}>Inactive</span>
-          )}
-        </div>
       </TokensWrap>
     </TokenCell>
   )

@@ -31,7 +31,7 @@ const Wrapper = styled(RowBetween)`
   `};
 `
 const AccountPowerWrapper = styled(Column)`
-  row-gap: 23px;
+  row-gap: 21px;
   & > p:first-of-type {
     width: 100%;
     font-family: 'Inter';
@@ -49,7 +49,6 @@ const AccountPowerWrapper = styled(Column)`
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-image: linear-gradient(45deg, #0badf4, #30efe4);
-      margin-left: 1ch;
     }
   }
   ${({ theme }) => theme.mediaWidth.upToMedium`
@@ -82,29 +81,37 @@ const CoinName = styled.p`
   margin-right: 6px;
 `
 const CoinValue = styled.div<{ colorType: COLOR_TYPE }>`
-font-family: 'Inter';
-font-weight: 500;
-font-size: 14px;
-   background-image:${({ colorType }) =>
-     colorType === COLOR_TYPE.BLUE
-       ? 'linear-gradient(45deg, #0badf4, #30efe4);'
-       : colorType === COLOR_TYPE.RED
-       ? 'linear-gradient(90deg, #E29C53 0%, #CE4C7A 100%);'
-       : 'linear-gradient(90deg, #966131 0%, #966131 100%);'}
- -webkit-background-clip: text;
- -webkit-text-fill-color: transparent;
-   display:flex;
-   column-gap:1ch;
+  font-family: 'Inter';
+  font-weight: 500;
+  font-size: 14px;
+  display: flex;
+  column-gap: 1ch;
+  color: ${({ colorType }) => (colorType === COLOR_TYPE.WHITE ? '#CCCCCC' : 'transparent')};
+  background-image: ${({ colorType }) =>
+    colorType === COLOR_TYPE.BLUE
+      ? `linear-gradient(45deg, #0badf4, #30efe4); -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;`
+      : colorType === COLOR_TYPE.RED
+      ? `linear-gradient(90deg, #E29C53 0%, #CE4C7A 100%); -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;`
+      : ''};
+`
 
+const Loading = styled.div`
+  background: #2a2c2e;
+  border-radius: 6px;
+  height: 14px;
+  width: 100%;
+  margin-right: 24px;
 `
 const CoinItem = styled(Column)`
-  row-gap: 23px;
+  row-gap: 28px;
   position: relative;
   &:after {
     content: '';
     width: 1px;
     height: 100%;
-    background-color: ${({ theme }) => theme.bg4};
+    background-color: ${({ theme }) => theme.border2};
     position: absolute;
     right: -12px;
     transform: translateX(-12px);
@@ -119,7 +126,7 @@ const CoinItem = styled(Column)`
 enum COLOR_TYPE {
   RED = 'RED',
   BLUE = 'BLUE',
-  BROWN = 'BROWN',
+  WHITE = 'WHITE',
 }
 
 const Account = () => {
@@ -138,33 +145,33 @@ const Account = () => {
     {
       id: 0,
       name: DEI_TOKEN.symbol,
-      value: tokenBalances[DEI_TOKEN.address]?.toFixed(3) ?? 'N/A',
+      value: tokenBalances[DEI_TOKEN.address]?.toFixed(3) ?? '',
       colorType: COLOR_TYPE.RED,
     },
     {
       id: 1,
       name: BDEI_TOKEN.symbol,
-      value: tokenBalances[BDEI_TOKEN.address]?.toFixed(3) ?? 'N/A',
+      value: tokenBalances[BDEI_TOKEN.address]?.toFixed(3) ?? '',
       colorType: COLOR_TYPE.RED,
     },
     {
       id: 2,
       name: DEUS_TOKEN.symbol,
-      value: tokenBalances[DEUS_TOKEN.address]?.toFixed(2) ?? 'N/A',
+      value: tokenBalances[DEUS_TOKEN.address]?.toFixed(2) ?? '',
       colorType: COLOR_TYPE.BLUE,
     },
     {
       id: 3,
       name: XDEUS_TOKEN.symbol,
-      value: tokenBalances[XDEUS_TOKEN.address]?.toFixed(2) ?? 'N/A',
+      value: tokenBalances[XDEUS_TOKEN.address]?.toFixed(2) ?? '',
       colorType: COLOR_TYPE.BLUE,
       info: 'xDEUS is the revenue-accruing token of the DEUS ecosystem.',
     },
     {
       id: 4,
       name: LegacyDEI_TOKEN.symbol,
-      value: tokenBalances[LegacyDEI_TOKEN.address]?.toFixed(3) ?? 'N/A',
-      colorType: COLOR_TYPE.BROWN,
+      value: tokenBalances[LegacyDEI_TOKEN.address]?.toFixed(3) ?? '',
+      colorType: COLOR_TYPE.WHITE,
     },
   ]
 
@@ -207,7 +214,11 @@ const Account = () => {
         <p>My Account</p>
         <Row>
           <p>Total balance:</p>
-          <p>≈ ${getTokenValue().toFixed(2)}</p>
+          {getTokenValue() ? (
+            <p style={{ marginLeft: '1ch' }}>≈ ${getTokenValue().toFixed(2)}</p>
+          ) : (
+            <Loading style={{ marginRight: '0px', marginLeft: '1ch', minWidth: '80px' }} />
+          )}
         </Row>
       </AccountPowerWrapper>
       <CoinInfoWrapper>
@@ -237,7 +248,7 @@ const Account = () => {
               )}
             </Row>
             <CoinValue colorType={coin.colorType}>
-              <p>{coin.value}</p>
+              {coin.value != '' ? <p>{coin.value}</p> : <Loading />}
               {/* <p>{coin.name}</p> */}
             </CoinValue>
           </CoinItem>

@@ -5,7 +5,7 @@ export const BaseButton = styled.div<{
   disabled?: boolean
 }>`
   font-family: 'Inter';
-  padding: 1rem;
+  padding: 12px 38px;
   width: 100%;
   font-weight: 500;
   text-align: center;

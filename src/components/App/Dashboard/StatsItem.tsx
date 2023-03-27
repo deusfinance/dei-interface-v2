@@ -18,7 +18,7 @@ const Item = styled.div`
     display: flex;
     height: 100%;
     width: 1px;
-    border-right: 1px solid ${({ theme }) => theme.border1};
+    border-right: 1px solid ${({ theme }) => theme.border2};
     right: 24px;
     top: 0;
   }
@@ -80,7 +80,7 @@ const CustomTooltip = styled(ToolTip)`
 
 const InfoIcon = styled(Info)`
   margin-top: 1px;
-  color: ${({ theme }) => theme.text1} !important;
+  color: ${({ theme }) => theme.text2} !important;
 `
 
 export default function StatsItem({
