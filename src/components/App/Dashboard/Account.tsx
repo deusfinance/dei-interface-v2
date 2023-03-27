@@ -98,12 +98,13 @@ const CoinValue = styled.div<{ colorType: COLOR_TYPE }>`
 `
 
 const Loading = styled.div`
-  background: #2a2c2e;
+  background: ${({ theme }) => theme.bg6};
   border-radius: 6px;
   height: 14px;
   width: 100%;
   margin-right: 24px;
 `
+
 const CoinItem = styled(Column)`
   row-gap: 28px;
   position: relative;

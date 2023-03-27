@@ -60,6 +60,13 @@ const TableWrapper = styled.table<{ isEmpty?: boolean }>`
   border-bottom-left-radius: ${({ isEmpty }) => (isEmpty ? '12px' : '0')};
 `
 
+const Loading = styled.div`
+  background: ${({ theme }) => theme.bg6};
+  border-radius: 6px;
+  height: 14px;
+  width: 100%;
+`
+
 export const Cell = styled.td<{ justify?: boolean }>`
   align-items: center;
   text-align: center;
@@ -461,11 +468,13 @@ export const TableRowLargeContent = ({
         <TokenBox tokens={tokens} title={name} active={active} chain={chain} />
       </Cell>
 
-      <Cell style={{ width: '10%' }}>{apr ? formatAmount(apr) + '%' : 'N/A'}</Cell>
+      <Cell style={{ width: '10%' }}>{apr ? formatAmount(apr) + '%' : <Loading />}</Cell>
 
-      <Cell style={{ width: '10%' }}>{tvl ? formatDollarAmount(tvl) : 'N/A'}</Cell>
+      <Cell style={{ width: '10%' }}>{tvl ? formatDollarAmount(tvl) : <Loading />}</Cell>
 
-      <Cell style={{ width: '15%' }}>{parseFloat(stakedAmount) > 0 ? parseFloat(stakedAmount).toFixed(2) : '-'}</Cell>
+      <Cell style={{ width: '15%' }}>
+        {parseFloat(stakedAmount) > 0 ? parseFloat(stakedAmount).toFixed(2) : <Loading />}
+      </Cell>
 
       <Cell style={{ width: '15%' }}>
         <RewardBox tokens={rewardTokens} rewardAmounts={rewardAmounts} />
