@@ -30,7 +30,7 @@ import { LegacyDEI_Address, USDC_ADDRESS } from 'constants/addresses'
 import { SupportedChainId } from 'constants/chains'
 import useWeb3React from 'hooks/useWeb3'
 import { useTokenBalance } from 'state/wallet/hooks'
-import { ROUTES } from './constants'
+import { ROUTES, DEI_MENU_ROUTES, PARTNERS_MENU_ROUTES, USEFUL_LINKS_MENU_ROUTES } from './constants'
 
 const Wrapper = styled.div<{ isOpen?: boolean }>`
   transition: width 0.25s;
@@ -78,6 +78,8 @@ const Routes = styled.div`
   gap: 4px;
   padding: 0px 12px;
   margin-top: 24px;
+  font-size: 16px;
+  line-height: 20px;
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
     & > * {
@@ -179,9 +181,9 @@ const NavLink = styled.div<{ active: boolean }>`
   color: ${({ theme }) => theme.text1};
   font-family: 'Inter';
   font-style: normal;
-  font-weight: ${({ active }) => (active ? '700' : '500')};
-  font-size: 20px;
-  line-height: 26px;
+  font-weight: ${({ active }) => (active ? '600' : '500')};
+  font-size: 16px;
+  line-height: 20px;
   cursor: pointer;
 
   /* ${({ active }) =>
@@ -373,6 +375,19 @@ const SidebarContent = styled.div<{ isOpen: boolean }>`
   left: 0px;
 `
 
+const SubMenuWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  margin: 16px 0px;
+`
+
+const SubMenuTitle = styled.div`
+  font-size: 16px;
+  font-weight: 400;
+  color: ${({ theme }) => theme.bg4};
+  margin: 0px 16px;
+`
+
 export default function Slider() {
   const { account } = useWeb3React()
   const router = useRouter()
@@ -449,9 +464,79 @@ export default function Slider() {
                 </SimpleLinkWrapper>
               ))}
 
-              <Separator />
+              <SubMenuWrapper>
+                <SubMenuTitle>DEI</SubMenuTitle>
+                <Separator style={{ margin: 'auto' }} />
+              </SubMenuWrapper>
+              {DEI_MENU_ROUTES.map((route, index) => (
+                <SimpleLinkWrapper
+                  key={route.id}
+                  isOpen={isOpen}
+                  className={`sidebar-link__route ${index + 1 === DEI_MENU_ROUTES.length && 'last'}`}
+                  active={router.asPath === route.path}
+                >
+                  <Link href={route.path} passHref>
+                    <MenuItemLinkContainer>
+                      <IconWrapper disable={router.asPath !== route.path}>
+                        <route.icon size={18} {...(route.path === '/swap' && { color: '#EBEBEC' })} />
+                      </IconWrapper>
+                      <NavLinkContainer isOpen={isOpen} isInternal={true}>
+                        <NavLink active={router.asPath === route.path}>{route.title}</NavLink>
+                      </NavLinkContainer>
+                    </MenuItemLinkContainer>
+                  </Link>
+                </SimpleLinkWrapper>
+              ))}
 
-              <SimpleLinkWrapper isOpen={isOpen} className="last">
+              <SubMenuWrapper>
+                <SubMenuTitle>Partners</SubMenuTitle>
+                <Separator style={{ margin: 'auto' }} />
+              </SubMenuWrapper>
+              {PARTNERS_MENU_ROUTES.map((route, index) => (
+                <SimpleLinkWrapper
+                  key={route.id}
+                  isOpen={isOpen}
+                  className={`sidebar-link__route ${index + 1 === PARTNERS_MENU_ROUTES.length && 'last'}`}
+                  active={router.asPath === route.path}
+                >
+                  <Link href={route.path} passHref>
+                    <MenuItemLinkContainer>
+                      <IconWrapper disable={router.asPath !== route.path}>
+                        <route.icon size={18} {...(route.path === '/swap' && { color: '#EBEBEC' })} />
+                      </IconWrapper>
+                      <NavLinkContainer isOpen={isOpen} isInternal={true}>
+                        <NavLink active={router.asPath === route.path}>{route.title}</NavLink>
+                      </NavLinkContainer>
+                    </MenuItemLinkContainer>
+                  </Link>
+                </SimpleLinkWrapper>
+              ))}
+
+              <SubMenuWrapper>
+                <SubMenuTitle>Useful Links</SubMenuTitle>
+                <Separator style={{ margin: 'auto' }} />
+              </SubMenuWrapper>
+              {USEFUL_LINKS_MENU_ROUTES.map((route, index) => (
+                <SimpleLinkWrapper
+                  key={route.id}
+                  isOpen={isOpen}
+                  className={`sidebar-link__route ${index + 1 === USEFUL_LINKS_MENU_ROUTES.length && 'last'}`}
+                  active={router.asPath === route.path}
+                >
+                  <Link href={route.path} passHref>
+                    <MenuItemLinkContainer>
+                      <IconWrapper disable={router.asPath !== route.path}>
+                        <route.icon size={18} {...(route.path === '/swap' && { color: '#EBEBEC' })} />
+                      </IconWrapper>
+                      <NavLinkContainer isOpen={isOpen} isInternal={true}>
+                        <NavLink active={router.asPath === route.path}>{route.title}</NavLink>
+                      </NavLinkContainer>
+                    </MenuItemLinkContainer>
+                  </Link>
+                </SimpleLinkWrapper>
+              ))}
+
+              {/* <SimpleLinkWrapper isOpen={isOpen} className="last">
                 <MenuItemLinkContainer>
                   <Row>
                     <IconWrapper disable>
@@ -493,7 +578,7 @@ export default function Slider() {
                     </Logo>
                   </NavLinkContainer>
                 </MenuItemLinkContainer>
-              </SimpleLinkWrapper>
+              </SimpleLinkWrapper> */}
             </Routes>
             {isOpen && <Separator />}
             <NavLinkContainer isOpen={isOpen} style={{ cursor: 'default' }}>

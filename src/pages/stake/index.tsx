@@ -71,6 +71,9 @@ const Cell = styled.div<{ justify?: boolean }>`
   vertical-align: middle;
   padding: 5px;
   height: 90px;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 15px;
 `
 export default function Stake() {
   const { snapshot, searchProps } = useSearch(Stakings, ExternalStakings)
@@ -90,12 +93,12 @@ export default function Stake() {
       return (
         <UpperRow>
           <Row>
-            <Cell style={{ height: 'fit-content', width: '25%' }}>
-              <SearchField searchProps={searchProps} />
-            </Cell>
-            <Cell style={{ height: 'fit-content', color: '#FFBA93', fontWeight: 'medium', width: '10%' }}>APR</Cell>
-            <Cell style={{ height: 'fit-content', color: '#6F7380', width: '18%' }}>TVL</Cell>
-            <Cell style={{ height: 'fit-content', textAlign: 'left', color: '#6F7380' }}>Reward Tokens</Cell>
+            <Cell style={{ height: 'fit-content', color: '#7F8082', textAlign: 'left', width: '25%' }}>Pair</Cell>
+            <Cell style={{ height: 'fit-content', color: '#7F8082', width: '10%' }}>APR</Cell>
+            <Cell style={{ height: 'fit-content', color: '#7F8082', width: '10%' }}>TVL</Cell>
+            <Cell style={{ height: 'fit-content', color: '#7F8082', width: '15%' }}>Staked LP</Cell>
+            <Cell style={{ height: 'fit-content', color: '#7F8082', width: '15%' }}>{`Reward(s)`}</Cell>
+            <Cell style={{ height: 'fit-content', color: '#7F8082', width: '25%' }}>Stake/Unstake</Cell>
           </Row>
         </UpperRow>
       )

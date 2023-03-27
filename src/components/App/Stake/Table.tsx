@@ -345,9 +345,11 @@ const MiniTopBorderWrap = styled(TopBorderWrap)`
   }
 `
 const ActionButton = styled(BaseButton)`
-  background: #141414;
+  background: ${({ theme }) => theme.bg0};
   backdrop-filter: blur(9px);
   border-radius: 8px;
+  width: fit-content;
+  margin: auto;
 `
 
 export interface ITableRowContent {
@@ -555,7 +557,7 @@ const TableRowContent = ({ stakingPool }: { stakingPool: StakingType }) => {
           type={type}
           rewardAmounts={rewardAmounts}
           stakedAmount={stakedAmount}
-          lpCurrencyBalance={lpCurrencyBalance}
+          lpCurrencyBalance={lpCurrencyBalance || ''}
         />
       </TableRowLargeContainer>
       <TableRowMiniContent
@@ -576,7 +578,7 @@ const TableRowContent = ({ stakingPool }: { stakingPool: StakingType }) => {
         chain={chain}
         type={type}
         stakedAmount={stakedAmount}
-        lpCurrencyBalance={lpCurrencyBalance}
+        lpCurrencyBalance={lpCurrencyBalance || ''}
       />
     </>
   )
