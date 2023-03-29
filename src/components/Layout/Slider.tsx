@@ -1,12 +1,8 @@
 import React, { useState } from 'react'
-import styled from 'styled-components'
+import styled, { useTheme } from 'styled-components'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { isMobileOnly as isMobile } from 'react-device-detect'
-
-import MULTICHAIN from '/public/static/images/pages/dashboard/ic_multichain.svg'
-import DEUSFINANCE from '/public/static/images/pages/dashboard/ic_deus_finance.svg'
-import ImageWithFallback from 'components/ImageWithFallback'
 
 import { Z_INDEX } from 'theme'
 
@@ -17,7 +13,7 @@ import NavLogo2 from './NavLogo2'
 import { Row as RowWrapper, RowEnd, RowStart } from 'components/Row'
 import Footer from 'components/Disclaimer'
 
-import { IconWrapper, VeDeus as VeDeusIcon, Bridge as BridgeIcon, ChevronLeft } from 'components/Icons'
+import { IconWrapper, Link as LinkIconLogo, Bridge as BridgeIcon, ChevronLeft } from 'components/Icons'
 import { ArrowUpRight, ChevronRight } from 'react-feather'
 import { useDeiPrice, useDeusPrice } from 'state/dashboard/hooks'
 import Column from 'components/Column'
@@ -31,6 +27,7 @@ import { SupportedChainId } from 'constants/chains'
 import useWeb3React from 'hooks/useWeb3'
 import { useTokenBalance } from 'state/wallet/hooks'
 import { ROUTES, DEI_MENU_ROUTES, PARTNERS_MENU_ROUTES, USEFUL_LINKS_MENU_ROUTES } from './constants'
+import ImageWithFallback from 'components/ImageWithFallback'
 
 const Wrapper = styled.div<{ isOpen?: boolean }>`
   transition: width 0.25s;
@@ -181,7 +178,7 @@ const NavLink = styled.div<{ active: boolean }>`
   color: ${({ theme }) => theme.text1};
   font-family: 'Inter';
   font-style: normal;
-  font-weight: ${({ active }) => (active ? '600' : '500')};
+  font-weight: ${({ active }) => (active ? '600' : '400')};
   font-size: 16px;
   line-height: 20px;
   cursor: pointer;
@@ -198,11 +195,12 @@ const NavLink = styled.div<{ active: boolean }>`
 
 const PricesWrap = styled(Row)`
   flex-direction: column;
+  gap: 16px;
   background: ${({ theme }) => theme.bg1};
   border-radius: 12px;
-  width: 288px;
-  padding: 20px 12px;
-  margin: 0 auto;
+  width: 100%;
+  margin: 0px 12px;
+  padding: 16px;
 `
 
 const Price = styled(RowEnd)`
@@ -218,7 +216,6 @@ const DeiPriceWrap = styled.div`
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin-bottom: 16px;
   font-size: 0.875rem;
   font-weight: medium;
 `
@@ -228,7 +225,6 @@ const DeusPriceWrap = styled.div`
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin-bottom: 16px;
   font-size: 0.875rem;
   font-weight: medium;
 `
@@ -292,48 +288,10 @@ const NavLinkContainer = styled(Row)<{ isOpen: boolean; isInternal?: boolean }>`
   transform-origin: left;
   transition: all 0.25s;
   white-space: nowrap;
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: center;
-  margin-right: ${({ isInternal }) => (isInternal ? 'auto' : '0')}; ;
-`
-const BurgerMenuButton = styled.button<{ isOpen: boolean }>`
-  display: flex;
-  flex-direction: column;
-  align-self: center;
-  max-width: 75px !important;
-  position: relative;
-  padding-top: 16px;
-  padding-bottom: 16px;
-  span {
-    transition: all 0.25s;
-    margin-inline: auto;
-    width: 20px;
-    height: 2px;
-    background-color: white;
-    display: inline-block;
-    margin-block: 3px;
-    ${({ isOpen }) =>
-      isOpen &&
-      `
-      position:absolute;
-      left:50%;
-      &:first-of-type{
-        transform:translateX(-50%) rotate(45deg);
-        margin-block: 0px;
-      }
-      &:last-of-type{
-        transform:translateX(-50%) rotate(-45deg);
-        margin-block: 0px;
-      }
-      &:nth-of-type(2){
-        opacity:0;
-        position:absolute;
-        left:50%;
-        transform:translate(-50%);
-      }
-
-    `}
-  }
+  margin-right: ${({ isInternal }) => (isInternal ? 'auto' : '0')};
+  width: 100%;
 `
 
 const CustomLink = styled(ExternalLink)`
@@ -381,16 +339,19 @@ const SubMenuWrapper = styled.div`
   margin: 16px 0px;
 `
 
-const SubMenuTitle = styled.div`
+const SubMenuTitle = styled.div<{ isOpen: boolean }>`
+  display: ${({ isOpen }) => (isOpen ? 'relative' : 'none')};
   font-size: 16px;
   font-weight: 400;
   color: ${({ theme }) => theme.bg4};
   margin: 0px 16px;
+  min-width: fit-content;
 `
 
 export default function Slider() {
   const { account } = useWeb3React()
   const router = useRouter()
+  const theme = useTheme()
 
   const deiPrice = useDeiPrice()
   const deusPrice = useDeusPrice()
@@ -454,10 +415,18 @@ export default function Slider() {
                   <Link href={route.path} passHref>
                     <MenuItemLinkContainer>
                       <IconWrapper disable={router.asPath !== route.path}>
-                        <route.icon size={18} {...(route.path === '/swap' && { color: '#EBEBEC' })} />
+                        <route.icon size={18} />
                       </IconWrapper>
                       <NavLinkContainer isOpen={isOpen} isInternal={true}>
                         <NavLink active={router.asPath === route.path}>{route.title}</NavLink>
+                        {route.specialIcon && (
+                          <ImageWithFallback
+                            src={route.specialIcon}
+                            width={88}
+                            height={24}
+                            alt={`${route.title}_logo`}
+                          />
+                        )}
                       </NavLinkContainer>
                     </MenuItemLinkContainer>
                   </Link>
@@ -465,7 +434,7 @@ export default function Slider() {
               ))}
 
               <SubMenuWrapper>
-                <SubMenuTitle>DEI</SubMenuTitle>
+                <SubMenuTitle isOpen={isOpen}>DEI</SubMenuTitle>
                 <Separator style={{ margin: 'auto' }} />
               </SubMenuWrapper>
               {DEI_MENU_ROUTES.map((route, index) => (
@@ -478,7 +447,7 @@ export default function Slider() {
                   <Link href={route.path} passHref>
                     <MenuItemLinkContainer>
                       <IconWrapper disable={router.asPath !== route.path}>
-                        <route.icon size={18} {...(route.path === '/swap' && { color: '#EBEBEC' })} />
+                        <route.icon size={18} />
                       </IconWrapper>
                       <NavLinkContainer isOpen={isOpen} isInternal={true}>
                         <NavLink active={router.asPath === route.path}>{route.title}</NavLink>
@@ -489,7 +458,7 @@ export default function Slider() {
               ))}
 
               <SubMenuWrapper>
-                <SubMenuTitle>Partners</SubMenuTitle>
+                <SubMenuTitle isOpen={isOpen}>Partners</SubMenuTitle>
                 <Separator style={{ margin: 'auto' }} />
               </SubMenuWrapper>
               {PARTNERS_MENU_ROUTES.map((route, index) => (
@@ -502,7 +471,7 @@ export default function Slider() {
                   <Link href={route.path} passHref>
                     <MenuItemLinkContainer>
                       <IconWrapper disable={router.asPath !== route.path}>
-                        <route.icon size={18} {...(route.path === '/swap' && { color: '#EBEBEC' })} />
+                        <route.icon size={18} />
                       </IconWrapper>
                       <NavLinkContainer isOpen={isOpen} isInternal={true}>
                         <NavLink active={router.asPath === route.path}>{route.title}</NavLink>
@@ -513,7 +482,7 @@ export default function Slider() {
               ))}
 
               <SubMenuWrapper>
-                <SubMenuTitle>Useful Links</SubMenuTitle>
+                <SubMenuTitle isOpen={isOpen}>Useful Links</SubMenuTitle>
                 <Separator style={{ margin: 'auto' }} />
               </SubMenuWrapper>
               {USEFUL_LINKS_MENU_ROUTES.map((route, index) => (
@@ -521,67 +490,34 @@ export default function Slider() {
                   key={route.id}
                   isOpen={isOpen}
                   className={`sidebar-link__route ${index + 1 === USEFUL_LINKS_MENU_ROUTES.length && 'last'}`}
-                  active={router.asPath === route.path}
                 >
-                  <Link href={route.path} passHref>
+                  <ExternalLink href={route.path} passHref style={{ width: '100%' }}>
                     <MenuItemLinkContainer>
                       <IconWrapper disable={router.asPath !== route.path}>
-                        <route.icon size={18} {...(route.path === '/swap' && { color: '#EBEBEC' })} />
+                        <route.icon size={18} />
                       </IconWrapper>
-                      <NavLinkContainer isOpen={isOpen} isInternal={true}>
-                        <NavLink active={router.asPath === route.path}>{route.title}</NavLink>
+                      <NavLinkContainer isOpen={isOpen} isInternal={false}>
+                        <NavLink active={false}>
+                          {route.title}
+                          <LinkIconLogo size={8} style={{ marginLeft: '8px' }} />
+                        </NavLink>
+                        {route.specialIcon && (
+                          <ImageWithFallback
+                            src={route.specialIcon}
+                            width={88}
+                            height={24}
+                            alt={`${route.title}_logo`}
+                          />
+                        )}
                       </NavLinkContainer>
                     </MenuItemLinkContainer>
-                  </Link>
+                  </ExternalLink>
                 </SimpleLinkWrapper>
               ))}
-
-              {/* <SimpleLinkWrapper isOpen={isOpen} className="last">
-                <MenuItemLinkContainer>
-                  <Row>
-                    <IconWrapper disable>
-                      <VeDeusIcon size={20} />
-                    </IconWrapper>
-                    <ExternalLink
-                      style={{ fontSize: 20, padding: '0.25rem 1rem', paddingRight: '0.3rem' }}
-                      href="https://app.deus.finance/xdeus/swap"
-                    >
-                      xDEUS
-                    </ExternalLink>
-                    <ArrowUpRight />
-                  </Row>
-
-                  <NavLinkContainer isOpen={isOpen}>
-                    <Logo>
-                      <ImageWithFallback src={DEUSFINANCE} width={92} height={14} alt={`deus_finance_logo`} />
-                    </Logo>
-                  </NavLinkContainer>
-                </MenuItemLinkContainer>
-              </SimpleLinkWrapper>
-              <SimpleLinkWrapper isOpen={isOpen}>
-                <MenuItemLinkContainer>
-                  <Row>
-                    <IconWrapper disable>
-                      <BridgeIcon size={20} />
-                    </IconWrapper>
-                    <ExternalLink
-                      style={{ fontSize: 20, padding: '0.25rem 1rem', paddingRight: '0.3rem' }}
-                      href="https://app.multichain.org/#/router"
-                    >
-                      Bridge
-                    </ExternalLink>
-                    <ArrowUpRight />
-                  </Row>
-                  <NavLinkContainer isOpen={isOpen}>
-                    <Logo>
-                      <ImageWithFallback src={MULTICHAIN} width={88} height={13} alt={`multichain_logo`} />
-                    </Logo>
-                  </NavLinkContainer>
-                </MenuItemLinkContainer>
-              </SimpleLinkWrapper> */}
             </Routes>
-            {isOpen && <Separator />}
-            <NavLinkContainer isOpen={isOpen} style={{ cursor: 'default' }}>
+
+            <NavLinkContainer isOpen={isOpen} style={{ cursor: 'default', flexDirection: 'column', padding: '12px' }}>
+              {isOpen && <Separator />}
               <PricesWrap style={{ cursor: 'default' }}>
                 <Token>
                   DEI Price
@@ -607,38 +543,37 @@ export default function Slider() {
                 )}
               </PricesWrap>
             </NavLinkContainer>
-            {isOpen && <Separator />}
           </Column>
 
-          <NavLinkContainer isOpen={isOpen}>
+          <NavLinkContainer isOpen={isOpen} style={{ flexDirection: 'column', padding: '12px' }}>
             <Column style={{ width: '100%' }}>
+              {isOpen && <Separator />}
               <Data>
                 <CustomLink href={'https://docs.deus.finance'} passHref>
                   <DataItems>
                     Bug Bounty
-                    <ArrowUpRight />
+                    <LinkIconLogo size={8} style={{ marginLeft: '8px', marginTop: '4px' }} color={theme.bg4} />
                   </DataItems>
                 </CustomLink>
-
                 <CustomLink href={'https://docs.deus.finance'} passHref>
                   <DataItems>
                     Docs
-                    <ArrowUpRight />
+                    <LinkIconLogo size={8} style={{ marginLeft: '8px', marginTop: '4px' }} color={theme.bg4} />
                   </DataItems>
                 </CustomLink>
                 <CustomLink href={'https://docs.deus.finance/contracts/disclaimer'} passHref>
                   <DataItems>
                     Terms
-                    <ArrowUpRight />
+                    <LinkIconLogo size={8} style={{ marginLeft: '8px', marginTop: '4px' }} color={theme.bg4} />
                   </DataItems>
                 </CustomLink>
               </Data>
 
-              <Separator style={{ marginBlock: '32px', height: 1 }} />
+              <Separator style={{ marginBlock: '32px', height: 1, padding: '0px 24px' }} />
 
-              <div style={{ width: '100%' }}>
-                <Footer />
-              </div>
+              <Column style={{ width: '100%' }}>
+                <Footer isOpen={isOpen} />
+              </Column>
             </Column>
           </NavLinkContainer>
         </SidebarContent>

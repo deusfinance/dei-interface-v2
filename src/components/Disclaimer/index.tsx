@@ -9,7 +9,7 @@ import Twitter from '/public/static/images/footer/Twitter.svg'
 import Github from '/public/static/images/footer/Github.svg'
 import Telegram from '/public/static/images/footer/Telegram.svg'
 
-const Wrapper = styled(RowCenter)`
+const Wrapper = styled(RowCenter)<{ isOpen?: boolean }>`
   color: ${({ theme }) => theme.text3};
   background: ${({ theme }) => theme.bg0};
   text-align: center;
@@ -32,9 +32,9 @@ const Wrapper = styled(RowCenter)`
 function getImageSize() {
   return isMobile ? 25 : 30
 }
-export default function Disclaimer() {
+export default function Disclaimer(isOpen?: boolean) {
   return (
-    <Wrapper>
+    <Wrapper isOpen={isOpen}>
       <ExternalLink href="https://discord.gg/xTTaBBAMgG">
         <Image src={Discord} alt="Discord Logo" width={getImageSize()} height={getImageSize()} />
       </ExternalLink>

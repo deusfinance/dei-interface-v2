@@ -51,7 +51,7 @@ const Item = styled.div`
 const Name = styled.div`
   font-family: 'Inter';
   font-weight: 400;
-  font-size: 12px;
+  font-size: 14px;
   color: ${({ theme }) => theme.text1};
   white-space: nowrap;
 

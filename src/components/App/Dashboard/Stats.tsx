@@ -23,8 +23,6 @@ const Wrapper = styled(RowBetween)`
   background: ${({ theme }) => theme.bg0};
   align-items: stretch;
   border-radius: 12px;
-  padding: 38px 36px;
-  padding-left: 14px;
   margin-bottom: 80px;
   position: relative;
 

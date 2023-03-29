@@ -12,7 +12,7 @@ const Wrapper = styled.div<{
   justify-content: center;
   align-items: center;
   border-radius: ${({ round }) => (round ? '50%' : '0px')};
-  border: ${({ border, theme }) => (border ? `2px solid ${theme.text2}` : `0px solid ${theme.text2}`)};
+  border: ${({ border, theme }) => (border ? `2px solid ${theme.bg5}` : `0px solid ${theme.text2}`)};
 `
 
 export default function ImageWithFallback({

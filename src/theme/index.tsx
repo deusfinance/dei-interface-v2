@@ -75,8 +75,8 @@ function colors(themeName: SupportedThemes): Colors {
       bg1: '#F5F6FC',
       bg2: '#F0F0F7',
       bg3: '#E9E9F3',
-      bg4: '#7F7F80',
-      bg5: '#181818',
+      bg4: '#8F939C',
+      bg5: '#23252C',
       bg6: '#2a2c2e',
 
       // borders
@@ -148,8 +148,8 @@ function colors(themeName: SupportedThemes): Colors {
       bg1: '#1A1B1B',
       bg2: '#181A1F',
       bg3: '#1B1D24',
-      bg4: '#7F7F80',
-      bg5: '#181818', //TEST
+      bg4: '#8F939C',
+      bg5: '#23252C',
       bg6: '#2a2c2e',
 
       // borders
