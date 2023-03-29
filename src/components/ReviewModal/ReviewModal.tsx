@@ -81,6 +81,8 @@ const Data = styled(RowCenter)`
   `};
 `
 const ConfirmButton = styled(PrimaryButton)`
+  font-family: 'IBM Plex Mono';
+  color: ${({ theme }) => theme.bg0};
   height: 62px;
   max-width: 90%;
   margin: 0 auto;

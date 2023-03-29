@@ -35,7 +35,6 @@ import {
   MainButton,
   ConnectWallet,
 } from 'components/App/StableCoin'
-import Tableau from 'components/App/StableCoin/Tableau'
 import WarningModal from 'components/ReviewModal/Warning'
 import AdvancedOptions from 'components/ReviewModal/AdvancedOptions'
 import { useUserSlippageTolerance, useSetUserSlippageTolerance } from 'state/user/hooks'
@@ -60,28 +59,18 @@ const Wrapper = styled(MainWrapper)`
   margin-top: 68px;
 `
 const InputContainer = styled.div`
+  border-radius: 16px;
   width: 100%;
-  margin-top: 2px;
   & > div:first-of-type {
     background-color: ${({ theme }) => theme.bg1};
   }
 `
 const TableauContainer = styled(RowCenter)`
-  align-items: center;
-  width: 100%;
-  background-color: ${({ theme }) => theme.bg1};
-  & > div:first-of-type {
-    background-color: ${({ theme }) => theme.bg1};
-    display: inline-block;
-    width: 60px;
-    span {
-      margin-right: 4px !important;
-      display: inline-block;
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: ${({ theme }) => theme.text1};
-    }
-  }
+  justify-content: flex-start;
+  font-size: 20px;
+  font-family: 'IBM Plex Mono';
+  background: ${({ theme }) => theme.bg1};
+  padding: 16px 24px;
 `
 const TextWrapper = styled.div`
   display: flex;
@@ -90,6 +79,22 @@ const TextWrapper = styled.div`
 
 const ExtLink = styled(ExternalLink)`
   width: 100%;
+`
+
+const ActionButtonWrapper = styled.div`
+  display: flex;
+  width: 100%;
+  padding: 4px 4px;
+  gap: 16px;
+  flex-direction: column;
+`
+
+const SwapWrapper = styled.div`
+  border-radius: 10px;
+  padding: 12px 10px;
+  background: ${({ theme }) => theme.bg7};
+  margin: -30px;
+  z-index: 1;
 `
 
 enum SwapType {
@@ -420,7 +425,7 @@ export default function Swap() {
           <MainButton>
             <TextWrapper>
               Swap on firebird
-              <IconWrapper>
+              <IconWrapper style={{ marginTop: '4px' }}>
                 <ArrowUpRight />
               </IconWrapper>
             </TextWrapper>
@@ -476,9 +481,7 @@ export default function Swap() {
     <>
       <Container>
         <Wrapper>
-          <TableauContainer>
-            <Tableau title={'Swap'} />
-          </TableauContainer>
+          <TableauContainer>Swap</TableauContainer>
           <InputContainer>
             <InputWrapper>
               <InputBox
@@ -491,7 +494,9 @@ export default function Swap() {
                 }}
               />
 
-              <SwapIcon onClick={handleClick} />
+              <SwapWrapper onClick={handleClick}>
+                <SwapIcon />
+              </SwapWrapper>
 
               <InputBox
                 currency={outputCurrency}
@@ -502,31 +507,33 @@ export default function Swap() {
                   setField('output')
                 }}
               />
-              {tokenSwap.swapType === SwapType.MINT && firebird && buyOnFirebird && (
-                <FirebirdInputBox
-                  currency={outputCurrency}
-                  firebirdLink={firebirdLink}
-                  value={formatBalance(firebird.outputTokenAmount, 7)}
-                  onChange={() => console.log('')}
-                  disabled
-                />
-              )}
-              <div style={{ marginTop: '30px' }}></div>
-              {getApproveButton()}
-              {getActionButton()}
-            </InputWrapper>
 
-            <BottomWrapper style={{ marginTop: '2px' }}>
-              <AdvancedOptions
-                amount={useUserSlippageTolerance().toString()}
-                setAmount={useSetUserSlippageTolerance()}
-                title="Slippage"
-                defaultAmounts={['0.1', '0.5', '1.0']}
-                unit={'%'}
-                toolTipData={slippageInfo}
-              />
-            </BottomWrapper>
+              <ActionButtonWrapper>
+                {tokenSwap.swapType === SwapType.MINT && firebird && buyOnFirebird && (
+                  <FirebirdInputBox
+                    currency={outputCurrency}
+                    firebirdLink={firebirdLink}
+                    value={formatBalance(firebird.outputTokenAmount, 7)}
+                    onChange={() => console.log('')}
+                    disabled
+                  />
+                )}
+
+                {getApproveButton()}
+                {getActionButton()}
+              </ActionButtonWrapper>
+            </InputWrapper>
           </InputContainer>
+          <BottomWrapper style={{ marginTop: '2px' }}>
+            <AdvancedOptions
+              amount={useUserSlippageTolerance().toString()}
+              setAmount={useSetUserSlippageTolerance()}
+              title="Slippage"
+              defaultAmounts={['0.1', '0.5', '1.0']}
+              unit={'%'}
+              toolTipData={slippageInfo}
+            />
+          </BottomWrapper>
         </Wrapper>
       </Container>
 

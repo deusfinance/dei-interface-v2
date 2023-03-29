@@ -9,7 +9,7 @@ export const DefaultOptionButtonWrapper = styled.div<{ active?: boolean }>`
   padding: 2px;
   background: ${({ theme }) => theme.deiColor};
   border-radius: 4px;
-  background: ${({ theme, active }) => (active ? theme.deiColor : 'transparent')};
+  background: ${({ theme, active }) => (active ? theme.deusColor : 'transparent')};
   margin: 0px 8px;
   cursor: ${({ active }) => active && 'pointer'};
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
@@ -20,6 +20,8 @@ export const DefaultOptionButtonWrapper = styled.div<{ active?: boolean }>`
 `
 
 export const DefaultOptionButton = styled(OptionButton)`
+  font-family: 'IBM Plex Mono';
+  font-size: 14px;
   width: 100%;
   height: 100%;
   background: ${({ theme }) => theme.bg2};
@@ -53,6 +55,7 @@ export const CustomOptionWrapper = styled.div<{ active?: boolean }>`
 
 export const CustomOption = styled(DefaultOptionButton)`
   justify-content: flex-end;
+  padding: 4px;
   border: 2px solid ${({ theme }) => theme.border1};
 
   &:hover {
@@ -66,13 +69,12 @@ export const InputAmount = styled.input.attrs({ type: 'number' })<{ active?: boo
   outline: none;
   width: 100%;
   margin-right: 2px;
-  margin-left: 5px;
-  font-size: 0.95rem;
+  font-size: 14px;
   background: transparent;
   ${({ active, theme }) =>
     active &&
     `
-    color: ${theme.text2};
+    color: ${theme.text1};
   `}
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     font-size: 10px;
@@ -101,7 +103,7 @@ export const QuestionMarkWrap = styled.div`
   margin-left: 6px;
   display: inline;
   background: transparent;
-  margin-top: 8px;
+  margin-top: 4px;
 `
 
 export const Title = styled.div`
@@ -111,7 +113,7 @@ export const Title = styled.div`
   direction: row;
   justify-content: space-between;
 
-  font-family: 'Inter';
+  font-family: 'IBM Plex Mono';
   font-style: normal;
   font-weight: 400;
   font-size: 12px;

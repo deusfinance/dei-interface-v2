@@ -17,10 +17,7 @@ const Wrapper = styled(Row)`
   border-radius: 12px;
   color: ${({ theme }) => theme.text2};
   white-space: nowrap;
-  border: 1px solid;
-  border-color: ${({ theme }) => theme.bg4};
   height: 72px;
-  margin-top: 16px;
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
     height: 65px;
@@ -43,6 +40,7 @@ const NumericalWrapper = styled.div`
 `
 
 const CurrencySymbol = styled.div<{ active?: any }>`
+  font-family: 'IBM Plex Mono';
   font-weight: 600;
   font-size: 16px;
   margin-left: 5px;

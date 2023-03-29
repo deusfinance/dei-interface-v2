@@ -73,15 +73,17 @@ function colors(themeName: SupportedThemes): Colors {
       // backgrounds / greys
       bg0: '#FFFFFF',
       bg1: '#F5F6FC',
-      bg2: '#F0F0F7',
-      bg3: '#E9E9F3',
+      bg2: '#28292B',
+      bg3: '#1C1D1E',
       bg4: '#8F939C',
       bg5: '#23252C',
       bg6: '#2a2c2e',
+      bg7: '#222325',
+      bg8: '#6F7074',
 
       // borders
       border1: '#B8B8BE',
-      border2: 'rgba(99, 126, 161, 0.2)',
+      border2: 'linear-gradient(90deg, #0BADF4 0%, #30EFE4 93.4%)',
       border3: 'rgba(99, 126, 161, 0.2)',
 
       //specialty colors
@@ -90,7 +92,7 @@ function colors(themeName: SupportedThemes): Colors {
         'linear-gradient(90deg, rgba(81, 171, 255, 0.1) 0%, rgba(22, 72, 250, 0.1) 100%), linear-gradient(0deg, #FFFFFF, #FFFFFF)',
 
       // primary colors
-      primary1: 'linear-gradient(90deg, #FFBA35 1.54%, #FFB463 98.9%)',
+      primary1: 'linear-gradient(90deg,#0BADF4 0%,#30EFE4 93.4%)',
       primary2: 'linear-gradient(90deg, #FFBA35 1.54%, #FFA76A 50%)',
       primary3: '#FFBA35',
       primary4: 'linear-gradient(92.33deg, #DE4A7B -10.26%, #E29D52 80%)',
@@ -146,11 +148,13 @@ function colors(themeName: SupportedThemes): Colors {
       // backgrounds / greys
       bg0: '#141414',
       bg1: '#1A1B1B',
-      bg2: '#181A1F',
-      bg3: '#1B1D24',
+      bg2: '#28292B',
+      bg3: '#1C1D1E',
       bg4: '#8F939C',
       bg5: '#23252C',
       bg6: '#2a2c2e',
+      bg7: '#222325',
+      bg8: '#6F7074',
 
       // borders
       border1: '#1B1B1B',
@@ -162,7 +166,7 @@ function colors(themeName: SupportedThemes): Colors {
       specialBG2: '#14181E',
 
       // primary colors
-      primary1: 'linear-gradient(92.33deg, #E29D52 -10.26%, #CE4A7B 144.81%)',
+      primary1: 'linear-gradient(90deg,#0BADF4 0%,#30EFE4 93.4%)',
       primary2: 'linear-gradient(92.33deg, #E29D52 -10.26%, #DE4A7B 80%)',
       primary3: '#FFBA35',
       primary4: 'linear-gradient(92.33deg, #DE4A7B -10.26%, #E29D52 80%)',
@@ -371,7 +375,7 @@ export const ThemedGlobalStyle = createGlobalStyle`
 
   /* Firefox */
   input[type=number] {
-    font-family: 'Inter';
+    font-family: 'IBM Plex Mono';
     -moz-appearance: textfield;
   }
 `

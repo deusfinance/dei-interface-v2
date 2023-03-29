@@ -15,27 +15,22 @@ export const Wrapper = styled(Container)`
   margin-top: 28px;
   width: clamp(250px, 90%, 500px);
   background: ${({ theme }) => theme.bg0};
-  border-radius: 15px;
+  border-radius: 16px;
   overflow: hidden;
 `
 
 export const InputWrapper = styled(Container)`
-  padding: 20px 15px;
+  padding: 4px 12px;
   width: 100%;
-  background: ${({ theme }) => theme.bg0};
-
-  & > * {
-    &:nth-child(2) {
-      margin: 15px auto;
-    }
-  }
+  background: ${({ theme }) => theme.bg3};
+  gap: 12px;
 `
 
 export const BottomWrapper = styled(Container)`
   padding: 20px 15px;
   padding-top: 10px;
   width: 100%;
-  background: ${({ theme }) => theme.bg1};
+  background: ${({ theme }) => theme.bg3};
   border-bottom-right-radius: 12px;
   border-bottom-left-radius: 12px;
 `
@@ -90,6 +85,14 @@ export const MainButton = styled(PrimaryButton)`
   border-radius: 12px;
   width: 100%;
   height: 72px;
+  font-family: 'IBM Plex Mono';
+  color: ${({ theme }) => theme.bg0};
+
+  ${({ theme, disabled }) =>
+    disabled &&
+    `
+    color: ${theme.white};
+  `}
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
     height: 60px;
