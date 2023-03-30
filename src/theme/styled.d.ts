@@ -61,6 +61,7 @@ export interface Colors {
   yellow4: Color
   blue1: Color
   blue2: Color
+  deusBlue: Color
   darkPink: Color
   darkOrange: Color
 

@@ -350,7 +350,7 @@ const FooterWrapper = styled.div<{ isOpen: boolean }>`
   display: flex;
   flex-direction: ${({ isOpen }) => (isOpen ? 'row' : 'column')};
   gap: ${({ isOpen }) => (isOpen ? '28px' : '24px')};
-  padding: ${({ isOpen }) => (isOpen ? '12px 20px 40px 20px' : '8px')};
+  padding: ${({ isOpen }) => (isOpen ? '2px 20px 20px 20px' : '8px')};
 `
 
 export default function Slider({ toggleSideMenu, isOpen }: { toggleSideMenu: () => void; isOpen: boolean }) {

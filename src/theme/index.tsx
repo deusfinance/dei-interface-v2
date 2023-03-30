@@ -119,6 +119,7 @@ function colors(themeName: SupportedThemes): Colors {
       yellow4: '#FFBA93',
       blue1: '#0068FC',
       blue2: '#0068FC',
+      deusBlue: '#30efe4',
       darkPink: '#de4a7b',
       darkOrange: '#391D12',
 
@@ -192,6 +193,7 @@ function colors(themeName: SupportedThemes): Colors {
       yellow4: '#FFBA93',
       blue1: '#2172E5',
       blue2: '#5199FF',
+      deusBlue: '#30efe4',
       darkPink: '#de4a7b',
       darkOrange: '#391D12',
 

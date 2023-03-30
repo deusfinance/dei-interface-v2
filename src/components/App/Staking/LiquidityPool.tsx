@@ -31,7 +31,6 @@ const Wrapper = styled.div`
   margin-top: 12px;
   background: ${({ theme }) => theme.bg1};
   padding: 20px 15px;
-  border: 1px solid rgb(0, 0, 0);
   border-radius: 12px;
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
@@ -53,7 +52,7 @@ const ToggleState = styled.div`
 const DepositButton = styled(PrimaryButton)`
   padding: 0px;
   border-radius: 12px;
-  background: -webkit-linear-gradient(90deg, #e0974c, #c93f6f);
+  background: -webkit-linear-gradient(90deg, #0badf4 0%, #30efe4 93.4%);
   min-height: 64px;
   display: flex;
   align-items: center;
@@ -68,7 +67,7 @@ const DepositButton = styled(PrimaryButton)`
     min-height: 62px;
     background-color: ${({ theme }) => theme.bg0};
     & > p {
-      background: -webkit-linear-gradient(90deg, #e0974c, #c93f6f);
+      background: -webkit-linear-gradient(90deg, #0badf4 0%, #30efe4 93.4%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
@@ -115,7 +114,8 @@ const PercentButton = styled.button<{ isActive: boolean }>`
   text-align: center;
   min-width: 63px;
   min-height: 36px;
-  background: ${({ isActive, theme }) => (isActive ? '-webkit-linear-gradient(90deg, #e0974c, #c93f6f);' : theme.bg2)};
+  background: ${({ isActive, theme }) =>
+    isActive ? '-webkit-linear-gradient(90deg, #0badf4 0%, #30efe4 93.4%);' : theme.bg2};
   padding: 1px;
   border-radius: 8px;
   overflow: hidden;
@@ -191,7 +191,7 @@ const RadioButton = styled.input<{ isDisabled: boolean }>`
     outline-offset: 3px;
   }
   &:checked:after {
-    background-image: linear-gradient(90deg, #e0974c 0%, #c93f6f 100%);
+    background-image: linear-gradient(90deg, #0badf4 0%, #30efe4 93.4%);
     content: '';
     display: inline-block;
   }

@@ -23,8 +23,8 @@ const Wrapper = styled(RowBetween)`
   background: ${({ theme }) => theme.bg0};
   align-items: stretch;
   border-radius: 12px;
-  margin-bottom: 80px;
   position: relative;
+  margin-top: 20px;
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
     flex-direction: column;
@@ -109,7 +109,7 @@ const DeiTitleContainer = styled(RowBetween)`
 const Title = styled.span`
   font-family: 'Inter';
   font-size: 20px;
-  background: ${({ theme }) => theme.specialBG1};
+  background: ${({ theme }) => theme.deiColor};
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   ${({ theme }) => theme.mediaWidth.upToMedium`

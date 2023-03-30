@@ -112,7 +112,7 @@ const PrimaryLabel = styled.div<{
   ${({ active, theme }) =>
     active &&
     ` 
-        color: ${theme.text1};
+        color: ${theme.bg0};
         backdrop-filter: blur(12px);
         background: ${theme.bg4};
     `}
@@ -136,7 +136,7 @@ const SecondaryLabel = styled.div<{
   ${({ active, theme }) =>
     active &&
     ` 
-        color: ${theme.text1};
+        color: ${theme.bg0};
         backdrop-filter: blur(12px);
         background: ${theme.bg4};
     `}
