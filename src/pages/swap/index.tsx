@@ -499,7 +499,7 @@ export default function Swap() {
               />
 
               <SwapWrapper onClick={handleClick}>
-                <SwapIcon />
+                <SwapIcon color="#83858E" />
               </SwapWrapper>
 
               <InputBox

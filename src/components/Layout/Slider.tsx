@@ -183,19 +183,10 @@ const NavLink = styled.div<{ active: boolean }>`
   color: ${({ theme }) => theme.text1};
   font-family: 'Inter';
   font-style: normal;
-  font-weight: ${({ active }) => (active ? '600' : '400')};
+  font-weight: ${({ active }) => (active ? '500' : '400')};
   font-size: 16px;
   line-height: 20px;
   cursor: pointer;
-
-  /* ${({ active }) =>
-    active &&
-    `
-  background: -webkit-linear-gradient(1deg, #e29d52 -10.26%, #de4a7b 90%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-weight: 600;
-  `}; */
 `
 
 const PricesWrap = styled(Row)`
@@ -553,7 +544,7 @@ export default function Slider({ toggleSideMenu, isOpen }: { toggleSideMenu: () 
                 <CustomLink href={'https://docs.deus.finance'} passHref>
                   <DataItems>
                     Bug Bounty
-                    <LinkIconLogo size={8} style={{ marginLeft: '8px', marginTop: '4px' }} color={theme.bg4} />
+                    <LinkIconLogo size={8} style={{ marginLeft: '8px', marginTop: '4px' }} />
                   </DataItems>
                 </CustomLink>
                 <CustomLink href={'https://docs.deus.finance'} passHref>
