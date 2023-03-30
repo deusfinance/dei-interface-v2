@@ -31,7 +31,6 @@ const Wrapper = styled.div`
   justify-content: flex-start;
   margin: 0 15px;
   gap: 0.8rem;
-  padding: 1.5rem 0;
   overflow-y: scroll;
   height: auto;
 `

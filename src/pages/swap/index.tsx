@@ -95,6 +95,10 @@ const SwapWrapper = styled.div`
   background: ${({ theme }) => theme.bg7};
   margin: -30px;
   z-index: 1;
+
+  &:hover {
+    cursor: pointer;
+  }
 `
 
 enum SwapType {

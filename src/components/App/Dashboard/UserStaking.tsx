@@ -1,7 +1,6 @@
 import { StakingType } from 'constants/stakingPools'
 import styled from 'styled-components'
 import { Row, RowBetween } from 'components/Row'
-import Link from 'next/link'
 import Table from '../Stake/Table'
 
 const Container = styled.div`

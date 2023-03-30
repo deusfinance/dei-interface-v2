@@ -10,6 +10,8 @@ import Github from '/public/static/images/footer/Github.svg'
 import Telegram from '/public/static/images/footer/Telegram.svg'
 
 const Wrapper = styled(RowCenter)<{ isOpen?: boolean }>`
+  display: flex;
+  flex-direction: ${({ isOpen }) => (isOpen ? 'row' : 'column')};
   color: ${({ theme }) => theme.text3};
   background: ${({ theme }) => theme.bg0};
   text-align: center;

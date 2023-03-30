@@ -44,7 +44,7 @@ const AvailableLPHeader = styled(Wrapper)`
 const AvailableLPContent = styled(Wrapper)`
   border-bottom-right-radius: 12px;
   border-bottom-left-radius: 12px;
-  background-color: ${({ theme }) => theme.bg2};
+  background-color: ${({ theme }) => theme.bg1};
   padding-block: 0px;
   column-gap: 4px;
 `

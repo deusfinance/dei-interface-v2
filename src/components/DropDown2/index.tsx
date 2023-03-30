@@ -60,31 +60,30 @@ const List = styled.ul<{
   isOpen?: boolean
 }>`
   display: ${(props) => (props.isOpen ? 'block' : 'none')};
+  padding: 8px;
   background: ${({ theme }) => theme.bg0};
-  border: 1px solid ${({ theme }) => theme.border2};
+  border: 1px solid ${({ theme }) => theme.border1};
   border-top: none;
+  border-bottom-right-radius: 8px;
+  border-bottom-left-radius: 8px;
   overflow: hidden;
   position: absolute;
   z-index: 999;
   width: 100%;
   max-width: ${({ width }) => width};
-
-  & > * {
-    &:not(:last-child) {
-      border-bottom: 1px solid ${({ theme }) => theme.border2};
-    }
-  }
 `
 
 const ListItem = styled.li`
   list-style: none;
   text-align: left;
+  margin: 4px 0px;
   height: 40px;
   border-top: none;
   line-height: 40px;
   font-size: 13px;
   z-index: 999;
   color: ${({ theme }) => theme.text1};
+  border-radius: 8px;
 
   &:hover {
     cursor: pointer;

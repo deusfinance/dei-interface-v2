@@ -37,13 +37,13 @@ export default function NavLogo({ isOpen }: { isOpen: boolean }) {
     <Wrapper isOpen={isOpen}>
       {isOpen ? (
         <>
-          <ExternalLink href="https://dei.finance" target="_self" passHref>
+          <ExternalLink href="https://app.deus.finance" target="_self" passHref>
             <ImageWithFallback src={DEUS_LOGO} width={28} height={28} alt={`App Logo`} />
           </ExternalLink>
           <ImageWithFallback src={DEUS_TEXT_LOGO} width={68} height={20} alt={`App Name Logo`} />{' '}
         </>
       ) : (
-        <ExternalLink href="https://dei.finance" target="_self" passHref>
+        <ExternalLink href="https://app.deus.finance" target="_self" passHref>
           <ImageWithFallback src={DEUS_LOGO} width={28} height={28} alt={`App Logo`} />
         </ExternalLink>
       )}

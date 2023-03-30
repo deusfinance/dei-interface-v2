@@ -1,8 +1,14 @@
-import React, { useState } from 'react'
+import React from 'react'
 import styled, { useTheme } from 'styled-components'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { isMobileOnly as isMobile } from 'react-device-detect'
+
+import Discord from '/public/static/images/footer/Discord.svg'
+import Twitter from '/public/static/images/footer/Twitter.svg'
+import Github from '/public/static/images/footer/Github.svg'
+import Telegram from '/public/static/images/footer/Telegram.svg'
+import Medium from '/public/static/images/footer/Medium.svg'
 
 import { Z_INDEX } from 'theme'
 
@@ -11,10 +17,8 @@ import Web3Status from 'components/Web3Status'
 import Menu from './Menu'
 import NavLogo2 from './NavLogo2'
 import { Row as RowWrapper, RowEnd, RowStart } from 'components/Row'
-import Footer from 'components/Disclaimer'
 
-import { IconWrapper, Link as LinkIconLogo, Bridge as BridgeIcon, ChevronLeft } from 'components/Icons'
-import { ArrowUpRight, ChevronRight } from 'react-feather'
+import { IconWrapper, Link as LinkIconLogo, ChevronLeft } from 'components/Icons'
 import { useDeiPrice, useDeusPrice } from 'state/dashboard/hooks'
 import Column from 'components/Column'
 import { ExternalLink } from 'components/Link'
@@ -47,7 +51,8 @@ const Wrapper = styled.div<{ isOpen?: boolean }>`
   `};
 `
 
-const DefaultWrapper = styled.div`
+const DefaultWrapper = styled.div<{ isOpen?: boolean }>`
+  width: ${({ isOpen }) => (isOpen ? '336px' : '66px')};
   display: flex;
   justify-content: flex-start;
   flex-direction: row;
@@ -259,8 +264,9 @@ const Separator = styled.div`
 
 const Logo = styled(RowEnd)``
 
-const Data = styled.div`
-  margin-top: 70px;
+const Data = styled.div<{ isOpen: boolean }>`
+  display: ${({ isOpen }) => (isOpen ? 'relative' : 'none')};
+  width: 100%;
   padding: 28px;
   padding-bottom: 0px;
   font-family: 'Inter';
@@ -282,6 +288,7 @@ const MenuItemLinkContainer = styled(Row)`
   width: 100%;
 `
 const NavLinkContainer = styled(Row)<{ isOpen: boolean; isInternal?: boolean }>`
+  display: ${({ isOpen }) => (isOpen ? 'relative' : 'none')};
   opacity: ${({ isOpen }) => (isOpen ? 1 : 0)};
   z-index: ${({ isOpen }) => (isOpen ? 1 : -1)};
   transform: ${({ isOpen }) => (isOpen ? 'scale(1)' : 'scale(0)')};
@@ -314,15 +321,6 @@ const MenuHideButton = styled.button`
   border-radius: 8px 0px 0px 8px;
 `
 
-const MenuOpenButton = styled.button`
-  margin-left: -36px;
-  padding: 12px 0px;
-  max-width: 25px;
-  max-height: 40px;
-  background: ${({ theme }) => theme.bg1};
-  border-radius: 0px 8px 8px 0px;
-`
-
 const SidebarContent = styled.div<{ isOpen: boolean }>`
   position: relative;
   overflow-y: scroll;
@@ -348,14 +346,21 @@ const SubMenuTitle = styled.div<{ isOpen: boolean }>`
   min-width: fit-content;
 `
 
-export default function Slider() {
+const FooterWrapper = styled.div<{ isOpen: boolean }>`
+  display: flex;
+  flex-direction: ${({ isOpen }) => (isOpen ? 'row' : 'column')};
+  gap: ${({ isOpen }) => (isOpen ? '28px' : '24px')};
+  padding: ${({ isOpen }) => (isOpen ? '12px 20px 40px 20px' : '8px')};
+`
+
+export default function Slider({ toggleSideMenu, isOpen }: { toggleSideMenu: () => void; isOpen: boolean }) {
   const { account } = useWeb3React()
   const router = useRouter()
   const theme = useTheme()
 
   const deiPrice = useDeiPrice()
   const deusPrice = useDeusPrice()
-  const [isOpen, setOpen] = useState(true)
+  // const [isOpen, setOpen] = useState(true)
 
   const legacyDeiPrice = useFirebirdPrice({
     amount: '1000000000000000000',
@@ -366,6 +371,10 @@ export default function Slider() {
     saveGas: '0',
     slippage: '0.01',
   })
+
+  function getImageSize() {
+    return isMobile ? 25 : 28
+  }
 
   const LegacyDeiBalance = useTokenBalance(account ?? undefined, LegacyDEI_TOKEN ?? undefined)
   const hasLegacyDei = !!Number(LegacyDeiBalance?.toSignificant(6))
@@ -387,23 +396,17 @@ export default function Slider() {
     return (
       <Wrapper isOpen={isOpen}>
         <SidebarContent isOpen={isOpen}>
-          <DefaultWrapper>
+          <DefaultWrapper isOpen={isOpen}>
             <NavLogo2 isOpen={isOpen} />
-            {!isOpen ? (
-              <MenuHideButton onClick={() => setOpen((prev) => !prev)}>
+            {isOpen && (
+              <MenuHideButton onClick={toggleSideMenu}>
                 <IconWrapper>
                   <ChevronLeft color="#6F7074"></ChevronLeft>
                 </IconWrapper>
               </MenuHideButton>
-            ) : (
-              <MenuOpenButton onClick={() => setOpen((prev) => !prev)}>
-                <IconWrapper>
-                  <ChevronRight color="#6F7074"></ChevronRight>
-                </IconWrapper>
-              </MenuOpenButton>
             )}
           </DefaultWrapper>
-          <Column style={{ position: 'relative', top: '62px' }}>
+          <Column style={{ position: 'relative', top: '62px', height: '100%' }}>
             <Routes>
               {ROUTES.map((route, index) => (
                 <SimpleLinkWrapper
@@ -543,12 +546,10 @@ export default function Slider() {
                 )}
               </PricesWrap>
             </NavLinkContainer>
-          </Column>
 
-          <NavLinkContainer isOpen={isOpen} style={{ flexDirection: 'column', padding: '12px' }}>
-            <Column style={{ width: '100%' }}>
+            <MenuItemLinkContainer style={{ flexDirection: 'column', padding: '12px', marginTop: 'auto' }}>
               {isOpen && <Separator />}
-              <Data>
+              <Data isOpen={isOpen}>
                 <CustomLink href={'https://docs.deus.finance'} passHref>
                   <DataItems>
                     Bug Bounty
@@ -568,14 +569,32 @@ export default function Slider() {
                   </DataItems>
                 </CustomLink>
               </Data>
+              <Separator />
 
-              <Separator style={{ marginBlock: '32px', height: 1, padding: '0px 24px' }} />
-
-              <Column style={{ width: '100%' }}>
-                <Footer isOpen={isOpen} />
-              </Column>
-            </Column>
-          </NavLinkContainer>
+              <FooterWrapper isOpen={isOpen}>
+                <ExternalLink href="https://discord.gg/xTTaBBAMgG">
+                  <ImageWithFallback src={Discord} alt="Discord Logo" width={getImageSize()} height={getImageSize()} />
+                </ExternalLink>
+                <ExternalLink href="https://t.me/deusfinance">
+                  <ImageWithFallback
+                    src={Telegram}
+                    alt="Telegram Logo"
+                    width={getImageSize()}
+                    height={getImageSize()}
+                  />
+                </ExternalLink>
+                <ExternalLink href="https://twitter.com/DeusDao">
+                  <ImageWithFallback src={Twitter} alt="Twitter Logo" width={getImageSize()} height={getImageSize()} />
+                </ExternalLink>
+                <ExternalLink href="https://lafayettetabor.medium.com">
+                  <ImageWithFallback src={Medium} alt="Medium Logo" width={getImageSize()} height={getImageSize()} />
+                </ExternalLink>
+                <ExternalLink href="http://github.com/deusfinance">
+                  <ImageWithFallback src={Github} alt="Github Logo" width={getImageSize()} height={getImageSize()} />
+                </ExternalLink>
+              </FooterWrapper>
+            </MenuItemLinkContainer>
+          </Column>
         </SidebarContent>
       </Wrapper>
     )

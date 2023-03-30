@@ -91,7 +91,7 @@ const StakedLPRewardButton = styled(BaseButton)`
   }
 `
 const UnStakedContainer = styled(Wrapper)`
-  background-color: ${({ theme }) => theme.bg2};
+  background-color: ${({ theme }) => theme.bg1};
   border-bottom-right-radius: 12px;
   border-bottom-left-radius: 12px;
   padding-block: 8px;

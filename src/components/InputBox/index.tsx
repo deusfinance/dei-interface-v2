@@ -172,7 +172,7 @@ export default function InputBox({
   return (
     <Wrapper>
       <TopWrapper>
-        <TokenWrapper>
+        <TokenWrapper onClick={onTokenSelect ? () => onTokenSelect() : undefined}>
           <ImageWithFallback
             src={logo}
             width={getImageSize()}
@@ -180,10 +180,7 @@ export default function InputBox({
             alt={`${currency?.symbol} Logo`}
             round
           />
-          <CurrencySymbol
-            onClick={onTokenSelect ? () => onTokenSelect() : undefined}
-            active={onTokenSelect ? true : false}
-          >
+          <CurrencySymbol active={onTokenSelect ? true : false}>
             {currency?.symbol}
             {onTokenSelect ? <ChevronDown /> : null}
           </CurrencySymbol>
