@@ -146,7 +146,7 @@ export default function DefaultReviewModal({
             <SummaryWrap>{summary}</SummaryWrap>
           </RowCenter>
 
-          <SeparatorLight />
+          <Separator />
 
           <RowCenter>
             <ConfirmWrap>Confirm this transaction in your wallet</ConfirmWrap>

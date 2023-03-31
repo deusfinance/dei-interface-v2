@@ -52,7 +52,7 @@ const Name = styled.div`
   font-family: 'Inter';
   font-weight: 400;
   font-size: 14px;
-  color: ${({ theme }) => theme.text1};
+  color: ${({ theme }) => theme.text2};
   white-space: nowrap;
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
@@ -66,12 +66,7 @@ const Value = styled.div<{ isLink?: boolean; isDeus?: boolean }>`
   font-weight: 500;
   font-size: 14px;
   width: fit-content;
-  color: ${({ theme }) => theme.yellow4};
-  ${({ theme, isDeus }) =>
-    isDeus &&
-    `
-    color: ${theme.deusBlue};
-  `}
+  color: ${({ theme }) => theme.text1};
   margin-top: 10px;
   cursor: ${({ isLink }) => (isLink ? 'pointer' : 'auto')};
   & > * {

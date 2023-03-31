@@ -146,7 +146,7 @@ function colors(themeName: SupportedThemes): Colors {
       black,
 
       // text
-      text1: '#EBEBEC',
+      text1: '#CCCCCC',
       text2: '#6F7380',
       text3: '#55575F',
       text4: '#B2B9D2',

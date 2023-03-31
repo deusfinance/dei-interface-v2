@@ -8,6 +8,7 @@ const Wrapper = styled(TopTableau)`
   background: ${({ theme }) => theme.bg1};
 `
 const Title = styled(TableauTitle)`
+  font-size: 24px;
   display: flex;
   font-family: 'IBM Plex Mono';
   margin-left: 24px;

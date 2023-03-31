@@ -14,7 +14,7 @@ const MainModal = styled(Modal)`
   justify-content: center;
   flex-direction: column;
   border: 1px solid ${({ theme }) => theme.border2};
-  border-radius: 24px;
+  border-radius: 16px;
 
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     width: 90%;
@@ -26,7 +26,6 @@ const AwaitingWrapper = styled.div`
   display: flex;
   flex-flow: column nowrap;
   justify-content: center;
-  padding: 1.5rem 0;
 `
 
 const ImageWrap = styled.div`
@@ -45,7 +44,7 @@ const ConfirmButton = styled(PrimaryButton)`
   color: ${({ theme }) => theme.bg0};
   height: 62px;
   max-width: 90%;
-  margin: 10px auto;
+  margin: 0px 0px 20px 0px;
   border-radius: 12px;
 `
 
