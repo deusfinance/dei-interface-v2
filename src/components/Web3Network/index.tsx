@@ -17,7 +17,7 @@ const Button = styled(NavButton)`
   &:focus,
   &:hover {
     cursor: default;
-    border: 1px solid ${({ theme }) => theme.text3};
+    border: 1px solid ${({ theme }) => theme.border2};
   }
 
   ${({ theme }) => theme.mediaWidth.upToMedium`

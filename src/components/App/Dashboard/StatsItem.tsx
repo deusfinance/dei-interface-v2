@@ -4,48 +4,22 @@ import { ToolTip } from 'components/ToolTip'
 import styled from 'styled-components'
 
 const Item = styled.div`
+  margin-top: 20px;
   display: inline-block;
   white-space: nowrap;
   width: 33%;
-  min-width: 180px;
+  min-width: 200px;
+  row-gap: 32px;
+  column-gap: 32px;
   path {
     fill: ${({ theme }) => theme.text2};
   }
   position: relative;
-  &:after {
-    content: '';
-    position: absolute;
-    display: flex;
-    height: 100%;
-    width: 1px;
-    border-right: 1px solid ${({ theme }) => theme.border2};
-    right: 24px;
-    top: 0;
-  }
-  &:last-child:after {
-    content: '';
-    border-right: none !important;
-  }
   ${({ theme }) => theme.mediaWidth.upToMedium`
   min-width: 130px;
     padding:0 12px;
     width: 30%;
-    &:nth-child(3n){
-      border-right:none !important;
-    }
   `};
-  ${({ theme }) => theme.mediaWidth.upToSmall`
-  &:nth-child(3n){
-    border-right: none !important;
-    &:after {
-    content: '';
-    border-right: none !important
-  }
-  }
-  `}
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    &:after{border-right:none;}
-  `}
 `
 
 const Name = styled.div`

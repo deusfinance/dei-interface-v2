@@ -146,9 +146,9 @@ function colors(themeName: SupportedThemes): Colors {
       black,
 
       // text
-      text1: '#CCCCCC',
+      text1: '#EBEBEC',
       text2: '#6F7380',
-      text3: '#55575F',
+      text3: '#CCCCCC',
       text4: '#B2B9D2',
 
       // backgrounds / greys
@@ -165,7 +165,7 @@ function colors(themeName: SupportedThemes): Colors {
       // borders
       border1: '#1B1B1B',
       border2: '#353639',
-      border3: '#2E2F33',
+      border3: '#55575F',
 
       //specialty colors
       specialBG1: 'linear-gradient(90deg, #0BADF4 0%, #30EFE4 93.4%)',

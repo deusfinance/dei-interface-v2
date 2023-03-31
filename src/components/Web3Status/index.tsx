@@ -23,6 +23,8 @@ const ConnectButton = styled(PrimaryButton)`
 `
 
 const ConnectedButton = styled(NavButton)`
+  background: ${({ theme }) => theme.bg1};
+  border: 1px solid ${({ theme }) => theme.border3};
   & > * {
     &:first-child {
       margin-right: 5px;
