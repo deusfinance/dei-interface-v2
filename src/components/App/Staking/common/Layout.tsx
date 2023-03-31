@@ -21,12 +21,6 @@ export const TableHeader = styled(HStack)`
   font-size: 1rem;
   color: ${({ theme }) => theme.text1};
   justify-content: space-between;
-  & > p:first-of-type {
-    font-weight: medium;
-    background: -webkit-linear-gradient(90deg, #0badf4 0%, #30efe4 93.4%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
   & > p {
     color: ${({ theme }) => theme.text1};
   }

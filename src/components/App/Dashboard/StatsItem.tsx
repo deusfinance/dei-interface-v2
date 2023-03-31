@@ -60,12 +60,18 @@ const Name = styled.div`
   `};
 `
 
-const Value = styled.div<{ isLink?: boolean }>`
+const Value = styled.div<{ isLink?: boolean; isDeus?: boolean }>`
+  font-family: 'IBM Plex Mono';
   display: flex;
   font-weight: 500;
   font-size: 14px;
   width: fit-content;
   color: ${({ theme }) => theme.yellow4};
+  ${({ theme, isDeus }) =>
+    isDeus &&
+    `
+    color: ${theme.deusBlue};
+  `}
   margin-top: 10px;
   cursor: ${({ isLink }) => (isLink ? 'pointer' : 'auto')};
   & > * {
@@ -90,6 +96,7 @@ export default function StatsItem({
   onClick,
   hasToolTip,
   toolTipInfo,
+  isDeus,
 }: {
   name: string
   value: string
@@ -97,6 +104,7 @@ export default function StatsItem({
   onClick?: () => void
   hasToolTip?: boolean
   toolTipInfo?: string
+  isDeus?: boolean
 }) {
   const isLink = !!href
   return (
@@ -104,18 +112,18 @@ export default function StatsItem({
       <Name>{name}</Name>
       {isLink ? (
         <ExternalLink href={href} passHref>
-          <Value isLink>
+          <Value isLink isDeus={isDeus}>
             {value}
             <LinkIconLogo style={{ marginTop: '6px' }} />
           </Value>
         </ExternalLink>
       ) : !!onClick ? (
-        <Value isLink>
+        <Value isLink isDeus={isDeus}>
           {value}
           <LinkIconLogo style={{ marginTop: '6px' }} />
         </Value>
       ) : (
-        <Value data-for="stat-id" data-tip={hasToolTip ? toolTipInfo : null}>
+        <Value data-for="stat-id" data-tip={hasToolTip ? toolTipInfo : null} isDeus={isDeus}>
           {value}
           {hasToolTip && (
             <span style={{ marginTop: '1px' }}>

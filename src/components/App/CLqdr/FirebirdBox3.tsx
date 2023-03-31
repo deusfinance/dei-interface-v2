@@ -6,7 +6,7 @@ import ImageWithFallback from 'components/ImageWithFallback'
 import FIREBIRD_ICON from '/public/static/images/pages/clqdr/ic_firebird.svg'
 import { ExternalLink } from 'components/Link'
 import { RowEnd } from 'components/Row'
-import { Wrapper, BuyButtonWrapper, BuyButton } from '.'
+import { Wrapper, BuyButtonWrapper, BuyButton, ButtonText } from '.'
 
 const BuyWrapper = styled(RowEnd)`
   margin-top: 2px;
@@ -69,7 +69,9 @@ export default function FirebirdBox3() {
               href={`https://app.firebird.finance/swap?inputCurrency=FTM&outputCurrency=${LQDR_ADDRESS[250]}&net=250`}
               style={{ textDecoration: 'none' }}
             >
-              <BuyButton>Buy LQDR</BuyButton>
+              <BuyButton>
+                <ButtonText>Buy LQDR</ButtonText>
+              </BuyButton>
             </ExternalLink>
           </ButtonWrapper>
         </BuyWrapper>

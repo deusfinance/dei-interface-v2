@@ -110,7 +110,7 @@ export const GradientButtonWrap = styled(PrimaryButton)`
 
 export const GradientButtonRow = styled(RowCenter)`
   background: ${({ theme }) => theme.bg2};
-  border-radius: 8px;
+  border-radius: 12px;
   height: 100%;
   width: 100%;
   white-space: nowrap;
@@ -123,7 +123,7 @@ export const GradientButtonText = styled.span`
   font-weight: 600;
   font-size: 20px;
   line-height: 24px;
-  background: -webkit-linear-gradient(0deg, #e29d52 -10.26%, #de4a7b 80%);
+  background: -webkit-linear-gradient(90deg, #0badf4 0%, #30efe4 93.4%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 `

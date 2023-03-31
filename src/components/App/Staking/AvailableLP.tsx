@@ -34,15 +34,7 @@ const AvailableLPHeader = styled(Wrapper)`
   border-top-left-radius: 12px;
   background-color: ${({ theme }) => theme.bg1};
   cursor: pointer;
-  & > p:first-of-type {
-    font-weight: medium;
-    background: -webkit-linear-gradient(90deg, #0badf4 0%, #30efe4 93.4%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  & > p {
-    color: ${({ theme }) => theme.text1};
-  }
+  color: ${({ theme }) => theme.text1};
 `
 const AvailableLPContent = styled(Wrapper)`
   border-bottom-right-radius: 12px;

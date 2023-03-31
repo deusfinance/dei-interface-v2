@@ -63,6 +63,7 @@ export interface Colors {
   blue2: Color
   deusBlue: Color
   darkPink: Color
+  orange: Color
   darkOrange: Color
 
   error: Color
@@ -73,6 +74,10 @@ export interface Colors {
   deiColor: Color
   deiLegacyColor: Color
   cLqdrColor: Color
+  clqdrBlueColor: Color
+  lqdrColor: Color
+  clqdChartPrimaryColor: Color
+  clqdChartSecondaryColor: Color
   deiPrimaryColor: Color
   deiSecondaryColor: Color
 }

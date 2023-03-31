@@ -42,6 +42,7 @@ const SummaryWrap = styled.div`
 `
 
 const ConfirmButton = styled(PrimaryButton)`
+  color: ${({ theme }) => theme.bg0};
   height: 62px;
   max-width: 90%;
   margin: 10px auto;
@@ -52,6 +53,11 @@ const WarningText = styled.span`
   font-family: 'Inter';
   font-weight: 500;
   color: ${({ theme }) => theme.warning};
+`
+
+const SeparatorLight = styled.div`
+  height: 2px;
+  background: ${({ theme }) => theme.bg2};
 `
 
 export default function WarningModal({
@@ -66,6 +72,7 @@ export default function WarningModal({
   return (
     <MainModal isOpen={isOpen} onBackgroundClick={() => toggleModal(false)} onEscapeKeydown={() => toggleModal(false)}>
       <ModalHeader onClose={() => toggleModal(false)} title={'Confirmation'} border={false} />
+      <SeparatorLight />
       <AwaitingWrapper>
         <ImageWrap>
           <Image src={WARNING} height={'90px'} alt="nft" />
