@@ -14,7 +14,7 @@ const RemainingWrap = styled(RowCenter)`
   position: relative;
   overflow: hidden;
   border-radius: 8px;
-  background: ${({ theme }) => theme.deusColor};
+  background: linear-gradient(90deg, #24576d 0%, #144e4a 93.4%);
   color: ${({ theme }) => theme.bg0};
   height: 40px;
   font-size: 12px;

@@ -10,7 +10,6 @@ import { useRouter } from 'next/router'
 
 const ClaimBar = styled.div<{ width: string }>`
   border-radius: 8px;
-  border: 1px solid ${({ theme }) => theme.text3};
   position: relative;
   overflow: hidden;
   height: 36px;
