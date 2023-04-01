@@ -27,7 +27,6 @@ import {
   ConnectWallet,
   GradientButton,
 } from 'components/App/StableCoin'
-import InputBoxInDollar from 'components/App/Redemption/InputBoxInDollar'
 import InfoItem from 'components/App/StableCoin/InfoItem'
 import Tableau from 'components/App/StableCoin/Tableau'
 import WarningModal from 'components/ReviewModal/Warning'
@@ -37,54 +36,27 @@ import Claim from 'components/App/Redemption/Claim'
 import Column from 'components/Column'
 
 const MainContainer = styled(Container)`
+  padding: 0px 12px;
   margin-top: 68px;
 `
-const ActionButton = styled.div`
-  width: 100%;
-  & > div {
-    background: linear-gradient(90deg, #e0974c 0%, #c93f6f 100%);
-    &:hover {
-      background: linear-gradient(270deg, #e0974c 0%, #c93f6f 100%);
 
-      & > div {
-        background: linear-gradient(270deg, #e0974c 0%, #c93f6f 100%);
-      }
-    }
-    & > div {
-      background: linear-gradient(90deg, #e0974c 0%, #c93f6f 100%);
-      & > span {
-        color: white;
-        background: transparent;
-        -webkit-text-fill-color: white;
-      }
-    }
-  }
-`
 const RedemptionWrapper = styled(InputWrapper)`
-  margin-top: 2px;
   background-color: ${({ theme }) => theme.bg1};
-  & > * {
-    &:nth-child(3) {
-      border-bottom-left-radius: 0;
-      border-bottom-right-radius: 0;
-    }
-    &:nth-child(5) {
-      border-top-left-radius: 0;
-      border-top-right-radius: 0;
-    }
-  }
 `
 
-const PlusIcon = styled(Plus)`
-  margin: -12.5px auto;
-  margin-left: 57px;
-  z-index: 1000;
-  padding: 3px;
-  border: 1px solid ${({ theme }) => theme.bg4};
-  border-radius: 4px;
-  background-color: ${({ theme }) => theme.bg4};
-  color: ${({ theme }) => theme.text2};
+const ActionButtonContainer = styled(Column)`
+  margin: 12px 0px 20px 0px;
+  row-gap: 8px;
+  width: 100%;
 `
+const PlusWrapper = styled.div`
+  border-radius: 10px;
+  padding: 12px 10px;
+  background: ${({ theme }) => theme.bg7};
+  margin: -30px;
+  z-index: 1;
+`
+
 const TableauContainer = styled(RowCenter)`
   align-items: center;
   width: 100%;
@@ -92,9 +64,6 @@ const TableauContainer = styled(RowCenter)`
   border-radius: 12px;
   & > div {
     background-color: ${({ theme }) => theme.bg1};
-  }
-  span {
-    font-size: 20px;
   }
 `
 const ArrowContainer = styled(RowCenter)`
@@ -302,10 +271,16 @@ export default function Redemption() {
                   onChange={(value: string) => console.log(value)}
                   disabled={true}
                 />
-                <PlusIcon size={'24px'} />
-                <InputBoxInDollar currency={deusCurrency} value={amountOut2} />
-                <div style={{ marginTop: '20px' }}></div>
-                <ActionButton>{getActionButton()}</ActionButton>
+                <PlusWrapper>
+                  <Plus size={'24px'} color="#83858E" />
+                </PlusWrapper>
+                <InputBox
+                  currency={deusCurrency}
+                  value={amountOut2 ? '$' + amountOut2 + ' in DEUS' : ''}
+                  onChange={(value: string) => console.log(value)}
+                  disabled={true}
+                />
+                <ActionButtonContainer>{getActionButton()}</ActionButtonContainer>
               </RedemptionWrapper>
               <BottomWrapper>
                 <InfoItem name={'Redemption Fee'} value={redemptionFee + '%'} />

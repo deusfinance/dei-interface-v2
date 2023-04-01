@@ -27,9 +27,14 @@ export const InputWrapper = styled(Container)`
 `
 
 export const BottomWrapper = styled(Container)`
-  padding: 20px 15px;
-  padding-top: 10px;
-  width: 100%;
+  font-family: 'IBM Plex Mono';
+  gap: 12px;
+  margin-top: 2px;
+  padding: 20px 16px;
+  & > * {
+    font-weight: 500;
+  }
+
   background: ${({ theme }) => theme.bg3};
   border-bottom-right-radius: 12px;
   border-bottom-left-radius: 12px;
@@ -51,8 +56,11 @@ export const TopTableau = styled.div`
 `
 
 export const TableauTitle = styled.span`
+  display: flex;
+  margin-left: 24px;
+  font-family: 'IBM Plex Mono';
   font-weight: 600;
-  font-size: 28px;
+  font-size: 24px;
   text-align: center;
   position: absolute;
   left: 0;
@@ -67,8 +75,6 @@ export const TableauTitle = styled.span`
 export const InfoWrapper = styled(RowBetween)`
   white-space: nowrap;
   font-size: 0.75rem;
-  margin-top: 6px;
-  height: 30px;
 `
 
 export const Title = styled.div`
@@ -100,7 +106,7 @@ export const MainButton = styled(PrimaryButton)`
 `
 
 export const GradientButtonWrap = styled(PrimaryButton)`
-  background: ${({ theme }) => theme.specialBG1};
+  background: ${({ theme }) => theme.deusColor};
   border-radius: 12px;
   padding: 2px;
   width: 100%;
@@ -123,6 +129,7 @@ export const GradientButtonText = styled.span`
   font-weight: 600;
   font-size: 20px;
   line-height: 24px;
+  color: ${({ theme }) => theme.bg0};
   background: -webkit-linear-gradient(90deg, #0badf4 0%, #30efe4 93.4%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;

@@ -39,6 +39,7 @@ import { useWeb3NavbarOption } from 'state/web3navbar/hooks'
 import Column from 'components/Column'
 
 const MainContainer = styled(Container)`
+  padding: 0px 12px;
   margin-top: 68px;
 `
 const PlusIcon = styled(Plus)`
@@ -84,18 +85,11 @@ const TableauContainer = styled(RowCenter)`
   & > div {
     background-color: ${({ theme }) => theme.bg1};
   }
-  span {
-    font-size: 20px;
-  }
 `
 
 const InputContainer = styled.div`
   width: 100%;
-  margin-top: 2px;
-  & > div:first-of-type {
-    padding: 22px 16px 24px;
-    background-color: ${({ theme }) => theme.bg1};
-  }
+  background-color: ${({ theme }) => theme.bg1};
 `
 
 const ArrowContainer = styled(RowCenter)`
@@ -114,34 +108,23 @@ const ArrowContainer = styled(RowCenter)`
   }
 `
 const BottomContainer = styled(BottomWrapper)`
+  font-family: 'IBM Plex Mono';
+  gap: 12px;
   margin-top: 2px;
   padding: 20px 16px;
   & > * {
     font-weight: 500;
   }
 `
-const ActionButton = styled.div`
+const ActionButton = styled(MainButton)`
   width: 100%;
-  & > div {
-    background: linear-gradient(90deg, #e0974c 0%, #c93f6f 100%);
-    &:hover {
-      background: linear-gradient(270deg, #e0974c 0%, #c93f6f 100%);
-
-      & > div {
-        background: linear-gradient(270deg, #e0974c 0%, #c93f6f 100%);
-      }
-    }
-    & > div {
-      background: linear-gradient(90deg, #e0974c 0%, #c93f6f 100%);
-      & > span {
-        color: white;
-        background: transparent;
-        -webkit-text-fill-color: white;
-      }
-    }
+  background: ${({ theme }) => theme.deusColor};
+  &:hover {
+    background: ${({ theme }) => theme.primary7};
   }
 `
 const ActionButtonContainer = styled(Column)`
+  margin: 12px 0px 20px 0px;
   row-gap: 8px;
   width: 100%;
 `
@@ -313,20 +296,20 @@ export default function Mint() {
     if (!isSupportedChainId || !account) return null
     else if (awaitingApproveConfirmation) {
       return (
-        <MainButton active>
+        <ActionButton active>
           Awaiting Confirmation <DotFlashing />
-        </MainButton>
+        </ActionButton>
       )
     } else if (showApproveLoader1 || showApproveLoader2) {
       return (
-        <MainButton active>
+        <ActionButton active>
           Approving <DotFlashing />
-        </MainButton>
+        </ActionButton>
       )
     } else if (showApprove1)
-      return <MainButton onClick={() => handleApprove('1')}>Allow us to spend {token1Currency?.symbol}</MainButton>
+      return <ActionButton onClick={() => handleApprove('1')}>Allow us to spend {token1Currency?.symbol}</ActionButton>
     else if (showApprove2)
-      return <MainButton onClick={() => handleApprove('2')}>Allow us to spend {token2Currency?.symbol}</MainButton>
+      return <ActionButton onClick={() => handleApprove('2')}>Allow us to spend {token2Currency?.symbol}</ActionButton>
 
     return null
   }
@@ -335,30 +318,30 @@ export default function Mint() {
     if (!chainId || !account) return <ConnectWallet />
     else if (showApprove1 || showApprove2) return null
     else if (insufficientBalance1)
-      return <MainButton disabled>Insufficient {token1Currency?.symbol} Balance</MainButton>
+      return <ActionButton disabled>Insufficient {token1Currency?.symbol} Balance</ActionButton>
     else if (insufficientBalance2)
-      return <MainButton disabled>Insufficient {token2Currency?.symbol} Balance</MainButton>
+      return <ActionButton disabled>Insufficient {token2Currency?.symbol} Balance</ActionButton>
     else if (mintPaused) {
-      return <MainButton disabled>Mint Paused</MainButton>
+      return <ActionButton disabled>Mint Paused</ActionButton>
     } else if (awaitingUpdateConfirmation) {
       return <GradientButton title={'Updating Oracle'} awaiting />
     } else if (expiredPrice) {
       return <GradientButton onClick={handleUpdatePrice} title={'Update Oracle'} />
     } else if (awaitingMintConfirmation) {
       return (
-        <MainButton>
+        <ActionButton>
           Minting {outputTokenCurrency?.symbol} <DotFlashing />
-        </MainButton>
+        </ActionButton>
       )
     }
     return (
-      <MainButton
+      <ActionButton
         onClick={() => {
           if (amountOut !== '0' && amountOut !== '' && amountOut !== '0.') toggleReviewModal(true)
         }}
       >
         Mint
-      </MainButton>
+      </ActionButton>
     )
   }
 
@@ -405,10 +388,9 @@ export default function Mint() {
                 onChange={(value: string) => onUserOutput(value)}
                 disabled={expiredPrice}
               />
-              <div style={{ marginTop: '30px' }}></div>
               <ActionButtonContainer>
-                <ActionButton>{getApproveButton()}</ActionButton>
-                <ActionButton>{getActionButton()}</ActionButton>
+                {getApproveButton()}
+                {getActionButton()}
               </ActionButtonContainer>
             </InputWrapper>
           </InputContainer>

@@ -41,6 +41,7 @@ const SummaryWrap = styled.div`
 `
 
 const ConfirmButton = styled(PrimaryButton)`
+  font-family: 'IBM Plex Mono';
   color: ${({ theme }) => theme.bg0};
   height: 62px;
   max-width: 90%;

@@ -9,8 +9,8 @@ import { RowCenter } from 'components/Row'
 import { PrimaryButton } from 'components/Button'
 import InputBox from 'components/InputBox'
 import ModalInfo from './ModalInfo'
-import InputBoxInDollar from 'components/App/Redemption/InputBoxInDollar'
 import LottieDeus from 'components/Icons/LottieDeus'
+import { Plus } from 'react-feather'
 
 const MainModal = styled(Modal)`
   display: flex;
@@ -61,7 +61,7 @@ const ConfirmWrap = styled(SummaryWrap)`
 `
 
 const TokenResultWrapper = styled(Column)`
-  gap: 8px;
+  gap: 12px;
   padding-top: 1rem;
 `
 
@@ -80,12 +80,21 @@ const Data = styled(RowCenter)`
   `};
 `
 const ConfirmButton = styled(PrimaryButton)`
+  font-family: 'IBM Plex Mono';
   color: ${({ theme }) => theme.bg0};
   height: 62px;
   max-width: 90%;
   margin: 0 auto;
   margin-bottom: 20px;
   border-radius: 12px;
+`
+const PlusWrapper = styled.div`
+  border-radius: 10px;
+  padding: 12px 10px;
+  background: ${({ theme }) => theme.bg7};
+  margin: -30px auto;
+  z-index: 1090;
+  width: fit-content;
 `
 
 const Separator = styled.div`
@@ -169,13 +178,24 @@ export default function DefaultReviewModal({
               )
             )}
 
-            <ArrowDownDark style={{ margin: '8px auto' }} />
+            <ArrowDownDark style={{ margin: '0px auto' }} />
 
             {outputTokens.map((token, index) =>
               amountsOut[index] === '0' ? (
                 <div style={{ display: 'none' }} key={index}></div>
               ) : token.name === 'DEUS' ? (
-                <InputBoxInDollar key={index} currency={token} value={amountsOut[index]} />
+                <>
+                  <PlusWrapper>
+                    <Plus size={'24px'} color="#83858E" />
+                  </PlusWrapper>
+                  <InputBox
+                    key={index}
+                    currency={token}
+                    value={amountsOut[index] ? '$' + amountsOut[index] + ' in DEUS' : ''}
+                    onChange={() => console.log()}
+                    disabled={true}
+                  />
+                </>
               ) : (
                 <InputBox
                   key={index}

@@ -14,8 +14,8 @@ const RemainingWrap = styled(RowCenter)`
   position: relative;
   overflow: hidden;
   border-radius: 8px;
-  background: ${({ theme }) => theme.primary5};
-  color: ${({ theme }) => theme.white};
+  background: ${({ theme }) => theme.deusColor};
+  color: ${({ theme }) => theme.bg0};
   height: 40px;
   font-size: 12px;
   cursor: progress;
@@ -40,6 +40,7 @@ const RemainingBlock = styled.div<{ width?: string }>`
 
 const Button = styled(PrimaryButton)`
   font-family: 'Inter';
+  color: ${({ theme }) => theme.bg0};
   font-weight: 700;
   height: 45px;
   padding: 0;

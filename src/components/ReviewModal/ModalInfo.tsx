@@ -7,16 +7,18 @@ const Wrapper = styled.div`
   gap: 20px;
   flex-direction: column;
   justify-content: center;
-  margin: 10px 15px;
+  margin: 12px 8px;
 `
 
 const Title = styled(RowStart)`
+  font-family: 'IBM Plex Mono';
   font-size: 12px;
   line-height: 16px;
   color: ${({ theme }) => theme.text2};
 `
 
 const Value = styled(RowEnd)`
+  font-family: 'IBM Plex Mono';
   font-size: 12px;
   line-height: 16px;
   color: ${({ theme }) => theme.text1};
