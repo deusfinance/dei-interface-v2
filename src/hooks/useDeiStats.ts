@@ -11,7 +11,7 @@ import { makeHttpRequest } from 'utils/http'
 
 const DEI_RESERVES_API = 'https://info.deus.finance/info/dei/reserves'
 const DEI_RESERVES_DETAILED_API = 'https://info.deus.finance/info/dei/reserves/detail'
-const DEI_CIRC_SUPPLY_API = 'https://info.deus.finance/info/dei/circ-supply'
+const DEI_CIRC_SUPPLY_API = 'https://info.deus.finance/info/dei/circulating-supply'
 
 export function useDeiStats(): {
   totalSupply: number
@@ -142,8 +142,12 @@ export function useDeiStats(): {
     }
     const fetchDetailedReservesStats = async () => {
       const response = await makeHttpRequest(DEI_RESERVES_DETAILED_API)
-      setUsdcReserves1(parseFloat(response[USDCReserves1[SupportedChainId.FANTOM]]['fantom'][0]?.balance ?? 0))
-      setUsdcPoolReserves(parseFloat(response[CollateralPool[SupportedChainId.FANTOM]]['fantom'][0]?.balance ?? 0))
+      setUsdcReserves1(
+        parseFloat(response['wallets'][USDCReserves1[SupportedChainId.FANTOM]]['fantom'][0]?.balance ?? 0)
+      )
+      setUsdcPoolReserves(
+        parseFloat(response['wallets'][CollateralPool[SupportedChainId.FANTOM]]['fantom'][0]?.balance ?? 0)
+      )
     }
     fetchReservesStats()
     fetchCirculatingSupplyStats()
