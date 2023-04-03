@@ -6,12 +6,12 @@ import { SupportedChainId } from 'constants/chains'
 import { toBN } from 'utils/numbers'
 
 import { CollateralPool } from '../constants/addresses'
-import { useGetCollateralRatios } from 'hooks/useRedemptionPage'
 import { makeHttpRequest } from 'utils/http'
 
 const DEI_RESERVES_API = 'https://info.deus.finance/info/dei/reserves'
 const DEI_RESERVES_DETAILED_API = 'https://info.deus.finance/info/dei/reserves/detail'
 const DEI_CIRC_SUPPLY_API = 'https://info.deus.finance/info/dei/circulating-supply'
+const DEI_STATS_API = 'https://info.deus.finance/info/dei/getDeiStats'
 
 export function useDeiStats(): {
   totalSupply: number
@@ -35,6 +35,7 @@ export function useDeiStats(): {
   const [totalSupply, setTotalSupply] = useState(0)
   const [usdcReserves1, setUsdcReserves1] = useState(0)
   const [usdcPoolReserves, setUsdcPoolReserves] = useState(0)
+  const [seigniorage, setSeigniorage] = useState(0)
 
   // const anyDEIcall = useMemo(
   //   () => [
@@ -125,8 +126,8 @@ export function useDeiStats(): {
     return circulatingSupply > 0 ? (totalUSDCReserves / circulatingSupply) * 100 : 0
   }, [totalUSDCReserves, circulatingSupply])
 
-  const { mintCollateralRatio, redeemCollateralRatio } = useGetCollateralRatios()
-  const seigniorage = Number(mintCollateralRatio) - Number(redeemCollateralRatio)
+  // const { mintCollateralRatio, redeemCollateralRatio } = useGetCollateralRatios()
+  // const seigniorage = Number(mintCollateralRatio) - Number(redeemCollateralRatio)
 
   useEffect(() => {
     const fetchReservesStats = async () => {
@@ -149,6 +150,11 @@ export function useDeiStats(): {
         parseFloat(response['wallets'][CollateralPool[SupportedChainId.FANTOM]]['fantom'][0]?.balance ?? 0)
       )
     }
+    const fetchDeiStats = async () => {
+      const response = await makeHttpRequest(DEI_STATS_API)
+      setSeigniorage(parseFloat(response['deiSeigniorageRatio'] ?? 0))
+    }
+    fetchDeiStats()
     fetchReservesStats()
     fetchCirculatingSupplyStats()
     fetchDetailedReservesStats()
