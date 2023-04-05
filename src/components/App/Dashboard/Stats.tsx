@@ -19,6 +19,7 @@ import { ToolTip } from 'components/ToolTip'
 import { ExplorerDataType, getExplorerLink } from 'utils/explorers'
 import MultipleChart from './MultipleChart'
 import { ChainInfo } from 'constants/chainInfo'
+import SinglePieChart from './PieChart'
 
 const Wrapper = styled(RowBetween)`
   background: ${({ theme }) => theme.bg0};
@@ -243,6 +244,7 @@ export default function Stats() {
     usdcPoolReserves,
     multiSigReserves,
     seigniorage,
+    reservesTokenBalances,
   } = useDeiStats()
 
   const deiPrice = useDeiPrice()
@@ -275,6 +277,16 @@ export default function Stats() {
   function getModalHeader() {
     return <ModalHeader title={modalId} onClose={() => setToggleDashboardModal(false)} />
   }
+
+  const formattedReservesTokenBalances = useMemo(() => {
+    const data: any[] = []
+
+    Object.entries(reservesTokenBalances).forEach((entry) => {
+      const [key, value] = entry
+      data.push({ name: key, value })
+    })
+    return data.sort((a, b) => a.value - b.value)
+  }, [reservesTokenBalances])
 
   function getModalBody() {
     switch (modalId) {
@@ -659,56 +671,55 @@ export default function Stats() {
               secondaryID="deiSupply"
             />
           </VerticalWrapper>
-          <StatsWrapper>
-            <DeusTitle>xDEUS Stats</DeusTitle>
-            <Info>
-              <StatsItem name="xDEUS Price" value={formatDollarAmount(xDeusPrice)} />
-              <StatsItem
-                name="Circulating Supply"
-                value={formatAmount(xDeusCirculatingSupply)}
-                onClick={() => handleDashboardModal(DASHBOARD_STATS_TITLES.XDEUS_CIRCULATING_SUPPLY)}
-                hasOnClick={true}
-              />
-              <StatsItem
-                name="Market Cap"
-                value={formatDollarAmount(xDeusMarketCap)}
-                hasToolTip={true}
-                toolTipInfo={'Market Cap = Circulating Supply * Price'}
-              />
-            </Info>
-          </StatsWrapper>
-          <StatsWrapper>
-            <DeusTitle>xDEUS and DEUS Combined Stats</DeusTitle>
-            <Info>
-              <StatsItem
-                name="Combined Supply"
-                value={formatAmount(combinedSupply, 2, undefined, true)}
-                hasToolTip={true}
-                toolTipInfo={'Combined Supply = DEUS Circulating Supply + xDEUS Circulating Supply'}
-              />
-              <StatsItem
-                name="Combined Market Cap"
-                value={formatAmount(combinedMarketCap)}
-                hasToolTip={true}
-                toolTipInfo={'Combined Market Cap = DEUS Market Cap + xDEUS Market Cap'}
-              />
-              <StatsItem
-                name="Projected Combined Supply in 1yr"
-                value={formatAmount(combinedProjectedSupply, 2, undefined, true)}
-                hasToolTip={true}
-                toolTipInfo={'Projected Supply = Combined Supply * (1 + Inflation Rate)'}
-              />
-              <StatsItem name="Inflation Rate" value={formatAmount(inflationRate) + '%'} />
-              <StatsItem name="Combined emissions per week" value={formatAmount(emissionPerWeek)} />
-            </Info>
-          </StatsWrapper>
+          <VerticalWrapper>
+            <HorizontalWrapper>
+              <StatsWrapper>
+                <DeusTitle>xDEUS Stats</DeusTitle>
+                <Info>
+                  <StatsItem name="xDEUS Price" value={formatDollarAmount(xDeusPrice)} />
+                  <StatsItem
+                    name="Circulating Supply"
+                    value={formatAmount(xDeusCirculatingSupply)}
+                    onClick={() => handleDashboardModal(DASHBOARD_STATS_TITLES.XDEUS_CIRCULATING_SUPPLY)}
+                    hasOnClick={true}
+                  />
+                  <StatsItem
+                    name="Market Cap"
+                    value={formatDollarAmount(xDeusMarketCap)}
+                    hasToolTip={true}
+                    toolTipInfo={'Market Cap = Circulating Supply * Price'}
+                  />
+                </Info>
+              </StatsWrapper>
+              <StatsWrapper>
+                <DeusTitle>xDEUS and DEUS Combined Stats</DeusTitle>
+                <Info>
+                  <StatsItem
+                    name="Combined Supply"
+                    value={formatAmount(combinedSupply, 2, undefined, true)}
+                    hasToolTip={true}
+                    toolTipInfo={'Combined Supply = DEUS Circulating Supply + xDEUS Circulating Supply'}
+                  />
+                  <StatsItem
+                    name="Combined Market Cap"
+                    value={formatAmount(combinedMarketCap)}
+                    hasToolTip={true}
+                    toolTipInfo={'Combined Market Cap = DEUS Market Cap + xDEUS Market Cap'}
+                  />
+                  <StatsItem
+                    name="Projected Combined Supply in 1yr"
+                    value={formatAmount(combinedProjectedSupply, 2, undefined, true)}
+                    hasToolTip={true}
+                    toolTipInfo={'Projected Supply = Combined Supply * (1 + Inflation Rate)'}
+                  />
+                  <StatsItem name="Inflation Rate" value={formatAmount(inflationRate) + '%'} />
+                  <StatsItem name="Combined emissions per week" value={formatAmount(emissionPerWeek)} />
+                </Info>
+              </StatsWrapper>
+            </HorizontalWrapper>
+            <SinglePieChart data={formattedReservesTokenBalances} />
+          </VerticalWrapper>
         </AllStats>
-        {/* <ChartWrapper>
-          <Chart />
-        </ChartWrapper> */}
-        {/* <BackgroundImageWrapper>
-          <Image src={BG_DASHBOARD} alt="swap bg" layout="fill" objectFit="cover" />
-        </BackgroundImageWrapper> */}
       </Wrapper>
       <Modal
         width="500px"
