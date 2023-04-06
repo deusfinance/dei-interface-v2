@@ -39,6 +39,7 @@ const ClaimBar = styled.div<{ width: string }>`
 `
 
 const Button = styled(PrimaryButton)`
+  color: ${({ theme }) => theme.bg0};
   width: 150px;
   font-family: 'Inter';
   font-weight: 700;
