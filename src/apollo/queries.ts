@@ -33,6 +33,12 @@ export interface ChartData {
   value: string
 }
 
+export interface ClqdrChartData {
+  timestamp: string
+  clqdrRatio: string
+  totalSupply: string
+}
+
 export const VOUCHER_DETAILS = gql`
   query getVoucherDetails($currentTokenId: BigInt!) {
     redeems(where: { currentTokenId: $currentTokenId }, orderBy: timestamp, orderDirection: desc) {

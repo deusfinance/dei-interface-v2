@@ -198,9 +198,7 @@ const BalanceToken = ({ pool }: { pool: LiquidityType }) => {
             <IconContainer>
               <Icon src={tokensLogo[1]} width={24} height={24} />
             </IconContainer>
-            <HeaderTextLabel isDeus={pool?.tokens[0]?.symbol === 'DEUS'}>
-              Your {pool?.tokens[1]?.symbol} Balance:
-            </HeaderTextLabel>
+            <HeaderTextLabel>Your {pool?.tokens[1]?.symbol} Balance:</HeaderTextLabel>
           </HStack>
           <HeaderTextValue>
             {account ? (
