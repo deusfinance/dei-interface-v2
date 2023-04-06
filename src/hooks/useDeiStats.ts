@@ -55,28 +55,6 @@ export function useDeiStats(): {
     fetchDeiStats()
   }, [])
 
-  useEffect(() => {
-    const fetchReservesStats = async () => {
-      const response = await makeHttpRequest(DEI_RESERVES_API)
-      setTotalUSDCReserves(parseFloat(response ?? 0))
-    }
-    const fetchCirculatingSupplyStats = async () => {
-      const response = await makeHttpRequest(DEI_CIRC_SUPPLY_API)
-      // TODO: as API returns number hence converting it back to string for handling big numbers. Remove once API returns string
-      const result = response.toLocaleString('fullwide', { useGrouping: false })
-      setTotalSupply(toBN(formatUnits(result, 18)).toNumber())
-      setCirculatingSupply(toBN(formatUnits(result, 18)).toNumber())
-    }
-    const fetchDetailedReservesStats = async () => {
-      const response = await makeHttpRequest(DEI_RESERVES_DETAILED_API)
-      setUsdcReserves1(parseFloat(response[USDCReserves1[SupportedChainId.FANTOM]]['fantom'][0]?.balance ?? 0))
-      setUsdcPoolReserves(parseFloat(response[CollateralPool[SupportedChainId.FANTOM]]['fantom'][0]?.balance ?? 0))
-    }
-    fetchReservesStats()
-    fetchCirculatingSupplyStats()
-    fetchDetailedReservesStats()
-  }, [])
-
   return {
     totalSupply,
     circulatingSupply,
