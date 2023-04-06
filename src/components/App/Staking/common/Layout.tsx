@@ -21,8 +21,8 @@ export const TableHeader = styled(HStack)`
   font-size: 1rem;
   color: ${({ theme }) => theme.text1};
   justify-content: space-between;
-  & > p:first-child {
-    font-weight: 600;
+  & > p {
+    color: ${({ theme }) => theme.text1};
   }
 `
 

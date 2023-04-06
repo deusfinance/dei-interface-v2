@@ -5,17 +5,18 @@ import { TNAVBAR_OPTIONS } from 'state/web3navbar/types'
 import styled from 'styled-components'
 import StatsHeader from 'components/StatsHeader'
 import { useRouter } from 'next/router'
-import Menu from './Menu'
 import Web3Status from '../Web3Status/index'
 import Web3Network from 'components/Web3Network'
 import { HStack } from 'components/App/Staking/common/Layout'
 import DeusClaimBar from 'components/DeusClaimBar'
+import { ChevronRight } from 'react-feather'
+import { IconWrapper } from 'components/Icons'
 
-const Wrapper = styled(RowBetween)<{ rtl: boolean }>`
+const Wrapper = styled(RowBetween)`
+  justify-content: flex-start;
   height: 60px;
   background: ${({ theme }) => theme.bg0};
   padding: 13px 28px;
-  flex-direction: ${({ rtl }) => (rtl ? 'row-reverse' : 'row')};
 `
 const Separator = styled.div`
   width: 100%;
@@ -24,16 +25,11 @@ const Separator = styled.div`
 `
 const StatsHeaderWrapper = styled.div`
   & > div > div > div > div {
-    background: ${({ theme }) => theme.bg2};
+    background: ${({ theme }) => theme.bg1};
     border: none;
   }
 `
-const MenuWrapper = styled.div`
-  display: none;
-  ${({ theme }) => theme.mediaWidth.upToLarge`
-  display:inline-block;
-`};
-`
+
 const ComponentWrapper = styled(HStack)`
   &:first-of-type {
     column-gap: 48px;
@@ -42,19 +38,15 @@ const ComponentWrapper = styled(HStack)`
     column-gap: 12px;
   }
 `
-const AprTvlWrapper = styled(HStack)`
-  & > p {
-    font-size: 1rem;
-    font-weight: bold;
-  }
-  & > p:first-of-type {
-    color: ${({ theme }) => theme.text2};
-  }
-  & > p:last-of-type {
-    margin-left: 12px;
-    color: ${({ theme }) => theme.text1};
-  }
+const MenuOpenButton = styled.button`
+  margin: 10px 28px 10px -30px;
+  padding: 12px 0px;
+  max-width: 25px;
+  max-height: 40px;
+  background: ${({ theme }) => theme.bg1};
+  border-radius: 0px 8px 8px 0px;
 `
+
 type TPartialNavbar = Partial<TNAVBAR_OPTIONS>
 type TComponentKey = {
   left: (keyof TPartialNavbar)[]
@@ -65,7 +57,7 @@ const componentKey: TComponentKey = {
   right: ['reward', 'network', 'wallet'],
 }
 
-const Web3Navbar = () => {
+const Web3Navbar = ({ toggleSideMenu, isOpen }: { toggleSideMenu: () => void; isOpen: boolean }) => {
   const options: TPartialNavbar = useGetWeb3NavbarOption()
 
   const [components, setComponents] = useState<TComponentKey>({
@@ -91,7 +83,14 @@ const Web3Navbar = () => {
 
   return (
     <>
-      <Wrapper rtl={components.left.length === 0}>
+      <Wrapper>
+        {!isOpen && (
+          <MenuOpenButton onClick={toggleSideMenu}>
+            <IconWrapper>
+              <ChevronRight color="#6F7074"></ChevronRight>
+            </IconWrapper>
+          </MenuOpenButton>
+        )}
         {components.left.length !== 0 && (
           <ComponentWrapper>
             {components.left.map((componentName) => {
@@ -102,26 +101,10 @@ const Web3Navbar = () => {
                   </StatsHeaderWrapper>
                 )
               }
-              if (componentName === componentKey['left'][1]) {
-                return (
-                  <AprTvlWrapper key={componentKey['left'][1]}>
-                    <p>APR:</p>
-                    <p>25%</p>
-                  </AprTvlWrapper>
-                )
-              }
-              if (componentName === componentKey['left'][2]) {
-                return (
-                  <AprTvlWrapper key={componentKey['left'][2]}>
-                    <p>TVL:</p>
-                    <p>$4,394,883</p>
-                  </AprTvlWrapper>
-                )
-              }
             })}
           </ComponentWrapper>
         )}
-        <ComponentWrapper>
+        <ComponentWrapper style={{ marginLeft: 'auto' }}>
           {components.right.map((componentName) => {
             if (componentName === componentKey['right'][0]) {
               return <DeusClaimBar key={componentKey['right'][0]} />
@@ -133,9 +116,6 @@ const Web3Navbar = () => {
               return <Web3Status key={componentKey['right'][2]} />
             }
           })}
-          <MenuWrapper>
-            <Menu />
-          </MenuWrapper>
         </ComponentWrapper>
       </Wrapper>
       <Separator />

@@ -196,3 +196,37 @@ export const DAILY_DEI_PRICE_STATS = gql`
     }
   }
 `
+
+export const CLQDR_DATA = gql`
+  query getCLQDRData($skip: Int!, $timestamp: Int!) {
+    snapshots(first: 1000, skip: $skip, where: { timestamp_lt: $timestamp }, orderBy: timestamp, orderDirection: desc) {
+      timestamp
+      clqdrRatio
+      totalSupply
+    }
+
+    hourlySnapshots(
+      first: 1000
+      skip: $skip
+      where: { timestamp_lt: $timestamp }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      timestamp
+      clqdrRatio
+      totalSupply
+    }
+
+    dailySnapshots(
+      first: 1000
+      skip: $skip
+      where: { timestamp_lt: $timestamp }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      timestamp
+      clqdrRatio
+      totalSupply
+    }
+  }
+`

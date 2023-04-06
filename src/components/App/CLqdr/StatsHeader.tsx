@@ -145,7 +145,7 @@ export default function StatsHeader({
     []
   )
   const dropDownOptions = contractAddresses.map((t) => {
-    return { name: t.name, value: t.value, label: DropDownOption({ name: t.name, value: t.value }) }
+    return { value: t.value, label: DropDownOption({ name: t.name, value: t.value }) }
   })
   return (
     <Wrapper>

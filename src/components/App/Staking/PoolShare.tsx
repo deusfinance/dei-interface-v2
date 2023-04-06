@@ -21,6 +21,15 @@ const Wrapper = styled(VStack)`
   border-radius: 12px;
 `
 
+const Loading = styled.div`
+  background: ${({ theme }) => theme.bg6};
+  border-radius: 6px;
+  height: 14px;
+  width: 100%;
+  margin-right: 24px;
+  min-width: 48px;
+`
+
 export default function PoolShare({ pool }: { pool: LiquidityType }) {
   const { account } = useWeb3React()
 
@@ -43,15 +52,19 @@ export default function PoolShare({ pool }: { pool: LiquidityType }) {
       <Wrapper>
         <TableHeader>
           <p>Your Share</p>
-          <p>{((shares / totalDepositedAmount) * 100).toFixed(6)}% of Pool</p>
+          <p>{!isNaN(shares) ? `${((shares / totalDepositedAmount) * 100).toFixed(6)}% of Pool` : <Loading />}</p>
         </TableHeader>
         <ContentTable>
           <Label>
             <p>Value:</p>
           </Label>
           <Value>
-            {formatDollarAmount(
-              (Number(depositAmount) + Number(currencyBalance)) * virtualPrice * parseFloat(tokenPrice)
+            {Number(depositAmount) ? (
+              formatDollarAmount(
+                (Number(depositAmount) + Number(currencyBalance)) * virtualPrice * parseFloat(tokenPrice)
+              )
+            ) : (
+              <Loading />
             )}
           </Value>
         </ContentTable>
@@ -60,7 +73,9 @@ export default function PoolShare({ pool }: { pool: LiquidityType }) {
             <Label>
               <p>{stakingPool.token?.symbol} Amount:</p>
             </Label>
-            <Value>{formatBalance(Number(depositAmount) + Number(currencyBalance))}</Value>
+            <Value>
+              {Number(depositAmount) ? formatBalance(Number(depositAmount) + Number(currencyBalance)) : <Loading />}
+            </Value>
           </ContentTable>
         ) : (
           <ContentTable>
@@ -68,7 +83,9 @@ export default function PoolShare({ pool }: { pool: LiquidityType }) {
               <ImageWithFallback src={tokensLogo[0]} alt={''} width={21} height={21} />
               <p>{tokens[0].symbol}</p>
             </Label>
-            <Value>{formatBalance(Number(depositAmount) + Number(currencyBalance))}</Value>
+            <Value>
+              {Number(depositAmount) ? formatBalance(Number(depositAmount) + Number(currencyBalance)) : <Loading />}
+            </Value>
           </ContentTable>
         )}
         {pool?.tokens.length > 1 &&
@@ -78,7 +95,7 @@ export default function PoolShare({ pool }: { pool: LiquidityType }) {
                 <ImageWithFallback key={index} src={logo} alt={''} width={21} height={21} />
                 <p>{tokens[index].symbol}</p>
               </Label>
-              <Value> {amountsOut[index] ? formatBalance(amountsOut[index]) : 0} </Value>
+              <Value> {amountsOut[index] ? formatBalance(amountsOut[index]) : <Loading />} </Value>
             </ContentTable>
           ))}
       </Wrapper>

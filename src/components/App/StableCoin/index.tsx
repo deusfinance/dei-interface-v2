@@ -15,27 +15,27 @@ export const Wrapper = styled(Container)`
   margin-top: 28px;
   width: clamp(250px, 90%, 500px);
   background: ${({ theme }) => theme.bg0};
-  border-radius: 15px;
+  border-radius: 16px;
   overflow: hidden;
 `
 
 export const InputWrapper = styled(Container)`
-  padding: 20px 15px;
+  padding: 4px 12px;
   width: 100%;
-  background: ${({ theme }) => theme.bg0};
-
-  & > * {
-    &:nth-child(2) {
-      margin: 15px auto;
-    }
-  }
+  background: ${({ theme }) => theme.bg3};
+  gap: 12px;
 `
 
 export const BottomWrapper = styled(Container)`
-  padding: 20px 15px;
-  padding-top: 10px;
-  width: 100%;
-  background: ${({ theme }) => theme.bg1};
+  font-family: 'IBM Plex Mono';
+  gap: 12px;
+  margin-top: 2px;
+  padding: 20px 16px;
+  & > * {
+    font-weight: 500;
+  }
+
+  background: ${({ theme }) => theme.bg3};
   border-bottom-right-radius: 12px;
   border-bottom-left-radius: 12px;
 `
@@ -56,8 +56,11 @@ export const TopTableau = styled.div`
 `
 
 export const TableauTitle = styled.span`
+  display: flex;
+  margin-left: 24px;
+  font-family: 'IBM Plex Mono';
   font-weight: 600;
-  font-size: 28px;
+  font-size: 24px;
   text-align: center;
   position: absolute;
   left: 0;
@@ -72,8 +75,6 @@ export const TableauTitle = styled.span`
 export const InfoWrapper = styled(RowBetween)`
   white-space: nowrap;
   font-size: 0.75rem;
-  margin-top: 6px;
-  height: 30px;
 `
 
 export const Title = styled.div`
@@ -90,6 +91,14 @@ export const MainButton = styled(PrimaryButton)`
   border-radius: 12px;
   width: 100%;
   height: 72px;
+  font-family: 'IBM Plex Mono';
+  color: ${({ theme }) => theme.bg0};
+
+  ${({ theme, disabled }) =>
+    disabled &&
+    `
+    color: ${theme.white};
+  `}
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
     height: 60px;
@@ -97,7 +106,7 @@ export const MainButton = styled(PrimaryButton)`
 `
 
 export const GradientButtonWrap = styled(PrimaryButton)`
-  background: ${({ theme }) => theme.specialBG1};
+  background: ${({ theme }) => theme.deusColor};
   border-radius: 12px;
   padding: 2px;
   width: 100%;
@@ -107,7 +116,7 @@ export const GradientButtonWrap = styled(PrimaryButton)`
 
 export const GradientButtonRow = styled(RowCenter)`
   background: ${({ theme }) => theme.bg2};
-  border-radius: 8px;
+  border-radius: 12px;
   height: 100%;
   width: 100%;
   white-space: nowrap;
@@ -120,7 +129,8 @@ export const GradientButtonText = styled.span`
   font-weight: 600;
   font-size: 20px;
   line-height: 24px;
-  background: -webkit-linear-gradient(0deg, #e29d52 -10.26%, #de4a7b 80%);
+  color: ${({ theme }) => theme.bg0};
+  background: -webkit-linear-gradient(90deg, #0badf4 0%, #30efe4 93.4%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 `

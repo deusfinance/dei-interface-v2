@@ -1,12 +1,14 @@
-import React, { useState } from 'react'
-import styled from 'styled-components'
+import React from 'react'
+import styled, { useTheme } from 'styled-components'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { isMobileOnly as isMobile } from 'react-device-detect'
 
-import MULTICHAIN from '/public/static/images/pages/dashboard/ic_multichain.svg'
-import DEUSFINANCE from '/public/static/images/pages/dashboard/ic_deus_finance.svg'
-import ImageWithFallback from 'components/ImageWithFallback'
+import Discord from '/public/static/images/footer/Discord.svg'
+import Twitter from '/public/static/images/footer/Twitter.svg'
+import Github from '/public/static/images/footer/Github.svg'
+import Telegram from '/public/static/images/footer/Telegram.svg'
+import Medium from '/public/static/images/footer/Medium.svg'
 
 import { Z_INDEX } from 'theme'
 
@@ -15,10 +17,8 @@ import Web3Status from 'components/Web3Status'
 import Menu from './Menu'
 import NavLogo2 from './NavLogo2'
 import { Row as RowWrapper, RowEnd, RowStart } from 'components/Row'
-import Footer from 'components/Disclaimer'
 
-import { IconWrapper, VeDeus as VeDeusIcon, Bridge as BridgeIcon } from 'components/Icons'
-import { ArrowUpRight } from 'react-feather'
+import { IconWrapper, Link as LinkIconLogo, ChevronLeft } from 'components/Icons'
 import { useDeiPrice, useDeusPrice } from 'state/dashboard/hooks'
 import Column from 'components/Column'
 import { ExternalLink } from 'components/Link'
@@ -30,17 +30,18 @@ import { LegacyDEI_Address, USDC_ADDRESS } from 'constants/addresses'
 import { SupportedChainId } from 'constants/chains'
 import useWeb3React from 'hooks/useWeb3'
 import { useTokenBalance } from 'state/wallet/hooks'
-import { ROUTES } from './constants'
+import { ROUTES, DEI_MENU_ROUTES, PARTNERS_MENU_ROUTES, USEFUL_LINKS_MENU_ROUTES } from './constants'
+import ImageWithFallback from 'components/ImageWithFallback'
 
 const Wrapper = styled.div<{ isOpen?: boolean }>`
   transition: width 0.25s;
   gap: 5px;
-  width: ${({ isOpen }) => (isOpen ? '450px' : '74px')};
+  width: ${({ isOpen }) => (isOpen ? '336px' : '66px')};
   display: flex;
   flex-direction: column;
   z-index: ${Z_INDEX.fixed};
   background: ${({ theme }) => theme.bg0};
-  border-right: 2px solid ${({ theme }) => theme.bg3};
+  border-right: 2px solid ${({ theme }) => theme.bg1};
   justify-content: space-between;
   ${({ theme }) => theme.mediaWidth.upToSmall`
     padding: 0px 1.25rem;
@@ -50,29 +51,16 @@ const Wrapper = styled.div<{ isOpen?: boolean }>`
   `};
 `
 
-const DefaultWrapper = styled(Wrapper)`
+const DefaultWrapper = styled.div<{ isOpen?: boolean }>`
+  width: ${({ isOpen }) => (isOpen ? '336px' : '66px')};
   display: flex;
-  justify-content: flex-start !important;
+  justify-content: flex-start;
   flex-direction: row;
   align-items: center;
-  font-family: 'Inter';
-  font-size: 16px;
-  line-height: 19px;
   height: 62px;
   position: absolute;
-  top: 0px;
   background: ${({ theme }) => theme.bg0};
-
-  border-bottom: 2px solid ${({ theme }) => theme.bg3};
-
-  & > * {
-    &:first-child {
-      flex: 1;
-    }
-    &:last-child {
-      flex: 1;
-    }
-  }
+  border-bottom: 2px solid ${({ theme }) => theme.bg1};
 `
 
 const MobileWrapper = styled(Wrapper)`
@@ -92,6 +80,8 @@ const Routes = styled.div`
   gap: 4px;
   padding: 0px 12px;
   margin-top: 24px;
+  font-size: 16px;
+  line-height: 20px;
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
     & > * {
@@ -153,17 +143,17 @@ const SimpleLinkWrapper = styled(RowWrapper)<{ active?: boolean; isOpen?: boolea
   transition: width 0.25s;
   margin-bottom: 16px;
   border-radius: 8px;
-  width: ${({ isOpen }) => (isOpen ? '312px' : '50px')};
+  width: ${({ isOpen }) => (isOpen ? '312px' : '42px')};
   height: 42px;
   cursor: pointer;
   opacity: 1;
-  padding: 12px 16px;
+  padding: 12px;
   &:hover {
     background: ${({ theme }) => theme.bg1};
   }
-  ${({ active, theme }) =>
+  ${({ active }) =>
     active &&
-    `background: ${theme.bg1};
+    `background: #0D0D0D;
     font-weight: 600;
 `};
   &.last {
@@ -191,34 +181,26 @@ const NavLink = styled.div<{ active: boolean }>`
   font-size: 1rem;
   padding: 0.25rem 1rem;
   color: ${({ theme }) => theme.text1};
-  font-family: 'IBM Plex Mono';
+  font-family: 'Inter';
   font-style: normal;
-  font-weight: ${({ active }) => (active ? '700' : '500')};
-  font-size: 20px;
-  line-height: 26px;
+  font-weight: ${({ active }) => (active ? '500' : '400')};
+  font-size: 16px;
+  line-height: 20px;
   cursor: pointer;
-
-  /* ${({ active }) =>
-    active &&
-    `
-  background: -webkit-linear-gradient(1deg, #e29d52 -10.26%, #de4a7b 90%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-weight: 600;
-  `}; */
 `
 
 const PricesWrap = styled(Row)`
   flex-direction: column;
+  gap: 16px;
   background: ${({ theme }) => theme.bg1};
   border-radius: 12px;
-  width: 288px;
-  padding: 20px 12px;
-  margin: 0 auto;
+  width: 100%;
+  margin: 0px 12px;
+  padding: 16px;
 `
 
 const Price = styled(RowEnd)`
-  font-family: 'IBM Plex Mono';
+  font-family: 'Inter';
   font-style: normal;
   font-weight: 600;
   font-size: 14px;
@@ -230,7 +212,6 @@ const DeiPriceWrap = styled.div`
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin-bottom: 16px;
   font-size: 0.875rem;
   font-weight: medium;
 `
@@ -240,7 +221,6 @@ const DeusPriceWrap = styled.div`
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin-bottom: 16px;
   font-size: 0.875rem;
   font-weight: medium;
 `
@@ -254,7 +234,7 @@ const LegacyDeiPriceWrap = styled.div`
 `
 
 const Token = styled.div`
-  font-family: 'IBM Plex Mono';
+  font-family: 'Inter';
   font-style: normal;
   font-weight: 500;
   font-size: 14px;
@@ -275,11 +255,12 @@ const Separator = styled.div`
 
 const Logo = styled(RowEnd)``
 
-const Data = styled.div`
-  margin-top: 70px;
+const Data = styled.div<{ isOpen: boolean }>`
+  display: ${({ isOpen }) => (isOpen ? 'relative' : 'none')};
+  width: 100%;
   padding: 28px;
   padding-bottom: 0px;
-  font-family: 'IBM Plex Mono';
+  font-family: 'Inter';
   font-style: normal;
   font-weight: 500;
   font-size: 16px;
@@ -298,54 +279,17 @@ const MenuItemLinkContainer = styled(Row)`
   width: 100%;
 `
 const NavLinkContainer = styled(Row)<{ isOpen: boolean; isInternal?: boolean }>`
+  display: ${({ isOpen }) => (isOpen ? 'relative' : 'none')};
   opacity: ${({ isOpen }) => (isOpen ? 1 : 0)};
   z-index: ${({ isOpen }) => (isOpen ? 1 : -1)};
   transform: ${({ isOpen }) => (isOpen ? 'scale(1)' : 'scale(0)')};
   transform-origin: left;
   transition: all 0.25s;
   white-space: nowrap;
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: center;
-  margin-right: ${({ isInternal }) => (isInternal ? 'auto' : '0')}; ;
-`
-const BurgerMenuButton = styled.button<{ isOpen: boolean }>`
-  display: flex;
-  flex-direction: column;
-  align-self: center;
-  max-width: 75px !important;
-  position: relative;
-  padding-top: 16px;
-  padding-bottom: 16px;
-  span {
-    transition: all 0.25s;
-    margin-inline: auto;
-    width: 20px;
-    height: 2px;
-    background-color: white;
-    display: inline-block;
-    margin-block: 3px;
-    ${({ isOpen }) =>
-      isOpen &&
-      `
-      position:absolute;
-      left:50%;
-      &:first-of-type{
-        transform:translateX(-50%) rotate(45deg);
-        margin-block: 0px;
-      }
-      &:last-of-type{
-        transform:translateX(-50%) rotate(-45deg);
-        margin-block: 0px;
-      }
-      &:nth-of-type(2){
-        opacity:0;
-        position:absolute;
-        left:50%;
-        transform:translate(-50%);
-      }
-
-    `}
-  }
+  margin-right: ${({ isInternal }) => (isInternal ? 'auto' : '0')};
+  width: 100%;
 `
 
 const CustomLink = styled(ExternalLink)`
@@ -356,25 +300,58 @@ const CustomLink = styled(ExternalLink)`
   }
   font-size: 1rem;
   font-weight: medium;
-  font-family: 'IBM Plex Mono';
+  font-family: 'Inter';
 `
+
+const MenuHideButton = styled.button`
+  margin-left: -36px;
+  padding: 12px 0px;
+  max-width: 25px;
+  max-height: 40px;
+  background: ${({ theme }) => theme.bg1};
+  border-radius: 8px 0px 0px 8px;
+`
+
 const SidebarContent = styled.div<{ isOpen: boolean }>`
   position: relative;
   overflow-y: scroll;
   height: 100%;
-  min-width: ${({ isOpen }) => (isOpen ? '300px' : '74px')};
+  min-width: ${({ isOpen }) => (isOpen ? '300px' : '62px')};
   width: '100%';
   top: 0px;
   left: 0px;
 `
 
-export default function Slider() {
+const SubMenuWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  margin: 16px 0px;
+`
+
+const SubMenuTitle = styled.div<{ isOpen: boolean }>`
+  display: ${({ isOpen }) => (isOpen ? 'relative' : 'none')};
+  font-size: 16px;
+  font-weight: 400;
+  color: ${({ theme }) => theme.bg4};
+  margin: 0px 16px;
+  min-width: fit-content;
+`
+
+const FooterWrapper = styled.div<{ isOpen: boolean }>`
+  display: flex;
+  flex-direction: ${({ isOpen }) => (isOpen ? 'row' : 'column')};
+  gap: ${({ isOpen }) => (isOpen ? '28px' : '24px')};
+  padding: ${({ isOpen }) => (isOpen ? '2px 20px 20px 20px' : '8px')};
+`
+
+export default function Slider({ toggleSideMenu, isOpen }: { toggleSideMenu: () => void; isOpen: boolean }) {
   const { account } = useWeb3React()
   const router = useRouter()
+  const theme = useTheme()
 
   const deiPrice = useDeiPrice()
   const deusPrice = useDeusPrice()
-  const [isOpen, setOpen] = useState(true)
+  // const [isOpen, setOpen] = useState(true)
 
   const legacyDeiPrice = useFirebirdPrice({
     amount: '1000000000000000000',
@@ -386,6 +363,10 @@ export default function Slider() {
     slippage: '0.01',
   })
 
+  function getImageSize() {
+    return isMobile ? 25 : 28
+  }
+
   const LegacyDeiBalance = useTokenBalance(account ?? undefined, LegacyDEI_TOKEN ?? undefined)
   const hasLegacyDei = !!Number(LegacyDeiBalance?.toSignificant(6))
 
@@ -393,7 +374,7 @@ export default function Slider() {
     return (
       <>
         <MobileWrapper>
-          <NavLogo2 />
+          <NavLogo2 isOpen={false} />
           <Web3Network />
           <Web3Status />
           <Menu />
@@ -406,15 +387,17 @@ export default function Slider() {
     return (
       <Wrapper isOpen={isOpen}>
         <SidebarContent isOpen={isOpen}>
-          <DefaultWrapper isOpen>
-            <BurgerMenuButton isOpen={isOpen} onClick={() => setOpen((prev) => !prev)}>
-              <span />
-              <span />
-              <span />
-            </BurgerMenuButton>
-            <NavLogo2 />
+          <DefaultWrapper isOpen={isOpen}>
+            <NavLogo2 isOpen={isOpen} />
+            {isOpen && (
+              <MenuHideButton onClick={toggleSideMenu}>
+                <IconWrapper>
+                  <ChevronLeft color="#6F7074"></ChevronLeft>
+                </IconWrapper>
+              </MenuHideButton>
+            )}
           </DefaultWrapper>
-          <Column style={{ position: 'relative', top: '62px' }}>
+          <Column style={{ position: 'relative', top: '62px', height: '100%' }}>
             <Routes>
               {ROUTES.map((route, index) => (
                 <SimpleLinkWrapper
@@ -426,7 +409,39 @@ export default function Slider() {
                   <Link href={route.path} passHref>
                     <MenuItemLinkContainer>
                       <IconWrapper disable={router.asPath !== route.path}>
-                        <route.icon size={20} {...(route.path === '/swap' && { color: '#EBEBEC' })} />
+                        <route.icon size={18} />
+                      </IconWrapper>
+                      <NavLinkContainer isOpen={isOpen} isInternal={true}>
+                        <NavLink active={router.asPath === route.path}>{route.title}</NavLink>
+                        {route.specialIcon && (
+                          <ImageWithFallback
+                            src={route.specialIcon}
+                            width={88}
+                            height={24}
+                            alt={`${route.title}_logo`}
+                          />
+                        )}
+                      </NavLinkContainer>
+                    </MenuItemLinkContainer>
+                  </Link>
+                </SimpleLinkWrapper>
+              ))}
+
+              <SubMenuWrapper>
+                <SubMenuTitle isOpen={isOpen}>DEI</SubMenuTitle>
+                <Separator style={{ margin: 'auto' }} />
+              </SubMenuWrapper>
+              {DEI_MENU_ROUTES.map((route, index) => (
+                <SimpleLinkWrapper
+                  key={route.id}
+                  isOpen={isOpen}
+                  className={`sidebar-link__route ${index + 1 === DEI_MENU_ROUTES.length && 'last'}`}
+                  active={router.asPath === route.path}
+                >
+                  <Link href={route.path} passHref>
+                    <MenuItemLinkContainer>
+                      <IconWrapper disable={router.asPath !== route.path}>
+                        <route.icon size={18} />
                       </IconWrapper>
                       <NavLinkContainer isOpen={isOpen} isInternal={true}>
                         <NavLink active={router.asPath === route.path}>{route.title}</NavLink>
@@ -436,54 +451,67 @@ export default function Slider() {
                 </SimpleLinkWrapper>
               ))}
 
-              <Separator />
+              <SubMenuWrapper>
+                <SubMenuTitle isOpen={isOpen}>Partners</SubMenuTitle>
+                <Separator style={{ margin: 'auto' }} />
+              </SubMenuWrapper>
+              {PARTNERS_MENU_ROUTES.map((route, index) => (
+                <SimpleLinkWrapper
+                  key={route.id}
+                  isOpen={isOpen}
+                  className={`sidebar-link__route ${index + 1 === PARTNERS_MENU_ROUTES.length && 'last'}`}
+                  active={router.asPath === route.path}
+                >
+                  <Link href={route.path} passHref>
+                    <MenuItemLinkContainer>
+                      <IconWrapper disable={router.asPath !== route.path}>
+                        <route.icon size={18} />
+                      </IconWrapper>
+                      <NavLinkContainer isOpen={isOpen} isInternal={true}>
+                        <NavLink active={router.asPath === route.path}>{route.title}</NavLink>
+                      </NavLinkContainer>
+                    </MenuItemLinkContainer>
+                  </Link>
+                </SimpleLinkWrapper>
+              ))}
 
-              <SimpleLinkWrapper isOpen={isOpen} className="last">
-                <MenuItemLinkContainer>
-                  <Row>
-                    <IconWrapper disable>
-                      <VeDeusIcon size={20} />
-                    </IconWrapper>
-                    <ExternalLink
-                      style={{ fontSize: 20, padding: '0.25rem 1rem', paddingRight: '0.3rem' }}
-                      href="https://app.deus.finance/xdeus/swap"
-                    >
-                      xDEUS
-                    </ExternalLink>
-                    <ArrowUpRight />
-                  </Row>
-
-                  <NavLinkContainer isOpen={isOpen}>
-                    <Logo>
-                      <ImageWithFallback src={DEUSFINANCE} width={92} height={14} alt={`deus_finance_logo`} />
-                    </Logo>
-                  </NavLinkContainer>
-                </MenuItemLinkContainer>
-              </SimpleLinkWrapper>
-              <SimpleLinkWrapper isOpen={isOpen}>
-                <MenuItemLinkContainer>
-                  <Row>
-                    <IconWrapper disable>
-                      <BridgeIcon size={20} />
-                    </IconWrapper>
-                    <ExternalLink
-                      style={{ fontSize: 20, padding: '0.25rem 1rem', paddingRight: '0.3rem' }}
-                      href="https://app.multichain.org/#/router"
-                    >
-                      Bridge
-                    </ExternalLink>
-                    <ArrowUpRight />
-                  </Row>
-                  <NavLinkContainer isOpen={isOpen}>
-                    <Logo>
-                      <ImageWithFallback src={MULTICHAIN} width={88} height={13} alt={`multichain_logo`} />
-                    </Logo>
-                  </NavLinkContainer>
-                </MenuItemLinkContainer>
-              </SimpleLinkWrapper>
+              <SubMenuWrapper>
+                <SubMenuTitle isOpen={isOpen}>Useful Links</SubMenuTitle>
+                <Separator style={{ margin: 'auto' }} />
+              </SubMenuWrapper>
+              {USEFUL_LINKS_MENU_ROUTES.map((route, index) => (
+                <SimpleLinkWrapper
+                  key={route.id}
+                  isOpen={isOpen}
+                  className={`sidebar-link__route ${index + 1 === USEFUL_LINKS_MENU_ROUTES.length && 'last'}`}
+                >
+                  <ExternalLink href={route.path} passHref style={{ width: '100%' }}>
+                    <MenuItemLinkContainer>
+                      <IconWrapper disable={router.asPath !== route.path}>
+                        <route.icon size={18} />
+                      </IconWrapper>
+                      <NavLinkContainer isOpen={isOpen} isInternal={false}>
+                        <NavLink active={false}>
+                          {route.title}
+                          <LinkIconLogo size={8} style={{ marginLeft: '8px' }} />
+                        </NavLink>
+                        {route.specialIcon && (
+                          <ImageWithFallback
+                            src={route.specialIcon}
+                            width={88}
+                            height={24}
+                            alt={`${route.title}_logo`}
+                          />
+                        )}
+                      </NavLinkContainer>
+                    </MenuItemLinkContainer>
+                  </ExternalLink>
+                </SimpleLinkWrapper>
+              ))}
             </Routes>
-            {isOpen && <Separator />}
-            <NavLinkContainer isOpen={isOpen} style={{ cursor: 'default' }}>
+
+            <NavLinkContainer isOpen={isOpen} style={{ cursor: 'default', flexDirection: 'column', padding: '12px' }}>
+              {isOpen && <Separator />}
               <PricesWrap style={{ cursor: 'default' }}>
                 <Token>
                   DEI Price
@@ -509,40 +537,55 @@ export default function Slider() {
                 )}
               </PricesWrap>
             </NavLinkContainer>
-            {isOpen && <Separator />}
-          </Column>
 
-          <NavLinkContainer isOpen={isOpen}>
-            <Column style={{ width: '100%' }}>
-              <Data>
+            <MenuItemLinkContainer style={{ flexDirection: 'column', padding: '12px', marginTop: 'auto' }}>
+              {isOpen && <Separator />}
+              <Data isOpen={isOpen}>
                 <CustomLink href={'https://docs.deus.finance'} passHref>
                   <DataItems>
                     Bug Bounty
-                    <ArrowUpRight />
+                    <LinkIconLogo size={8} style={{ marginLeft: '8px', marginTop: '4px' }} />
                   </DataItems>
                 </CustomLink>
-
                 <CustomLink href={'https://docs.deus.finance'} passHref>
                   <DataItems>
                     Docs
-                    <ArrowUpRight />
+                    <LinkIconLogo size={8} style={{ marginLeft: '8px', marginTop: '4px' }} color={theme.bg4} />
                   </DataItems>
                 </CustomLink>
                 <CustomLink href={'https://docs.deus.finance/contracts/disclaimer'} passHref>
                   <DataItems>
                     Terms
-                    <ArrowUpRight />
+                    <LinkIconLogo size={8} style={{ marginLeft: '8px', marginTop: '4px' }} color={theme.bg4} />
                   </DataItems>
                 </CustomLink>
               </Data>
+              <Separator />
 
-              <Separator style={{ marginBlock: '32px', height: 1 }} />
-
-              <div style={{ width: '100%' }}>
-                <Footer />
-              </div>
-            </Column>
-          </NavLinkContainer>
+              <FooterWrapper isOpen={isOpen}>
+                <ExternalLink href="https://discord.gg/xTTaBBAMgG">
+                  <ImageWithFallback src={Discord} alt="Discord Logo" width={getImageSize()} height={getImageSize()} />
+                </ExternalLink>
+                <ExternalLink href="https://t.me/deusfinance">
+                  <ImageWithFallback
+                    src={Telegram}
+                    alt="Telegram Logo"
+                    width={getImageSize()}
+                    height={getImageSize()}
+                  />
+                </ExternalLink>
+                <ExternalLink href="https://twitter.com/DeusDao">
+                  <ImageWithFallback src={Twitter} alt="Twitter Logo" width={getImageSize()} height={getImageSize()} />
+                </ExternalLink>
+                <ExternalLink href="https://lafayettetabor.medium.com">
+                  <ImageWithFallback src={Medium} alt="Medium Logo" width={getImageSize()} height={getImageSize()} />
+                </ExternalLink>
+                <ExternalLink href="http://github.com/deusfinance">
+                  <ImageWithFallback src={Github} alt="Github Logo" width={getImageSize()} height={getImageSize()} />
+                </ExternalLink>
+              </FooterWrapper>
+            </MenuItemLinkContainer>
+          </Column>
         </SidebarContent>
       </Wrapper>
     )

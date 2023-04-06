@@ -6,12 +6,13 @@ import NotFound from '/public/static/images/fallback/not_found.png'
 
 const Wrapper = styled.div<{
   round?: boolean
+  border?: boolean
 }>`
   display: flex;
   justify-content: center;
   align-items: center;
   border-radius: ${({ round }) => (round ? '50%' : '0px')};
-  overflow: hidden;
+  border: ${({ border, theme }) => (border ? `2px solid ${theme.bg5}` : `0px solid ${theme.text2}`)};
 `
 
 export default function ImageWithFallback({
@@ -21,6 +22,7 @@ export default function ImageWithFallback({
   height,
   loading = false,
   round = false,
+  border = false,
   ...rest
 }: {
   src: StaticImageData | string
@@ -29,6 +31,7 @@ export default function ImageWithFallback({
   height: number
   loading?: boolean
   round?: boolean
+  border?: boolean
   [x: string]: any
 }) {
   const [imgSrc, setImgSrc] = useState<string | StaticImageData>('/static/images/fallback/loader.gif')
@@ -42,7 +45,7 @@ export default function ImageWithFallback({
   }, [src, loading])
 
   return (
-    <Wrapper round={round}>
+    <Wrapper round={round} border={border}>
       <Image src={imgSrc} alt={alt} width={width} height={height} onError={() => setImgSrc(NotFound.src)} {...rest} />
     </Wrapper>
   )

@@ -5,9 +5,11 @@ import { InfoWrapper } from './index'
 import { Loader } from 'components/Icons'
 
 const Name = styled.div`
+  font-family: 'IBM Plex Mono';
   color: ${({ theme }) => theme.text2};
 `
 const ItemValue = styled.div`
+  font-family: 'IBM Plex Mono';
   color: ${({ theme }) => theme.text1};
 `
 

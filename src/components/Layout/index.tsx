@@ -44,6 +44,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const showBanner = localStorage.getItem('risk_warning') === 'true' ? false : true
   const [showTopBanner, setShowTopBanner] = useState(showBanner)
   const bannerText = 'Users interacting with this software do so entirely at their own risk'
+  const [open, setOpen] = useState(true)
 
   function setShowBanner(inp: boolean) {
     if (!inp) {
@@ -52,17 +53,18 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       sendEvent('click', { click_type: 'close_notification', click_action: 'risk_warning' })
     }
   }
+  const toggleSideMenu = () => setOpen((open) => !open)
 
   return (
     <VerticalWrapper>
       {showTopBanner && <RiskNotification onClose={setShowBanner} bg={'gray'} hasInfoIcon={true} text={bannerText} />}
       <Wrapper>
-        <Slider />
+        <Slider toggleSideMenu={toggleSideMenu} isOpen={open} />
         <div style={{ width: '100%' }}>
           {hasInjected && (
             <Warning>{`❌ You are in "READ-ONLY" mode. Please do not confirm any transactions! ❌ `}</Warning>
           )}
-          <Web3Navbar />
+          <Web3Navbar toggleSideMenu={toggleSideMenu} isOpen={open} />
           <Content>{children}</Content>
           {/* <Footer /> */}
         </div>

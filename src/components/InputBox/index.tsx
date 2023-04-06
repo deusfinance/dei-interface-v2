@@ -14,12 +14,12 @@ import { Row, RowBetween, RowCenter, RowEnd } from 'components/Row'
 import { ChevronDown as ChevronDownIcon } from 'components/Icons'
 
 export const Wrapper = styled(Row)`
+  display: flex;
+  flex-direction: column;
   background: ${({ theme }) => theme.bg2};
   border-radius: 12px;
   color: ${({ theme }) => theme.text2};
   white-space: nowrap;
-  height: 80px;
-  border: 1px solid #444444;
   border-color: ${({ theme }) => theme.border1};
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
@@ -41,6 +41,8 @@ const NumericalWrapper = styled.div`
   width: 100%;
   font-size: 24px;
   position: relative;
+  padding: 0px 16px;
+  margin: 7px 0px;
   color: ${({ theme }) => theme.red1};
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
@@ -50,9 +52,11 @@ const NumericalWrapper = styled.div`
 `
 
 export const CurrencySymbol = styled.div<{ active?: any }>`
-  font-weight: 600;
+  display: flex;
+  align-items: center;
+  font-weight: 500;
   font-size: 16px;
-  margin-left: 5px;
+  margin-left: 12px;
   color: ${({ theme }) => theme.text1};
   cursor: ${({ active }) => active && 'pointer'};
 
@@ -63,11 +67,13 @@ export const CurrencySymbol = styled.div<{ active?: any }>`
   `}
 `
 
-export const RightWrapper = styled.div`
+export const TopWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  font-family: 'IBM Plex Mono';
   width: 100%;
   border-left: 1px solid ${({ theme }) => theme.border1};
-  padding: 8px;
-  padding-left: 10px;
+  padding: 10px 16px;
   height: 100%;
   position: relative;
 `
@@ -89,9 +95,9 @@ export const RowWrap = styled(RowEnd)`
 `
 
 export const ChevronDown = styled(ChevronDownIcon)`
-  margin-left: 7px;
+  margin-left: 8px;
   width: 16px;
-  color: ${({ theme }) => theme.text1};
+  color: ${({ theme }) => theme.bg8};
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
       margin-left: 4px;
@@ -99,8 +105,9 @@ export const ChevronDown = styled(ChevronDownIcon)`
 `
 
 const Balance = styled(RowWrap)<{ disabled?: boolean }>`
+  font-family: 'IBM Plex Mono';
   font-weight: 500;
-  font-size: 10px;
+  font-size: 12px;
   margin-left: 4px;
   gap: 5px;
   color: ${({ theme }) => theme.text1};
@@ -114,6 +121,7 @@ const Balance = styled(RowWrap)<{ disabled?: boolean }>`
     color: ${({ theme }) => theme.text1};
 
     &:hover {
+      color: ${({ theme }) => theme.bg0};
       background: ${({ theme }) => theme.primary1};
       cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
     }
@@ -124,8 +132,12 @@ const Balance = styled(RowWrap)<{ disabled?: boolean }>`
   }
 `
 
+const TokenWrapper = styled(RowBetween)`
+  justify-content: flex-start;
+`
+
 export const getImageSize = () => {
-  return isMobile ? 35 : 38
+  return isMobile ? 28 : 32
 }
 
 export default function InputBox({
@@ -159,30 +171,27 @@ export default function InputBox({
 
   return (
     <Wrapper>
-      <LogoWrapper onClick={onTokenSelect ? () => onTokenSelect() : undefined} active={onTokenSelect ? true : false}>
-        <ImageWithFallback
-          src={logo}
-          width={getImageSize()}
-          height={getImageSize()}
-          alt={`${currency?.symbol} Logo`}
-          round
-        />
-        {onTokenSelect ? <ChevronDown /> : null}
-      </LogoWrapper>
-
-      <RightWrapper>
-        <RowBetween>
-          <CurrencySymbol
-            onClick={onTokenSelect ? () => onTokenSelect() : undefined}
-            active={onTokenSelect ? true : false}
-          >
+      <TopWrapper>
+        <TokenWrapper onClick={onTokenSelect ? () => onTokenSelect() : undefined}>
+          <ImageWithFallback
+            src={logo}
+            width={getImageSize()}
+            height={getImageSize()}
+            alt={`${currency?.symbol} Logo`}
+            round
+          />
+          <CurrencySymbol active={onTokenSelect ? true : false}>
             {currency?.symbol}
+            {onTokenSelect ? <ChevronDown /> : null}
           </CurrencySymbol>
-          <Balance disabled={disabled} onClick={handleClick}>
-            balance: {balanceDisplay ? balanceDisplay : '0.00'}
-            {!disabled && <span>MAX</span>}
-          </Balance>
-        </RowBetween>
+        </TokenWrapper>
+
+        <Balance disabled={disabled} onClick={handleClick}>
+          balance: {balanceDisplay ? balanceDisplay : '0.00'}
+          {!disabled && <span>MAX</span>}
+        </Balance>
+      </TopWrapper>
+      <TopWrapper>
         <NumericalWrapper>
           <NumericalInput
             value={value || ''}
@@ -192,7 +201,7 @@ export default function InputBox({
             disabled={disabled}
           />
         </NumericalWrapper>
-      </RightWrapper>
+      </TopWrapper>
     </Wrapper>
   )
 }

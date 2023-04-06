@@ -15,7 +15,7 @@ import { ChevronDown as ChevronDownIcon } from 'components/Icons'
 import { HStack } from './Layout'
 
 export const Wrapper = styled(Row)`
-  width: 410.488px;
+  width: 100%;
   background: ${({ theme }) => theme.bg2};
   border-radius: 12px;
   color: ${({ theme }) => theme.text2};

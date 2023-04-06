@@ -23,6 +23,8 @@ export interface Colors {
   bg4: Color
   bg5: Color
   bg6: Color
+  bg7: Color
+  bg8: Color
 
   // borders
   border1: Color
@@ -59,7 +61,9 @@ export interface Colors {
   yellow4: Color
   blue1: Color
   blue2: Color
+  deusBlue: Color
   darkPink: Color
+  orange: Color
   darkOrange: Color
 
   error: Color
@@ -70,6 +74,10 @@ export interface Colors {
   deiColor: Color
   deiLegacyColor: Color
   cLqdrColor: Color
+  clqdrBlueColor: Color
+  lqdrColor: Color
+  clqdChartPrimaryColor: Color
+  clqdChartSecondaryColor: Color
   deiPrimaryColor: Color
   deiSecondaryColor: Color
 }

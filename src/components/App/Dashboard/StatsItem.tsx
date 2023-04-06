@@ -4,55 +4,29 @@ import { ToolTip } from 'components/ToolTip'
 import styled from 'styled-components'
 
 const Item = styled.div`
+  margin-top: 20px;
   display: inline-block;
   white-space: nowrap;
   width: 33%;
-  min-width: 180px;
+  min-width: 200px;
+  row-gap: 32px;
+  column-gap: 32px;
   path {
     fill: ${({ theme }) => theme.text2};
   }
   position: relative;
-  &:after {
-    content: '';
-    position: absolute;
-    display: flex;
-    height: 100%;
-    width: 1px;
-    border-right: 1px solid ${({ theme }) => theme.border1};
-    right: 24px;
-    top: 0;
-  }
-  &:last-child:after {
-    content: '';
-    border-right: none !important;
-  }
   ${({ theme }) => theme.mediaWidth.upToMedium`
   min-width: 130px;
     padding:0 12px;
     width: 30%;
-    &:nth-child(3n){
-      border-right:none !important;
-    }
   `};
-  ${({ theme }) => theme.mediaWidth.upToSmall`
-  &:nth-child(3n){
-    border-right: none !important;
-    &:after {
-    content: '';
-    border-right: none !important
-  }
-  }
-  `}
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    &:after{border-right:none;}
-  `}
 `
 
 const Name = styled.div`
   font-family: 'Inter';
   font-weight: 400;
-  font-size: 12px;
-  color: ${({ theme }) => theme.text1};
+  font-size: 14px;
+  color: ${({ theme }) => theme.text2};
   white-space: nowrap;
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
@@ -60,12 +34,13 @@ const Name = styled.div`
   `};
 `
 
-const Value = styled.div<{ isLink?: boolean }>`
+const Value = styled.div<{ isLink?: boolean; isDeus?: boolean }>`
+  font-family: 'IBM Plex Mono';
   display: flex;
   font-weight: 500;
   font-size: 14px;
   width: fit-content;
-  color: ${({ theme }) => theme.yellow4};
+  color: ${({ theme }) => theme.text1};
   margin-top: 10px;
   cursor: ${({ isLink }) => (isLink ? 'pointer' : 'auto')};
   & > * {
@@ -80,7 +55,7 @@ const CustomTooltip = styled(ToolTip)`
 
 const InfoIcon = styled(Info)`
   margin-top: 1px;
-  color: ${({ theme }) => theme.text1} !important;
+  color: ${({ theme }) => theme.text2} !important;
 `
 
 export default function StatsItem({
@@ -90,6 +65,7 @@ export default function StatsItem({
   onClick,
   hasToolTip,
   toolTipInfo,
+  isDeus,
 }: {
   name: string
   value: string
@@ -97,6 +73,7 @@ export default function StatsItem({
   onClick?: () => void
   hasToolTip?: boolean
   toolTipInfo?: string
+  isDeus?: boolean
 }) {
   const isLink = !!href
   return (
@@ -104,18 +81,18 @@ export default function StatsItem({
       <Name>{name}</Name>
       {isLink ? (
         <ExternalLink href={href} passHref>
-          <Value isLink>
+          <Value isLink isDeus={isDeus}>
             {value}
             <LinkIconLogo style={{ marginTop: '6px' }} />
           </Value>
         </ExternalLink>
       ) : !!onClick ? (
-        <Value isLink>
+        <Value isLink isDeus={isDeus}>
           {value}
           <LinkIconLogo style={{ marginTop: '6px' }} />
         </Value>
       ) : (
-        <Value data-for="stat-id" data-tip={hasToolTip ? toolTipInfo : null}>
+        <Value data-for="stat-id" data-tip={hasToolTip ? toolTipInfo : null} isDeus={isDeus}>
           {value}
           {hasToolTip && (
             <span style={{ marginTop: '1px' }}>

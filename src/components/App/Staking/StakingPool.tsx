@@ -35,7 +35,6 @@ const Wrapper = styled(Container)`
   margin-top: 12px;
   background: ${({ theme }) => theme.bg1};
   padding: 20px 15px 0 15px;
-  border: 1px solid rgb(0, 0, 0);
   border-radius: 12px;
   justify-content: center;
 

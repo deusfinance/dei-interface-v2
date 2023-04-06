@@ -9,7 +9,7 @@ import { RowCenter } from 'components/Row'
 import { PrimaryButton } from 'components/Button'
 import InputBox from 'components/InputBox'
 import ModalInfo from './ModalInfo'
-import LottieDei from 'components/Icons/LottieDei'
+import LottieDeus from 'components/Icons/LottieDeus'
 
 const MainModal = styled(Modal)`
   display: flex;
@@ -17,7 +17,7 @@ const MainModal = styled(Modal)`
   justify-content: center;
   flex-direction: column;
   border: 1px solid ${({ theme }) => theme.border2};
-  border-radius: 24px;
+  border-radius: 16px;
 
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     width: 90%;
@@ -30,8 +30,6 @@ const Wrapper = styled.div`
   flex-flow: column nowrap;
   justify-content: flex-start;
   margin: 0 15px;
-  gap: 0.8rem;
-  padding: 1.5rem 0;
   overflow-y: scroll;
   height: auto;
 `
@@ -40,11 +38,10 @@ const AwaitingWrapper = styled.div`
   display: flex;
   flex-flow: column nowrap;
   justify-content: center;
-  padding: 1.5rem 0;
 `
 
 const LottieWrap = styled.div`
-  margin-bottom: 30px;
+  margin: 30px 0px;
 `
 
 const SummaryWrap = styled.div`
@@ -58,7 +55,7 @@ const SummaryWrap = styled.div`
 const ConfirmWrap = styled(SummaryWrap)`
   font-size: 14px;
   margin: 0;
-  margin-top: 20px;
+  margin: 20px 0px;
 `
 
 const TokenResultWrapper = styled(Column)`
@@ -81,6 +78,8 @@ const Data = styled(RowCenter)`
   `};
 `
 const ConfirmButton = styled(PrimaryButton)`
+  font-family: 'IBM Plex Mono';
+  color: ${({ theme }) => theme.bg0};
   height: 62px;
   max-width: 90%;
   margin: 0 auto;
@@ -131,10 +130,11 @@ export default function ReviewModal({
   return (
     <MainModal isOpen={isOpen} onBackgroundClick={() => toggleModal(false)} onEscapeKeydown={() => toggleModal(false)}>
       <ModalHeader onClose={() => toggleModal(false)} title={awaiting ? 'Confirmation' : title} border={false} />
+      <Separator />
       {awaiting ? (
         <AwaitingWrapper>
           <LottieWrap>
-            <LottieDei />
+            <LottieDeus />
           </LottieWrap>
 
           <RowCenter>
@@ -145,7 +145,7 @@ export default function ReviewModal({
             <SummaryWrap>{summary}</SummaryWrap>
           </RowCenter>
 
-          <SeparatorLight />
+          <Separator />
 
           <RowCenter>
             <ConfirmWrap>Confirm this transaction in your wallet</ConfirmWrap>
@@ -168,7 +168,7 @@ export default function ReviewModal({
               )
             )}
 
-            <ArrowDownDark style={{ margin: '16px auto' }} />
+            <ArrowDownDark style={{ margin: '8px auto' }} />
 
             {outputTokens.map((token, index) =>
               amountsOut[index] === '0' ? (

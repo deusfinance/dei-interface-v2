@@ -49,6 +49,7 @@ export const ClaimBox = styled.div`
   padding: 12px;
   display: flex;
   flex-flow: column nowrap;
+  gap: 12px;
   flex: 1;
 `
 
@@ -59,7 +60,6 @@ const DeusBox = styled.div`
 `
 
 const UsdcBox = styled.div`
-  margin-bottom: 12px;
   border-radius: 12px;
   border: 1px solid ${({ theme }) => theme.border3};
 `
@@ -84,7 +84,7 @@ export const InfoSubHeader = styled.p`
 
 const InfoWrap = styled.div`
   background: ${({ theme }) => theme.bg1};
-  padding: 0 15px 10px 15px;
+  padding: 16px;
   border-bottom-right-radius: 12px;
   border-bottom-left-radius: 12px;
   width: 100%;
@@ -111,8 +111,13 @@ const Title = styled.div`
 const NoResultWrapper = styled.div<{ warning?: boolean }>`
   font-size: 14px;
   text-align: center;
-  padding: 10px 12px;
-  color: ${({ theme, warning }) => (warning ? theme.warning : 'white')};
+  color: ${({ theme, warning }) => (warning ? theme.text2 : 'white')};
+`
+
+const ClaimBottomWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 `
 
 const EmptyToken = styled.p`
@@ -333,21 +338,23 @@ export default function RedeemClaim({
                 />
               </UsdcBox>
             )}
-            <DeusBox>
-              {unClaimed.map((token: IToken, index: number) => {
-                return (
-                  <TokenBox
-                    key={index}
-                    token={token}
-                    currentBlock={currentBlock}
-                    onSwitchNetwork={() => onSwitchNetwork(SupportedChainId.FANTOM)}
-                    onClaim={() => handleClaim(token)}
-                    isFirst={index === 0}
-                    isLast={index === unClaimed.length - 1}
-                  />
-                )
-              })}
-            </DeusBox>
+            {unClaimed.length > 0 && (
+              <DeusBox>
+                {unClaimed.map((token: IToken, index: number) => {
+                  return (
+                    <TokenBox
+                      key={index}
+                      token={token}
+                      currentBlock={currentBlock}
+                      onSwitchNetwork={() => onSwitchNetwork(SupportedChainId.FANTOM)}
+                      onClaim={() => handleClaim(token)}
+                      isFirst={index === 0}
+                      isLast={index === unClaimed.length - 1}
+                    />
+                  )
+                })}
+              </DeusBox>
+            )}
           </ClaimBox>
         )}
         <InfoWrap>
@@ -366,10 +373,10 @@ export default function RedeemClaim({
               )}
             </>
           ) : (
-            <>
+            <ClaimBottomWrapper>
               <InfoItem name={'Ready to Claim:'} value={readyCount.toString()} />
               <InfoItem name={'Pending:'} value={pendingCount.toString()} />
-            </>
+            </ClaimBottomWrapper>
           )}
         </InfoWrap>
       </ActionWrap>

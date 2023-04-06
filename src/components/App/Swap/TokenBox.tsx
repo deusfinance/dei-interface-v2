@@ -23,11 +23,11 @@ const Wrapper = styled(RowBetween).attrs({
   gap: 10px;
   padding: 0px 1rem;
   margin: 0 auto;
-  border: 2px solid ${({ theme, disabled }) => (disabled ? theme.bg2 : theme.bg4)};
+  border: 2px solid ${({ theme, disabled }) => (disabled ? theme.bg0 : theme.bg2)};
   background: ${({ theme }) => theme.bg1};
 
   &:hover {
-    background: ${({ theme, disabled }) => (disabled ? theme.bg1 : theme.bg3)};
+    background: ${({ theme, disabled }) => (disabled ? theme.bg1 : theme.bg2)};
     cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
   }
 

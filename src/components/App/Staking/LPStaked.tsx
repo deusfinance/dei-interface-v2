@@ -24,9 +24,7 @@ const StakedLPHeader = styled(Wrapper)`
   background-color: ${({ theme }) => theme.bg1};
   cursor: pointer;
   & > p {
-    color:${({ theme }) => theme.text1}
-    font-size: 0.875rem;
-    font-weight: medium;
+    color: ${({ theme }) => theme.text1};
   }
 `
 const StakedLPReward = styled(Wrapper)<{ disabled?: boolean }>`
@@ -91,7 +89,7 @@ const StakedLPRewardButton = styled(BaseButton)`
   }
 `
 const UnStakedContainer = styled(Wrapper)`
-  background-color: ${({ theme }) => theme.bg2};
+  background-color: ${({ theme }) => theme.bg1};
   border-bottom-right-radius: 12px;
   border-bottom-left-radius: 12px;
   padding-block: 8px;
@@ -118,6 +116,16 @@ const UnStakedButton = styled(BaseButton)`
     }
   }
 `
+
+const Loading = styled.div`
+  background: ${({ theme }) => theme.bg6};
+  border-radius: 6px;
+  height: 14px;
+  width: 100%;
+  margin-right: 24px;
+  min-width: 48px;
+`
+
 const StakedLP = ({ pid }: { pid: number }) => {
   const [amountIn, setAmountIn] = useState<string>('')
 
@@ -178,7 +186,7 @@ const StakedLP = ({ pid }: { pid: number }) => {
       <>
         <StakedLPHeader onClick={() => setAmountIn(depositAmount)}>
           <p>{stakingPool.token?.symbol} Staked:</p>
-          <p>{Number(depositAmount).toFixed(6)}</p>
+          <p>{Number(depositAmount) ? Number(depositAmount).toFixed(6) : <Loading />}</p>
         </StakedLPHeader>
         <Divider backgroundColor="#101116" />
         <StakedLPReward disabled={!rewardAmounts[0]}>

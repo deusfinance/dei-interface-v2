@@ -34,17 +34,12 @@ const AvailableLPHeader = styled(Wrapper)`
   border-top-left-radius: 12px;
   background-color: ${({ theme }) => theme.bg1};
   cursor: pointer;
-  & > p {
-    font-weight: medium;
-    &:last-of-type {
-      color: ${({ theme }) => theme.text2};
-    }
-  }
+  color: ${({ theme }) => theme.text1};
 `
 const AvailableLPContent = styled(Wrapper)`
   border-bottom-right-radius: 12px;
   border-bottom-left-radius: 12px;
-  background-color: ${({ theme }) => theme.bg2};
+  background-color: ${({ theme }) => theme.bg1};
   padding-block: 0px;
   column-gap: 4px;
 `
@@ -55,6 +50,7 @@ const AmountInput = styled(InputField)`
   font-weight: medium;
 `
 const ActionButton = styled(PrimaryButton)`
+  color: ${({ disabled, theme }) => (disabled ? theme.text1 : theme.bg0)};
   height: 36px !important;
   width: 104px !important;
   font-size: 0.875rem;

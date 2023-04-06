@@ -6,7 +6,7 @@ import FIREBIRD_ICON from '/public/static/images/pages/clqdr/ic_firebird.svg'
 import LQDR_ICON from '/public/static/images/tokens/lqdr.svg'
 import { ExternalLink } from 'components/Link'
 import { RowCenter } from 'components/Row'
-import { BuyButton, BuyButtonWrapper, Wrapper } from '.'
+import { BuyButton, BuyButtonWrapper, Wrapper, ButtonText } from '.'
 
 const MainWrapper = styled(Wrapper)`
   padding: 12px 16px 16px 16px;
@@ -59,7 +59,7 @@ export default function FirebirdBox2() {
         <BuyButtonWrapper>
           <ExternalLink href={'https://app.firebird.finance/swap'} style={{ textDecoration: 'none' }}>
             <MainBuyButton>
-              Buy LQDR from Firebird
+              <ButtonText>Buy LQDR from Firebird</ButtonText>
               <LittleIcon>
                 <ImageWithFallback src={FIREBIRD_ICON} width={35} height={40} alt={'firebird_icon'} />
               </LittleIcon>

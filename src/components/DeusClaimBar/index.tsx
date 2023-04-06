@@ -10,7 +10,6 @@ import { useRouter } from 'next/router'
 
 const ClaimBar = styled.div<{ width: string }>`
   border-radius: 8px;
-  border: 1px solid ${({ theme }) => theme.text3};
   position: relative;
   overflow: hidden;
   height: 36px;
@@ -40,6 +39,7 @@ const ClaimBar = styled.div<{ width: string }>`
 `
 
 const Button = styled(PrimaryButton)`
+  color: ${({ theme }) => theme.bg0};
   width: 150px;
   font-family: 'Inter';
   font-weight: 700;

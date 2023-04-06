@@ -9,8 +9,8 @@ import { RowCenter } from 'components/Row'
 import { PrimaryButton } from 'components/Button'
 import InputBox from 'components/InputBox'
 import ModalInfo from './ModalInfo'
-import InputBoxInDollar from 'components/App/Redemption/InputBoxInDollar'
-import LottieDei from 'components/Icons/LottieDei'
+import LottieDeus from 'components/Icons/LottieDeus'
+import { Plus } from 'react-feather'
 
 const MainModal = styled(Modal)`
   display: flex;
@@ -18,7 +18,7 @@ const MainModal = styled(Modal)`
   justify-content: center;
   flex-direction: column;
   border: 1px solid ${({ theme }) => theme.border2};
-  border-radius: 24px;
+  border-radius: 16px;
 
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     width: 90%;
@@ -31,8 +31,6 @@ const Wrapper = styled.div`
   flex-flow: column nowrap;
   justify-content: flex-start;
   margin: 0 15px;
-  gap: 0.8rem;
-  padding: 1.5rem 0;
   overflow-y: scroll;
   height: auto;
 `
@@ -63,7 +61,7 @@ const ConfirmWrap = styled(SummaryWrap)`
 `
 
 const TokenResultWrapper = styled(Column)`
-  gap: 8px;
+  gap: 12px;
   padding-top: 1rem;
 `
 
@@ -82,11 +80,21 @@ const Data = styled(RowCenter)`
   `};
 `
 const ConfirmButton = styled(PrimaryButton)`
+  font-family: 'IBM Plex Mono';
+  color: ${({ theme }) => theme.bg0};
   height: 62px;
   max-width: 90%;
   margin: 0 auto;
   margin-bottom: 20px;
   border-radius: 12px;
+`
+const PlusWrapper = styled.div`
+  border-radius: 10px;
+  padding: 12px 10px;
+  background: ${({ theme }) => theme.bg7};
+  margin: -30px auto;
+  z-index: 1090;
+  width: fit-content;
 `
 
 const Separator = styled.div`
@@ -132,10 +140,11 @@ export default function DefaultReviewModal({
   return (
     <MainModal isOpen={isOpen} onBackgroundClick={() => toggleModal(false)} onEscapeKeydown={() => toggleModal(false)}>
       <ModalHeader onClose={() => toggleModal(false)} title={awaiting ? 'Confirmation' : title} border={false} />
+      <Separator />
       {awaiting ? (
         <AwaitingWrapper>
           <LottieWrap>
-            <LottieDei />
+            <LottieDeus />
           </LottieWrap>
 
           <RowCenter>
@@ -146,7 +155,7 @@ export default function DefaultReviewModal({
             <SummaryWrap>{summary}</SummaryWrap>
           </RowCenter>
 
-          <SeparatorLight />
+          <Separator />
 
           <RowCenter>
             <ConfirmWrap>Confirm this transaction in your wallet</ConfirmWrap>
@@ -169,13 +178,24 @@ export default function DefaultReviewModal({
               )
             )}
 
-            <ArrowDownDark style={{ margin: '16px auto' }} />
+            <ArrowDownDark style={{ margin: '0px auto' }} />
 
             {outputTokens.map((token, index) =>
               amountsOut[index] === '0' ? (
                 <div style={{ display: 'none' }} key={index}></div>
               ) : token.name === 'DEUS' ? (
-                <InputBoxInDollar key={index} currency={token} value={amountsOut[index]} />
+                <>
+                  <PlusWrapper>
+                    <Plus size={'24px'} color="#83858E" />
+                  </PlusWrapper>
+                  <InputBox
+                    key={index}
+                    currency={token}
+                    value={amountsOut[index] ? '$' + amountsOut[index] + ' in DEUS' : ''}
+                    onChange={() => console.log()}
+                    disabled={true}
+                  />
+                </>
               ) : (
                 <InputBox
                   key={index}

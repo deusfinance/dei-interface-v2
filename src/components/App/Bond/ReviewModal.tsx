@@ -11,8 +11,8 @@ import { Row, RowCenter } from 'components/Row'
 import { PrimaryButton } from 'components/Button'
 import InputBox, { getImageSize } from 'components/InputBox'
 import InputBoxInDollar from 'components/App/Redemption/InputBoxInDollar'
-import LottieDei from 'components/Icons/LottieDei'
 import ImageWithFallback from 'components/ImageWithFallback'
+import LottieDeus from 'components/Icons/LottieDeus'
 
 const MainModal = styled(Modal)`
   display: flex;
@@ -168,7 +168,7 @@ export default function DefaultReviewModal({
       {awaiting ? (
         <AwaitingWrapper>
           <LottieWrap>
-            <LottieDei />
+            <LottieDeus />
           </LottieWrap>
 
           <RowCenter>

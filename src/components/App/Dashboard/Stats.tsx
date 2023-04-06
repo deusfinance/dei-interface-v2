@@ -23,10 +23,8 @@ const Wrapper = styled(RowBetween)`
   background: ${({ theme }) => theme.bg0};
   align-items: stretch;
   border-radius: 12px;
-  padding: 38px 36px;
-  padding-left: 14px;
-  margin-bottom: 80px;
   position: relative;
+  margin-top: 20px;
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
     flex-direction: column;
@@ -111,7 +109,7 @@ const DeiTitleContainer = styled(RowBetween)`
 const Title = styled.span`
   font-family: 'Inter';
   font-size: 20px;
-  background: ${({ theme }) => theme.specialBG1};
+  background: ${({ theme }) => theme.deiColor};
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   ${({ theme }) => theme.mediaWidth.upToMedium`
@@ -273,9 +271,7 @@ export default function Stats() {
             <div>
               DEI Total Reserve Assets are held in multiple reserve contracts to isolate risk for security reasons.
             </div>
-            <div style={{ marginTop: '16px' }}>
-              Below is a list of current reserve contracts and their holdings in USDC:
-            </div>
+            <div style={{ marginTop: '16px' }}>Below is a list of current reserve contracts and their holdings:</div>
             <ModalInfoWrapper>
               <a
                 href={getContractExplorerLink(USDCReserves1[SupportedChainId.FANTOM], ExplorerDataType.ADDRESS)}
@@ -622,22 +618,26 @@ export default function Stats() {
                     name="DEUS Price"
                     value={formatDollarAmount(deusPrice, 2)}
                     href={'https://www.coingecko.com/en/coins/deus-finance'}
+                    isDeus
                   />
                   <StatsItem
                     name="Circulating Supply"
                     value={formatAmount(deusCirculatingSupply)}
                     onClick={() => handleDashboardModal(DASHBOARD_STATS_TITLES.DEUS_CIRCULATING_SUPPLY)}
+                    isDeus
                   />
                   <StatsItem
                     name="Total Supply"
                     value={formatAmount(deusTotalSupply)}
                     onClick={() => handleDashboardModal(DASHBOARD_STATS_TITLES.DEUS_TOTAL_SUPPLY)}
+                    isDeus
                   />
                   <StatsItem
                     name="Market Cap"
                     value={formatAmount(deusMarketCap)}
-                    hasToolTip={true}
+                    hasToolTip
                     toolTipInfo={'Market Cap = Circulating Supply * Price'}
+                    isDeus
                   />
                 </Info>
               </StatsWrapper>
@@ -654,17 +654,19 @@ export default function Stats() {
           <StatsWrapper>
             <DeusTitle>xDEUS Stats</DeusTitle>
             <Info>
-              <StatsItem name="xDEUS Price" value={formatDollarAmount(xDeusPrice)} />
+              <StatsItem name="xDEUS Price" value={formatDollarAmount(xDeusPrice)} isDeus />
               <StatsItem
                 name="Circulating Supply"
                 value={formatAmount(xDeusCirculatingSupply)}
                 onClick={() => handleDashboardModal(DASHBOARD_STATS_TITLES.XDEUS_CIRCULATING_SUPPLY)}
+                isDeus
               />
               <StatsItem
                 name="Market Cap"
                 value={formatDollarAmount(xDeusMarketCap)}
-                hasToolTip={true}
+                hasToolTip
                 toolTipInfo={'Market Cap = Circulating Supply * Price'}
+                isDeus
               />
             </Info>
           </StatsWrapper>
@@ -674,32 +676,29 @@ export default function Stats() {
               <StatsItem
                 name="Combined Supply"
                 value={formatAmount(combinedSupply, 2, undefined, true)}
-                hasToolTip={true}
+                hasToolTip
                 toolTipInfo={'Combined Supply = DEUS Circulating Supply + xDEUS Circulating Supply'}
+                isDeus
               />
               <StatsItem
                 name="Combined Market Cap"
                 value={formatAmount(combinedMarketCap)}
-                hasToolTip={true}
+                hasToolTip
                 toolTipInfo={'Combined Market Cap = DEUS Market Cap + xDEUS Market Cap'}
+                isDeus
               />
               <StatsItem
                 name="Projected Combined Supply in 1yr"
                 value={formatAmount(combinedProjectedSupply, 2, undefined, true)}
-                hasToolTip={true}
+                hasToolTip
                 toolTipInfo={'Projected Supply = Combined Supply * (1 + Inflation Rate)'}
+                isDeus
               />
-              <StatsItem name="Inflation Rate" value={formatAmount(inflationRate) + '%'} />
-              <StatsItem name="Combined emissions per week" value={formatAmount(emissionPerWeek)} />
+              <StatsItem name="Inflation Rate" value={formatAmount(inflationRate) + '%'} isDeus />
+              <StatsItem name="Combined emissions per week" value={formatAmount(emissionPerWeek)} isDeus />
             </Info>
           </StatsWrapper>
         </AllStats>
-        {/* <ChartWrapper>
-          <Chart />
-        </ChartWrapper> */}
-        {/* <BackgroundImageWrapper>
-          <Image src={BG_DASHBOARD} alt="swap bg" layout="fill" objectFit="cover" />
-        </BackgroundImageWrapper> */}
       </Wrapper>
       <Modal
         width="500px"

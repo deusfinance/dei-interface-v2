@@ -14,7 +14,7 @@ const MainModal = styled(Modal)`
   justify-content: center;
   flex-direction: column;
   border: 1px solid ${({ theme }) => theme.border2};
-  border-radius: 24px;
+  border-radius: 16px;
 
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     width: 90%;
@@ -26,7 +26,6 @@ const AwaitingWrapper = styled.div`
   display: flex;
   flex-flow: column nowrap;
   justify-content: center;
-  padding: 1.5rem 0;
 `
 
 const ImageWrap = styled.div`
@@ -42,16 +41,23 @@ const SummaryWrap = styled.div`
 `
 
 const ConfirmButton = styled(PrimaryButton)`
+  font-family: 'IBM Plex Mono';
+  color: ${({ theme }) => theme.bg0};
   height: 62px;
   max-width: 90%;
-  margin: 10px auto;
+  margin: 0px 0px 20px 0px;
   border-radius: 12px;
 `
 
 const WarningText = styled.span`
-  font-family: 'IBM Plex Mono';
+  font-family: 'Inter';
   font-weight: 500;
   color: ${({ theme }) => theme.warning};
+`
+
+const SeparatorLight = styled.div`
+  height: 2px;
+  background: ${({ theme }) => theme.bg2};
 `
 
 export default function WarningModal({
@@ -66,6 +72,7 @@ export default function WarningModal({
   return (
     <MainModal isOpen={isOpen} onBackgroundClick={() => toggleModal(false)} onEscapeKeydown={() => toggleModal(false)}>
       <ModalHeader onClose={() => toggleModal(false)} title={'Confirmation'} border={false} />
+      <SeparatorLight />
       <AwaitingWrapper>
         <ImageWrap>
           <Image src={WARNING} height={'90px'} alt="nft" />

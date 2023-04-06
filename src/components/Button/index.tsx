@@ -5,7 +5,7 @@ export const BaseButton = styled.div<{
   disabled?: boolean
 }>`
   font-family: 'Inter';
-  padding: 1rem;
+  padding: 12px 38px;
   width: 100%;
   font-weight: 500;
   text-align: center;
@@ -47,7 +47,7 @@ export const NavButton = styled.button`
   padding: 0 10px;
   border-radius: 10px;
   background: ${({ theme }) => theme.bg2};
-  border: 1px solid ${({ theme }) => theme.text3};
+  border: 1px solid ${({ theme }) => theme.border3};
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;

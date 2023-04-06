@@ -8,7 +8,11 @@ const Wrapper = styled(TopTableau)`
   background: ${({ theme }) => theme.bg1};
 `
 const Title = styled(TableauTitle)`
-  color: ${({ theme }) => theme.cLqdrColor};
+  font-size: 24px;
+  display: flex;
+  font-family: 'IBM Plex Mono';
+  margin-left: 24px;
+  color: ${({ theme }) => theme.text1};
 `
 
 export default function Tableau({ title, imgSrc }: { title: string; imgSrc: string }) {
