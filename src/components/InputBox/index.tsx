@@ -37,6 +37,15 @@ export const InputWrapper = styled.div`
   `}
 `
 
+export const RightWrapper = styled.div`
+  width: 100%;
+  border-left: 1px solid ${({ theme }) => theme.border1};
+  padding: 8px;
+  padding-left: 10px;
+  height: 100%;
+  position: relative;
+`
+
 const NumericalWrapper = styled.div`
   width: 100%;
   font-size: 24px;
