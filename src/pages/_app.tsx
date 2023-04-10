@@ -4,6 +4,7 @@ import { ModalProvider } from 'styled-react-modal'
 import dynamic from 'next/dynamic'
 import type { AppProps } from 'next/app'
 import { Toaster } from 'react-hot-toast'
+import { LiveChatWidget } from '@livechat/widget-react'
 
 import Web3ReactManager from '../components/Web3ReactManager'
 import ThemeProvider, { ThemedGlobalStyle } from '../theme'
@@ -35,6 +36,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
               <ThemedGlobalStyle />
               <ModalProvider backgroundComponent={ModalBackground}>
                 <Toaster position="bottom-center" />
+                <LiveChatWidget license="13128099" group="0" />
                 <Popups />
                 <Updaters />
                 <Layout>
