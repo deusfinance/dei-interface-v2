@@ -36,7 +36,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
               <ThemedGlobalStyle />
               <ModalProvider backgroundComponent={ModalBackground}>
                 <Toaster position="bottom-center" />
-                <LiveChatWidget license="12332502" group="0" />
+                <LiveChatWidget license="13128099" group="0" />
                 <Popups />
                 <Updaters />
                 <Layout>
