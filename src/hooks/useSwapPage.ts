@@ -16,6 +16,7 @@ export function useSwapAmountsOut(
 ): {
   amountOut: string
 } {
+  console.log('pool info', pool)
   const amountInBN = amountIn ? toBN(amountIn).times(BN_TEN.pow(tokenIn.decimals)).toFixed(0) : ''
   const liquidityPool = LiquidityPool.find((liqPool) => liqPool.id === pool.id) || LiquidityPool[0]
   const contract = useStablePoolContract(liquidityPool)

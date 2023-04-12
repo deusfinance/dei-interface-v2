@@ -9,7 +9,7 @@ import { useDeiPrice, useDeusPrice } from 'state/dashboard/hooks'
 import { usePoolBalances, usePoolInfo } from 'hooks/useStablePoolInfo'
 import { useUserInfo } from 'hooks/useStakingInfo'
 import { useBDeiStats } from 'hooks/useBDeiStats'
-import { useVDeusStats } from 'hooks/useVDeusStats'
+import { useXDeusStats } from 'hooks/useXDeusStats'
 
 import Copy from 'components/Copy'
 
@@ -75,7 +75,7 @@ export default function PoolInfo({ pool }: { pool: LiquidityType }) {
     return stakingPool.isSingleStaking
   }, [stakingPool])
 
-  const { swapRatio: xDeusRatio } = useVDeusStats()
+  const { swapRatio: xDeusRatio } = useXDeusStats()
   const { swapRatio: bDeiRatio } = useBDeiStats()
 
   const totalDepositedValue = useMemo(() => {

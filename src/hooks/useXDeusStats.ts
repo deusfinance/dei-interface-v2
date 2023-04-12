@@ -6,13 +6,13 @@ import { formatUnits } from '@ethersproject/units'
 import { BN_TEN, toBN } from 'utils/numbers'
 import { LiquidityPool } from 'constants/stakingPools'
 
-const VDEUS_TOKEN_INDEX = 0
+const XDEUS_TOKEN_INDEX = 0
 const DEUS_TOKEN_INDEX = 1
 const ONE = toBN(1).times(BN_TEN.pow(18)).toFixed(0) // 10 ** 18, to be used as input to calculate swap ratio
 
-export function useVDeusStats(): {
+export function useXDeusStats(): {
   swapRatio: number
-  vDeusBalance: number
+  xDeusBalance: number
   deusBalance: number
 } {
   const contract = useStablePoolContract(LiquidityPool[2])
@@ -21,7 +21,7 @@ export function useVDeusStats(): {
     () => [
       {
         methodName: 'getTokenBalance',
-        callInputs: [VDEUS_TOKEN_INDEX],
+        callInputs: [XDEUS_TOKEN_INDEX],
       },
       {
         methodName: 'getTokenBalance',
@@ -29,21 +29,21 @@ export function useVDeusStats(): {
       },
       {
         methodName: 'calculateSwap',
-        callInputs: [VDEUS_TOKEN_INDEX, DEUS_TOKEN_INDEX, ONE],
+        callInputs: [XDEUS_TOKEN_INDEX, DEUS_TOKEN_INDEX, ONE],
       },
     ],
     []
   )
 
-  const [vdeusBalanceRaw, deusBalanceRaw, swapRatioRaw] = useSingleContractMultipleMethods(contract, methodCalls)
+  const [xdeusBalanceRaw, deusBalanceRaw, swapRatioRaw] = useSingleContractMultipleMethods(contract, methodCalls)
 
-  const { vDeusBalance, deusBalance, swapRatio } = useMemo(() => {
+  const { xDeusBalance, deusBalance, swapRatio } = useMemo(() => {
     return {
-      vDeusBalance: vdeusBalanceRaw?.result ? toBN(formatUnits(vdeusBalanceRaw.result[0], 18)).toNumber() : 0,
+      xDeusBalance: xdeusBalanceRaw?.result ? toBN(formatUnits(xdeusBalanceRaw.result[0], 18)).toNumber() : 0,
       deusBalance: deusBalanceRaw?.result ? toBN(formatUnits(deusBalanceRaw.result[0], 18)).toNumber() : 0,
       swapRatio: swapRatioRaw?.result ? toBN(formatUnits(swapRatioRaw.result[0], 18)).toNumber() : 0,
     }
-  }, [vdeusBalanceRaw, deusBalanceRaw, swapRatioRaw])
+  }, [xdeusBalanceRaw, deusBalanceRaw, swapRatioRaw])
 
-  return { swapRatio, vDeusBalance, deusBalance }
+  return { swapRatio, xDeusBalance, deusBalance }
 }

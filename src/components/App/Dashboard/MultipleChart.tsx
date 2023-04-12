@@ -567,7 +567,7 @@ export default function MultipleChart({
             axisLine={false}
             domain={[lowest, highest]}
           />
-          <CartesianGrid stroke={theme.border3} vertical={false} horizontal={true} />
+          <CartesianGrid stroke={theme.border2} vertical={false} horizontal={true} />
           <Tooltip content={<CustomTooltip payload={filteredData} />} />
           <Area
             type="monotone"

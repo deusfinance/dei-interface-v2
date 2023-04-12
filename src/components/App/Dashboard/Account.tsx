@@ -16,6 +16,8 @@ import { LiquidityPool } from 'constants/stakingPools'
 import { useFirebirdPrice } from 'hooks/useFirebirdPrice'
 import { SupportedChainId } from 'constants/chains'
 import { LegacyDEI_Address, USDC_ADDRESS } from 'constants/addresses'
+import { useMemo } from 'react'
+import { formatDollarAmount } from 'utils/numbers'
 
 const Wrapper = styled(RowBetween)`
   background-color: ${({ theme }) => theme.bg1};
@@ -58,14 +60,10 @@ const AccountPowerWrapper = styled(Column)`
 `};
 `
 const CoinInfoWrapper = styled(Row)`
+  display: flex;
+  justify-content: flex-end;
   width: fit-content;
   column-gap: 24px;
-  & > div {
-    justify-content: space-between;
-  }
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  margin-left: 150px;
   ${({ theme }) => theme.mediaWidth.upToMedium`
       margin-left: 0px;
       row-gap:24px;
@@ -108,20 +106,23 @@ const Loading = styled.div`
 const CoinItem = styled(Column)`
   row-gap: 28px;
   position: relative;
-  &:after {
-    content: '';
-    width: 1px;
-    height: 100%;
-    background-color: ${({ theme }) => theme.border2};
-    position: absolute;
-    right: -12px;
-    transform: translateX(-12px);
-    top: 0px;
-  }
-  &:last-of-type:after {
-    content: '';
-    display: none;
-  }
+`
+
+const CoinInfoValue = styled.div<{ isLastItem: boolean }>`
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  flex-direction: column;
+  min-width: 100px;
+`
+
+const Divider = styled.div<{ isLastItem: boolean }>`
+  display: ${({ isLastItem }) => (isLastItem ? 'none' : 'relative')};
+  border-left: 1px solid ${({ theme }) => theme.border2};
+  height: 100%;
+  position: absolute;
+  left: 100%;
+  top: 0;
 `
 
 enum COLOR_TYPE {
@@ -142,39 +143,35 @@ const Account = () => {
     return isMobile ? 12 : 16
   }
 
-  const coins = [
-    {
-      id: 0,
-      name: DEI_TOKEN.symbol,
-      value: tokenBalances[DEI_TOKEN.address]?.toFixed(3) ?? '',
-      colorType: COLOR_TYPE.RED,
-    },
-    {
-      id: 1,
-      name: BDEI_TOKEN.symbol,
-      value: tokenBalances[BDEI_TOKEN.address]?.toFixed(3) ?? '',
-      colorType: COLOR_TYPE.RED,
-    },
-    {
-      id: 2,
-      name: DEUS_TOKEN.symbol,
-      value: tokenBalances[DEUS_TOKEN.address]?.toFixed(2) ?? '',
-      colorType: COLOR_TYPE.BLUE,
-    },
-    {
-      id: 3,
-      name: XDEUS_TOKEN.symbol,
-      value: tokenBalances[XDEUS_TOKEN.address]?.toFixed(2) ?? '',
-      colorType: COLOR_TYPE.BLUE,
-      info: 'xDEUS is the revenue-accruing token of the DEUS ecosystem.',
-    },
-    {
-      id: 4,
-      name: LegacyDEI_TOKEN.symbol,
-      value: tokenBalances[LegacyDEI_TOKEN.address]?.toFixed(3) ?? '',
-      colorType: COLOR_TYPE.WHITE,
-    },
-  ]
+  const coins = useMemo(() => {
+    return [
+      {
+        id: 0,
+        name: DEI_TOKEN.symbol,
+        value: tokenBalances[DEI_TOKEN.address]?.toFixed(3) ?? '',
+        colorType: COLOR_TYPE.RED,
+      },
+      {
+        id: 1,
+        name: BDEI_TOKEN.symbol,
+        value: tokenBalances[BDEI_TOKEN.address]?.toFixed(3) ?? '',
+        colorType: COLOR_TYPE.RED,
+      },
+      {
+        id: 2,
+        name: DEUS_TOKEN.symbol,
+        value: tokenBalances[DEUS_TOKEN.address]?.toFixed(2) ?? '',
+        colorType: COLOR_TYPE.BLUE,
+      },
+      {
+        id: 3,
+        name: XDEUS_TOKEN.symbol,
+        value: tokenBalances[XDEUS_TOKEN.address]?.toFixed(2) ?? '',
+        colorType: COLOR_TYPE.BLUE,
+        info: 'xDEUS is the revenue-accruing token of the DEUS ecosystem.',
+      },
+    ]
+  }, [tokenBalances])
 
   const deiPrice = useDeiPrice()
   const deusPrice = useDeusPrice()
@@ -199,13 +196,24 @@ const Account = () => {
     slippage: '0.01',
   })
 
+  useMemo(() => {
+    if (!tokenBalances[LegacyDEI_TOKEN.address]?.toFixed(3)) {
+      coins.push({
+        id: 4,
+        name: LegacyDEI_TOKEN.symbol,
+        value: tokenBalances[LegacyDEI_TOKEN.address]?.toFixed(3) ?? '',
+        colorType: COLOR_TYPE.WHITE,
+      })
+    }
+  }, [coins, tokenBalances])
+
   const getTokenValue = (): number => {
     let sum = 0
-    sum = sum + Number(coins[0]?.value) * Number(deiPrice) // Add DEI
-    sum = sum + Number(coins[1]?.value) * Number(bDEIPrice) // Add bDEI
-    sum = sum + Number(coins[2]?.value) * Number(deusPrice) // Add DEUS
-    sum = sum + Number(coins[3]?.value) * Number(xDeusPrice) // Add XDEUS
-    sum = sum + Number(coins[4]?.value) * (Number(legacyDeiPrice) * 1e-6) // Add LegacyDEI
+    sum = sum + Number(tokenBalances[DEI_TOKEN.address]?.toFixed(2)) * Number(deiPrice) // Add DEI
+    sum = sum + Number(tokenBalances[BDEI_TOKEN.address]?.toFixed(2)) * Number(bDEIPrice) // Add bDEI
+    sum = sum + Number(tokenBalances[DEUS_TOKEN.address]?.toFixed(2)) * Number(deusPrice) // Add DEUS
+    sum = sum + Number(tokenBalances[XDEUS_TOKEN.address]?.toFixed(2)) * Number(xDeusPrice) // Add XDEUS
+    sum = sum + Number(tokenBalances[LegacyDEI_TOKEN.address]?.toFixed(2)) * (Number(legacyDeiPrice) * 1e-6) // Add LegacyDEI
     return sum ? sum : 0
   }
 
@@ -216,7 +224,7 @@ const Account = () => {
         <Row>
           <p>Total balance:</p>
           {getTokenValue() ? (
-            <p style={{ marginLeft: '1ch' }}>≈ ${getTokenValue().toFixed(2)}</p>
+            <p style={{ marginLeft: '1ch' }}>≈ {formatDollarAmount(getTokenValue())}</p>
           ) : (
             <Loading style={{ marginRight: '0px', marginLeft: '1ch', minWidth: '80px' }} />
           )}
@@ -225,33 +233,33 @@ const Account = () => {
       <CoinInfoWrapper>
         {coins.map((coin, index) => (
           <CoinItem key={coin.id}>
-            <Row>
-              <CoinName>{coin.name}</CoinName>
-              <ImageWithFallback
-                src={tokenLogos[index]}
-                width={getImageSize()}
-                height={getImageSize()}
-                alt={`${coin.name} Logo`}
-                round
-              />
-              {coin.info && (
-                <div style={{ margin: '0 20px' }}>
-                  <ToolTip id="id" />
-                  <ImageWithFallback
-                    data-for="id"
-                    data-tip={coin.info}
-                    alt="Exclamation"
-                    src={Exclamation}
-                    width={getImageSize() - 1}
-                    height={getImageSize() - 1}
-                  />
-                </div>
-              )}
-            </Row>
-            <CoinValue colorType={coin.colorType}>
-              {coin.value != '' ? <p>{coin.value}</p> : <Loading />}
-              {/* <p>{coin.name}</p> */}
-            </CoinValue>
+            <CoinInfoValue isLastItem={index === coins.length - 1}>
+              <Row>
+                <CoinName>{coin.name}</CoinName>
+                <ImageWithFallback
+                  src={tokenLogos[index]}
+                  width={getImageSize()}
+                  height={getImageSize()}
+                  alt={`${coin.name} Logo`}
+                  round
+                />
+                {coin.info && (
+                  <div style={{ marginLeft: '20px' }}>
+                    <ToolTip id="id" />
+                    <ImageWithFallback
+                      data-for="id"
+                      data-tip={coin.info}
+                      alt="Exclamation"
+                      src={Exclamation}
+                      width={getImageSize() - 1}
+                      height={getImageSize() - 1}
+                    />
+                  </div>
+                )}
+              </Row>
+              <CoinValue colorType={coin.colorType}>{coin.value != '' ? <p>{coin.value}</p> : <Loading />}</CoinValue>
+            </CoinInfoValue>
+            <Divider isLastItem={index === coins.length - 1} />
           </CoinItem>
         ))}
       </CoinInfoWrapper>

@@ -15,7 +15,7 @@ import { Token } from '@sushiswap/core-sdk'
 import BigNumber from 'bignumber.js'
 import { usePoolBalances } from './useStablePoolInfo'
 import { useAverageBlockTime } from 'state/application/hooks'
-import { useVDeusStats } from './useVDeusStats'
+import { useXDeusStats } from './useXDeusStats'
 import { useBDeiStats } from './useBDeiStats'
 
 //TODO: should remove all and put it in /constants
@@ -308,7 +308,7 @@ export function useGetTvl(stakingPool: StakingType): number {
     return stakingPool.isSingleStaking
   }, [stakingPool])
 
-  const { swapRatio: xDeusRatio } = useVDeusStats()
+  const { swapRatio: xDeusRatio } = useXDeusStats()
   const { swapRatio: bDeiRatio } = useBDeiStats()
 
   const totalDepositedValue = useMemo(() => {

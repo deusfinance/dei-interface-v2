@@ -236,3 +236,52 @@ export const CLQDR_DATA = gql`
     }
   }
 `
+
+export const XDEUS_POOL_STATS = gql`
+  query getPoolStats($skip: Int!, $timestamp: Int!) {
+    vdeusPoolSnapshots(
+      first: 1000
+      skip: $skip
+      where: { timestamp_lt: $timestamp }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      timestamp
+      vDeusBalance
+      deusBalance
+      vDeusPerDeus
+      deusPerVDeus
+      swapRatio
+    }
+
+    vdeusPoolHourlySnapshots(
+      first: 1000
+      skip: $skip
+      where: { timestamp_lt: $timestamp }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      timestamp
+      vDeusBalance
+      deusBalance
+      vDeusPerDeus
+      deusPerVDeus
+      swapRatio
+    }
+
+    vdeusPoolDailySnapshots(
+      first: 1000
+      skip: $skip
+      where: { timestamp_lt: $timestamp }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
+      timestamp
+      vDeusBalance
+      deusBalance
+      vDeusPerDeus
+      deusPerVDeus
+      swapRatio
+    }
+  }
+`

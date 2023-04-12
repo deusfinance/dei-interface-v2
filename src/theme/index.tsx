@@ -149,7 +149,7 @@ function colors(themeName: SupportedThemes): Colors {
       text1: '#EBEBEC',
       text2: '#6F7380',
       text3: '#CCCCCC',
-      text4: '#B2B9D2',
+      text4: '#8F9390',
 
       // backgrounds / greys
       bg0: '#141414',
