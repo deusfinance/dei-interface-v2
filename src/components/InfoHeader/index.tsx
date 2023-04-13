@@ -7,7 +7,7 @@ const Wrapper = styled.div<{ bg?: string }>`
   width: 100%;
   display: flex;
   justify-content: center;
-  background: ${({ theme, bg }) => (bg ? (bg === 'gray' ? theme.text3 : bg) : theme.primary6)};
+  background: ${({ theme, bg }) => (bg ? (bg === 'gray' ? theme.bg2 : bg) : theme.primary6)};
 `
 
 const Value = styled.div`
