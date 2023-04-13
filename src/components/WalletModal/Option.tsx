@@ -28,7 +28,7 @@ const Wrapper = styled.button<{
   &:hover,
   &:focus {
     cursor: pointer;
-    border: 1px solid ${({ theme, clickable }) => (clickable ? theme.yellow4 : 'transparent')};
+    border: 1px solid ${({ theme, clickable }) => (clickable ? theme.deusBlue : 'transparent')};
   }
 
   ${({ theme, clickable }) =>

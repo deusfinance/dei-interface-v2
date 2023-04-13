@@ -400,13 +400,12 @@ export default function Slider({ toggleSideMenu, isOpen }: { toggleSideMenu: () 
           <Column style={{ position: 'relative', top: '62px', height: '100%' }}>
             <Routes>
               {ROUTES.map((route, index) => (
-                <SimpleLinkWrapper
-                  key={route.id}
-                  isOpen={isOpen}
-                  className={`sidebar-link__route ${index + 1 === ROUTES.length && 'last'}`}
-                  active={router.asPath === route.path}
-                >
-                  <Link href={route.path} passHref>
+                <Link key={route.id} href={route.path} passHref>
+                  <SimpleLinkWrapper
+                    isOpen={isOpen}
+                    className={`sidebar-link__route ${index + 1 === ROUTES.length && 'last'}`}
+                    active={router.asPath === route.path}
+                  >
                     <MenuItemLinkContainer>
                       <IconWrapper disable={router.asPath !== route.path}>
                         <route.icon size={18} />
@@ -423,8 +422,8 @@ export default function Slider({ toggleSideMenu, isOpen }: { toggleSideMenu: () 
                         )}
                       </NavLinkContainer>
                     </MenuItemLinkContainer>
-                  </Link>
-                </SimpleLinkWrapper>
+                  </SimpleLinkWrapper>
+                </Link>
               ))}
 
               <SubMenuWrapper>
@@ -432,13 +431,12 @@ export default function Slider({ toggleSideMenu, isOpen }: { toggleSideMenu: () 
                 <Separator style={{ margin: 'auto' }} />
               </SubMenuWrapper>
               {DEI_MENU_ROUTES.map((route, index) => (
-                <SimpleLinkWrapper
-                  key={route.id}
-                  isOpen={isOpen}
-                  className={`sidebar-link__route ${index + 1 === DEI_MENU_ROUTES.length && 'last'}`}
-                  active={router.asPath === route.path}
-                >
-                  <Link href={route.path} passHref>
+                <Link href={route.path} key={route.id} passHref>
+                  <SimpleLinkWrapper
+                    isOpen={isOpen}
+                    className={`sidebar-link__route ${index + 1 === DEI_MENU_ROUTES.length && 'last'}`}
+                    active={router.asPath === route.path}
+                  >
                     <MenuItemLinkContainer>
                       <IconWrapper disable={router.asPath !== route.path}>
                         <route.icon size={18} />
@@ -447,8 +445,8 @@ export default function Slider({ toggleSideMenu, isOpen }: { toggleSideMenu: () 
                         <NavLink active={router.asPath === route.path}>{route.title}</NavLink>
                       </NavLinkContainer>
                     </MenuItemLinkContainer>
-                  </Link>
-                </SimpleLinkWrapper>
+                  </SimpleLinkWrapper>
+                </Link>
               ))}
 
               <SubMenuWrapper>
@@ -456,13 +454,12 @@ export default function Slider({ toggleSideMenu, isOpen }: { toggleSideMenu: () 
                 <Separator style={{ margin: 'auto' }} />
               </SubMenuWrapper>
               {PARTNERS_MENU_ROUTES.map((route, index) => (
-                <SimpleLinkWrapper
-                  key={route.id}
-                  isOpen={isOpen}
-                  className={`sidebar-link__route ${index + 1 === PARTNERS_MENU_ROUTES.length && 'last'}`}
-                  active={router.asPath === route.path}
-                >
-                  <Link href={route.path} passHref>
+                <Link href={route.path} key={route.id} passHref>
+                  <SimpleLinkWrapper
+                    isOpen={isOpen}
+                    className={`sidebar-link__route ${index + 1 === PARTNERS_MENU_ROUTES.length && 'last'}`}
+                    active={router.asPath === route.path}
+                  >
                     <MenuItemLinkContainer>
                       <IconWrapper disable={router.asPath !== route.path}>
                         <route.icon size={18} />
@@ -471,8 +468,8 @@ export default function Slider({ toggleSideMenu, isOpen }: { toggleSideMenu: () 
                         <NavLink active={router.asPath === route.path}>{route.title}</NavLink>
                       </NavLinkContainer>
                     </MenuItemLinkContainer>
-                  </Link>
-                </SimpleLinkWrapper>
+                  </SimpleLinkWrapper>
+                </Link>
               ))}
 
               <SubMenuWrapper>
@@ -480,12 +477,11 @@ export default function Slider({ toggleSideMenu, isOpen }: { toggleSideMenu: () 
                 <Separator style={{ margin: 'auto' }} />
               </SubMenuWrapper>
               {USEFUL_LINKS_MENU_ROUTES.map((route, index) => (
-                <SimpleLinkWrapper
-                  key={route.id}
-                  isOpen={isOpen}
-                  className={`sidebar-link__route ${index + 1 === USEFUL_LINKS_MENU_ROUTES.length && 'last'}`}
-                >
-                  <ExternalLink href={route.path} passHref style={{ width: '100%' }}>
+                <ExternalLink href={route.path} passHref key={route.id} style={{ width: '100%' }}>
+                  <SimpleLinkWrapper
+                    isOpen={isOpen}
+                    className={`sidebar-link__route ${index + 1 === USEFUL_LINKS_MENU_ROUTES.length && 'last'}`}
+                  >
                     <MenuItemLinkContainer>
                       <IconWrapper disable={router.asPath !== route.path}>
                         <route.icon size={18} />
@@ -505,8 +501,8 @@ export default function Slider({ toggleSideMenu, isOpen }: { toggleSideMenu: () 
                         )}
                       </NavLinkContainer>
                     </MenuItemLinkContainer>
-                  </ExternalLink>
-                </SimpleLinkWrapper>
+                  </SimpleLinkWrapper>
+                </ExternalLink>
               ))}
             </Routes>
 
