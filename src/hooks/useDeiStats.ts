@@ -15,6 +15,7 @@ export function useDeiStats(): {
   totalSupply: number
   outstandingSupply: number
   usdcPoolReserves: number
+  amoUsdcReserves: number
   totalUSDCReserves: number
   collateralRatio: number
   multiSigReserves: number
@@ -30,10 +31,11 @@ export function useDeiStats(): {
   const [seigniorage, setSeigniorage] = useState(0)
   const [collateralRatio, setCollateralRatio] = useState(0)
   const [protocolOwnedDei, setProtocolOwnedDei] = useState(0)
+  const [amoUsdcReserves, setAmoUsdcReserves] = useState(0)
 
   const multiSigReserves = useMemo(
-    () => totalUSDCReserves - usdcPoolReserves - usdcReserves1,
-    [totalUSDCReserves, usdcPoolReserves, usdcReserves1]
+    () => totalUSDCReserves - usdcPoolReserves - usdcReserves1 - amoUsdcReserves,
+    [totalUSDCReserves, usdcPoolReserves, usdcReserves1, amoUsdcReserves]
   )
 
   useEffect(() => {
@@ -54,6 +56,7 @@ export function useDeiStats(): {
       setTotalSupply(toBN(formatUnits(response['totalSupply'], 18)).toNumber())
       setOutstandingSupply(toBN(formatUnits(response['outstanding'], 18)).toNumber())
       setProtocolOwnedDei(toBN(formatUnits(response['protocolOwnedDei'], 18)).toNumber())
+      setAmoUsdcReserves(parseFloat(response['reserves']['amoReserves'] ?? 0))
     }
     fetchDeiStats()
     fetchDetailedReservesStats()
@@ -62,6 +65,7 @@ export function useDeiStats(): {
   return {
     totalSupply,
     outstandingSupply,
+    amoUsdcReserves,
     usdcPoolReserves,
     usdcReserves1,
     totalUSDCReserves,
