@@ -237,7 +237,8 @@ export default function Stats() {
   const {
     totalSupply,
     collateralRatio,
-    circulatingSupply,
+    outstandingSupply,
+    protocolOwnedDei,
     totalUSDCReserves,
     usdcReserves1,
     usdcPoolReserves,
@@ -479,13 +480,13 @@ export default function Stats() {
         return (
           <ModalWrapper>
             <div>There are currently no contracts that are excluded from circulating supply, the formula is:</div>
-            <ModalText>Total Supply on Fantom = Circulating Supply</ModalText>
+            <ModalText>Total Supply on Fantom = Outstanding Supply</ModalText>
             <ModalInfoWrapper active>
-              <p>Circulating Supply</p>
-              {circulatingSupply === null ? (
+              <p>Outstanding Supply</p>
+              {outstandingSupply === null ? (
                 <Loader />
               ) : (
-                <ModalItemValue>{formatAmount(circulatingSupply, 2)}</ModalItemValue>
+                <ModalItemValue>{formatAmount(outstandingSupply, 2)}</ModalItemValue>
               )}
             </ModalInfoWrapper>
           </ModalWrapper>
@@ -513,11 +514,11 @@ export default function Stats() {
               )}
             </ModalInfoWrapper>
             <ModalInfoWrapper>
-              <p>Circulating Supply</p>
-              {circulatingSupply === null ? (
+              <p>Outstanding Supply</p>
+              {outstandingSupply === null ? (
                 <Loader />
               ) : (
-                <ModalItemValue>{formatAmount(circulatingSupply, 2)}</ModalItemValue>
+                <ModalItemValue>{formatAmount(outstandingSupply, 2)}</ModalItemValue>
               )}
             </ModalInfoWrapper>
             <ModalInfoWrapper active>
@@ -606,15 +607,8 @@ export default function Stats() {
                     value={`${formatBalance(seigniorage, 2)}%`}
                     href={'https://docs.deus.finance/usddei/dei-stablecoin-overview'}
                   />
-                  <StatsItem
-                    name="Circulating Supply"
-                    value={formatAmount(circulatingSupply, 2)}
-                    href={
-                      ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl +
-                      '/token/' +
-                      DEI_ADDRESS[SupportedChainId.FANTOM]
-                    }
-                  />
+                  <StatsItem name="Outstanding Supply" value={formatAmount(outstandingSupply, 2)} />
+                  <StatsItem name="Protocol Owned DEI" value={formatAmount(protocolOwnedDei, 2)} />
                   <StatsItem
                     name="Total Reserve Assets"
                     value={formatDollarAmount(totalUSDCReserves, 2)}
