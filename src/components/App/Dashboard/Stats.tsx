@@ -480,13 +480,13 @@ export default function Stats() {
         return (
           <ModalWrapper>
             <div>There are currently no contracts that are excluded from circulating supply, the formula is:</div>
-            <ModalText>Total Supply on Fantom = Circulating Supply</ModalText>
+            <ModalText>Total Supply on Fantom = Outstanding Supply</ModalText>
             <ModalInfoWrapper active>
-              <p>Circulating Supply</p>
-              {circulatingSupply === null ? (
+              <p>Outstanding Supply</p>
+              {outstandingSupply === null ? (
                 <Loader />
               ) : (
-                <ModalItemValue>{formatAmount(circulatingSupply, 2)}</ModalItemValue>
+                <ModalItemValue>{formatAmount(outstandingSupply, 2)}</ModalItemValue>
               )}
             </ModalInfoWrapper>
           </ModalWrapper>
@@ -514,11 +514,11 @@ export default function Stats() {
               )}
             </ModalInfoWrapper>
             <ModalInfoWrapper>
-              <p>Circulating Supply</p>
-              {circulatingSupply === null ? (
+              <p>Outstanding Supply</p>
+              {outstandingSupply === null ? (
                 <Loader />
               ) : (
-                <ModalItemValue>{formatAmount(circulatingSupply, 2)}</ModalItemValue>
+                <ModalItemValue>{formatAmount(outstandingSupply, 2)}</ModalItemValue>
               )}
             </ModalInfoWrapper>
             <ModalInfoWrapper active>
