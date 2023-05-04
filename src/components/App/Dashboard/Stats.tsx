@@ -237,7 +237,8 @@ export default function Stats() {
   const {
     totalSupply,
     collateralRatio,
-    circulatingSupply,
+    outstandingSupply,
+    protocolOwnedDei,
     totalUSDCReserves,
     usdcReserves1,
     usdcPoolReserves,
@@ -606,15 +607,8 @@ export default function Stats() {
                     value={`${formatBalance(seigniorage, 2)}%`}
                     href={'https://docs.deus.finance/usddei/dei-stablecoin-overview'}
                   />
-                  <StatsItem
-                    name="Circulating Supply"
-                    value={formatAmount(circulatingSupply, 2)}
-                    href={
-                      ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl +
-                      '/token/' +
-                      DEI_ADDRESS[SupportedChainId.FANTOM]
-                    }
-                  />
+                  <StatsItem name="Outstanding Supply" value={formatAmount(outstandingSupply, 2)} />
+                  <StatsItem name="Protocol Owned DEI" value={formatAmount(protocolOwnedDei, 2)} />
                   <StatsItem
                     name="Total Reserve Assets"
                     value={formatDollarAmount(totalUSDCReserves, 2)}
