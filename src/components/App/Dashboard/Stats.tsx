@@ -238,6 +238,7 @@ export default function Stats() {
     totalSupply,
     collateralRatio,
     outstandingSupply,
+    amoUsdcReserves,
     protocolOwnedDei,
     totalUSDCReserves,
     usdcReserves1,
@@ -326,6 +327,20 @@ export default function Stats() {
                 <Loader />
               ) : (
                 <ModalItemValue>{formatAmount(multiSigReserves, 2)}</ModalItemValue>
+              )}
+            </ModalInfoWrapper>
+            <ModalInfoWrapper>
+              <a
+                href="https://debank.com/profile/0x1589931e8a0b311fc37b8df57131cbf60754002b"
+                target={'_blank'}
+                rel={'noreferrer'}
+              >
+                AMO owned USDC
+              </a>
+              {amoUsdcReserves === null ? (
+                <Loader />
+              ) : (
+                <ModalItemValue>{formatAmount(amoUsdcReserves, 2)}</ModalItemValue>
               )}
             </ModalInfoWrapper>
             <ModalInfoWrapper active>
