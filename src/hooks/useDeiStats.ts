@@ -7,6 +7,9 @@ import { toBN } from 'utils/numbers'
 
 import { CollateralPool } from '../constants/addresses'
 import { makeHttpRequest } from 'utils/http'
+import { DEI_TOKEN } from 'constants/tokens'
+import { useERC20Contract } from './useContract'
+import { useSingleContractMultipleMethods } from 'state/multicall/hooks'
 
 const DEI_RESERVES_DETAILED_API = 'https://info.deus.finance/info/dei/reserves/detail'
 const DEI_STATS_API = 'https://info.deus.finance/info/dei/getDeiStats'
@@ -32,6 +35,23 @@ export function useDeiStats(): {
   const [collateralRatio, setCollateralRatio] = useState(0)
   const [protocolOwnedDei, setProtocolOwnedDei] = useState(0)
   const [amoUsdcReserves, setAmoUsdcReserves] = useState(0)
+  const deiContract = useERC20Contract(DEI_TOKEN.address)
+  const calls = !deiContract
+    ? []
+    : [
+        {
+          methodName: 'totalSupply',
+          callInputs: [],
+        },
+      ]
+
+  const [totalSupplyDEI] = useSingleContractMultipleMethods(deiContract, calls)
+
+  const { totalSupplyDEIValueRaw } = useMemo(() => {
+    return {
+      totalSupplyDEIValueRaw: totalSupplyDEI?.result ? toBN(formatUnits(totalSupplyDEI.result[0], 18)).toNumber() : 0,
+    }
+  }, [totalSupplyDEI?.result])
 
   const multiSigReserves = useMemo(
     () => totalUSDCReserves - usdcPoolReserves - usdcReserves1 - amoUsdcReserves,
@@ -63,7 +83,7 @@ export function useDeiStats(): {
   }, [])
 
   return {
-    totalSupply,
+    totalSupply: totalSupplyDEIValueRaw,
     outstandingSupply,
     amoUsdcReserves,
     usdcPoolReserves,
