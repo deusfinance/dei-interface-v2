@@ -496,14 +496,14 @@ export default function Stats() {
           <ModalWrapper>
             <div>There are currently no contracts that are excluded from circulating supply, the formula is:</div>
             <ModalText>Total Supply on Fantom = Outstanding Supply</ModalText>
-            <ModalInfoWrapper active>
+            {/* <ModalInfoWrapper active>
               <p>Outstanding Supply</p>
               {outstandingSupply === null ? (
                 <Loader />
               ) : (
                 <ModalItemValue>{formatAmount(outstandingSupply, 2)}</ModalItemValue>
               )}
-            </ModalInfoWrapper>
+            </ModalInfoWrapper> */}
           </ModalWrapper>
         )
       case DASHBOARD_STATS_TITLES.DEI_USDC_BACKING_PER_DEI:
@@ -528,14 +528,14 @@ export default function Stats() {
                 <ModalItemValue>{formatAmount(totalUSDCReserves)}</ModalItemValue>
               )}
             </ModalInfoWrapper>
-            <ModalInfoWrapper>
+            {/* <ModalInfoWrapper>
               <p>Outstanding Supply</p>
               {outstandingSupply === null ? (
                 <Loader />
               ) : (
                 <ModalItemValue>{formatAmount(outstandingSupply, 2)}</ModalItemValue>
               )}
-            </ModalInfoWrapper>
+            </ModalInfoWrapper> */}
             <ModalInfoWrapper active>
               <p>USDC Backing Per DEI</p>
               {usdcBackingPerDei === null ? <Loader /> : <ModalItemValue>{usdcBackingPerDei}</ModalItemValue>}
@@ -622,7 +622,7 @@ export default function Stats() {
                     value={`${formatBalance(seigniorage, 2)}%`}
                     href={'https://docs.deus.finance/usddei/dei-stablecoin-overview'}
                   />
-                  <StatsItem name="Outstanding Supply" value={formatAmount(outstandingSupply, 2)} />
+                  {/* <StatsItem name="Outstanding Supply" value={formatAmount(outstandingSupply, 2)} /> */}
                   <StatsItem name="Protocol Owned DEI" value={formatAmount(protocolOwnedDei, 2)} />
                   <StatsItem
                     name="Total Reserve Assets"
