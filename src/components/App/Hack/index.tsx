@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 
 import { Container as MainContainer } from 'components/App/StableCoin'
-import { ColumnCenter } from 'components/Column'
+import Column, { ColumnCenter } from 'components/Column'
 import styled from 'styled-components'
 
 import { InputField } from 'components/Input'
@@ -87,15 +87,22 @@ const Input = styled(InputField)`
     font-size: 0.7rem !important;
   `}
 `
-
+const ErrorWrap = styled(Column)`
+  gap: 20px;
+  & > * {
+    line-height: 25px;
+  }
+`
 export default function Hack() {
   const { account } = useWeb3React()
   const [result, setResult] = useState<RESULT | undefined>(undefined)
   const [walletAddress, setWalletAddress] = useState<string>('')
   const [data, setData] = useState<UserData[]>([])
   const [userData, setUserData] = useState<any>(null)
+  const [error, setError] = useState<boolean>(false)
 
   const findUserLPData = useCallback(async () => {
+    if (!walletAddress) return null
     try {
       const res = makeHttpRequest(`https://info.deus.finance/info/dei/userData/${walletAddress}`)
       return res
@@ -103,10 +110,6 @@ export default function Hack() {
       return null
     }
   }, [walletAddress])
-
-  useEffect(() => {
-    findUserLPData()
-  }, [findUserLPData])
 
   useEffect(() => {
     if (account) setWalletAddress(account)
@@ -120,7 +123,13 @@ export default function Hack() {
 
   const handleCheck = async () => {
     const rest = await findUserLPData()
-    setUserData(rest)
+    if (rest?.status === 'error') {
+      setError(true)
+      setUserData(null)
+    } else {
+      setUserData(rest)
+      setError(false)
+    }
   }
 
   // function findUserLPData(walletAddress: string): void {
@@ -133,11 +142,14 @@ export default function Hack() {
   return (
     <Container>
       <FormContainer>
-        <FormHeader>Dei snapshot 05.05.2023</FormHeader>
+        <FormHeader>DEI Snapshot 05.05.2023</FormHeader>
         <WalletAddressInputContainer>
           <Input
             value={walletAddress}
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) => setWalletAddress(event.target.value)}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+              setWalletAddress(event.target.value)
+              setError(false)
+            }}
             placeholder="Enter wallet address"
           />
           <Button
@@ -151,7 +163,19 @@ export default function Hack() {
 
         {userData && <UserStats userData={userData} />}
 
-        {userData && (
+        {error && (
+          <ErrorWrap>
+            <p>Wallet Address: {walletAddress}</p>
+            <p>Snapshot Error: DEI Balance Not Found</p>
+            <p>
+              The wallet you&#39;re trying to access has not been included in the snapshot dated 05.05.2023, as it did
+              not hold any DEI balances immediately before and during the incident.
+            </p>
+            <p>If you believe this is a mistake, please report an issue. </p>
+          </ErrorWrap>
+        )}
+
+        {walletAddress && (
           <ExternalLink style={{ marginTop: '60px' }} href="https://7eoku1wmhjg.typeform.com/dei-incident">
             <NavButton style={{ width: '200px', padding: '5px 10px' }}>Report Issues</NavButton>
           </ExternalLink>
