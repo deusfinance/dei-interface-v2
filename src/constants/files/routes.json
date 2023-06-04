@@ -14,5 +14,10 @@
     "text": "Redeem",
     "path": "/redemption",
     "exact": true
+  },
+  {
+    "text": "Incident",
+    "path": "/dei-incident",
+    "exact": true
   }
 ]

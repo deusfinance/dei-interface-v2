@@ -155,6 +155,11 @@ export default function Menu() {
               </IconWrapper>
             </Row>
           </Link>
+          <Link href="/dei-incident" passHref>
+            <Row active={router.route === '/dei-incident'}>
+              <div>Incident</div>
+            </Row>
+          </Link>
           <Separator />
 
           <ExternalLink href="https://app.deus.finance/vest">
