@@ -32,7 +32,7 @@ function getDecimals(name: string, symbol: string) {
   if (name.indexOf('Thena') !== -1 || name.indexOf('archly-bnb') !== -1 || name.indexOf('archly-bnb') !== -1) {
     return 18
   }
-  return symbol === 'USDC' || symbol === 'USDT' ? 6 : 18
+  return symbol === 'USDC' || symbol === 'USDT' || symbol === 'USDP' ? 6 : 18
 }
 
 function getInfoDynamic(data: any) {

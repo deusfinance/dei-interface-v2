@@ -8,10 +8,7 @@ import { InputField } from 'components/Input'
 import { RowBetween } from 'components/Row'
 import { BaseButton } from 'components/Button'
 
-import { AddressZero } from '@ethersproject/constants'
-import { isAddress } from 'utils/address'
 import useWeb3React from 'hooks/useWeb3'
-import { RESULT, UserData } from './Types'
 import UserStats from './UserStats'
 import { makeHttpRequest } from 'utils/http'
 import { ExternalLink } from 'components/Link'
@@ -95,9 +92,7 @@ const ErrorWrap = styled(Column)`
 `
 export default function Hack() {
   const { account } = useWeb3React()
-  const [result, setResult] = useState<RESULT | undefined>(undefined)
   const [walletAddress, setWalletAddress] = useState<string>('')
-  const [data, setData] = useState<UserData[]>([])
   const [userData, setUserData] = useState<any>(null)
   const [error, setError] = useState<boolean>(false)
 
@@ -114,12 +109,6 @@ export default function Hack() {
   useEffect(() => {
     if (account) setWalletAddress(account)
   }, [account])
-
-  useEffect(() => {
-    if (!isAddress(walletAddress) || walletAddress === AddressZero) {
-      setResult(undefined)
-    }
-  }, [walletAddress])
 
   const handleCheck = async () => {
     const rest = await findUserLPData()
