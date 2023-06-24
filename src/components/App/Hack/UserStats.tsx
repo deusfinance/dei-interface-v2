@@ -98,11 +98,13 @@ function Stats({
 
 export default function UserStats({ userData }: { userData: any }) {
   const { pairs } = userData
-  const { anydei_bh, dei_bh, anydei_now, dei_now } = userData.balance
+  const { anydei_bh, dei_bh, anydei_now, dei_now, stuck_anydei } = userData.balance
+
   const { dei, deus, usdc } = userData.redeemed
   const DeiBalance = [
     { title: 'before', amount: toAmount(dei_bh) },
     { title: 'now', amount: toAmount(dei_now) },
+    { title: 'DEI stuck in bridge', amount: toAmount(stuck_anydei) },
   ]
   const anyDeiBalance = [
     { title: 'before', amount: toAmount(anydei_bh) },
