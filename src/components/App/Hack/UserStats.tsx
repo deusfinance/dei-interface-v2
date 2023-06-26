@@ -20,11 +20,13 @@ function has(amount: string): boolean {
   return toBN(amount).abs().gt(0)
 }
 
-function toAmount(amount: string, decimals?: number): string {
+function toAmount(amount: string, decimals?: number, isAbs?: boolean): string {
   return formatBalance(
-    toBN(amount)
-      .abs()
-      .div(BN_TEN.pow(decimals || 18))
+    isAbs
+      ? toBN(amount).div(BN_TEN.pow(decimals || 18))
+      : toBN(amount)
+          .abs()
+          .div(BN_TEN.pow(decimals || 18))
   )
 }
 
@@ -35,10 +37,10 @@ function getDecimals(name: string, symbol: string) {
   return symbol === 'USDC' || symbol === 'USDT' || symbol === 'USDP' ? 6 : 18
 }
 
-function getInfoDynamic(data: any) {
+function getInfoDynamic(data: any, isAbs?: boolean) {
   return Object.keys(data)
     .filter((k) => has(data[k]))
-    .map((v) => ({ title: v, amount: `${toAmount(data[v], getDecimals('', v))}` }))
+    .map((v) => ({ title: v, amount: `${toAmount(data[v], getDecimals('', v), isAbs)}` }))
 }
 
 function getLPInfo(pairs: any) {
@@ -134,7 +136,7 @@ export default function UserStats({ userData }: { userData: any }) {
       )}
 
       {getInfoDynamic(userData['arbitrage']).length > 0 && (
-        <Stats mainTitle="Arbitrages" info={getInfoDynamic(userData['arbitrage'])} />
+        <Stats mainTitle="Arbitrages" info={getInfoDynamic(userData['arbitrage'], true)} />
       )}
 
       {pairs.map((pair: any, key: number) => (
