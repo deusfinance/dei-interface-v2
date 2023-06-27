@@ -54,8 +54,8 @@ export function useDeiStats(): {
   }, [totalSupplyDEI?.result])
 
   const multiSigReserves = useMemo(
-    () => totalUSDCReserves - usdcPoolReserves - usdcReserves1 - amoUsdcReserves,
-    [totalUSDCReserves, usdcPoolReserves, usdcReserves1, amoUsdcReserves]
+    () => totalUSDCReserves - usdcPoolReserves - amoUsdcReserves,
+    [totalUSDCReserves, usdcPoolReserves, amoUsdcReserves]
   )
 
   useEffect(() => {

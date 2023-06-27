@@ -10,7 +10,7 @@ import { formatAmount, formatBalance, formatDollarAmount } from 'utils/numbers'
 import { Modal, ModalHeader } from 'components/Modal'
 import { RowBetween } from 'components/Row'
 import StatsItem from './StatsItem'
-import { CollateralPool, DEI_ADDRESS, MultiSigReservesPool, USDCReserves1 } from 'constants/addresses'
+import { CollateralPool, DEI_ADDRESS, MultiSigReservesPool } from 'constants/addresses'
 import { SupportedChainId } from 'constants/chains'
 import { Loader, Info as InfoImage, Link } from 'components/Icons'
 import { ExternalLink } from 'components/Link'
@@ -237,11 +237,9 @@ export default function Stats() {
   const {
     totalSupply,
     collateralRatio,
-    outstandingSupply,
     amoUsdcReserves,
     protocolOwnedDei,
     totalUSDCReserves,
-    usdcReserves1,
     usdcPoolReserves,
     multiSigReserves,
     seigniorage,
@@ -287,7 +285,7 @@ export default function Stats() {
               DEI Total Reserve Assets are held in multiple reserve contracts to isolate risk for security reasons.
             </div>
             <div style={{ marginTop: '16px' }}>Below is a list of current reserve contracts and their holdings:</div>
-            <ModalInfoWrapper>
+            {/* <ModalInfoWrapper>
               <a
                 href={getContractExplorerLink(USDCReserves1[SupportedChainId.FANTOM], ExplorerDataType.ADDRESS)}
                 target={'_blank'}
@@ -296,7 +294,7 @@ export default function Stats() {
                 Reserves 1
               </a>
               {usdcReserves1 === null ? <Loader /> : <ModalItemValue>{formatAmount(usdcReserves1, 2)}</ModalItemValue>}
-            </ModalInfoWrapper>
+            </ModalInfoWrapper> */}
             <ModalInfoWrapper>
               <a
                 href={getContractExplorerLink(CollateralPool[SupportedChainId.FANTOM], ExplorerDataType.ADDRESS)}
