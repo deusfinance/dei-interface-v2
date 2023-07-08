@@ -8,10 +8,9 @@ import { Row } from 'components/Row'
 import { PrimaryButton } from 'components/Button'
 import InputBox from './InputBox'
 import { Title } from '.'
-// import { DEUS_TOKEN, USDC_TOKEN } from 'constants/tokens'
+// import { DEUS_TOKEN } from 'constants/tokens'
 // import { formatUnits } from '@ethersproject/units'
 // import { toBN } from 'utils/numbers'
-import { useGetReimburseRatio } from 'hooks/useReimbursementPage'
 
 const MainModal = styled(Modal)`
   display: flex;
@@ -59,7 +58,7 @@ export default function ReviewModal({
   buttonText,
   toggleModal,
   handleClick,
-  userReimbursableData,
+  userDeusAmount,
 }: {
   title: string
   inputTokens: Token[]
@@ -70,43 +69,34 @@ export default function ReviewModal({
   buttonText: string
   toggleModal: (action: boolean) => void
   handleClick: () => void
-  userReimbursableData: string
+  userDeusAmount: string
 }) {
-  const reimburseRatio = useGetReimburseRatio()
-  const ratio = Number(reimburseRatio) * 1e-6
-  const USDC_amount = ratio * Number(userReimbursableData)
-  const bDEI_amount = (1 - ratio) * Number(userReimbursableData)
-
   return (
     <MainModal isOpen={isOpen} onBackgroundClick={() => toggleModal(false)} onEscapeKeydown={() => toggleModal(false)}>
       <ModalHeader onClose={() => toggleModal(false)} title={title} border={false} />
       <Wrapper>
-        {userReimbursableData && (
+        {userDeusAmount && (
           <TokenResultWrapper>
             {inputTokens.map((token, index) => (
               <InputBox
                 key={index}
                 currency={token}
-                // maxValue={formatUnits(userReimbursableData?.toString(), DEUS_TOKEN.decimals)}
+                // maxValue={formatUnits(userDeusAmount?.toString(), DEUS_TOKEN.decimals)}
                 value={amountIn}
                 onChange={(value: string) => setAmountIn(value)}
               />
             ))}
 
-            {USDC_amount && bDEI_amount && (
-              <div style={{ paddingTop: '10px', paddingBottom: '65px' }}>
-                {outputTokens.map((token, index) => (
-                  <Row key={index} style={{ paddingTop: '10px' }}>
-                    <Title>Claimable {token.name}:</Title>
-                    {/* <Value>
-                      {token.name === USDC_TOKEN.symbol
-                        ? toBN(formatUnits(USDC_amount.toString(), DEUS_TOKEN.decimals)).toFixed(6).toString()
-                        : toBN(formatUnits(bDEI_amount.toString(), DEUS_TOKEN.decimals)).toFixed(4).toString()}
-                    </Value> */}
-                  </Row>
-                ))}
-              </div>
-            )}
+            <div style={{ paddingTop: '10px', paddingBottom: '65px' }}>
+              {outputTokens.map((token, index) => (
+                <Row key={index} style={{ paddingTop: '10px' }}>
+                  <Title>Claimable {token.name}:</Title>
+                  {/* <Value>
+                    {toBN(formatUnits(userDeusAmount?.toString(), DEUS_TOKEN.decimals)).toFixed(6).toString()}
+                  </Value> */}
+                </Row>
+              ))}
+            </div>
           </TokenResultWrapper>
         )}
       </Wrapper>

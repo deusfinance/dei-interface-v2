@@ -124,3 +124,7 @@ export const CLQDR_ADDRESS: AddressMap = {
 export const LQDR_ADDRESS: AddressMap = {
   [SupportedChainId.FANTOM]: '0x10b620b2dbAC4Faa7D7FFD71Da486f5D44cd86f9',
 }
+
+export const Reimbursement_ADDRESS: AddressMap = {
+  [SupportedChainId.ARBITRUM]: '0xFdE7279951861716149d73FF7d5C35c2A79F12b0',
+}

@@ -64,6 +64,7 @@ export interface Colors {
   warning: Color
 
   deusColor: Color
+  deusColorReverse: Color
   deiColor: Color
   cLqdrColor: Color
   deiPrimaryColor: Color

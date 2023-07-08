@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
 
 import { Container as MainContainer } from 'components/App/StableCoin'
@@ -13,7 +13,13 @@ import { ExternalLink } from 'components/Link'
 import { NavButton } from 'components/Button'
 import { useWalletModalToggle } from 'state/application/hooks'
 import ReviewModal from './ReviewModal'
-import { DEI_BDEI_LP_TOKEN, DEUS_TOKEN, USDC_TOKEN } from 'constants/tokens'
+import ReviewModal2 from './ReviewModal2'
+import { BDEI_TOKEN, DEI_BDEI_LP_TOKEN, DEUS_TOKEN, USDC_TOKEN } from 'constants/tokens'
+import { formatUnits } from '@ethersproject/units'
+import { BN_ZERO, toBN } from 'utils/numbers'
+import { DeusText } from '../Redemption/InputBoxInDollar'
+import { useClaimDeusCallback, useReimbursementCallback } from 'hooks/useReimbursementCallback'
+import { useGetClaimedData } from 'hooks/useReimbursementPage'
 
 const Container = styled(MainContainer)`
   min-height: 90vh;
@@ -79,8 +85,8 @@ export const MainButton = styled(PrimaryButton)<{ disabled?: boolean }>`
   margin-left: auto;
 `
 const Input = styled(InputField)`
-  font-size: 1rem;
   font-family: Inter;
+  font-size: 1rem;
   color: #f2fbfb;
   /* ${({ theme }) => theme.mediaWidth.upToMedium`
     font-size: 0.7rem !important;
@@ -90,6 +96,19 @@ export const ClaimButton = styled(MainButton)`
   width: 260px;
   height: 45px;
   font-size: 18px;
+`
+export const ClaimButtonDeus = styled(ClaimButton)`
+  width: 140px;
+  background: ${({ theme }) => theme.deusColor};
+  color: #000;
+
+  &:focus {
+    box-shadow: 0 0 0 1pt ${({ theme }) => theme.deusColorReverse};
+    background: ${({ theme }) => theme.deusColorReverse};
+  }
+  &:hover {
+    background: ${({ theme }) => theme.deusColorReverse};
+  }
 `
 const ErrorWrap = styled(Column)`
   gap: 20px;
@@ -110,6 +129,12 @@ export const ConnectedButton = styled.div`
   background: rgb(37, 43, 36);
   color: #66dd96;
 `
+const ButtonWrap = styled.div`
+  display: flex;
+  flex-flow: row wrap;
+  margin-left: auto;
+  gap: 5px;
+`
 
 export default function Incident() {
   const { account } = useWeb3React()
@@ -121,6 +146,12 @@ export default function Incident() {
   const [amountIn, setAmountIn] = useState('')
   const [isOpen, setIsOpen] = useState(false)
   const toggleModal = () => setIsOpen((prev) => !prev)
+  const [isOpen2, setIsOpen2] = useState(false)
+  const toggleModal2 = () => setIsOpen2((prev) => !prev)
+
+  const [awaitingReimburseConfirmation, setAwaitingReimburseConfirmation] = useState(false)
+
+  const { claimedDeusAmount, claimedCollateralAmount } = useGetClaimedData()
 
   const findUserLPData = useCallback(async () => {
     if (!walletAddress) return null
@@ -160,12 +191,100 @@ export default function Incident() {
     }
   }
 
+  useEffect(() => {
+    if (account) {
+      setWalletAddress(account?.toString())
+      handleCheck()
+    }
+  }, [account])
+
+  // console.log({ userReimbursableData })
+
   // function findUserLPData(walletAddress: string): void {
   //   const AllData = LPsData as unknown as { [key: string]: any }
   //   const userData = AllData[walletAddress.toLowerCase()] ?? null
   //   setUserData(userData)
   //   return userData
   // }
+
+  // const InputAmount = useMemo(() => {
+  //   return tryParseAmount(amountIn, deiCurrency || undefined)
+  // }, [amountIn, deiCurrency])
+
+  const userReimbursableAmountBN = useMemo(() => {
+    if (userReimbursableData) return toBN(formatUnits(userReimbursableData?.data?.usdc.toString(), DEUS_TOKEN.decimals))
+    return BN_ZERO
+  }, [userReimbursableData])
+  const userReimbursableAmount = userReimbursableAmountBN.minus(claimedCollateralAmount)
+
+  const userDeusAmountBN = useMemo(() => {
+    if (userReimbursableData) return toBN(formatUnits(userReimbursableData?.data?.deus.toString(), DEUS_TOKEN.decimals))
+    return BN_ZERO
+  }, [userReimbursableData])
+  const userDeusAmount = userDeusAmountBN.minus(claimedDeusAmount)
+
+  // console.log(claimedDeusAmount, claimedCollateralAmount)
+  // console.log(userReimbursableAmount, userDeusAmount)
+
+  const {
+    state: reimburseCallbackState,
+    callback: reimburseCallback,
+    error: reimburseCallbackError,
+  } = useReimbursementCallback(amountIn, userReimbursableAmount?.toString(), userReimbursableData?.usdc_proof)
+
+  const {
+    state: claimDeusCallbackState,
+    callback: claimDeusCallback,
+    error: claimDeusCallbackError,
+  } = useClaimDeusCallback(amountIn, userDeusAmount?.toString(), userReimbursableData?.deus_proof)
+
+  const handleReimburse = useCallback(async () => {
+    console.log('called handleReimburse')
+    console.log(reimburseCallbackState, reimburseCallbackError)
+    if (!reimburseCallback) return
+    try {
+      setAwaitingReimburseConfirmation(true)
+      const txHash = await reimburseCallback()
+      setAwaitingReimburseConfirmation(false)
+      console.log({ txHash })
+      setIsOpen(false)
+      setIsOpen2(false)
+      setAmountIn('')
+    } catch (e) {
+      setAwaitingReimburseConfirmation(false)
+      setIsOpen(false)
+      setIsOpen2(false)
+      if (e instanceof Error) {
+        console.error(e)
+      } else {
+        console.error(e)
+      }
+    }
+  }, [reimburseCallbackState, reimburseCallbackError, reimburseCallback])
+
+  const handleClaimDeus = useCallback(async () => {
+    console.log('called handleClaimDeus')
+    console.log(claimDeusCallbackState, claimDeusCallbackError)
+    if (!claimDeusCallback) return
+    try {
+      setAwaitingReimburseConfirmation(true)
+      const txHash = await claimDeusCallback()
+      setAwaitingReimburseConfirmation(false)
+      console.log({ txHash })
+      setIsOpen(false)
+      setIsOpen2(false)
+      setAmountIn('')
+    } catch (e) {
+      setAwaitingReimburseConfirmation(false)
+      setIsOpen(false)
+      setIsOpen2(false)
+      if (e instanceof Error) {
+        console.error(e)
+      } else {
+        console.error(e)
+      }
+    }
+  }, [claimDeusCallbackState, claimDeusCallbackError, claimDeusCallback])
 
   return (
     <>
@@ -202,10 +321,21 @@ export default function Incident() {
             <OutputContainer>
               <Row>
                 <Title>
-                  Reimbursable Amount ({USDC_TOKEN.name}-{DEUS_TOKEN.name}):
+                  Reimbursable Amount ({USDC_TOKEN.name}-{BDEI_TOKEN.name}):
                 </Title>
-                <Value>12,233,263</Value>
+                <Value>${userReimbursableAmount.toString()}</Value>
               </Row>
+              {userReimbursableData?.data?.deus !== '0' && (
+                <Row>
+                  <Title>{DEUS_TOKEN.name} Amount:</Title>
+                  <Value>
+                    {toBN(formatUnits(userReimbursableData?.data?.deus.toString(), DEUS_TOKEN.decimals))
+                      .toFixed(3)
+                      .toString()}
+                    <DeusText>DEUS</DeusText>
+                  </Value>
+                </Row>
+              )}
               <Row>
                 <ExternalLink href="https://7eoku1wmhjg.typeform.com/dei-incident">
                   <NavButton style={{ width: '200px', padding: '5px 10px' }}>Report Issues</NavButton>
@@ -213,9 +343,17 @@ export default function Incident() {
                 {!account ? (
                   <MainButton onClick={toggleWalletModal}>Connect Wallet</MainButton>
                 ) : walletAddress?.toLowerCase() === account?.toLowerCase() ? (
-                  <ClaimButton onClick={() => toggleModal()}>Claim</ClaimButton>
+                  <ButtonWrap>
+                    {userReimbursableData?.data?.deus !== '0' && (
+                      <ClaimButtonDeus onClick={() => toggleModal2()}>Claim DEUS</ClaimButtonDeus>
+                    )}
+                    <ClaimButton onClick={() => toggleModal()}>Claim</ClaimButton>
+                  </ButtonWrap>
                 ) : (
-                  <ClaimButton disabled>Claim</ClaimButton>
+                  <ButtonWrap>
+                    {userReimbursableData?.data?.deus !== '0' && <ClaimButtonDeus disabled>Claim DEUS</ClaimButtonDeus>}
+                    <ClaimButton disabled>Claim</ClaimButton>
+                  </ButtonWrap>
                 )}
               </Row>
             </OutputContainer>
@@ -246,14 +384,26 @@ export default function Incident() {
       <ReviewModal
         title={'Claim'}
         inputTokens={[DEI_BDEI_LP_TOKEN]}
-        outputTokens={[USDC_TOKEN, DEUS_TOKEN]}
+        outputTokens={[USDC_TOKEN, BDEI_TOKEN]}
         amountIn={amountIn}
         setAmountIn={setAmountIn}
-        userReimbursableData={userReimbursableData}
+        userReimbursableData={userReimbursableAmount?.toString()}
         isOpen={isOpen}
         toggleModal={toggleModal}
         buttonText={'Claim'}
-        handleClick={() => console.log('test2')}
+        handleClick={() => handleReimburse()}
+      />
+      <ReviewModal2
+        title={'Claim'}
+        inputTokens={[DEUS_TOKEN]}
+        outputTokens={[DEUS_TOKEN]}
+        amountIn={amountIn}
+        setAmountIn={setAmountIn}
+        userDeusAmount={userDeusAmount?.toString()}
+        isOpen={isOpen2}
+        toggleModal={toggleModal2}
+        buttonText={'Claim'}
+        handleClick={() => handleClaimDeus()}
       />
     </>
   )

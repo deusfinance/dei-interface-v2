@@ -10,6 +10,7 @@ import { NumericalInput } from 'components/Input'
 import { RowBetween } from '../../Row/index'
 import { ChevronDown as ChevronDownIcon } from 'components/Icons'
 import { formatBalance } from 'utils/numbers'
+import { DEUS_TOKEN } from 'constants/tokens'
 
 const Wrapper = styled.div`
   font-family: Inter;
@@ -114,7 +115,7 @@ export default function InputBox({
   return (
     <Wrapper>
       <RowBetween alignItems={'center'}>
-        <TokenName>Reimbursable Amount</TokenName>
+        <TokenName>{currency.symbol === DEUS_TOKEN.symbol ? DEUS_TOKEN.symbol : 'Reimbursable Amount'}</TokenName>
         <Balance onClick={handleClick}>
           <span>Balance: </span> {balanceDisplay ? balanceDisplay : '0.00'}
           {!disabled && <MaxButton>MAX</MaxButton>}
