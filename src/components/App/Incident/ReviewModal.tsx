@@ -112,6 +112,8 @@ export default function ReviewModal({
 
       {!amountIn ? (
         <ConfirmButton disabled>{buttonText}</ConfirmButton>
+      ) : toBN(amountIn).isGreaterThan(toBN(userReimbursableData?.toString())) ? (
+        <ConfirmButton disabled>insufficient Balance</ConfirmButton>
       ) : (
         <ConfirmButton onClick={() => handleClick()}>{buttonText}</ConfirmButton>
       )}

@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
+import { formatUnits } from '@ethersproject/units'
 
 import { Container as MainContainer } from 'components/App/StableCoin'
 import Column, { ColumnCenter } from 'components/Column'
 import { InputField } from 'components/Input'
-import { Row, RowBetween } from 'components/Row'
+import { Row, RowBetween, RowStart } from 'components/Row'
 import { PrimaryButton } from 'components/Button'
 import useWeb3React from 'hooks/useWeb3'
 import UserStats from './UserStats'
@@ -15,14 +16,13 @@ import { useWalletModalToggle } from 'state/application/hooks'
 import ReviewModal from './ReviewModal'
 import ReviewModal2 from './ReviewModal2'
 import { BDEI_TOKEN, DEI_BDEI_LP_TOKEN, DEUS_TOKEN, USDC_TOKEN } from 'constants/tokens'
-import { formatUnits } from '@ethersproject/units'
 import { BN_ZERO, toBN } from 'utils/numbers'
-import { DeusText } from '../Redemption/InputBoxInDollar'
 import { useClaimDeusCallback, useReimbursementCallback } from 'hooks/useReimbursementCallback'
 import { useGetClaimedData, useGetReimburseRatio } from 'hooks/useReimbursementPage'
 import { SupportedChainId } from 'constants/chains'
 import useRpcChangerCallback from 'hooks/useRpcChangerCallback'
 import { ConnectButton, ConnectButtonText, ConnectButtonWrap } from 'components/Web3Status'
+import { Link as LinkIcon } from 'components/Icons'
 
 const Container = styled(MainContainer)`
   min-height: 90vh;
@@ -72,8 +72,10 @@ const OutputContainer = styled(RowBetween)`
 export const Title = styled.span`
   color: #aaaeae;
 `
-export const TitleIndent = styled(Title)`
-  padding-left: 20px;
+export const LinkTitle = styled(Title)`
+  &:hover {
+    color: white;
+  }
 `
 export const Value = styled.span`
   margin-left: auto;
@@ -99,18 +101,13 @@ const Input = styled(InputField)`
   `}
 `
 export const ClaimButton = styled(MainButton)`
-  width: 260px;
+  width: 165px;
   height: 45px;
   font-size: 18px;
 `
 export const ClaimButtonDeus = styled(ClaimButton)`
-  width: 140px;
   background: ${({ theme }) => theme.deusColor};
   color: #000;
-
-  ${({ theme }) => theme.mediaWidth.upToSmall`
-    width: 260px;
-  `}
 
   &:focus {
     box-shadow: 0 0 0 1pt ${({ theme }) => theme.deusColorReverse};
@@ -146,7 +143,6 @@ export const ConnectedButton = styled.div`
   font-family: Inter;
   background: rgb(37, 43, 36);
   color: #66dd96;
-
   ${({ theme }) => theme.mediaWidth.upToSmall`
     height: 32px;
     width: 100px;
@@ -164,6 +160,27 @@ const MainButtonsWrap = styled.div`
   display: flex;
   flex-flow: row wrap;
   gap: 5px;
+`
+const ExternalLinkIcon = styled(LinkIcon)`
+  margin-left: 5px;
+  margin-bottom: 4px;
+  path {
+    fill: #aaaeae;
+  }
+`
+const ExternalItem = styled(RowStart)`
+  border-bottom: 1px solid #aaaeae;
+  &:hover {
+    border-bottom: 1px solid white;
+    & > * {
+      color: ${({ theme }) => theme.white};
+    }
+    svg {
+      path {
+        fill: ${({ theme }) => theme.white};
+      }
+    }
+  }
 `
 
 export default function Incident() {
@@ -371,31 +388,39 @@ export default function Incident() {
           {walletAddress && userReimbursableData && (
             <OutputContainer>
               <Row>
-                <Title>Reimbursable Amount:</Title>
-                <Value style={{ color: '#aaaeae' }}>${userReimbursableAmount.toFixed(6).toString()}</Value>
+                <ExternalLink
+                  href="https://docs.deus.finance/dei-incident-05.05.2023/reimbursement-process"
+                  style={{ textDecoration: 'none' }}
+                >
+                  <ExternalItem>
+                    <LinkTitle>Reimbursable Amount</LinkTitle>
+                    <ExternalLinkIcon />
+                    <LinkTitle>:</LinkTitle>
+                  </ExternalItem>
+                </ExternalLink>
+                <Value>${userReimbursableAmount.toFixed(6).toString()}</Value>
               </Row>
               <Row>
-                <TitleIndent>
+                <Title>
                   Claimable amount in {USDC_TOKEN.name} + {BDEI_TOKEN.name}: (NOW)
-                </TitleIndent>
+                </Title>
                 <Value>
                   {USDC_amount.toFixed(2).toString()} {USDC_TOKEN.symbol} + {bDEI_amount.toFixed(2).toString()}{' '}
                   {BDEI_TOKEN.symbol}
                 </Value>
               </Row>
               <Row>
-                <TitleIndent>Claimable amount in New DEI + {BDEI_TOKEN.name}: (Later)</TitleIndent>
-                <Value style={{ color: '#aaaeae' }}>
+                <Title>Claimable amount in New DEI + {BDEI_TOKEN.name}: (Later)</Title>
+                <Value>
                   {NewDei_amount.toFixed(2).toString()} new DEI + {bDEI_amount2.toFixed(2).toString()}{' '}
                   {BDEI_TOKEN.symbol}
                 </Value>
               </Row>
               {userDeusAmount.isGreaterThan(BN_ZERO) && (
                 <Row>
-                  <Title>{DEUS_TOKEN.name} Amount:</Title>
+                  <Title>Claimable amount in {DEUS_TOKEN.name}: (NOW)</Title>
                   <Value>
-                    {userDeusAmount.toFixed(3).toString()}
-                    <DeusText>DEUS</DeusText>
+                    {userDeusAmount.toFixed(3).toString()} {DEUS_TOKEN.name}
                   </Value>
                 </Row>
               )}
@@ -411,22 +436,18 @@ export default function Incident() {
                       <ClaimButtonDeus onClick={() => toggleModal2()}>Claim DEUS</ClaimButtonDeus>
                     )}
                     <MainButtonsWrap>
-                      <ClaimButton onClick={() => toggleModal()}>
-                        CLAIM {USDC_TOKEN.symbol}&{BDEI_TOKEN.symbol} NOW
-                      </ClaimButton>
-                      <ClaimButton disabled style={{ cursor: 'not-allowed' }}>
-                        CLAIM newDEI&{BDEI_TOKEN.symbol} later
+                      <ClaimButton onClick={() => toggleModal()}>CLAIM NOW</ClaimButton>
+                      <ClaimButton disabled style={{ cursor: 'not-allowed', color: 'gray' }}>
+                        CLAIM LATER
                       </ClaimButton>
                     </MainButtonsWrap>
                   </ButtonWrap>
                 ) : (
                   <ButtonWrap>
                     {userDeusAmount.isGreaterThan(BN_ZERO) && <ClaimButtonDeus disabled>Claim DEUS</ClaimButtonDeus>}
-                    <ClaimButton disabled>
-                      CLAIM {USDC_TOKEN.symbol}&{BDEI_TOKEN.symbol} NOW
-                    </ClaimButton>
-                    <ClaimButton disabled style={{ cursor: 'not-allowed' }}>
-                      CLAIM newDEI&{BDEI_TOKEN.symbol} later
+                    <ClaimButton disabled>CLAIM NOW</ClaimButton>
+                    <ClaimButton disabled style={{ cursor: 'not-allowed', color: 'gray' }}>
+                      CLAIM LATER
                     </ClaimButton>
                   </ButtonWrap>
                 )}
