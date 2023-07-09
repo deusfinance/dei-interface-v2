@@ -4,7 +4,7 @@ import { formatUnits } from '@ethersproject/units'
 import { useSingleContractMultipleMethods } from 'state/multicall/hooks'
 import { useReimbursementContract } from 'hooks/useContract'
 import { DEUS_TOKEN, USDC_TOKEN } from 'constants/tokens'
-import { toBN } from 'utils/numbers'
+import { BN_ZERO, toBN } from 'utils/numbers'
 import useWeb3React from './useWeb3'
 import useDebounce from './useDebounce'
 
@@ -34,12 +34,12 @@ export function useGetClaimedData() {
 
   const claimedDeusAmountRes =
     !claimedDeusAmount || !claimedDeusAmount.result
-      ? ''
+      ? BN_ZERO
       : toBN(formatUnits(claimedDeusAmount?.result[0].toString(), DEUS_TOKEN.decimals)).toString()
 
   const claimedCollateralAmountRes =
     !claimedCollateralAmount || !claimedCollateralAmount.result
-      ? ''
+      ? BN_ZERO
       : toBN(formatUnits(claimedCollateralAmount?.result[0].toString(), USDC_TOKEN.decimals)).toString()
 
   return {

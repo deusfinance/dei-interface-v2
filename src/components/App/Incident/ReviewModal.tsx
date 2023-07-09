@@ -7,11 +7,11 @@ import Column from 'components/Column'
 import { Row } from 'components/Row'
 import { PrimaryButton } from 'components/Button'
 import InputBox from './InputBox'
-import { Title } from '.'
-// import { DEUS_TOKEN, USDC_TOKEN } from 'constants/tokens'
-// import { formatUnits } from '@ethersproject/units'
-// import { toBN } from 'utils/numbers'
+import { Title, Value } from '.'
 import { useGetReimburseRatio } from 'hooks/useReimbursementPage'
+import BigNumber from 'bignumber.js'
+import { USDC_TOKEN } from 'constants/tokens'
+import { toBN } from 'utils/numbers'
 
 const MainModal = styled(Modal)`
   display: flex;
@@ -70,12 +70,12 @@ export default function ReviewModal({
   buttonText: string
   toggleModal: (action: boolean) => void
   handleClick: () => void
-  userReimbursableData: string
+  userReimbursableData: BigNumber
 }) {
   const reimburseRatio = useGetReimburseRatio()
   const ratio = Number(reimburseRatio) * 1e-6
-  const USDC_amount = ratio * Number(userReimbursableData)
-  const bDEI_amount = (1 - ratio) * Number(userReimbursableData)
+  const USDC_amount = userReimbursableData.times(toBN(ratio))
+  const bDEI_amount = userReimbursableData.times(toBN(1 - ratio))
 
   return (
     <MainModal isOpen={isOpen} onBackgroundClick={() => toggleModal(false)} onEscapeKeydown={() => toggleModal(false)}>
@@ -87,7 +87,7 @@ export default function ReviewModal({
               <InputBox
                 key={index}
                 currency={token}
-                // maxValue={formatUnits(userReimbursableData?.toString(), DEUS_TOKEN.decimals)}
+                maxValue={userReimbursableData?.toString()}
                 value={amountIn}
                 onChange={(value: string) => setAmountIn(value)}
               />
@@ -98,11 +98,11 @@ export default function ReviewModal({
                 {outputTokens.map((token, index) => (
                   <Row key={index} style={{ paddingTop: '10px' }}>
                     <Title>Claimable {token.name}:</Title>
-                    {/* <Value>
+                    <Value>
                       {token.name === USDC_TOKEN.symbol
-                        ? toBN(formatUnits(USDC_amount.toString(), DEUS_TOKEN.decimals)).toFixed(6).toString()
-                        : toBN(formatUnits(bDEI_amount.toString(), DEUS_TOKEN.decimals)).toFixed(4).toString()}
-                    </Value> */}
+                        ? USDC_amount.toFixed(6).toString()
+                        : bDEI_amount.toFixed(4).toString()}
+                    </Value>
                   </Row>
                 ))}
               </div>

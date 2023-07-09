@@ -7,10 +7,8 @@ import Column from 'components/Column'
 import { Row } from 'components/Row'
 import { PrimaryButton } from 'components/Button'
 import InputBox from './InputBox'
-import { Title } from '.'
-// import { DEUS_TOKEN } from 'constants/tokens'
-// import { formatUnits } from '@ethersproject/units'
-// import { toBN } from 'utils/numbers'
+import { Title, Value } from '.'
+import BigNumber from 'bignumber.js'
 
 const MainModal = styled(Modal)`
   display: flex;
@@ -69,7 +67,7 @@ export default function ReviewModal({
   buttonText: string
   toggleModal: (action: boolean) => void
   handleClick: () => void
-  userDeusAmount: string
+  userDeusAmount: BigNumber
 }) {
   return (
     <MainModal isOpen={isOpen} onBackgroundClick={() => toggleModal(false)} onEscapeKeydown={() => toggleModal(false)}>
@@ -81,7 +79,7 @@ export default function ReviewModal({
               <InputBox
                 key={index}
                 currency={token}
-                // maxValue={formatUnits(userDeusAmount?.toString(), DEUS_TOKEN.decimals)}
+                maxValue={userDeusAmount?.toString()}
                 value={amountIn}
                 onChange={(value: string) => setAmountIn(value)}
               />
@@ -91,9 +89,7 @@ export default function ReviewModal({
               {outputTokens.map((token, index) => (
                 <Row key={index} style={{ paddingTop: '10px' }}>
                   <Title>Claimable {token.name}:</Title>
-                  {/* <Value>
-                    {toBN(formatUnits(userDeusAmount?.toString(), DEUS_TOKEN.decimals)).toFixed(6).toString()}
-                  </Value> */}
+                  <Value>{userDeusAmount?.toString()}</Value>
                 </Row>
               ))}
             </div>
