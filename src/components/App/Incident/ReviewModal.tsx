@@ -8,7 +8,6 @@ import { Row } from 'components/Row'
 import { PrimaryButton } from 'components/Button'
 import InputBox from './InputBox'
 import { Title, Value } from '.'
-import { useGetReimburseRatio } from 'hooks/useReimbursementPage'
 import BigNumber from 'bignumber.js'
 import { USDC_TOKEN } from 'constants/tokens'
 import { toBN } from 'utils/numbers'
@@ -60,6 +59,7 @@ export default function ReviewModal({
   toggleModal,
   handleClick,
   userReimbursableData,
+  ratio,
 }: {
   title: string
   inputTokens: Token[]
@@ -71,9 +71,8 @@ export default function ReviewModal({
   toggleModal: (action: boolean) => void
   handleClick: () => void
   userReimbursableData: BigNumber
+  ratio: number
 }) {
-  const reimburseRatio = useGetReimburseRatio()
-  const ratio = Number(reimburseRatio) * 1e-6
   const USDC_amount = userReimbursableData.times(toBN(ratio))
   const bDEI_amount = userReimbursableData.times(toBN(1 - ratio))
 

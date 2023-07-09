@@ -44,6 +44,30 @@ const ConfirmButton = styled(PrimaryButton)`
   margin: 0 auto;
   margin-bottom: 20px;
   border-radius: 12px;
+  background: ${({ theme }) => theme.deusColor};
+  color: #000;
+
+  &:focus {
+    box-shadow: 0 0 0 1pt ${({ theme }) => theme.deusColorReverse};
+    background: ${({ theme }) => theme.deusColorReverse};
+  }
+  &:hover {
+    background: ${({ theme }) => theme.deusColorReverse};
+  }
+
+  ${({ theme, disabled }) =>
+    disabled &&
+    `
+      background: ${theme.bg2};
+      border: 1px solid ${theme.border1};
+      cursor: default;
+      color: #FFF;
+
+      &:focus,
+      &:hover {
+        background: ${theme.bg2};
+      }
+  `}
 `
 
 export default function ReviewModal({

@@ -19,9 +19,10 @@ import { formatUnits } from '@ethersproject/units'
 import { BN_ZERO, toBN } from 'utils/numbers'
 import { DeusText } from '../Redemption/InputBoxInDollar'
 import { useClaimDeusCallback, useReimbursementCallback } from 'hooks/useReimbursementCallback'
-import { useGetClaimedData } from 'hooks/useReimbursementPage'
+import { useGetClaimedData, useGetReimburseRatio } from 'hooks/useReimbursementPage'
 import { SupportedChainId } from 'constants/chains'
 import useRpcChangerCallback from 'hooks/useRpcChangerCallback'
+import { ConnectButton, ConnectButtonText, ConnectButtonWrap } from 'components/Web3Status'
 
 const Container = styled(MainContainer)`
   min-height: 90vh;
@@ -51,10 +52,10 @@ const WalletAddressInputContainer = styled(RowBetween)`
   z-index: 2;
   border: 1px solid rgba(75, 73, 73, 0.9);
   margin-bottom: 16px;
-  /* ${({ theme }) => theme.mediaWidth.upToMedium`
+  ${({ theme }) => theme.mediaWidth.upToSmall`
     min-height: 45px;
     height: 45px;
-  `} */
+  `}
 `
 const OutputContainer = styled(RowBetween)`
   display: flex;
@@ -67,13 +68,12 @@ const OutputContainer = styled(RowBetween)`
   z-index: 2;
   border: 1px solid rgba(75, 73, 73, 0.9);
   margin-bottom: 16px;
-  /* ${({ theme }) => theme.mediaWidth.upToMedium`
-    min-height: 45px;
-    height: 45px;
-  `} */
 `
 export const Title = styled.span`
   color: #aaaeae;
+`
+export const TitleIndent = styled(Title)`
+  padding-left: 20px;
 `
 export const Value = styled.span`
   margin-left: auto;
@@ -85,14 +85,18 @@ export const MainButton = styled(PrimaryButton)<{ disabled?: boolean }>`
   height: 48px;
   font-size: 16px;
   margin-left: auto;
+
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    margin: 0 auto;
+  `}
 `
 const Input = styled(InputField)`
   font-family: Inter;
   font-size: 1rem;
   color: #f2fbfb;
-  /* ${({ theme }) => theme.mediaWidth.upToMedium`
+  ${({ theme }) => theme.mediaWidth.upToSmall`
     font-size: 0.7rem !important;
-  `} */
+  `}
 `
 export const ClaimButton = styled(MainButton)`
   width: 260px;
@@ -103,6 +107,10 @@ export const ClaimButtonDeus = styled(ClaimButton)`
   width: 140px;
   background: ${({ theme }) => theme.deusColor};
   color: #000;
+
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    width: 260px;
+  `}
 
   &:focus {
     box-shadow: 0 0 0 1pt ${({ theme }) => theme.deusColorReverse};
@@ -118,6 +126,14 @@ const ErrorWrap = styled(Column)`
     line-height: 25px;
   }
 `
+const ButtonsRow = styled(Row)`
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    display: flex;
+    flex-flow: column wrap;
+    justify-content: center;
+    gap: 5px;
+  `}
+`
 export const ConnectedButton = styled.div`
   display: flex;
   flex-flow: column nowrap;
@@ -130,11 +146,23 @@ export const ConnectedButton = styled.div`
   font-family: Inter;
   background: rgb(37, 43, 36);
   color: #66dd96;
+
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    height: 32px;
+    width: 100px;
+    border-radius: 8px;
+    font-size: 14px;
+  `}
 `
 const ButtonWrap = styled.div`
   display: flex;
   flex-flow: row wrap;
   margin-left: auto;
+  gap: 5px;
+`
+const MainButtonsWrap = styled.div`
+  display: flex;
+  flex-flow: row wrap;
   gap: 5px;
 `
 
@@ -207,6 +235,16 @@ export default function Incident() {
   }, [userReimbursableData])
   const userDeusAmount = userDeusAmountBN.minus(claimedDeusAmount ?? BN_ZERO)
 
+  const reimburseRatio = useGetReimburseRatio()
+  const ratio = Number(reimburseRatio) * 1e-6
+  const newDeiRatio = 0.71
+
+  const USDC_amount = userReimbursableAmount.times(toBN(ratio))
+  const bDEI_amount = userReimbursableAmount.times(toBN(1 - ratio))
+
+  const NewDei_amount = userReimbursableAmount.times(toBN(newDeiRatio))
+  const bDEI_amount2 = userReimbursableAmount.times(toBN(1 - newDeiRatio))
+
   // console.log(userReimbursableAmountBN?.toString(), userDeusAmountBN?.toString())
   // console.log(claimedDeusAmount, claimedCollateralAmount)
   // console.log(userReimbursableAmount?.toString(), userDeusAmount?.toString())
@@ -215,13 +253,13 @@ export default function Incident() {
     state: reimburseCallbackState,
     callback: reimburseCallback,
     error: reimburseCallbackError,
-  } = useReimbursementCallback(amountIn, userReimbursableAmount?.toString(), userReimbursableData?.usdc_proof)
+  } = useReimbursementCallback(amountIn, userReimbursableData?.data?.usdc.toString(), userReimbursableData?.usdc_proof)
 
   const {
     state: claimDeusCallbackState,
     callback: claimDeusCallback,
     error: claimDeusCallbackError,
-  } = useClaimDeusCallback(amountIn, userDeusAmount?.toString(), userReimbursableData?.deus_proof)
+  } = useClaimDeusCallback(amountIn, userReimbursableData?.data?.deus.toString(), userReimbursableData?.deus_proof)
 
   const handleReimburse = useCallback(async () => {
     console.log('called handleReimburse')
@@ -289,28 +327,42 @@ export default function Incident() {
             walletAddress?.toLowerCase() !== account?.toLowerCase() ||
             !userData ||
             !userReimbursableData ? (
-              <span>
-                {chainId && chainId !== SupportedChainId.ARBITRUM ? (
-                  <ClaimButton
-                    onClick={() => {
-                      setUserData(null)
-                      setUserReimbursableData(null)
-                      rpcChangerCallback(SupportedChainId.ARBITRUM)
-                    }}
-                  >
-                    Switch to ARBITRUM
-                  </ClaimButton>
-                ) : (
-                  <ClaimButton
-                    style={{ width: '120px' }}
-                    onClick={() => {
-                      handleCheck()
-                    }}
-                  >
-                    Check
-                  </ClaimButton>
-                )}
-              </span>
+              <React.Fragment>
+                <React.Fragment>
+                  {!account ? (
+                    <React.Fragment>
+                      <ConnectButtonWrap onClick={toggleWalletModal}>
+                        <ConnectButton>
+                          <ConnectButtonText>Connect Wallet</ConnectButtonText>
+                        </ConnectButton>
+                      </ConnectButtonWrap>
+                    </React.Fragment>
+                  ) : (
+                    <React.Fragment>
+                      {chainId && chainId !== SupportedChainId.ARBITRUM ? (
+                        <ClaimButton
+                          onClick={() => {
+                            setUserData(null)
+                            setUserReimbursableData(null)
+                            rpcChangerCallback(SupportedChainId.ARBITRUM)
+                          }}
+                        >
+                          Switch to ARBITRUM
+                        </ClaimButton>
+                      ) : (
+                        <ClaimButton
+                          style={{ width: '120px' }}
+                          onClick={() => {
+                            handleCheck()
+                          }}
+                        >
+                          Check
+                        </ClaimButton>
+                      )}
+                    </React.Fragment>
+                  )}
+                </React.Fragment>
+              </React.Fragment>
             ) : (
               <ConnectedButton>Connected</ConnectedButton>
             )}
@@ -319,10 +371,24 @@ export default function Incident() {
           {walletAddress && userReimbursableData && (
             <OutputContainer>
               <Row>
-                <Title>
-                  Reimbursable Amount ({USDC_TOKEN.name}-{BDEI_TOKEN.name}):
-                </Title>
-                <Value>${userReimbursableAmount.toFixed(6).toString()}</Value>
+                <Title>Reimbursable Amount:</Title>
+                <Value style={{ color: '#aaaeae' }}>${userReimbursableAmount.toFixed(6).toString()}</Value>
+              </Row>
+              <Row>
+                <TitleIndent>
+                  Claimable amount in {USDC_TOKEN.name} + {BDEI_TOKEN.name}: (NOW)
+                </TitleIndent>
+                <Value>
+                  {USDC_amount.toFixed(2).toString()} {USDC_TOKEN.symbol} + {bDEI_amount.toFixed(2).toString()}{' '}
+                  {BDEI_TOKEN.symbol}
+                </Value>
+              </Row>
+              <Row>
+                <TitleIndent>Claimable amount in New DEI + {BDEI_TOKEN.name}: (Later)</TitleIndent>
+                <Value style={{ color: '#aaaeae' }}>
+                  {NewDei_amount.toFixed(2).toString()} new DEI + {bDEI_amount2.toFixed(2).toString()}{' '}
+                  {BDEI_TOKEN.symbol}
+                </Value>
               </Row>
               {userDeusAmount.isGreaterThan(BN_ZERO) && (
                 <Row>
@@ -333,9 +399,9 @@ export default function Incident() {
                   </Value>
                 </Row>
               )}
-              <Row>
+              <ButtonsRow>
                 <ExternalLink href="https://7eoku1wmhjg.typeform.com/dei-incident">
-                  <NavButton style={{ width: '200px', padding: '5px 10px' }}>Report Issues</NavButton>
+                  <NavButton style={{ width: '100px', padding: '5px 10px' }}>Report Issues</NavButton>
                 </ExternalLink>
                 {!account ? (
                   <MainButton onClick={toggleWalletModal}>Connect Wallet</MainButton>
@@ -344,15 +410,27 @@ export default function Incident() {
                     {userDeusAmount.isGreaterThan(BN_ZERO) && (
                       <ClaimButtonDeus onClick={() => toggleModal2()}>Claim DEUS</ClaimButtonDeus>
                     )}
-                    <ClaimButton onClick={() => toggleModal()}>Claim</ClaimButton>
+                    <MainButtonsWrap>
+                      <ClaimButton onClick={() => toggleModal()}>
+                        CLAIM {USDC_TOKEN.symbol}&{BDEI_TOKEN.symbol} NOW
+                      </ClaimButton>
+                      <ClaimButton disabled style={{ cursor: 'not-allowed' }}>
+                        CLAIM newDEI&{BDEI_TOKEN.symbol} later
+                      </ClaimButton>
+                    </MainButtonsWrap>
                   </ButtonWrap>
                 ) : (
                   <ButtonWrap>
                     {userDeusAmount.isGreaterThan(BN_ZERO) && <ClaimButtonDeus disabled>Claim DEUS</ClaimButtonDeus>}
-                    <ClaimButton disabled>Claim</ClaimButton>
+                    <ClaimButton disabled>
+                      CLAIM {USDC_TOKEN.symbol}&{BDEI_TOKEN.symbol} NOW
+                    </ClaimButton>
+                    <ClaimButton disabled style={{ cursor: 'not-allowed' }}>
+                      CLAIM newDEI&{BDEI_TOKEN.symbol} later
+                    </ClaimButton>
                   </ButtonWrap>
                 )}
-              </Row>
+              </ButtonsRow>
             </OutputContainer>
           )}
 
@@ -389,9 +467,10 @@ export default function Incident() {
         toggleModal={toggleModal}
         buttonText={'Claim'}
         handleClick={() => handleReimburse()}
+        ratio={ratio}
       />
       <ReviewModal2
-        title={'Claim'}
+        title={'Claim DEUS'}
         inputTokens={[DEUS_TOKEN]}
         outputTokens={[DEUS_TOKEN]}
         amountIn={amountIn}
@@ -399,7 +478,7 @@ export default function Incident() {
         userDeusAmount={userDeusAmount}
         isOpen={isOpen2}
         toggleModal={toggleModal2}
-        buttonText={'Claim'}
+        buttonText={'Claim DEUS'}
         handleClick={() => handleClaimDeus()}
       />
     </>
