@@ -126,5 +126,5 @@ export const LQDR_ADDRESS: AddressMap = {
 }
 
 export const Reimbursement_ADDRESS: AddressMap = {
-  [SupportedChainId.ARBITRUM]: '0xFdE7279951861716149d73FF7d5C35c2A79F12b0',
+  [SupportedChainId.ARBITRUM]: '0xA16C48C4a07CDCd519b4354C2D094eA509124615',
 }

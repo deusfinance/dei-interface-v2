@@ -114,7 +114,7 @@ export default function ReviewModal({
               {outputTokens.map((token, index) => (
                 <Row key={index} style={{ paddingTop: '10px' }}>
                   <Title>Claimable {token.name}:</Title>
-                  <Value>{userDeusAmount?.toString()}</Value>
+                  <Value>{userDeusAmount?.toFixed(6).toString()}</Value>
                 </Row>
               ))}
             </div>

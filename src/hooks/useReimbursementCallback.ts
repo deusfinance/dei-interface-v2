@@ -26,7 +26,7 @@ export function useReimbursementCallback(
       }
 
       const amountInBN = toBN(amountIn).times(1e18).toFixed(0).toString()
-      const totalClaimableAmountBN = toBN(totalClaimableAmount).times(1e18).toFixed(0).toString()
+      const totalClaimableAmountBN = toBN(totalClaimableAmount).toFixed(0).toString()
 
       const args = [amountInBN, totalClaimableAmountBN, proof, account]
       console.log({ args })
@@ -82,7 +82,7 @@ export function useClaimDeusCallback(
         throw new Error('Missing dependencies.')
       }
 
-      const amountInBN = toBN(amountIn).times(1e18).toFixed(0).toString()
+      const amountInBN = toBN(amountIn).times(1).toFixed(0).toString()
       const args = [amountInBN, totalClaimableAmount, proof, account]
       console.log({ args })
 

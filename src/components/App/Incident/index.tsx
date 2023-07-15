@@ -108,7 +108,6 @@ export const ClaimButton = styled(MainButton)`
 export const ClaimButtonDeus = styled(ClaimButton)`
   background: ${({ theme }) => theme.deusColor};
   color: #000;
-
   &:focus {
     box-shadow: 0 0 0 1pt ${({ theme }) => theme.deusColorReverse};
     background: ${({ theme }) => theme.deusColorReverse};
@@ -116,6 +115,19 @@ export const ClaimButtonDeus = styled(ClaimButton)`
   &:hover {
     background: ${({ theme }) => theme.deusColorReverse};
   }
+  ${({ theme, disabled }) =>
+    disabled &&
+    `
+      background: ${theme.bg2};
+      color: #FFF;
+      border: 1px solid ${theme.border1};
+      cursor: default;
+
+      &:focus,
+      &:hover {
+        background: ${theme.bg2};
+      }
+  `}
 `
 const ErrorWrap = styled(Column)`
   gap: 20px;
@@ -192,9 +204,17 @@ export default function Incident() {
   const toggleWalletModal = useWalletModalToggle()
   const [amountIn, setAmountIn] = useState('')
   const [isOpen, setIsOpen] = useState(false)
-  const toggleModal = () => setIsOpen((prev) => !prev)
+  const [clickedOnce, setClickedOnce] = useState(false)
+
+  const toggleModal = () => {
+    setIsOpen((prev) => !prev)
+    setAmountIn('')
+  }
   const [isOpen2, setIsOpen2] = useState(false)
-  const toggleModal2 = () => setIsOpen2((prev) => !prev)
+  const toggleModal2 = () => {
+    setIsOpen2((prev) => !prev)
+    setAmountIn('')
+  }
 
   const rpcChangerCallback = useRpcChangerCallback()
 
@@ -222,11 +242,8 @@ export default function Incident() {
     }
   }, [walletAddress])
 
-  useEffect(() => {
-    if (account) setWalletAddress(account)
-  }, [account])
-
-  const handleCheck = async () => {
+  const handleCheck = useCallback(async () => {
+    setClickedOnce(true)
     const rest = await findUserLPData()
     const rest2 = await findUserReimbursableData()
     if (rest?.status === 'error' || rest2?.status === 'error') {
@@ -238,7 +255,14 @@ export default function Incident() {
       setUserReimbursableData(rest2)
       setError(false)
     }
-  }
+  }, [findUserLPData, findUserReimbursableData])
+
+  useEffect(() => {
+    if (account) {
+      setWalletAddress(account)
+      if (clickedOnce) handleCheck()
+    }
+  }, [account, clickedOnce])
 
   const userReimbursableAmountBN = useMemo(() => {
     if (userReimbursableData) return toBN(formatUnits(userReimbursableData?.data?.usdc.toString(), DEUS_TOKEN.decimals))
@@ -254,17 +278,12 @@ export default function Incident() {
 
   const reimburseRatio = useGetReimburseRatio()
   const ratio = Number(reimburseRatio) * 1e-6
-  const newDeiRatio = 0.71
-
   const USDC_amount = userReimbursableAmount.times(toBN(ratio))
   const bDEI_amount = userReimbursableAmount.times(toBN(1 - ratio))
 
+  const newDeiRatio = 0.71
   const NewDei_amount = userReimbursableAmount.times(toBN(newDeiRatio))
   const bDEI_amount2 = userReimbursableAmount.times(toBN(1 - newDeiRatio))
-
-  // console.log(userReimbursableAmountBN?.toString(), userDeusAmountBN?.toString())
-  // console.log(claimedDeusAmount, claimedCollateralAmount)
-  // console.log(userReimbursableAmount?.toString(), userDeusAmount?.toString())
 
   const {
     state: reimburseCallbackState,
@@ -340,49 +359,42 @@ export default function Incident() {
               }}
               placeholder="Wallet address"
             />
-            {!account ||
-            walletAddress?.toLowerCase() !== account?.toLowerCase() ||
-            !userData ||
-            !userReimbursableData ? (
+            <React.Fragment>
               <React.Fragment>
-                <React.Fragment>
-                  {!account ? (
-                    <React.Fragment>
-                      <ConnectButtonWrap onClick={toggleWalletModal}>
-                        <ConnectButton>
-                          <ConnectButtonText>Connect Wallet</ConnectButtonText>
-                        </ConnectButton>
-                      </ConnectButtonWrap>
-                    </React.Fragment>
-                  ) : (
-                    <React.Fragment>
-                      {chainId && chainId !== SupportedChainId.ARBITRUM ? (
-                        <ClaimButton
-                          onClick={() => {
-                            setUserData(null)
-                            setUserReimbursableData(null)
-                            rpcChangerCallback(SupportedChainId.ARBITRUM)
-                          }}
-                        >
-                          Switch to ARBITRUM
-                        </ClaimButton>
-                      ) : (
-                        <ClaimButton
-                          style={{ width: '120px' }}
-                          onClick={() => {
-                            handleCheck()
-                          }}
-                        >
-                          Check
-                        </ClaimButton>
-                      )}
-                    </React.Fragment>
-                  )}
-                </React.Fragment>
+                {!account ? (
+                  <React.Fragment>
+                    <ConnectButtonWrap onClick={toggleWalletModal}>
+                      <ConnectButton>
+                        <ConnectButtonText>Connect Wallet</ConnectButtonText>
+                      </ConnectButton>
+                    </ConnectButtonWrap>
+                  </React.Fragment>
+                ) : (
+                  <React.Fragment>
+                    {chainId && chainId !== SupportedChainId.ARBITRUM ? (
+                      <ClaimButton
+                        onClick={() => {
+                          setUserData(null)
+                          setUserReimbursableData(null)
+                          rpcChangerCallback(SupportedChainId.ARBITRUM)
+                        }}
+                      >
+                        Switch to ARBITRUM
+                      </ClaimButton>
+                    ) : (
+                      <ClaimButton
+                        style={{ width: '120px' }}
+                        onClick={() => {
+                          handleCheck()
+                        }}
+                      >
+                        Check
+                      </ClaimButton>
+                    )}
+                  </React.Fragment>
+                )}
               </React.Fragment>
-            ) : (
-              <ConnectedButton>Connected</ConnectedButton>
-            )}
+            </React.Fragment>
           </WalletAddressInputContainer>
 
           {walletAddress && userReimbursableData && (
@@ -426,7 +438,7 @@ export default function Incident() {
               )}
               <ButtonsRow>
                 <ExternalLink href="https://7eoku1wmhjg.typeform.com/dei-incident">
-                  <NavButton style={{ width: '100px', padding: '5px 10px' }}>Report Issues</NavButton>
+                  <NavButton style={{ width: '120px', padding: '5px 10px' }}>Report Issues</NavButton>
                 </ExternalLink>
                 {!account ? (
                   <MainButton onClick={toggleWalletModal}>Connect Wallet</MainButton>
