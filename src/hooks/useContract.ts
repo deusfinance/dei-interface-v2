@@ -7,6 +7,7 @@ import { Web3Provider } from '@ethersproject/providers'
 import useWeb3React from './useWeb3'
 
 import ERC20_ABI from 'constants/abi/ERC20.json'
+import REIMBURSEMENT_ABI from 'constants/abi/REIMBURSEMENT.json'
 import ERC20_BYTES32_ABI from 'constants/abi/ERC20'
 import MULTICALL2_ABI from 'constants/abi/MULTICALL2.json'
 import VEDEUS_ABI from 'constants/abi/VEDEUS.json'
@@ -33,6 +34,7 @@ import {
   DeiBonderV3,
   CLQDR_ADDRESS,
   AnyDEI_ADDRESS,
+  Reimbursement_ADDRESS,
 } from 'constants/addresses'
 
 export function useContract<T extends Contract = Contract>(
@@ -165,4 +167,10 @@ export function useAnyDEIContract() {
   const { chainId } = useWeb3React()
   const address = useMemo(() => (chainId ? AnyDEI_ADDRESS[chainId] : undefined), [chainId])
   return useContract(address, ERC20_ABI)
+}
+
+export function useReimbursementContract() {
+  const { chainId } = useWeb3React()
+  const address = useMemo(() => (chainId ? Reimbursement_ADDRESS[chainId] : undefined), [chainId])
+  return useContract(address, REIMBURSEMENT_ABI)
 }

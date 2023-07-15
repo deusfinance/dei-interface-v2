@@ -15,7 +15,7 @@ import { FALLBACK_CHAIN_ID, SolidlyChains } from 'constants/chains'
 import useRpcChangerCallback from 'hooks/useRpcChangerCallback'
 import { RowCenter } from 'components/Row'
 
-const ConnectButtonWrap = styled.div`
+export const ConnectButtonWrap = styled.div`
   border: none;
   background: ${({ theme }) => theme.specialBG1};
   padding: 1px;
@@ -30,7 +30,7 @@ const ConnectButtonWrap = styled.div`
   }
 `
 
-const ConnectButton = styled(RowCenter)`
+export const ConnectButton = styled(RowCenter)`
   border-radius: 8px;
   background: ${({ theme }) => theme.bg2};
   height: 100%;
@@ -38,7 +38,7 @@ const ConnectButton = styled(RowCenter)`
   white-space: nowrap;
 `
 
-const ConnectButtonText = styled.span`
+export const ConnectButtonText = styled.span`
   background: -webkit-linear-gradient(0deg, #e29d52 -10.26%, #de4a7b 80%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;

@@ -39,7 +39,7 @@ const NumericalWrapper = styled.div`
   `}
 `
 
-const DeusText = styled(DeusTitle)<{ fromLeft?: string }>`
+export const DeusText = styled(DeusTitle)<{ fromLeft?: string }>`
   font-weight: 500;
   font-size: 12px;
   margin-left: 6px;

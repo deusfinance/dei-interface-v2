@@ -1,5 +1,5 @@
-import Hack from 'components/App/Hack'
+import Incident from 'components/App/Incident'
 
-export default function HackPage() {
-  return <Hack />
+export default function IncidentPage() {
+  return <Incident />
 }
