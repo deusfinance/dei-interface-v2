@@ -449,7 +449,7 @@ export default function Incident() {
                     )}
                     <MainButtonsWrap>
                       <ClaimButton onClick={() => toggleModal()}>CLAIM NOW</ClaimButton>
-                      <ClaimButton disabled style={{ cursor: 'not-allowed', color: 'gray' }}>
+                      <ClaimButton disabled style={{ cursor: 'not-allowed', color: 'gray', opacity: '0.3' }}>
                         CLAIM LATER
                       </ClaimButton>
                     </MainButtonsWrap>
@@ -458,7 +458,7 @@ export default function Incident() {
                   <ButtonWrap>
                     {userDeusAmount.isGreaterThan(BN_ZERO) && <ClaimButtonDeus disabled>Claim DEUS</ClaimButtonDeus>}
                     <ClaimButton disabled>CLAIM NOW</ClaimButton>
-                    <ClaimButton disabled style={{ cursor: 'not-allowed', color: 'gray' }}>
+                    <ClaimButton disabled style={{ cursor: 'not-allowed', color: 'gray', opacity: '0.3' }}>
                       CLAIM LATER
                     </ClaimButton>
                   </ButtonWrap>
