@@ -82,7 +82,7 @@ export function useClaimDeusCallback(
         throw new Error('Missing dependencies.')
       }
 
-      const amountInBN = toBN(amountIn).times(1).toFixed(0).toString()
+      const amountInBN = toBN(amountIn).times(1e18).toFixed(0).toString()
       const args = [amountInBN, totalClaimableAmount, proof, account]
       console.log({ args })
 
