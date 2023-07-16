@@ -262,16 +262,18 @@ export default function Incident() {
       setWalletAddress(account)
       if (clickedOnce) handleCheck()
     }
-  }, [account, clickedOnce])
+  }, [account])
 
   const userReimbursableAmountBN = useMemo(() => {
-    if (userReimbursableData) return toBN(formatUnits(userReimbursableData?.data?.usdc.toString(), DEUS_TOKEN.decimals))
+    if (userReimbursableData?.data)
+      return toBN(formatUnits(userReimbursableData?.data?.usdc.toString(), DEUS_TOKEN.decimals))
     return BN_ZERO
   }, [userReimbursableData])
   const userReimbursableAmount = userReimbursableAmountBN.minus(claimedCollateralAmount ?? BN_ZERO)
 
   const userDeusAmountBN = useMemo(() => {
-    if (userReimbursableData) return toBN(formatUnits(userReimbursableData?.data?.deus.toString(), DEUS_TOKEN.decimals))
+    if (userReimbursableData?.data)
+      return toBN(formatUnits(userReimbursableData?.data?.deus.toString(), DEUS_TOKEN.decimals))
     return BN_ZERO
   }, [userReimbursableData])
   const userDeusAmount = userDeusAmountBN.minus(claimedDeusAmount ?? BN_ZERO)
