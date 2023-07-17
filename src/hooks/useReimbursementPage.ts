@@ -64,5 +64,5 @@ export function useGetReimburseRatio(): string {
 
   const [reimburseRatioRes] = useSingleContractMultipleMethods(contract, call)
 
-  return !reimburseRatioRes || !reimburseRatioRes.result ? '' : reimburseRatioRes.result[0].toString()
+  return !reimburseRatioRes || !reimburseRatioRes.result ? '602500' : reimburseRatioRes.result[0].toString()
 }

@@ -200,7 +200,7 @@ export default function Incident() {
   const [walletAddress, setWalletAddress] = useState<string>('')
   const [userData, setUserData] = useState<any>(null)
   const [userReimbursableData, setUserReimbursableData] = useState<any>(null)
-  const [error, setError] = useState<boolean>(false)
+  const [error, setError] = useState(false)
   const toggleWalletModal = useWalletModalToggle()
   const [amountIn, setAmountIn] = useState('')
   const [isOpen, setIsOpen] = useState(false)
@@ -246,14 +246,17 @@ export default function Incident() {
     setClickedOnce(true)
     const rest = await findUserLPData()
     const rest2 = await findUserReimbursableData()
-    if (rest?.status === 'error' || rest2?.status === 'error') {
+    if (rest?.status === 'error') {
       setError(true)
       setUserData(null)
-      setUserReimbursableData(null)
     } else {
       setUserData(rest)
-      setUserReimbursableData(rest2)
       setError(false)
+    }
+    if (rest2?.status === 'error') {
+      setUserReimbursableData(null)
+    } else {
+      setUserReimbursableData(rest2)
     }
   }, [findUserLPData, findUserReimbursableData])
 
