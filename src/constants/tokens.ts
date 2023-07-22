@@ -14,6 +14,13 @@ import { USDC_ADDRESS, DEUS_ADDRESS, DEI_ADDRESS, BDEI_ADDRESS, LQDR_ADDRESS, CL
 // import FTM_LOGO from 'assets/img/tokens/ftm.svg'
 
 export const DEI_TOKEN = new Token(SupportedChainId.FANTOM, DEI_ADDRESS[SupportedChainId.FANTOM], 18, 'DEI', 'DEI')
+export const NEW_DEI_TOKEN = new Token(
+  SupportedChainId.FANTOM,
+  DEI_ADDRESS[SupportedChainId.FANTOM],
+  18,
+  'New DEI',
+  'New DEI'
+)
 
 // FIXME: this token is only used in migration page, do we need this?
 export const DEIv2_TOKEN = new Token(
