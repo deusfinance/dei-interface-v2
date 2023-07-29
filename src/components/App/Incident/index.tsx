@@ -231,7 +231,7 @@ export default function Incident() {
 
   const [awaitingReimburseConfirmation, setAwaitingReimburseConfirmation] = useState(false)
 
-  const { claimedDeusAmount, claimedCollateralAmount } = useGetClaimedData()
+  const { claimedDeusAmount, claimedCollateralAmount, claimableDeiAmount } = useGetClaimedData()
 
   const findUserLPData = useCallback(async () => {
     if (!walletAddress) return null
@@ -449,6 +449,15 @@ export default function Incident() {
                 <Value>
                   {NewDei_amount.toFixed(2).toString()} DEI IOU + {bDEI_amount2.toFixed(2).toString()}{' '}
                   {BDEI_TOKEN.symbol}
+                </Value>
+              </Row>
+              <Row>
+                <Title>{NEW_DEI_TOKEN.name} IOU amount:</Title>
+                <Value>
+                  {claimableDeiAmount && claimableDeiAmount.isGreaterThan(BN_ZERO)
+                    ? claimableDeiAmount.toFixed(3).toString()
+                    : 0}{' '}
+                  DEI IOU
                 </Value>
               </Row>
               {userDeusAmount.isGreaterThan(BN_ZERO) && (

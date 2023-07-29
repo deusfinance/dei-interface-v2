@@ -29,14 +29,16 @@ export function useGetClaimedData() {
               methodName: 'claimedDeiAmount',
               callInputs: [account],
             },
+            {
+              methodName: 'claimableDeiAmount',
+              callInputs: [account],
+            },
           ],
     [account]
   )
 
-  const [claimedDeusAmount, claimedCollateralAmount, claimedDeiAmount] = useSingleContractMultipleMethods(
-    contract,
-    call
-  )
+  const [claimedDeusAmount, claimedCollateralAmount, claimedDeiAmount, claimableDeiAmount] =
+    useSingleContractMultipleMethods(contract, call)
   const isLoading = useDebounce(claimedDeusAmount?.loading || claimedCollateralAmount?.loading, 500)
 
   const claimedDeusAmountRes =
@@ -54,10 +56,16 @@ export function useGetClaimedData() {
       ? BN_ZERO
       : toBN(formatUnits(claimedDeiAmount?.result[0].toString(), DEUS_TOKEN.decimals)).toString()
 
+  const claimableDeiAmountRes =
+    !claimableDeiAmount || !claimableDeiAmount.result
+      ? BN_ZERO
+      : toBN(formatUnits(claimableDeiAmount?.result[0].toString(), DEUS_TOKEN.decimals))
+
   return {
     claimedCollateralAmount: claimedCollateralAmountRes,
     claimedDeusAmount: claimedDeusAmountRes,
     claimedDeiAmount: claimedDeiAmountRes,
+    claimableDeiAmount: claimableDeiAmountRes,
     isLoading,
   }
 }
