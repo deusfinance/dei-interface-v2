@@ -9,7 +9,7 @@ import { PrimaryButton } from 'components/Button'
 import InputBox from './InputBox'
 import { Title, Value } from '.'
 import BigNumber from 'bignumber.js'
-import { toBN } from 'utils/numbers'
+import { BN_ZERO, toBN } from 'utils/numbers'
 
 const MainModal = styled(Modal)`
   display: flex;
@@ -122,7 +122,7 @@ export default function ReviewModal({
         )}
       </Wrapper>
 
-      {!amountIn ? (
+      {!amountIn || !toBN(amountIn).isGreaterThan(BN_ZERO) ? (
         <ConfirmButton disabled>{buttonText}</ConfirmButton>
       ) : toBN(amountIn).isGreaterThan(toBN(userDeusAmount?.toString())) ? (
         <ConfirmButton disabled>Insufficient Balance</ConfirmButton>

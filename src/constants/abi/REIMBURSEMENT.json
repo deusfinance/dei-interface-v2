@@ -18,6 +18,17 @@
       { "indexed": false, "internalType": "uint256", "name": "totalClaimableAmount", "type": "uint256" },
       { "indexed": false, "internalType": "address", "name": "to", "type": "address" }
     ],
+    "name": "ClaimDei",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "address", "name": "sender", "type": "address" },
+      { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "totalClaimableAmount", "type": "uint256" },
+      { "indexed": false, "internalType": "address", "name": "to", "type": "address" }
+    ],
     "name": "ClaimDeus",
     "type": "event"
   },
@@ -123,6 +134,18 @@
       { "internalType": "bytes32[]", "name": "proof", "type": "bytes32[]" },
       { "internalType": "address", "name": "to", "type": "address" }
     ],
+    "name": "claimDei",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "amount", "type": "uint256" },
+      { "internalType": "uint256", "name": "totalClaimableAmount", "type": "uint256" },
+      { "internalType": "bytes32[]", "name": "proof", "type": "bytes32[]" },
+      { "internalType": "address", "name": "to", "type": "address" }
+    ],
     "name": "claimDeus",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -130,7 +153,21 @@
   },
   {
     "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "name": "claimableDeiAmount",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "name": "claimedCollateralAmount",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "name": "claimedDeiAmount",
     "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
@@ -146,6 +183,13 @@
     "inputs": [],
     "name": "collateralMerkleRoot",
     "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "deiReimburseRatio",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
@@ -167,6 +211,23 @@
     "inputs": [{ "internalType": "bytes32", "name": "role", "type": "bytes32" }],
     "name": "getRoleAdmin",
     "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "bytes32", "name": "role", "type": "bytes32" },
+      { "internalType": "uint256", "name": "index", "type": "uint256" }
+    ],
+    "name": "getRoleMember",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "bytes32", "name": "role", "type": "bytes32" }],
+    "name": "getRoleMemberCount",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
@@ -196,9 +257,9 @@
       { "internalType": "address", "name": "bDEI_", "type": "address" },
       { "internalType": "address", "name": "usdc_", "type": "address" },
       { "internalType": "address", "name": "deus_", "type": "address" },
+      { "internalType": "address", "name": "admin", "type": "address" },
       { "internalType": "address", "name": "pauser", "type": "address" },
-      { "internalType": "address", "name": "setter", "type": "address" },
-      { "internalType": "address", "name": "admin", "type": "address" }
+      { "internalType": "address", "name": "setter", "type": "address" }
     ],
     "name": "initialize",
     "outputs": [],
@@ -243,6 +304,13 @@
   {
     "inputs": [{ "internalType": "bytes32", "name": "root", "type": "bytes32" }],
     "name": "setCollateralMerkleRoot",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "ratio", "type": "uint256" }],
+    "name": "setDeiReimburseRatio",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

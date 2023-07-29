@@ -9,8 +9,8 @@ import { PrimaryButton } from 'components/Button'
 import InputBox from './InputBox'
 import { Title, Value } from '.'
 import BigNumber from 'bignumber.js'
-import { USDC_TOKEN } from 'constants/tokens'
-import { toBN } from 'utils/numbers'
+import { NEW_DEI_TOKEN, USDC_TOKEN } from 'constants/tokens'
+import { BN_ZERO, toBN } from 'utils/numbers'
 
 const MainModal = styled(Modal)`
   display: flex;
@@ -73,7 +73,7 @@ export default function ReviewModal({
   userReimbursableData: BigNumber
   ratio: number
 }) {
-  const USDC_amount = userReimbursableData.times(toBN(ratio))
+  const USDC_amount = userReimbursableData.times(toBN(ratio)) // OR New DEI
   const bDEI_amount = userReimbursableData.times(toBN(1 - ratio))
 
   return (
@@ -98,7 +98,7 @@ export default function ReviewModal({
                   <Row key={index} style={{ paddingTop: '10px' }}>
                     <Title>Claimable {token.name}:</Title>
                     <Value>
-                      {token.name === USDC_TOKEN.symbol
+                      {token.name === USDC_TOKEN.symbol || token.name === NEW_DEI_TOKEN.symbol
                         ? USDC_amount.toFixed(6).toString()
                         : bDEI_amount.toFixed(4).toString()}
                     </Value>
@@ -110,7 +110,7 @@ export default function ReviewModal({
         )}
       </Wrapper>
 
-      {!amountIn ? (
+      {!amountIn || !toBN(amountIn).isGreaterThan(BN_ZERO) ? (
         <ConfirmButton disabled>{buttonText}</ConfirmButton>
       ) : toBN(amountIn).isGreaterThan(toBN(userReimbursableData?.toString())) ? (
         <ConfirmButton disabled>Insufficient Balance</ConfirmButton>

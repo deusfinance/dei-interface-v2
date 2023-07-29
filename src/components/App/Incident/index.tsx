@@ -15,7 +15,7 @@ import { NavButton } from 'components/Button'
 import { useWalletModalToggle } from 'state/application/hooks'
 import ReviewModal from './ReviewModal'
 import ReviewModal2 from './ReviewModal2'
-import { BDEI_TOKEN, DEI_BDEI_LP_TOKEN, DEUS_TOKEN, USDC_TOKEN } from 'constants/tokens'
+import { BDEI_TOKEN, DEI_BDEI_LP_TOKEN, DEUS_TOKEN, NEW_DEI_TOKEN, USDC_TOKEN } from 'constants/tokens'
 import { BN_ZERO, toBN } from 'utils/numbers'
 import { useClaimDeusCallback, useReimbursementCallback } from 'hooks/useReimbursementCallback'
 import { useGetClaimedData, useGetReimburseRatio } from 'hooks/useReimbursementPage'
@@ -195,6 +195,11 @@ const ExternalItem = styled(RowStart)`
   }
 `
 
+export enum ModalType {
+  USDC,
+  DEI,
+}
+
 export default function Incident() {
   const { account, chainId } = useWeb3React()
   const [walletAddress, setWalletAddress] = useState<string>('')
@@ -205,10 +210,16 @@ export default function Incident() {
   const [amountIn, setAmountIn] = useState('')
   const [isOpen, setIsOpen] = useState(false)
   const [clickedOnce, setClickedOnce] = useState(false)
+  const [modalType, setModalType] = useState(ModalType.USDC)
 
-  const toggleModal = () => {
+  const toggleModal = (action?: boolean) => {
     setIsOpen((prev) => !prev)
     setAmountIn('')
+    if (action) {
+      setModalType(ModalType.DEI)
+    } else {
+      setModalType(ModalType.USDC)
+    }
   }
   const [isOpen2, setIsOpen2] = useState(false)
   const toggleModal2 = () => {
@@ -220,7 +231,7 @@ export default function Incident() {
 
   const [awaitingReimburseConfirmation, setAwaitingReimburseConfirmation] = useState(false)
 
-  const { claimedDeusAmount, claimedCollateralAmount } = useGetClaimedData()
+  const { claimedDeusAmount, claimedCollateralAmount, claimableDeiAmount } = useGetClaimedData()
 
   const findUserLPData = useCallback(async () => {
     if (!walletAddress) return null
@@ -281,20 +292,25 @@ export default function Incident() {
   }, [userReimbursableData])
   const userDeusAmount = userDeusAmountBN.minus(claimedDeusAmount ?? BN_ZERO)
 
-  const reimburseRatio = useGetReimburseRatio()
+  const { reimburseRatio, deiReimburseRatio } = useGetReimburseRatio()
   const ratio = Number(reimburseRatio) * 1e-6
   const USDC_amount = userReimbursableAmount.times(toBN(ratio))
   const bDEI_amount = userReimbursableAmount.times(toBN(1 - ratio))
 
-  const newDeiRatio = 0.71
-  const NewDei_amount = userReimbursableAmount.times(toBN(newDeiRatio))
-  const bDEI_amount2 = userReimbursableAmount.times(toBN(1 - newDeiRatio))
+  const deiRatio = Number(deiReimburseRatio) * 1e-6
+  const NewDei_amount = userReimbursableAmount.times(toBN(deiRatio))
+  const bDEI_amount2 = userReimbursableAmount.times(toBN(1 - deiRatio))
 
   const {
     state: reimburseCallbackState,
     callback: reimburseCallback,
     error: reimburseCallbackError,
-  } = useReimbursementCallback(amountIn, userReimbursableData?.data?.usdc.toString(), userReimbursableData?.usdc_proof)
+  } = useReimbursementCallback(
+    amountIn,
+    userReimbursableData?.data?.usdc.toString(),
+    userReimbursableData?.usdc_proof,
+    modalType
+  )
 
   const {
     state: claimDeusCallbackState,
@@ -427,10 +443,21 @@ export default function Incident() {
                 </Value>
               </Row>
               <Row>
-                <Title>Claimable amount in New DEI + {BDEI_TOKEN.name}: (Later)</Title>
+                <Title>
+                  Claimable amount in {NEW_DEI_TOKEN.name} + {BDEI_TOKEN.name}: (Later)
+                </Title>
                 <Value>
-                  {NewDei_amount.toFixed(2).toString()} new DEI + {bDEI_amount2.toFixed(2).toString()}{' '}
+                  {NewDei_amount.toFixed(2).toString()} DEI IOU + {bDEI_amount2.toFixed(2).toString()}{' '}
                   {BDEI_TOKEN.symbol}
+                </Value>
+              </Row>
+              <Row>
+                <Title>{NEW_DEI_TOKEN.name} IOU amount:</Title>
+                <Value>
+                  {claimableDeiAmount && claimableDeiAmount.isGreaterThan(BN_ZERO)
+                    ? claimableDeiAmount.toFixed(3).toString()
+                    : 0}{' '}
+                  DEI IOU
                 </Value>
               </Row>
               {userDeusAmount.isGreaterThan(BN_ZERO) && (
@@ -454,18 +481,14 @@ export default function Incident() {
                     )}
                     <MainButtonsWrap>
                       <ClaimButton onClick={() => toggleModal()}>CLAIM NOW</ClaimButton>
-                      <ClaimButton disabled style={{ cursor: 'not-allowed', color: 'gray', opacity: '0.3' }}>
-                        CLAIM LATER
-                      </ClaimButton>
+                      <ClaimButton onClick={() => toggleModal(true)}>CLAIM DEI IOU</ClaimButton>
                     </MainButtonsWrap>
                   </ButtonWrap>
                 ) : (
                   <ButtonWrap>
                     {userDeusAmount.isGreaterThan(BN_ZERO) && <ClaimButtonDeus disabled>Claim DEUS</ClaimButtonDeus>}
                     <ClaimButton disabled>CLAIM NOW</ClaimButton>
-                    <ClaimButton disabled style={{ cursor: 'not-allowed', color: 'gray', opacity: '0.3' }}>
-                      CLAIM LATER
-                    </ClaimButton>
+                    <ClaimButton disabled>CLAIM DEI IOU</ClaimButton>
                   </ButtonWrap>
                 )}
               </ButtonsRow>
@@ -497,7 +520,7 @@ export default function Incident() {
       <ReviewModal
         title={'Claim'}
         inputTokens={[DEI_BDEI_LP_TOKEN]}
-        outputTokens={[USDC_TOKEN, BDEI_TOKEN]}
+        outputTokens={[modalType === ModalType.USDC ? USDC_TOKEN : NEW_DEI_TOKEN, BDEI_TOKEN]}
         amountIn={amountIn}
         setAmountIn={setAmountIn}
         userReimbursableData={userReimbursableAmount}
@@ -505,7 +528,7 @@ export default function Incident() {
         toggleModal={toggleModal}
         buttonText={'Claim'}
         handleClick={() => handleReimburse()}
-        ratio={ratio}
+        ratio={modalType === ModalType.USDC ? ratio : deiRatio}
       />
       <ReviewModal2
         title={'Claim DEUS'}
