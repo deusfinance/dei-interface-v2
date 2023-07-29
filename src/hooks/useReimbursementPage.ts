@@ -5,16 +5,17 @@ import { useSingleContractMultipleMethods } from 'state/multicall/hooks'
 import { useReimbursementContract } from 'hooks/useContract'
 import { DEUS_TOKEN } from 'constants/tokens'
 import { BN_ZERO, toBN } from 'utils/numbers'
-import useWeb3React from './useWeb3'
+// import useWeb3React from './useWeb3'
 import useDebounce from './useDebounce'
+import { isAddress } from 'utils/address'
 
-export function useGetClaimedData() {
+export function useGetClaimedData(account: string) {
   const contract = useReimbursementContract()
-  const { account } = useWeb3React()
+  // const { account } = useWeb3React()
 
   const call = useMemo(
     () =>
-      !account
+      !isAddress(account)
         ? []
         : [
             {

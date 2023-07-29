@@ -80,6 +80,7 @@ export const PrimaryButton = styled(BaseButton)`
       background: ${theme.bg2};
       border: 1px solid ${theme.border1};
       cursor: default;
+      color: gray;
 
       &:focus,
       &:hover {

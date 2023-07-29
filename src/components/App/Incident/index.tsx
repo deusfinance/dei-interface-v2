@@ -119,7 +119,7 @@ export const ClaimButtonDeus = styled(ClaimButton)`
     disabled &&
     `
       background: ${theme.bg2};
-      color: #FFF;
+      color: gray;
       border: 1px solid ${theme.border1};
       cursor: default;
 
@@ -231,7 +231,7 @@ export default function Incident() {
 
   const [awaitingReimburseConfirmation, setAwaitingReimburseConfirmation] = useState(false)
 
-  const { claimedDeusAmount, claimedCollateralAmount, claimableDeiAmount } = useGetClaimedData()
+  const { claimedDeusAmount, claimedCollateralAmount, claimableDeiAmount } = useGetClaimedData(walletAddress)
 
   const findUserLPData = useCallback(async () => {
     if (!walletAddress) return null
