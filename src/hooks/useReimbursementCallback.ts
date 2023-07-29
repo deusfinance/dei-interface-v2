@@ -5,11 +5,13 @@ import useWeb3React from 'hooks/useWeb3'
 import { useReimbursementContract } from 'hooks/useContract'
 import { createTransactionCallback, TransactionCallbackState } from 'utils/web3'
 import { toBN } from 'utils/numbers'
+import { ModalType } from 'components/App/Incident'
 
 export function useReimbursementCallback(
   amountIn: string,
   totalClaimableAmount: string,
-  proof: string
+  proof: string,
+  modalType?: ModalType
 ): {
   state: TransactionCallbackState
   callback: null | (() => Promise<string>)
@@ -31,9 +33,11 @@ export function useReimbursementCallback(
       const args = [amountInBN, totalClaimableAmountBN, proof, account]
       console.log({ args })
 
+      const methodName = modalType === ModalType.DEI ? 'claimDei' : 'claimCollateral'
+
       return {
         address: reimbursementContract.address,
-        calldata: reimbursementContract.interface.encodeFunctionData('claimCollateral', args) ?? '',
+        calldata: reimbursementContract.interface.encodeFunctionData(methodName, args) ?? '',
         value: 0,
       }
     } catch (error) {
@@ -41,7 +45,7 @@ export function useReimbursementCallback(
         error,
       }
     }
-  }, [account, library, reimbursementContract, amountIn, totalClaimableAmount, proof])
+  }, [account, library, reimbursementContract, amountIn, totalClaimableAmount, proof, modalType])
 
   return useMemo(() => {
     if (!account || !chainId || !library || !reimbursementContract) {
@@ -52,7 +56,7 @@ export function useReimbursementCallback(
       }
     }
 
-    const summary = `Claimed Collateral`
+    const summary = modalType === ModalType.DEI ? `Claimed DEI` : `Claimed Collateral`
 
     return {
       state: TransactionCallbackState.VALID,
@@ -60,7 +64,7 @@ export function useReimbursementCallback(
       callback: () =>
         createTransactionCallback('claimCollateral', constructCall, addTransaction, summary, account, library),
     }
-  }, [account, chainId, library, reimbursementContract, constructCall, addTransaction])
+  }, [account, chainId, library, reimbursementContract, modalType, constructCall, addTransaction])
 }
 
 export function useClaimDeusCallback(

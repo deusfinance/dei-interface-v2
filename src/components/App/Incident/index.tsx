@@ -195,6 +195,11 @@ const ExternalItem = styled(RowStart)`
   }
 `
 
+export enum ModalType {
+  USDC,
+  DEI,
+}
+
 export default function Incident() {
   const { account, chainId } = useWeb3React()
   const [walletAddress, setWalletAddress] = useState<string>('')
@@ -205,15 +210,15 @@ export default function Incident() {
   const [amountIn, setAmountIn] = useState('')
   const [isOpen, setIsOpen] = useState(false)
   const [clickedOnce, setClickedOnce] = useState(false)
-  const [modalType, setModalType] = useState('USDC')
+  const [modalType, setModalType] = useState(ModalType.USDC)
 
   const toggleModal = (action?: boolean) => {
     setIsOpen((prev) => !prev)
     setAmountIn('')
     if (action) {
-      setModalType('DEI')
+      setModalType(ModalType.DEI)
     } else {
-      setModalType('USDC')
+      setModalType(ModalType.USDC)
     }
   }
   const [isOpen2, setIsOpen2] = useState(false)
@@ -300,7 +305,12 @@ export default function Incident() {
     state: reimburseCallbackState,
     callback: reimburseCallback,
     error: reimburseCallbackError,
-  } = useReimbursementCallback(amountIn, userReimbursableData?.data?.usdc.toString(), userReimbursableData?.usdc_proof)
+  } = useReimbursementCallback(
+    amountIn,
+    userReimbursableData?.data?.usdc.toString(),
+    userReimbursableData?.usdc_proof,
+    modalType
+  )
 
   const {
     state: claimDeusCallbackState,
@@ -437,7 +447,7 @@ export default function Incident() {
                   Claimable amount in {NEW_DEI_TOKEN.name} + {BDEI_TOKEN.name}: (Later)
                 </Title>
                 <Value>
-                  {NewDei_amount.toFixed(2).toString()} {NEW_DEI_TOKEN.name} + {bDEI_amount2.toFixed(2).toString()}{' '}
+                  {NewDei_amount.toFixed(2).toString()} DEI IOU + {bDEI_amount2.toFixed(2).toString()}{' '}
                   {BDEI_TOKEN.symbol}
                 </Value>
               </Row>
@@ -462,14 +472,14 @@ export default function Incident() {
                     )}
                     <MainButtonsWrap>
                       <ClaimButton onClick={() => toggleModal()}>CLAIM NOW</ClaimButton>
-                      <ClaimButton onClick={() => toggleModal(true)}>CLAIM IOU DEI</ClaimButton>
+                      <ClaimButton onClick={() => toggleModal(true)}>CLAIM DEI IOU</ClaimButton>
                     </MainButtonsWrap>
                   </ButtonWrap>
                 ) : (
                   <ButtonWrap>
                     {userDeusAmount.isGreaterThan(BN_ZERO) && <ClaimButtonDeus disabled>Claim DEUS</ClaimButtonDeus>}
                     <ClaimButton disabled>CLAIM NOW</ClaimButton>
-                    <ClaimButton disabled>CLAIM IOU DEI</ClaimButton>
+                    <ClaimButton disabled>CLAIM DEI IOU</ClaimButton>
                   </ButtonWrap>
                 )}
               </ButtonsRow>
@@ -501,7 +511,7 @@ export default function Incident() {
       <ReviewModal
         title={'Claim'}
         inputTokens={[DEI_BDEI_LP_TOKEN]}
-        outputTokens={[modalType === 'USDC' ? USDC_TOKEN : NEW_DEI_TOKEN, BDEI_TOKEN]}
+        outputTokens={[modalType === ModalType.USDC ? USDC_TOKEN : NEW_DEI_TOKEN, BDEI_TOKEN]}
         amountIn={amountIn}
         setAmountIn={setAmountIn}
         userReimbursableData={userReimbursableAmount}
@@ -509,7 +519,7 @@ export default function Incident() {
         toggleModal={toggleModal}
         buttonText={'Claim'}
         handleClick={() => handleReimburse()}
-        ratio={modalType === 'USDC' ? ratio : deiRatio}
+        ratio={modalType === ModalType.USDC ? ratio : deiRatio}
       />
       <ReviewModal2
         title={'Claim DEUS'}

@@ -84,7 +84,7 @@ export function useGetReimburseRatio() {
   const reimburseRatioRes = !reimburseRatio || !reimburseRatio.result ? '602500' : reimburseRatio.result[0].toString()
 
   const deiReimburseRatioRes =
-    !deiReimburseRatio || !deiReimburseRatio.result ? '700000' : deiReimburseRatio.result[0].toString()
+    !deiReimburseRatio || !deiReimburseRatio.result ? '710000' : deiReimburseRatio.result[0].toString()
 
   return { reimburseRatio: reimburseRatioRes, deiReimburseRatio: deiReimburseRatioRes }
 }
