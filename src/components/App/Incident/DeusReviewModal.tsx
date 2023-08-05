@@ -10,6 +10,7 @@ import { Title, Value } from '.'
 import BigNumber from 'bignumber.js'
 import { BN_ZERO, toBN } from 'utils/numbers'
 import { DEUS_TOKEN } from 'constants/tokens'
+import { DotFlashing } from 'components/Icons'
 
 const MainModal = styled(Modal)`
   display: flex;
@@ -78,6 +79,7 @@ export default function DeusReviewModal({
   toggleModal,
   handleClick,
   userDeusAmount,
+  awaiting,
 }: {
   amountIn: string
   setAmountIn: (action: string) => void
@@ -85,6 +87,7 @@ export default function DeusReviewModal({
   toggleModal: (action: boolean) => void
   handleClick: () => void
   userDeusAmount: BigNumber
+  awaiting: boolean
 }) {
   return (
     <MainModal isOpen={isOpen} onBackgroundClick={() => toggleModal(false)} onEscapeKeydown={() => toggleModal(false)}>
@@ -114,7 +117,9 @@ export default function DeusReviewModal({
       ) : toBN(amountIn).isGreaterThan(toBN(userDeusAmount?.toString())) ? (
         <ConfirmButton disabled>Insufficient Balance</ConfirmButton>
       ) : (
-        <ConfirmButton onClick={() => handleClick()}>{`Claim ${DEUS_TOKEN.name}`}</ConfirmButton>
+        <ConfirmButton onClick={() => handleClick()}>
+          {awaiting ? 'Claiming' : 'Claim'} {DEUS_TOKEN.name} {awaiting && <DotFlashing />}
+        </ConfirmButton>
       )}
     </MainModal>
   )

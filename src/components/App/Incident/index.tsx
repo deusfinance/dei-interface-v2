@@ -595,10 +595,11 @@ export default function Incident() {
         userReimbursableData={userReimbursableAmount}
         isOpen={isOpen}
         toggleModal={toggleModal}
-        buttonText={'Claim'}
+        buttonText={awaitingReimburseConfirmation ? 'Claiming' : 'Claim'}
         handleClick={() => handleReimburse()}
         ratio={ratioMemo}
         modalType={modalType}
+        awaiting={awaitingReimburseConfirmation}
       />
       <DeusReviewModal
         amountIn={amountIn}
@@ -607,6 +608,7 @@ export default function Incident() {
         isOpen={isDeusModalOpen}
         toggleModal={toggleDeusModal}
         handleClick={() => handleClaimDeus()}
+        awaiting={awaitingReimburseConfirmation}
       />
     </>
   )

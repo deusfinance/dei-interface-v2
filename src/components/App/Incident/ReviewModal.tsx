@@ -10,6 +10,7 @@ import InputBox from './InputBox'
 import { ModalType, Title, Value } from '.'
 import BigNumber from 'bignumber.js'
 import { BN_ZERO, toBN } from 'utils/numbers'
+import { DotFlashing } from 'components/Icons'
 
 const MainModal = styled(Modal)`
   display: flex;
@@ -60,6 +61,7 @@ export default function ReviewModal({
   userReimbursableData,
   ratio,
   modalType,
+  awaiting,
 }: {
   title: string
   inputTokens: Token[]
@@ -73,6 +75,7 @@ export default function ReviewModal({
   userReimbursableData: BigNumber
   ratio: number
   modalType: ModalType
+  awaiting: boolean
 }) {
   const mainClaimableAmount =
     modalType === ModalType.bDEI ? userReimbursableData : userReimbursableData.times(toBN(ratio))
@@ -117,7 +120,9 @@ export default function ReviewModal({
       ) : toBN(amountIn).isGreaterThan(toBN(userReimbursableData?.toString())) ? (
         <ConfirmButton disabled>Insufficient Balance</ConfirmButton>
       ) : (
-        <ConfirmButton onClick={() => handleClick()}>{buttonText}</ConfirmButton>
+        <ConfirmButton onClick={() => handleClick()}>
+          {buttonText} {awaiting && <DotFlashing />}
+        </ConfirmButton>
       )}
     </MainModal>
   )
