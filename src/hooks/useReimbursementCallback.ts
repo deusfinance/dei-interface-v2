@@ -11,7 +11,7 @@ export function useReimbursementCallback(
   amountIn: string,
   totalClaimableAmount: string,
   proof: string,
-  modalType?: ModalType
+  modalType: ModalType
 ): {
   state: TransactionCallbackState
   callback: null | (() => Promise<string>)
@@ -33,7 +33,10 @@ export function useReimbursementCallback(
       const args = [amountInBN, totalClaimableAmountBN, proof, account]
       console.log({ args })
 
-      const methodName = modalType === ModalType.DEI ? 'claimDei' : 'claimCollateral'
+      let methodName = ''
+      if (modalType === ModalType.DEI) methodName = 'claimDei'
+      else if (modalType === ModalType.USDC) methodName = 'claimCollateral'
+      else if (modalType === ModalType.bDEI) methodName = 'claimbDei'
 
       return {
         address: reimbursementContract.address,
@@ -56,7 +59,10 @@ export function useReimbursementCallback(
       }
     }
 
-    const summary = modalType === ModalType.DEI ? `Claimed DEI` : `Claimed Collateral`
+    let summary = ''
+    if (modalType === ModalType.DEI) summary = `Claimed DEI`
+    else if (modalType === ModalType.USDC) summary = `Claimed Collateral`
+    else if (modalType === ModalType.bDEI) summary = `Claimed bDEI`
 
     return {
       state: TransactionCallbackState.VALID,

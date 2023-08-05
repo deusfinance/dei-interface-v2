@@ -1,6 +1,5 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Token } from '@sushiswap/core-sdk'
 
 import { ModalHeader, Modal } from 'components/Modal'
 import Column from 'components/Column'
@@ -10,6 +9,7 @@ import InputBox from './InputBox'
 import { Title, Value } from '.'
 import BigNumber from 'bignumber.js'
 import { BN_ZERO, toBN } from 'utils/numbers'
+import { DEUS_TOKEN } from 'constants/tokens'
 
 const MainModal = styled(Modal)`
   display: flex;
@@ -71,63 +71,50 @@ const ConfirmButton = styled(PrimaryButton)`
   `}
 `
 
-export default function ReviewModal({
-  title,
-  inputTokens,
-  outputTokens,
+export default function DeusReviewModal({
   amountIn,
   setAmountIn,
   isOpen,
-  buttonText,
   toggleModal,
   handleClick,
   userDeusAmount,
 }: {
-  title: string
-  inputTokens: Token[]
-  outputTokens: Token[]
   amountIn: string
   setAmountIn: (action: string) => void
   isOpen: boolean
-  buttonText: string
   toggleModal: (action: boolean) => void
   handleClick: () => void
   userDeusAmount: BigNumber
 }) {
   return (
     <MainModal isOpen={isOpen} onBackgroundClick={() => toggleModal(false)} onEscapeKeydown={() => toggleModal(false)}>
-      <ModalHeader onClose={() => toggleModal(false)} title={title} border={false} />
+      <ModalHeader onClose={() => toggleModal(false)} title={`Claim ${DEUS_TOKEN.name}`} border={false} />
       <Wrapper>
         {userDeusAmount && (
           <TokenResultWrapper>
-            {inputTokens.map((token, index) => (
-              <InputBox
-                key={index}
-                currency={token}
-                maxValue={userDeusAmount?.toString()}
-                value={amountIn}
-                onChange={(value: string) => setAmountIn(value)}
-              />
-            ))}
+            <InputBox
+              currency={DEUS_TOKEN}
+              maxValue={userDeusAmount?.toString()}
+              value={amountIn}
+              onChange={(value: string) => setAmountIn(value)}
+            />
 
             <div style={{ paddingTop: '10px', paddingBottom: '65px' }}>
-              {outputTokens.map((token, index) => (
-                <Row key={index} style={{ paddingTop: '10px' }}>
-                  <Title>Claimable {token.name}:</Title>
-                  <Value>{userDeusAmount?.toFixed(6).toString()}</Value>
-                </Row>
-              ))}
+              <Row style={{ paddingTop: '10px' }}>
+                <Title>Claimable {DEUS_TOKEN.name}:</Title>
+                <Value>{userDeusAmount?.toFixed(6).toString()}</Value>
+              </Row>
             </div>
           </TokenResultWrapper>
         )}
       </Wrapper>
 
       {!amountIn || !toBN(amountIn).isGreaterThan(BN_ZERO) ? (
-        <ConfirmButton disabled>{buttonText}</ConfirmButton>
+        <ConfirmButton disabled>{`Claim ${DEUS_TOKEN.name}`}</ConfirmButton>
       ) : toBN(amountIn).isGreaterThan(toBN(userDeusAmount?.toString())) ? (
         <ConfirmButton disabled>Insufficient Balance</ConfirmButton>
       ) : (
-        <ConfirmButton onClick={() => handleClick()}>{buttonText}</ConfirmButton>
+        <ConfirmButton onClick={() => handleClick()}>{`Claim ${DEUS_TOKEN.name}`}</ConfirmButton>
       )}
     </MainModal>
   )
