@@ -36,7 +36,7 @@ export function useReimbursementCallback(
       let methodName = ''
       if (modalType === ModalType.DEI) methodName = 'claimDei'
       else if (modalType === ModalType.USDC) methodName = 'claimCollateral'
-      else if (modalType === ModalType.bDEI) methodName = 'claimbDei'
+      else if (modalType === ModalType.bDEI) methodName = 'claimBDei'
 
       return {
         address: reimbursementContract.address,

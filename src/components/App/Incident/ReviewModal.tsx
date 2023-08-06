@@ -11,6 +11,7 @@ import { ModalType, Title, Value } from '.'
 import BigNumber from 'bignumber.js'
 import { BN_ZERO, toBN } from 'utils/numbers'
 import { DotFlashing } from 'components/Icons'
+import { NEW_DEI_TOKEN, USDC_TOKEN } from 'constants/tokens'
 
 const MainModal = styled(Modal)`
   display: flex;
@@ -77,9 +78,8 @@ export default function ReviewModal({
   modalType: ModalType
   awaiting: boolean
 }) {
-  const mainClaimableAmount =
-    modalType === ModalType.bDEI ? userReimbursableData : userReimbursableData.times(toBN(ratio))
-  const bDEIAmount = modalType === ModalType.bDEI ? BN_ZERO : userReimbursableData.times(toBN(1 - ratio))
+  const mainClaimableAmount = userReimbursableData.times(toBN(ratio))
+  const bDEIAmount = userReimbursableData.times(toBN(1 - ratio))
 
   return (
     <MainModal isOpen={isOpen} onBackgroundClick={() => toggleModal()} onEscapeKeydown={() => toggleModal()}>
@@ -103,7 +103,7 @@ export default function ReviewModal({
                   <Row key={index} style={{ paddingTop: '10px' }}>
                     <Title>Claimable {token.name}:</Title>
                     <Value>
-                      {modalType !== ModalType.bDEI
+                      {token.name === USDC_TOKEN.symbol || token.name === NEW_DEI_TOKEN.symbol
                         ? mainClaimableAmount.toFixed(6).toString()
                         : bDEIAmount.toFixed(4).toString()}
                     </Value>

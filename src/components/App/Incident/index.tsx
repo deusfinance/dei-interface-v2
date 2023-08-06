@@ -237,7 +237,8 @@ export default function Incident() {
     setAmountIn('')
   }
 
-  const { claimedDeusAmount, claimedCollateralAmount, claimableDeiAmount } = useGetClaimedData(walletAddress)
+  const { claimedDeusAmount, claimedCollateralAmount, claimedBDeiAmount, claimableDeiAmount } =
+    useGetClaimedData(walletAddress)
 
   const findUserLPData = useCallback(async () => {
     if (!walletAddress) return null
@@ -296,6 +297,13 @@ export default function Incident() {
   }, [userReimbursableData])
   const userReimbursableAmount = userReimbursableAmountBN.minus(claimedCollateralAmount ?? BN_ZERO)
 
+  const userLongTermReimbursableAmountBN = useMemo(() => {
+    if (userReimbursableData?.data)
+      return toBN(formatUnits(userReimbursableData?.data?.arbitrage.toString(), DEUS_TOKEN.decimals))
+    return BN_ZERO
+  }, [userReimbursableData])
+  const userLongTermReimbursableAmount = userLongTermReimbursableAmountBN.minus(claimedBDeiAmount ?? BN_ZERO)
+
   const userDeusAmountBN = useMemo(() => {
     if (userReimbursableData?.data)
       return toBN(formatUnits(userReimbursableData?.data?.deus.toString(), DEUS_TOKEN.decimals))
@@ -318,8 +326,10 @@ export default function Incident() {
     error: reimburseCallbackError,
   } = useReimbursementCallback(
     amountIn,
-    userReimbursableData?.data?.usdc.toString(),
-    userReimbursableData?.usdc_proof,
+    modalType === ModalType.bDEI
+      ? userReimbursableData?.data?.arbitrage.toString()
+      : userReimbursableData?.data?.usdc.toString(),
+    modalType === ModalType.bDEI ? userReimbursableData?.arbitrage_proof : userReimbursableData?.usdc_proof,
     modalType
   )
 
@@ -386,9 +396,9 @@ export default function Incident() {
 
   const ratioMemo = useMemo(() => {
     if (modalType === ModalType.DEI) return deiRatio
-    else if (modalType === ModalType.bDEI) return 1
+    else if (modalType === ModalType.bDEI) return 0
     else if (modalType === ModalType.USDC) return ratio
-    else return 0
+    else return 1
   }, [deiRatio, modalType, ratio])
 
   const sameWallet = useMemo(() => {
@@ -475,13 +485,13 @@ export default function Incident() {
                     <LinkTitle>:</LinkTitle>
                   </ExternalItem>
                 </ExternalLink>
-                <Value>${toBN(0).toFixed(6).toString()}</Value>
+                <Value>${userLongTermReimbursableAmount.toFixed(6).toString()}</Value>
               </Row>
 
               <Row>
                 <Title>Claimable amount in {BDEI_TOKEN.name}: (LONG-TERM)</Title>
                 <Value>
-                  {toBN(0).toFixed(2).toString()} {BDEI_TOKEN.symbol}
+                  {userLongTermReimbursableAmount.toFixed(2).toString()} {BDEI_TOKEN.symbol}
                 </Value>
               </Row>
 
@@ -592,7 +602,7 @@ export default function Incident() {
         outputTokens={outputTokensMemo}
         amountIn={amountIn}
         setAmountIn={setAmountIn}
-        userReimbursableData={userReimbursableAmount}
+        userReimbursableData={modalType === ModalType.bDEI ? userLongTermReimbursableAmount : userReimbursableAmount}
         isOpen={isOpen}
         toggleModal={toggleModal}
         buttonText={awaitingReimburseConfirmation ? 'Claiming' : 'Claim'}
