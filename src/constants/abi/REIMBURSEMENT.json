@@ -7,6 +7,17 @@
       { "indexed": false, "internalType": "uint256", "name": "totalClaimableAmount", "type": "uint256" },
       { "indexed": false, "internalType": "address", "name": "to", "type": "address" }
     ],
+    "name": "ClaimBDei",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "address", "name": "sender", "type": "address" },
+      { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "totalClaimableAmount", "type": "uint256" },
+      { "indexed": false, "internalType": "address", "name": "to", "type": "address" }
+    ],
     "name": "ClaimCollateral",
     "type": "event"
   },
@@ -116,6 +127,25 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "bDeiMerkleRoot",
+    "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "amount", "type": "uint256" },
+      { "internalType": "uint256", "name": "totalClaimableAmount", "type": "uint256" },
+      { "internalType": "bytes32[]", "name": "proof", "type": "bytes32[]" },
+      { "internalType": "address", "name": "to", "type": "address" }
+    ],
+    "name": "claimBDei",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [
       { "internalType": "uint256", "name": "amount", "type": "uint256" },
       { "internalType": "uint256", "name": "totalClaimableAmount", "type": "uint256" },
@@ -160,14 +190,14 @@
   },
   {
     "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
-    "name": "claimedCollateralAmount",
+    "name": "claimedBDeiAmount",
     "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
-    "name": "claimedDeiAmount",
+    "name": "claimedCollateralAmount",
     "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
@@ -297,6 +327,13 @@
       { "internalType": "address", "name": "account", "type": "address" }
     ],
     "name": "revokeRole",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "bytes32", "name": "root", "type": "bytes32" }],
+    "name": "setBDeiMerkleRoot",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

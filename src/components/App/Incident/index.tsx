@@ -11,10 +11,10 @@ import useWeb3React from 'hooks/useWeb3'
 import UserStats from './UserStats'
 import { makeHttpRequest } from 'utils/http'
 import { ExternalLink } from 'components/Link'
-import { NavButton } from 'components/Button'
+// import { NavButton } from 'components/Button'
 import { useWalletModalToggle } from 'state/application/hooks'
 import ReviewModal from './ReviewModal'
-import ReviewModal2 from './ReviewModal2'
+import DeusReviewModal from './DeusReviewModal'
 import { BDEI_TOKEN, DEI_BDEI_LP_TOKEN, DEUS_TOKEN, NEW_DEI_TOKEN, USDC_TOKEN } from 'constants/tokens'
 import { BN_ZERO, toBN } from 'utils/numbers'
 import { useClaimDeusCallback, useReimbursementCallback } from 'hooks/useReimbursementCallback'
@@ -23,6 +23,7 @@ import { SupportedChainId } from 'constants/chains'
 import useRpcChangerCallback from 'hooks/useRpcChangerCallback'
 import { ConnectButton, ConnectButtonText, ConnectButtonWrap } from 'components/Web3Status'
 import { Link as LinkIcon } from 'components/Icons'
+import { isAddress } from 'utils/address'
 
 const Container = styled(MainContainer)`
   min-height: 90vh;
@@ -86,8 +87,6 @@ export const MainButton = styled(PrimaryButton)<{ disabled?: boolean }>`
   width: 200px;
   height: 48px;
   font-size: 16px;
-  margin-left: auto;
-
   ${({ theme }) => theme.mediaWidth.upToSmall`
     margin: 0 auto;
   `}
@@ -101,19 +100,34 @@ const Input = styled(InputField)`
   `}
 `
 export const ClaimButton = styled(MainButton)`
+  background: ${({ theme }) => theme.bg2};
+  border: 1px solid ${({ theme }) => theme.text3};
   width: 165px;
   height: 45px;
   font-size: 18px;
+  ${({ disabled }) =>
+    disabled &&
+    `
+      border: none;
+  `}
+`
+export const CheckButton = styled(ClaimButton)<{ inert?: boolean }>`
+  /* background: ${({ theme, inert }) => (inert ? theme.bg2 : theme.specialBG1)}; */
+  background: ${({ theme }) => theme.specialBG1};
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    height: 35px;
+  `}
 `
 export const ClaimButtonDeus = styled(ClaimButton)`
-  background: ${({ theme }) => theme.deusColor};
-  color: #000;
+  background: ${({ theme }) => theme.bg2};
+  border: 1px solid ${({ theme }) => theme.text3};
   &:focus {
     box-shadow: 0 0 0 1pt ${({ theme }) => theme.deusColorReverse};
     background: ${({ theme }) => theme.deusColorReverse};
   }
   &:hover {
     background: ${({ theme }) => theme.deusColorReverse};
+    color: #000;
   }
   ${({ theme, disabled }) =>
     disabled &&
@@ -126,6 +140,7 @@ export const ClaimButtonDeus = styled(ClaimButton)`
       &:focus,
       &:hover {
         background: ${theme.bg2};
+        color: gray;
       }
   `}
 `
@@ -168,11 +183,6 @@ const ButtonWrap = styled.div`
   margin-left: auto;
   gap: 5px;
 `
-const MainButtonsWrap = styled.div`
-  display: flex;
-  flex-flow: row wrap;
-  gap: 5px;
-`
 const ExternalLinkIcon = styled(LinkIcon)`
   margin-left: 5px;
   margin-bottom: 4px;
@@ -198,6 +208,7 @@ const ExternalItem = styled(RowStart)`
 export enum ModalType {
   USDC,
   DEI,
+  bDEI,
 }
 
 export default function Incident() {
@@ -205,33 +216,29 @@ export default function Incident() {
   const [walletAddress, setWalletAddress] = useState<string>('')
   const [userData, setUserData] = useState<any>(null)
   const [userReimbursableData, setUserReimbursableData] = useState<any>(null)
+  const [awaitingReimburseConfirmation, setAwaitingReimburseConfirmation] = useState(false)
   const [error, setError] = useState(false)
-  const toggleWalletModal = useWalletModalToggle()
   const [amountIn, setAmountIn] = useState('')
   const [isOpen, setIsOpen] = useState(false)
   const [clickedOnce, setClickedOnce] = useState(false)
   const [modalType, setModalType] = useState(ModalType.USDC)
 
-  const toggleModal = (action?: boolean) => {
+  const rpcChangerCallback = useRpcChangerCallback()
+  const toggleWalletModal = useWalletModalToggle()
+
+  const toggleModal = (action?: ModalType) => {
     setIsOpen((prev) => !prev)
     setAmountIn('')
-    if (action) {
-      setModalType(ModalType.DEI)
-    } else {
-      setModalType(ModalType.USDC)
-    }
+    if (action !== undefined) setModalType(action)
   }
-  const [isOpen2, setIsOpen2] = useState(false)
-  const toggleModal2 = () => {
-    setIsOpen2((prev) => !prev)
+  const [isDeusModalOpen, setIsDeusModalOpen] = useState(false)
+  const toggleDeusModal = () => {
+    setIsDeusModalOpen((prev) => !prev)
     setAmountIn('')
   }
 
-  const rpcChangerCallback = useRpcChangerCallback()
-
-  const [awaitingReimburseConfirmation, setAwaitingReimburseConfirmation] = useState(false)
-
-  const { claimedDeusAmount, claimedCollateralAmount, claimableDeiAmount } = useGetClaimedData(walletAddress)
+  const { claimedDeusAmount, claimedCollateralAmount, claimedBDeiAmount, claimableDeiAmount } =
+    useGetClaimedData(walletAddress)
 
   const findUserLPData = useCallback(async () => {
     if (!walletAddress) return null
@@ -272,11 +279,16 @@ export default function Incident() {
   }, [findUserLPData, findUserReimbursableData])
 
   useEffect(() => {
-    if (account) {
-      setWalletAddress(account)
-      if (clickedOnce) handleCheck()
-    }
+    if (account) setWalletAddress(account)
   }, [account])
+
+  useEffect(() => {
+    if (clickedOnce && isAddress(walletAddress)) handleCheck()
+    if (!isAddress(walletAddress)) {
+      setUserData(null)
+      setUserReimbursableData(null)
+    }
+  }, [walletAddress])
 
   const userReimbursableAmountBN = useMemo(() => {
     if (userReimbursableData?.data)
@@ -284,6 +296,13 @@ export default function Incident() {
     return BN_ZERO
   }, [userReimbursableData])
   const userReimbursableAmount = userReimbursableAmountBN.minus(claimedCollateralAmount ?? BN_ZERO)
+
+  const userLongTermReimbursableAmountBN = useMemo(() => {
+    if (userReimbursableData?.data)
+      return toBN(formatUnits(userReimbursableData?.data?.arbitrage.toString(), DEUS_TOKEN.decimals))
+    return BN_ZERO
+  }, [userReimbursableData])
+  const userLongTermReimbursableAmount = userLongTermReimbursableAmountBN.minus(claimedBDeiAmount ?? BN_ZERO)
 
   const userDeusAmountBN = useMemo(() => {
     if (userReimbursableData?.data)
@@ -307,8 +326,10 @@ export default function Incident() {
     error: reimburseCallbackError,
   } = useReimbursementCallback(
     amountIn,
-    userReimbursableData?.data?.usdc.toString(),
-    userReimbursableData?.usdc_proof,
+    modalType === ModalType.bDEI
+      ? userReimbursableData?.data?.arbitrage.toString()
+      : userReimbursableData?.data?.usdc.toString(),
+    modalType === ModalType.bDEI ? userReimbursableData?.arbitrage_proof : userReimbursableData?.usdc_proof,
     modalType
   )
 
@@ -328,12 +349,12 @@ export default function Incident() {
       setAwaitingReimburseConfirmation(false)
       console.log({ txHash })
       setIsOpen(false)
-      setIsOpen2(false)
+      setIsDeusModalOpen(false)
       setAmountIn('')
     } catch (e) {
       setAwaitingReimburseConfirmation(false)
       setIsOpen(false)
-      setIsOpen2(false)
+      setIsDeusModalOpen(false)
       if (e instanceof Error) {
         console.error(e)
       } else {
@@ -352,12 +373,12 @@ export default function Incident() {
       setAwaitingReimburseConfirmation(false)
       console.log({ txHash })
       setIsOpen(false)
-      setIsOpen2(false)
+      setIsDeusModalOpen(false)
       setAmountIn('')
     } catch (e) {
       setAwaitingReimburseConfirmation(false)
       setIsOpen(false)
-      setIsOpen2(false)
+      setIsDeusModalOpen(false)
       if (e instanceof Error) {
         console.error(e)
       } else {
@@ -365,6 +386,24 @@ export default function Incident() {
       }
     }
   }, [claimDeusCallbackState, claimDeusCallbackError, claimDeusCallback])
+
+  const outputTokensMemo = useMemo(() => {
+    if (modalType === ModalType.DEI) return [NEW_DEI_TOKEN, BDEI_TOKEN]
+    else if (modalType === ModalType.bDEI) return [BDEI_TOKEN]
+    else if (modalType === ModalType.USDC) return [USDC_TOKEN, BDEI_TOKEN]
+    else return []
+  }, [modalType])
+
+  const ratioMemo = useMemo(() => {
+    if (modalType === ModalType.DEI) return deiRatio
+    else if (modalType === ModalType.bDEI) return 0
+    else if (modalType === ModalType.USDC) return ratio
+    else return 1
+  }, [deiRatio, modalType, ratio])
+
+  const sameWallet = useMemo(() => {
+    return walletAddress?.toLowerCase() === account?.toLowerCase()
+  }, [account, walletAddress])
 
   return (
     <>
@@ -393,24 +432,25 @@ export default function Incident() {
                 ) : (
                   <React.Fragment>
                     {chainId && chainId !== SupportedChainId.ARBITRUM ? (
-                      <ClaimButton
+                      <CheckButton
                         onClick={() => {
                           setUserData(null)
                           setUserReimbursableData(null)
                           rpcChangerCallback(SupportedChainId.ARBITRUM)
                         }}
                       >
-                        Switch to ARBITRUM
-                      </ClaimButton>
+                        Switch to ARB
+                      </CheckButton>
                     ) : (
-                      <ClaimButton
+                      <CheckButton
+                        inert={sameWallet && clickedOnce}
                         style={{ width: '120px' }}
                         onClick={() => {
                           handleCheck()
                         }}
                       >
                         Check
-                      </ClaimButton>
+                      </CheckButton>
                     )}
                   </React.Fragment>
                 )}
@@ -433,24 +473,50 @@ export default function Incident() {
                 </ExternalLink>
                 <Value>${userReimbursableAmount.toFixed(6).toString()}</Value>
               </Row>
+
+              <Row style={{ marginBottom: '40px' }}>
+                <ExternalLink
+                  href="https://docs.deus.finance/dei-incident-05.05.2023/long-term-reimbursement-plan"
+                  style={{ textDecoration: 'none' }}
+                >
+                  <ExternalItem>
+                    <LinkTitle>Long-term Reimbursable Amount</LinkTitle>
+                    <ExternalLinkIcon />
+                    <LinkTitle>:</LinkTitle>
+                  </ExternalItem>
+                </ExternalLink>
+                <Value>${userLongTermReimbursableAmount.toFixed(6).toString()}</Value>
+              </Row>
+
               <Row>
                 <Title>
-                  Claimable amount in {USDC_TOKEN.name} + {BDEI_TOKEN.name}: (NOW)
+                  Claimable LONG-TERM amount in {BDEI_TOKEN.name}: (CLAIM {BDEI_TOKEN.name})
+                </Title>
+                <Value>
+                  {userLongTermReimbursableAmount.toFixed(2).toString()} {BDEI_TOKEN.symbol}
+                </Value>
+              </Row>
+
+              <Row>
+                <Title>
+                  Claimable amount in {USDC_TOKEN.name} + {BDEI_TOKEN.name}: (CLAIM NOW)
                 </Title>
                 <Value>
                   {USDC_amount.toFixed(2).toString()} {USDC_TOKEN.symbol} + {bDEI_amount.toFixed(2).toString()}{' '}
                   {BDEI_TOKEN.symbol}
                 </Value>
               </Row>
+
               <Row>
                 <Title>
-                  Claimable amount in {NEW_DEI_TOKEN.name} + {BDEI_TOKEN.name}: (Later)
+                  Claimable amount in {NEW_DEI_TOKEN.name} + {BDEI_TOKEN.name}: (CLAIM DEI IOU)
                 </Title>
                 <Value>
                   {NewDei_amount.toFixed(2).toString()} DEI IOU + {bDEI_amount2.toFixed(2).toString()}{' '}
                   {BDEI_TOKEN.symbol}
                 </Value>
               </Row>
+
               <Row>
                 <Title>{NEW_DEI_TOKEN.name} IOU amount:</Title>
                 <Value>
@@ -460,35 +526,54 @@ export default function Incident() {
                   DEI IOU
                 </Value>
               </Row>
+
               {userDeusAmount.isGreaterThan(BN_ZERO) && (
                 <Row>
-                  <Title>Claimable amount in {DEUS_TOKEN.name}: (NOW)</Title>
+                  <Title>
+                    Claimable amount in {DEUS_TOKEN.name}: (CLAIM {DEUS_TOKEN.name})
+                  </Title>
                   <Value>
                     {userDeusAmount.toFixed(3).toString()} {DEUS_TOKEN.name}
                   </Value>
                 </Row>
               )}
               <ButtonsRow>
-                <ExternalLink href="https://7eoku1wmhjg.typeform.com/dei-incident">
+                {/* <ExternalLink href="https://7eoku1wmhjg.typeform.com/dei-incident">
                   <NavButton style={{ width: '120px', padding: '5px 10px' }}>Report Issues</NavButton>
-                </ExternalLink>
+                </ExternalLink> */}
                 {!account ? (
                   <MainButton onClick={toggleWalletModal}>Connect Wallet</MainButton>
-                ) : walletAddress?.toLowerCase() === account?.toLowerCase() ? (
-                  <ButtonWrap>
-                    {userDeusAmount.isGreaterThan(BN_ZERO) && (
-                      <ClaimButtonDeus onClick={() => toggleModal2()}>Claim DEUS</ClaimButtonDeus>
-                    )}
-                    <MainButtonsWrap>
-                      <ClaimButton onClick={() => toggleModal()}>CLAIM NOW</ClaimButton>
-                      <ClaimButton onClick={() => toggleModal(true)}>CLAIM DEI IOU</ClaimButton>
-                    </MainButtonsWrap>
-                  </ButtonWrap>
                 ) : (
                   <ButtonWrap>
-                    {userDeusAmount.isGreaterThan(BN_ZERO) && <ClaimButtonDeus disabled>Claim DEUS</ClaimButtonDeus>}
-                    <ClaimButton disabled>CLAIM NOW</ClaimButton>
-                    <ClaimButton disabled>CLAIM DEI IOU</ClaimButton>
+                    <ClaimButton
+                      disabled={!sameWallet}
+                      onClick={sameWallet ? () => toggleModal(ModalType.bDEI) : undefined}
+                    >
+                      CLAIM {BDEI_TOKEN.symbol}
+                    </ClaimButton>
+
+                    <ClaimButton
+                      disabled={!sameWallet}
+                      onClick={sameWallet ? () => toggleModal(ModalType.USDC) : undefined}
+                    >
+                      CLAIM NOW
+                    </ClaimButton>
+
+                    <ClaimButton
+                      disabled={!sameWallet}
+                      onClick={sameWallet ? () => toggleModal(ModalType.DEI) : undefined}
+                    >
+                      CLAIM DEI IOU
+                    </ClaimButton>
+
+                    {userDeusAmount.isGreaterThan(BN_ZERO) && (
+                      <ClaimButtonDeus
+                        disabled={!sameWallet}
+                        onClick={sameWallet ? () => toggleDeusModal() : undefined}
+                      >
+                        Claim DEUS
+                      </ClaimButtonDeus>
+                    )}
                   </ButtonWrap>
                 )}
               </ButtonsRow>
@@ -508,11 +593,11 @@ export default function Incident() {
                 </p>
                 <p>If you believe this is a mistake, please report an issue. </p>
               </ErrorWrap>
-              {walletAddress && (
+              {/* {walletAddress && (
                 <ExternalLink style={{ marginTop: '60px' }} href="https://7eoku1wmhjg.typeform.com/dei-incident">
                   <NavButton style={{ width: '200px', padding: '5px 10px' }}>Report Issues</NavButton>
                 </ExternalLink>
-              )}
+              )} */}
             </>
           )}
         </FormContainer>
@@ -520,27 +605,26 @@ export default function Incident() {
       <ReviewModal
         title={'Claim'}
         inputTokens={[DEI_BDEI_LP_TOKEN]}
-        outputTokens={[modalType === ModalType.USDC ? USDC_TOKEN : NEW_DEI_TOKEN, BDEI_TOKEN]}
+        outputTokens={outputTokensMemo}
         amountIn={amountIn}
         setAmountIn={setAmountIn}
-        userReimbursableData={userReimbursableAmount}
+        userReimbursableData={modalType === ModalType.bDEI ? userLongTermReimbursableAmount : userReimbursableAmount}
         isOpen={isOpen}
         toggleModal={toggleModal}
-        buttonText={'Claim'}
+        buttonText={awaitingReimburseConfirmation ? 'Claiming' : 'Claim'}
         handleClick={() => handleReimburse()}
-        ratio={modalType === ModalType.USDC ? ratio : deiRatio}
+        ratio={ratioMemo}
+        modalType={modalType}
+        awaiting={awaitingReimburseConfirmation}
       />
-      <ReviewModal2
-        title={'Claim DEUS'}
-        inputTokens={[DEUS_TOKEN]}
-        outputTokens={[DEUS_TOKEN]}
+      <DeusReviewModal
         amountIn={amountIn}
         setAmountIn={setAmountIn}
         userDeusAmount={userDeusAmount}
-        isOpen={isOpen2}
-        toggleModal={toggleModal2}
-        buttonText={'Claim DEUS'}
+        isOpen={isDeusModalOpen}
+        toggleModal={toggleDeusModal}
         handleClick={() => handleClaimDeus()}
+        awaiting={awaitingReimburseConfirmation}
       />
     </>
   )

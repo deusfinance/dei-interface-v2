@@ -27,7 +27,7 @@ export function useGetClaimedData(account: string) {
               callInputs: [account],
             },
             {
-              methodName: 'claimedDeiAmount',
+              methodName: 'claimedBDeiAmount',
               callInputs: [account],
             },
             {
@@ -38,9 +38,16 @@ export function useGetClaimedData(account: string) {
     [account]
   )
 
-  const [claimedDeusAmount, claimedCollateralAmount, claimedDeiAmount, claimableDeiAmount] =
+  const [claimedDeusAmount, claimedCollateralAmount, claimedBDeiAmount, claimableDeiAmount] =
     useSingleContractMultipleMethods(contract, call)
-  const isLoading = useDebounce(claimedDeusAmount?.loading || claimedCollateralAmount?.loading, 500)
+
+  const isLoading = useDebounce(
+    claimedDeusAmount?.loading ||
+      claimedCollateralAmount?.loading ||
+      claimedBDeiAmount?.loading ||
+      claimableDeiAmount?.loading,
+    500
+  )
 
   const claimedDeusAmountRes =
     !claimedDeusAmount || !claimedDeusAmount.result
@@ -52,10 +59,10 @@ export function useGetClaimedData(account: string) {
       ? BN_ZERO
       : toBN(formatUnits(claimedCollateralAmount?.result[0].toString(), DEUS_TOKEN.decimals)).toString()
 
-  const claimedDeiAmountRes =
-    !claimedDeiAmount || !claimedDeiAmount.result
+  const claimedBDeiAmountRes =
+    !claimedBDeiAmount || !claimedBDeiAmount.result
       ? BN_ZERO
-      : toBN(formatUnits(claimedDeiAmount?.result[0].toString(), DEUS_TOKEN.decimals)).toString()
+      : toBN(formatUnits(claimedBDeiAmount?.result[0].toString(), DEUS_TOKEN.decimals)).toString()
 
   const claimableDeiAmountRes =
     !claimableDeiAmount || !claimableDeiAmount.result
@@ -65,7 +72,7 @@ export function useGetClaimedData(account: string) {
   return {
     claimedCollateralAmount: claimedCollateralAmountRes,
     claimedDeusAmount: claimedDeusAmountRes,
-    claimedDeiAmount: claimedDeiAmountRes,
+    claimedBDeiAmount: claimedBDeiAmountRes,
     claimableDeiAmount: claimableDeiAmountRes,
     isLoading,
   }

@@ -7,10 +7,11 @@ import Column from 'components/Column'
 import { Row } from 'components/Row'
 import { PrimaryButton } from 'components/Button'
 import InputBox from './InputBox'
-import { Title, Value } from '.'
+import { ModalType, Title, Value } from '.'
 import BigNumber from 'bignumber.js'
-import { NEW_DEI_TOKEN, USDC_TOKEN } from 'constants/tokens'
 import { BN_ZERO, toBN } from 'utils/numbers'
+import { DotFlashing } from 'components/Icons'
+import { NEW_DEI_TOKEN, USDC_TOKEN } from 'constants/tokens'
 
 const MainModal = styled(Modal)`
   display: flex;
@@ -60,6 +61,8 @@ export default function ReviewModal({
   handleClick,
   userReimbursableData,
   ratio,
+  modalType,
+  awaiting,
 }: {
   title: string
   inputTokens: Token[]
@@ -68,17 +71,19 @@ export default function ReviewModal({
   setAmountIn: (action: string) => void
   isOpen: boolean
   buttonText: string
-  toggleModal: (action: boolean) => void
+  toggleModal: (action?: ModalType) => void
   handleClick: () => void
   userReimbursableData: BigNumber
   ratio: number
+  modalType: ModalType
+  awaiting: boolean
 }) {
-  const USDC_amount = userReimbursableData.times(toBN(ratio)) // OR New DEI
-  const bDEI_amount = userReimbursableData.times(toBN(1 - ratio))
+  const mainClaimableAmount = userReimbursableData.times(toBN(ratio))
+  const bDEIAmount = userReimbursableData.times(toBN(1 - ratio))
 
   return (
-    <MainModal isOpen={isOpen} onBackgroundClick={() => toggleModal(false)} onEscapeKeydown={() => toggleModal(false)}>
-      <ModalHeader onClose={() => toggleModal(false)} title={title} border={false} />
+    <MainModal isOpen={isOpen} onBackgroundClick={() => toggleModal()} onEscapeKeydown={() => toggleModal()}>
+      <ModalHeader onClose={() => toggleModal()} title={title} border={false} />
       <Wrapper>
         {userReimbursableData && (
           <TokenResultWrapper>
@@ -92,15 +97,15 @@ export default function ReviewModal({
               />
             ))}
 
-            {USDC_amount && bDEI_amount && (
+            {mainClaimableAmount && bDEIAmount && (
               <div style={{ paddingTop: '10px', paddingBottom: '65px' }}>
                 {outputTokens.map((token, index) => (
                   <Row key={index} style={{ paddingTop: '10px' }}>
                     <Title>Claimable {token.name}:</Title>
                     <Value>
                       {token.name === USDC_TOKEN.symbol || token.name === NEW_DEI_TOKEN.symbol
-                        ? USDC_amount.toFixed(6).toString()
-                        : bDEI_amount.toFixed(4).toString()}
+                        ? mainClaimableAmount.toFixed(6).toString()
+                        : bDEIAmount.toFixed(4).toString()}
                     </Value>
                   </Row>
                 ))}
@@ -115,7 +120,9 @@ export default function ReviewModal({
       ) : toBN(amountIn).isGreaterThan(toBN(userReimbursableData?.toString())) ? (
         <ConfirmButton disabled>Insufficient Balance</ConfirmButton>
       ) : (
-        <ConfirmButton onClick={() => handleClick()}>{buttonText}</ConfirmButton>
+        <ConfirmButton onClick={() => handleClick()}>
+          {buttonText} {awaiting && <DotFlashing />}
+        </ConfirmButton>
       )}
     </MainModal>
   )
