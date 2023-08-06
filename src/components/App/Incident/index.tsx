@@ -489,7 +489,9 @@ export default function Incident() {
               </Row>
 
               <Row>
-                <Title>Claimable amount in {BDEI_TOKEN.name}: (LONG-TERM)</Title>
+                <Title>
+                  Claimable LONG-TERM amount in {BDEI_TOKEN.name}: (CLAIM {BDEI_TOKEN.name})
+                </Title>
                 <Value>
                   {userLongTermReimbursableAmount.toFixed(2).toString()} {BDEI_TOKEN.symbol}
                 </Value>
@@ -497,7 +499,7 @@ export default function Incident() {
 
               <Row>
                 <Title>
-                  Claimable amount in {USDC_TOKEN.name} + {BDEI_TOKEN.name}: (NOW)
+                  Claimable amount in {USDC_TOKEN.name} + {BDEI_TOKEN.name}: (CLAIM NOW)
                 </Title>
                 <Value>
                   {USDC_amount.toFixed(2).toString()} {USDC_TOKEN.symbol} + {bDEI_amount.toFixed(2).toString()}{' '}
@@ -507,7 +509,7 @@ export default function Incident() {
 
               <Row>
                 <Title>
-                  Claimable amount in {NEW_DEI_TOKEN.name} + {BDEI_TOKEN.name}: (Later)
+                  Claimable amount in {NEW_DEI_TOKEN.name} + {BDEI_TOKEN.name}: (CLAIM DEI IOU)
                 </Title>
                 <Value>
                   {NewDei_amount.toFixed(2).toString()} DEI IOU + {bDEI_amount2.toFixed(2).toString()}{' '}
@@ -527,7 +529,9 @@ export default function Incident() {
 
               {userDeusAmount.isGreaterThan(BN_ZERO) && (
                 <Row>
-                  <Title>Claimable amount in {DEUS_TOKEN.name}: (NOW)</Title>
+                  <Title>
+                    Claimable amount in {DEUS_TOKEN.name}: (CLAIM {DEUS_TOKEN.name})
+                  </Title>
                   <Value>
                     {userDeusAmount.toFixed(3).toString()} {DEUS_TOKEN.name}
                   </Value>
@@ -541,6 +545,27 @@ export default function Incident() {
                   <MainButton onClick={toggleWalletModal}>Connect Wallet</MainButton>
                 ) : (
                   <ButtonWrap>
+                    <ClaimButton
+                      disabled={!sameWallet}
+                      onClick={sameWallet ? () => toggleModal(ModalType.bDEI) : undefined}
+                    >
+                      CLAIM {BDEI_TOKEN.symbol}
+                    </ClaimButton>
+
+                    <ClaimButton
+                      disabled={!sameWallet}
+                      onClick={sameWallet ? () => toggleModal(ModalType.USDC) : undefined}
+                    >
+                      CLAIM NOW
+                    </ClaimButton>
+
+                    <ClaimButton
+                      disabled={!sameWallet}
+                      onClick={sameWallet ? () => toggleModal(ModalType.DEI) : undefined}
+                    >
+                      CLAIM DEI IOU
+                    </ClaimButton>
+
                     {userDeusAmount.isGreaterThan(BN_ZERO) && (
                       <ClaimButtonDeus
                         disabled={!sameWallet}
@@ -549,25 +574,6 @@ export default function Incident() {
                         Claim DEUS
                       </ClaimButtonDeus>
                     )}
-
-                    <ClaimButton
-                      disabled={!sameWallet}
-                      onClick={sameWallet ? () => toggleModal(ModalType.USDC) : undefined}
-                    >
-                      CLAIM NOW
-                    </ClaimButton>
-                    <ClaimButton
-                      disabled={!sameWallet}
-                      onClick={sameWallet ? () => toggleModal(ModalType.bDEI) : undefined}
-                    >
-                      CLAIM {BDEI_TOKEN.symbol}
-                    </ClaimButton>
-                    <ClaimButton
-                      disabled={!sameWallet}
-                      onClick={sameWallet ? () => toggleModal(ModalType.DEI) : undefined}
-                    >
-                      CLAIM DEI IOU
-                    </ClaimButton>
                   </ButtonWrap>
                 )}
               </ButtonsRow>
