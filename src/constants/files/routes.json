@@ -5,17 +5,6 @@
     "exact": true
   },
   {
-    "text": "Mint",
-    "path": "/mint",
-    "exact": true
-  },
-
-  {
-    "text": "Redeem",
-    "path": "/redemption",
-    "exact": true
-  },
-  {
     "text": "Incident",
     "path": "/dei-incident",
     "exact": true

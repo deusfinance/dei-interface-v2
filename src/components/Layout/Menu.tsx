@@ -13,9 +13,9 @@ import {
   NavToggle as NavToggleIcon,
   IconWrapper,
   Dashboard as DashboardIcon,
-  Mint as MintIcon,
-  Redeem as RedeemIcon,
-  DeiBonds as DeiBondsIcon,
+  // Mint as MintIcon,
+  // Redeem as RedeemIcon,
+  // DeiBonds as DeiBondsIcon,
   // Analytics as AnalyticsIcon,
 } from 'components/Icons'
 import { Card } from 'components/Card'
@@ -120,41 +120,41 @@ export default function Menu() {
             </Row>
           </Link>
 
-          <Link href="/mint" passHref>
+          {/* <Link href="/mint" passHref>
             <Row active={router.route === '/mint'}>
               <div>Mint</div>
               <IconWrapper>
                 <MintIcon size={20} />
               </IconWrapper>
             </Row>
-          </Link>
+          </Link> */}
 
-          <Link href="/arbitrum/mint" passHref>
+          {/* <Link href="/arbitrum/mint" passHref>
             <Row active={router.route === '/arbitrum/mint'}>
               <div>Arbitrum Mint</div>
               <IconWrapper>
                 <MintIcon size={20} />
               </IconWrapper>
             </Row>
-          </Link>
+          </Link> */}
 
-          <Link href="/redemption" passHref>
+          {/* <Link href="/redemption" passHref>
             <Row active={router.route === '/redemption'}>
               <div>Redeem</div>
               <IconWrapper>
                 <RedeemIcon size={20} />
               </IconWrapper>
             </Row>
-          </Link>
+          </Link> */}
 
-          <Link href="/bond" passHref>
+          {/* <Link href="/bond" passHref>
             <Row active={router.route === '/bond'}>
               <div>Bond</div>
               <IconWrapper>
                 <DeiBondsIcon size={20} />
               </IconWrapper>
             </Row>
-          </Link>
+          </Link> */}
           <Link href="/dei-incident" passHref>
             <Row active={router.route === '/dei-incident'}>
               <div>Incident</div>
