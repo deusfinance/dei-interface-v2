@@ -288,6 +288,7 @@ export default function Incident() {
       setUserData(null)
       setUserReimbursableData(null)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [walletAddress])
 
   const userReimbursableAmountBN = useMemo(() => {

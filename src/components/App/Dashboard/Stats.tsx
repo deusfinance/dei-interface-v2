@@ -1,11 +1,11 @@
-import React, { useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import styled, { useTheme } from 'styled-components'
 
 //import { useDeiPrice } from 'state/dashboard/hooks'
 import { useDeiPrice } from 'hooks/useCoingeckoPrice'
 import { useDeiStats } from 'hooks/useDeiStats'
 
-import { formatAmount, formatDollarAmount } from 'utils/numbers'
+import { formatAmount, formatDollarAmount, toBN } from 'utils/numbers'
 
 import { Modal, ModalHeader } from 'components/Modal'
 import { RowBetween } from 'components/Row'
@@ -17,6 +17,9 @@ import { ExternalLink } from 'components/Link'
 import useDeusMarketCapStats from 'hooks/useMarketCapStats'
 import { ToolTip } from 'components/ToolTip'
 import { ExplorerDataType, getExplorerLink } from 'utils/explorers'
+import { getTotalPaymentApolloClient } from 'apollo/client/totalPayment'
+import { TOTAL_PAYMENT } from 'apollo/queries'
+import { formatUnits } from '@ethersproject/units'
 // import MultipleChart from './MultipleChart'
 // import { ChainInfo } from 'constants/chainInfo'
 
@@ -270,6 +273,7 @@ export default function Stats() {
 
   const [modalId, setModalId] = useState(DASHBOARD_STATS_TITLES.DEI_TOTAL_RESERVES)
   const [toggleDashboardModal, setToggleDashboardModal] = useState(false)
+  const [totalPayment, setTotalPayment] = useState<any>(null)
   //const [toggleInfoModal, setToggleInfoModal] = useState(false)
 
   function getModalHeader() {
@@ -590,45 +594,50 @@ export default function Stats() {
     return `${formatAmount(collateralRatio, 1).toString()}%`
   }, [collateralRatio])
 
+  const totalPaymentApolloClient = getTotalPaymentApolloClient(SupportedChainId.ARBITRUM)
+
+  const getTotalPayment = useCallback(async () => {
+    if (!totalPaymentApolloClient) return
+    try {
+      const { data } = await totalPaymentApolloClient.query({
+        query: TOTAL_PAYMENT,
+        fetchPolicy: 'no-cache',
+      })
+      return data
+    } catch (error) {
+      return null
+    }
+  }, [totalPaymentApolloClient])
+
+  useEffect(() => {
+    getTotalPayment()
+      .then((result) => setTotalPayment(result.totalPaymentEntity))
+      .catch((error) => console.log(error))
+  }, [getTotalPayment])
+
   return (
     <>
       <Wrapper>
         <AllStats>
           {/* <VerticalWrapper> */}
           <HorizontalWrapper>
-            {/* <StatsWrapper>
-                <DeiTitleContainer>
-                  <Title>DEI Stats</Title>
-                </DeiTitleContainer>
+            <StatsWrapper>
+              <DeiTitleContainer>
+                <Title>Reimburse Stats</Title>
+              </DeiTitleContainer>
+              {totalPayment && (
                 <Info>
+                  <StatsItem name={'bDEI minted'} value={toBN(formatUnits(totalPayment?.bdei, 18)).toFixed(2)} />
                   <StatsItem
-                    name="DEI Price"
-                    value={formatDollarAmount(parseFloat(deiPrice), 3)}
-                    href="https://www.coingecko.com/en/coins/dei-token"
+                    name={'USDC reimbursed'}
+                    value={toBN(formatUnits(totalPayment?.collateral, 18)).toFixed(2)}
                   />
-                  <StatsItem
-                    name="Total Supply"
-                    value={formatAmount(totalSupply, 2)}
-                    href={
-                      ChainInfo[SupportedChainId.FANTOM].blockExplorerUrl +
-                      '/token/' +
-                      DEI_ADDRESS[SupportedChainId.FANTOM]
-                    }
-                  />
-                  <StatsItem
-                    name="Seigniorage"
-                    value={`${formatBalance(seigniorage, 2)}%`}
-                    href={'https://docs.deus.finance/usddei/dei-stablecoin-overview'}
-                  />
-                  <StatsItem name="Protocol Owned DEI" value={formatAmount(protocolOwnedDei, 2)} />
-                  <StatsItem
-                    name="Total Reserve Assets"
-                    value={formatDollarAmount(totalUSDCReserves, 2)}
-                    onClick={() => handleDashboardModal(DASHBOARD_STATS_TITLES.DEI_TOTAL_RESERVES)}
-                  />
-                  <StatsItem name="USDC Backing Per DEI" value={usdcBackingPerDei} />
+                  <StatsItem name={'DEI IOUs'} value={toBN(formatUnits(totalPayment?.dei, 18)).toFixed(2)} />
+                  <StatsItem name={'DEUS collected'} value={toBN(formatUnits(totalPayment?.deus, 18)).toFixed(2)} />
                 </Info>
-              </StatsWrapper> */}
+              )}
+            </StatsWrapper>
+
             <StatsWrapper>
               <DeusTitle>DEUS Stats</DeusTitle>
               <Info>

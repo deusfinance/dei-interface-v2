@@ -196,3 +196,19 @@ export const DAILY_DEI_PRICE_STATS = gql`
     }
   }
 `
+
+export const TOTAL_PAYMENT = gql`
+  query getTotalPayment {
+    totalPaymentEntity(id: "OK") {
+      bdeiCount
+      bdei
+      collateral
+      collateralCount
+      dei
+      deiCount
+      deus
+      deusCount
+      id
+    }
+  }
+`
