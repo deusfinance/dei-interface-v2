@@ -3,6 +3,11 @@ import numbro from 'numbro'
 
 BigNumber.config({ EXPONENTIAL_AT: 30 })
 
+export enum RoundMode {
+  ROUND_UP,
+  ROUND_DOWN,
+}
+
 export const formatDollarAmount = (num: number | undefined, digits = 2, round = true) => {
   if (num === 0) return '$0.00'
   if (!num) return '-'
@@ -110,4 +115,10 @@ export const formatBalance = (balance: BigNumber.Value | undefined | null, fixed
     return bnBalance.toFixed(0, BigNumber.ROUND_DOWN)
   }
   return bnBalance.sd(fixed, BigNumber.ROUND_DOWN).toFixed()
+}
+
+export function formatFixedAmount(amount: BigNumber.Value | undefined | null, fixed = 2, separator = true): string {
+  if (amount === null || amount === undefined) return ''
+  const toFixed = toBN(amount).toFixed(fixed, RoundMode.ROUND_DOWN)
+  return separator ? toBN(toFixed).toFormat() : removeTrailingZeros(toFixed)
 }

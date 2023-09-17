@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import styled, { useTheme } from 'styled-components'
+import styled from 'styled-components'
 
 //import { useDeiPrice } from 'state/dashboard/hooks'
-import { useDeiPrice } from 'hooks/useCoingeckoPrice'
+// import { useDeiPrice } from 'hooks/useCoingeckoPrice'
 import { useDeiStats } from 'hooks/useDeiStats'
 
-import { formatAmount, formatDollarAmount, toBN } from 'utils/numbers'
+import { formatAmount, formatDollarAmount, formatFixedAmount, toBN } from 'utils/numbers'
 
 import { Modal, ModalHeader } from 'components/Modal'
 import { RowBetween } from 'components/Row'
@@ -37,15 +37,15 @@ const Wrapper = styled(RowBetween)`
   `};
 `
 
-const VerticalWrapper = styled.div`
-  display: flex;
-  flex-direction: row;
-  gap: 16px;
+// const VerticalWrapper = styled.div`
+//   display: flex;
+//   flex-direction: row;
+//   gap: 16px;
 
-  ${({ theme }) => theme.mediaWidth.upToMedium`
-    flex-direction: column;
-  `};
-`
+//   ${({ theme }) => theme.mediaWidth.upToMedium`
+//     flex-direction: column;
+//   `};
+// `
 
 const HorizontalWrapper = styled.div`
   display: flex;
@@ -236,19 +236,10 @@ const getContractExplorerLink = (address: string, dataType = ExplorerDataType.TO
 
 export default function Stats() {
   //const deusPrice = useDeusPrice()
-  const theme = useTheme()
-  const {
-    totalSupply,
-    collateralRatio,
-    amoUsdcReserves,
-    protocolOwnedDei,
-    totalUSDCReserves,
-    usdcPoolReserves,
-    multiSigReserves,
-    seigniorage,
-  } = useDeiStats()
+  // const theme = useTheme()
+  const { collateralRatio, amoUsdcReserves, totalUSDCReserves, usdcPoolReserves, multiSigReserves } = useDeiStats()
 
-  const deiPrice = useDeiPrice()
+  // const deiPrice = useDeiPrice()
   const {
     deusPrice,
     deusCirculatingSupply,
@@ -615,6 +606,43 @@ export default function Stats() {
       .catch((error) => console.log(error))
   }, [getTotalPayment])
 
+  const ReimburseData = useMemo(() => {
+    if (!totalPayment) return []
+
+    const TotalClaimableReimbursement = '20519230.81'
+    const AlreadyClaimableReimbursement = toBN(formatUnits(totalPayment?.dei, 18)).plus(
+      toBN(formatUnits(totalPayment?.collateral, 18))
+    )
+    const bdei = toBN(formatUnits(totalPayment?.bdei, 18))
+    const bdeiThroughUSDC = toBN(formatUnits(totalPayment?.collateral, 18)).times(0.3975)
+    const bdeiThroughDEI = toBN(formatUnits(totalPayment?.dei, 18)).times(0.29)
+
+    return [
+      {
+        name: 'Remaining to be Claimed',
+        value: toBN(TotalClaimableReimbursement).minus(AlreadyClaimableReimbursement).toFixed(2),
+      },
+      { name: 'Total claimable reimbursement', value: TotalClaimableReimbursement },
+
+      {
+        name: 'Already claimed reimbursement',
+        value: AlreadyClaimableReimbursement.toFixed(2),
+      },
+
+      { name: 'bDEI minted through long-term reimburse claim', value: bdei.toFixed(2) },
+      {
+        name: 'bDEI minted through USDC claim',
+        value: bdeiThroughUSDC.toFixed(2),
+      },
+      {
+        name: 'bDEI minted through DEI claim',
+        value: bdeiThroughDEI.toFixed(2),
+      },
+
+      { name: 'Total minted bDEI', value: bdei.plus(bdeiThroughUSDC).plus(bdeiThroughDEI).toFixed(2) },
+    ]
+  }, [totalPayment])
+
   return (
     <>
       <Wrapper>
@@ -627,13 +655,30 @@ export default function Stats() {
               </DeiTitleContainer>
               {totalPayment && (
                 <Info>
-                  <StatsItem name={'bDEI minted'} value={toBN(formatUnits(totalPayment?.bdei, 18)).toFixed(2)} />
+                  <StatsItem name={ReimburseData[0].name} value={formatFixedAmount(ReimburseData[0].value)} />
+
+                  <StatsItem name={ReimburseData[1].name} value={formatFixedAmount(ReimburseData[1].value)} />
+                  <StatsItem name={ReimburseData[2].name} value={formatFixedAmount(ReimburseData[2].value)} />
+
+                  <StatsItem name={ReimburseData[3].name} value={formatFixedAmount(ReimburseData[3].value)} />
+                  <StatsItem name={ReimburseData[4].name} value={formatFixedAmount(ReimburseData[4].value)} />
+                  <StatsItem name={ReimburseData[5].name} value={formatFixedAmount(ReimburseData[5].value)} />
+
+                  <StatsItem name={ReimburseData[6].name} value={formatFixedAmount(ReimburseData[6].value)} />
+
+                  <StatsItem
+                    name={'DEI IOUs'}
+                    value={formatFixedAmount(toBN(formatUnits(totalPayment?.dei, 18)).toFixed(2))}
+                  />
+
                   <StatsItem
                     name={'USDC reimbursed'}
-                    value={toBN(formatUnits(totalPayment?.collateral, 18)).toFixed(2)}
+                    value={formatFixedAmount(toBN(formatUnits(totalPayment?.collateral, 18)).toFixed(2))}
                   />
-                  <StatsItem name={'DEI IOUs'} value={toBN(formatUnits(totalPayment?.dei, 18)).toFixed(2)} />
-                  <StatsItem name={'DEUS collected'} value={toBN(formatUnits(totalPayment?.deus, 18)).toFixed(2)} />
+                  <StatsItem
+                    name={'DEUS collected'}
+                    value={formatFixedAmount(toBN(formatUnits(totalPayment?.deus, 18)).toFixed(2))}
+                  />
                 </Info>
               )}
             </StatsWrapper>
