@@ -15,7 +15,7 @@ import { ExternalLink } from 'components/Link'
 import { useWalletModalToggle } from 'state/application/hooks'
 import ReviewModal from './ReviewModal'
 import DeusReviewModal from './DeusReviewModal'
-import { BDEI_TOKEN, DEI_BDEI_LP_TOKEN, DEUS_TOKEN, NEW_DEI_TOKEN, USDC_TOKEN } from 'constants/tokens'
+import { BDEI_TOKEN, DEI_BDEI_LP_TOKEN, DEI_IOU_TOKEN, DEUS_TOKEN, NEW_DEI_TOKEN, USDC_TOKEN } from 'constants/tokens'
 import { BN_ZERO, toBN } from 'utils/numbers'
 import { useClaimDeusCallback, useReimbursementCallback } from 'hooks/useReimbursementCallback'
 import { useGetClaimedData, useGetReimburseRatio } from 'hooks/useReimbursementPage'
@@ -510,10 +510,10 @@ export default function Incident() {
 
               <Row>
                 <Title>
-                  Claimable amount in {NEW_DEI_TOKEN.name} + {BDEI_TOKEN.name}: (CLAIM DEI IOU)
+                  Claimable amount in {NEW_DEI_TOKEN.name} + {BDEI_TOKEN.name}: (CLAIM {DEI_IOU_TOKEN?.symbol})
                 </Title>
                 <Value>
-                  {NewDei_amount.toFixed(2).toString()} DEI IOU + {bDEI_amount2.toFixed(2).toString()}{' '}
+                  {NewDei_amount.toFixed(2).toString()} {DEI_IOU_TOKEN?.symbol} + {bDEI_amount2.toFixed(2).toString()}{' '}
                   {BDEI_TOKEN.symbol}
                 </Value>
               </Row>
@@ -524,7 +524,7 @@ export default function Incident() {
                   {claimableDeiAmount && claimableDeiAmount.isGreaterThan(BN_ZERO)
                     ? claimableDeiAmount.toFixed(3).toString()
                     : 0}{' '}
-                  DEI IOU
+                  {DEI_IOU_TOKEN?.symbol}
                 </Value>
               </Row>
 
@@ -564,7 +564,7 @@ export default function Incident() {
                       disabled={!sameWallet}
                       onClick={sameWallet ? () => toggleModal(ModalType.DEI) : undefined}
                     >
-                      CLAIM DEI IOU
+                      CLAIM {DEI_IOU_TOKEN?.symbol}
                     </ClaimButton>
 
                     {userDeusAmount.isGreaterThan(BN_ZERO) && (
