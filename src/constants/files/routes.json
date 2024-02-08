@@ -6,12 +6,7 @@
   },
   {
     "text": "Incident",
-    "path": "/dei-incident",
-    "exact": true
-  },
-  {
-    "text": "Redeem",
-    "path": "/redeem",
+    "path": "/incident",
     "exact": true
   }
 ]

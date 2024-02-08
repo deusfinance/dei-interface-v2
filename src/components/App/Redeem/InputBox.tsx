@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import { Currency } from '@sushiswap/core-sdk'
 
@@ -7,12 +7,18 @@ import { useCurrencyBalance } from 'state/wallet/hooks'
 import { maxAmountSpend } from 'utils/currency'
 
 import { NumericalInput } from 'components/Input'
-import { ChevronDown as ChevronDownIcon } from 'components/Icons'
+import { ChevronDown as ChevronDownIcon, DotFlashing } from 'components/Icons'
 import { ClaimButton } from '.'
 import { BDEI_TOKEN, USDC_TOKEN } from 'constants/tokens'
 import BigNumber from 'bignumber.js'
 import { toBN } from 'utils/numbers'
 import { useRedeemIouDeiCallback } from 'hooks/useReimbursementCallback'
+import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
+import { Reimbursement_ADDRESS } from 'constants/addresses'
+import { ConnectWallet } from '../StableCoin'
+import { useSupportedChainId } from 'hooks/useSupportedChainId'
+import { tryParseAmount } from 'utils/parse'
+import toast from 'react-hot-toast'
 
 const Wrapper = styled.div`
   font-family: Inter;
@@ -103,8 +109,13 @@ export default function InputBox({
   USDC_amount: BigNumber
   bDEI_amount: BigNumber
 }) {
-  const { account } = useWeb3React()
+  const { account, chainId } = useWeb3React()
+  const isSupportedChainId = useSupportedChainId()
+
   const currencyBalance = useCurrencyBalance(account ?? undefined, currency ?? undefined)
+  const spender = useMemo(() => (chainId ? Reimbursement_ADDRESS[chainId] : undefined), [chainId])
+  const [awaitingApproveConfirmation, setAwaitingApproveConfirmation] = useState(false)
+  const [awaitingReimburseConfirmation, setAwaitingReimburseConfirmation] = useState(false)
 
   const balanceExact = useMemo(() => {
     if (!maxValue) return maxAmountSpend(currencyBalance)?.toExact()
@@ -124,6 +135,28 @@ export default function InputBox({
     return [bDEI_amount.times(ratio), USDC_amount.times(ratio)]
   }, [USDC_amount, bDEI_amount, ratio])
 
+  const [approvalState, approveCallback] = useApproveCallback(currency ?? undefined, spender)
+
+  const [showApprove, showApproveLoader] = useMemo(() => {
+    const show = currency && approvalState !== ApprovalState.APPROVED && !!value
+    return [show, show && approvalState === ApprovalState.PENDING]
+  }, [currency, approvalState, value])
+
+  const tokenAmount = useMemo(() => {
+    return tryParseAmount(value, currency || undefined)
+  }, [value, currency])
+
+  const insufficientBalance = useMemo(() => {
+    if (!tokenAmount) return false
+    return currencyBalance?.lessThan(tokenAmount)
+  }, [currencyBalance, tokenAmount])
+
+  const handleApprove = async () => {
+    setAwaitingApproveConfirmation(true)
+    await approveCallback()
+    setAwaitingApproveConfirmation(false)
+  }
+
   const {
     state: redeemCallbackState,
     callback: redeemCallback,
@@ -134,20 +167,60 @@ export default function InputBox({
     console.log('called handleRedeemIouDei')
     console.log(redeemCallbackState, redeemCallbackError)
     if (!redeemCallback) return
+    if (!value) toast.error('Please enter amount')
     try {
-      // setAwaitingReimburseConfirmation(true)
+      setAwaitingReimburseConfirmation(true)
       const txHash = await redeemCallback()
-      // setAwaitingReimburseConfirmation(false)
+      setAwaitingReimburseConfirmation(false)
       console.log({ txHash })
     } catch (e) {
-      // setAwaitingReimburseConfirmation(false)
+      setAwaitingReimburseConfirmation(false)
       if (e instanceof Error) {
         console.error(e)
       } else {
         console.error(e)
       }
     }
-  }, [redeemCallbackState, redeemCallbackError, redeemCallback])
+  }, [redeemCallbackState, redeemCallbackError, redeemCallback, value])
+
+  function getApproveButton(): JSX.Element | null {
+    if (!isSupportedChainId || !account) return null
+    else if (awaitingApproveConfirmation) {
+      return (
+        <ClaimButton active>
+          Awaiting Confirmation <DotFlashing />
+        </ClaimButton>
+      )
+    } else if (showApproveLoader) {
+      return (
+        <ClaimButton active>
+          Approving <DotFlashing />
+        </ClaimButton>
+      )
+    } else if (showApprove)
+      return <ClaimButton onClick={() => handleApprove()}>Allow us to spend {currency?.symbol}</ClaimButton>
+
+    return null
+  }
+
+  function getActionButton(): JSX.Element | null {
+    if (!chainId || !account) return <ConnectWallet />
+    else if (showApprove) return null
+    else if (insufficientBalance) return <ClaimButton disabled>Insufficient {currency?.symbol} Balance</ClaimButton>
+    else if (awaitingReimburseConfirmation) {
+      return (
+        <ClaimButton>
+          CLAIMING <DotFlashing />
+        </ClaimButton>
+      )
+    }
+    return (
+      <ClaimButton onClick={() => handleRedeemIouDei()}>
+        CLAIM {bDEI_amount_div.toFixed(2).toString()} {BDEI_TOKEN?.symbol} {USDC_amount_div.toFixed(2).toString()}{' '}
+        {USDC_TOKEN?.symbol}
+      </ClaimButton>
+    )
+  }
 
   return (
     <Wrapper>
@@ -162,10 +235,8 @@ export default function InputBox({
 
       <div style={{ display: 'flex', flexDirection: 'row', alignSelf: 'center', gap: '10px' }}>
         <MaxButton onClick={handleClick}>MAX</MaxButton>
-        <ClaimButton onClick={() => handleRedeemIouDei()}>
-          CLAIM {bDEI_amount_div.toFixed(2).toString()} {BDEI_TOKEN?.symbol} {USDC_amount_div.toFixed(2).toString()}{' '}
-          {USDC_TOKEN?.symbol}
-        </ClaimButton>
+        {getApproveButton()}
+        {getActionButton()}
       </div>
     </Wrapper>
   )

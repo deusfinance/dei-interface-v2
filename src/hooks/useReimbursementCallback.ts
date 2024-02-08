@@ -193,12 +193,12 @@ export function useRedeemIouDeiCallback(amountIn: string): {
       }
 
       const amountInBN = toBN(amountIn).times(1e18).toFixed(0).toString()
-      const args = [amountInBN, account]
+      const args = [amountInBN]
       console.log({ args })
 
       return {
         address: reimbursementContract.address,
-        calldata: reimbursementContract.interface.encodeFunctionData('RedeemIOUDEIForUsdc', args) ?? '',
+        calldata: reimbursementContract.interface.encodeFunctionData('redeemIOUDEIForUsdc', args) ?? '',
         value: 0,
       }
     } catch (error) {

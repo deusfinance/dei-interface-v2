@@ -252,7 +252,7 @@ export default function Incident() {
   //   setAmountIn('')
   // }
 
-  const { claimedCollateralAmount } = useGetClaimedData(walletAddress)
+  const { claimedCollateralAmount, claimableDeiAmount } = useGetClaimedData(walletAddress)
 
   const findUserLPData = useCallback(async () => {
     if (!walletAddress) return null
@@ -332,18 +332,19 @@ export default function Incident() {
   const bDEI_amount = userReimbursableAmount.times(toBN(1 - ratio))
 
   const deiRatio = Number(deiReimburseRatio) * 1e-6
-  const NewDei_amount = userReimbursableAmount.times(toBN(deiRatio))
-  // const bDEI_amount2 = userReimbursableAmount.times(toBN(1 - deiRatio))
+  const bDEI_amount2 = userReimbursableAmount.times(toBN(1 - deiRatio))
+  const left_bDEI_amount = bDEI_amount.minus(bDEI_amount2)
+
+  // const NewDei_amount = userReimbursableAmount.times(toBN(deiRatio))
 
   const DEI_IOU_Balance = useCurrencyBalance(account ?? undefined, DEI_IOU_TOKEN)
   const DEI_IOU_BalanceDisplay = maxAmountSpend(DEI_IOU_Balance)?.toExact()
-  // console.log({ DEI_IOU_BalanceDisplay })
 
   const {
     state: mintCallbackState,
     callback: mintCallback,
     error: mintCallbackError,
-  } = useMintIouDeiCallback(NewDei_amount.toString())
+  } = useMintIouDeiCallback(claimableDeiAmount.toString())
 
   const handleMintIouDei = useCallback(async () => {
     console.log('called handleMintIouDei')
@@ -376,7 +377,7 @@ export default function Incident() {
   return (
     <Container>
       <FormContainer>
-        <FormHeader>Redeem</FormHeader>
+        <FormHeader>Incident</FormHeader>
         <WalletAddressInputContainer>
           <Input
             value={walletAddress}
@@ -425,18 +426,18 @@ export default function Incident() {
           </React.Fragment>
         </WalletAddressInputContainer>
 
-        {walletAddress && NewDei_amount.gt(0) && (
+        {walletAddress && clickedOnce && claimableDeiAmount.gt(0) && (
           <OutputContainer>
             <RowBetween>
               <Title>CLAIM {DEI_IOU_TOKEN?.symbol} ERC-20</Title>
               <ClaimButton disabled={!sameWallet} onClick={sameWallet ? () => handleMintIouDei() : undefined}>
-                CLAIM {NewDei_amount.toFixed(2).toString()} {DEI_IOU_TOKEN?.symbol} ERC-20
+                CLAIM {claimableDeiAmount.toFixed(2).toString()} {DEI_IOU_TOKEN?.symbol} ERC-20
               </ClaimButton>
             </RowBetween>
           </OutputContainer>
         )}
 
-        {NewDei_amount.gt(0) && (
+        {DEI_IOU_BalanceDisplay && clickedOnce && toBN(DEI_IOU_BalanceDisplay).gt(0) && (
           <DisclaimerWrap>
             <p>Wait for relaunch (do not claim USDC now)</p>
             <p>OR</p>
@@ -444,21 +445,21 @@ export default function Incident() {
           </DisclaimerWrap>
         )}
 
-        {walletAddress && NewDei_amount.gt(0) && (
+        {walletAddress && clickedOnce && DEI_IOU_BalanceDisplay && toBN(DEI_IOU_BalanceDisplay).gt(0) && (
           <OutputContainer>
             <RowBetween>
               <Title>{'DEI IOU -> bDEI + USDC'}</Title>
               <Value>
-                My {DEI_IOU_TOKEN?.symbol} Balance: {NewDei_amount.toFixed(2).toString()}
+                My {DEI_IOU_TOKEN?.symbol} Balance: {DEI_IOU_BalanceDisplay}
               </Value>
             </RowBetween>
 
             <Row>
               <InputBox
                 currency={DEI_IOU_TOKEN}
-                maxValue={NewDei_amount?.toString()}
+                maxValue={DEI_IOU_BalanceDisplay}
                 USDC_amount={USDC_amount}
-                bDEI_amount={bDEI_amount}
+                bDEI_amount={left_bDEI_amount}
                 value={amountIn}
                 onChange={(value: string) => setAmountIn(value)}
               />
@@ -466,7 +467,7 @@ export default function Incident() {
           </OutputContainer>
         )}
 
-        {error && (
+        {!Number(DEI_IOU_BalanceDisplay) && claimableDeiAmount.lte(0) && clickedOnce && (
           <>
             <ErrorWrap>
               <p>Wallet Address: {walletAddress}</p>
