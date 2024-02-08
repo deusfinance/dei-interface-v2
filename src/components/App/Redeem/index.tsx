@@ -1,23 +1,22 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
-import { formatUnits } from '@ethersproject/units'
 
 import { Container as MainContainer } from 'components/App/StableCoin'
 import Column, { ColumnCenter } from 'components/Column'
 import { InputField } from 'components/Input'
-import { Row, RowBetween, RowStart } from 'components/Row'
+import { Row, RowBetween } from 'components/Row'
 import { PrimaryButton } from 'components/Button'
 import useWeb3React from 'hooks/useWeb3'
 import { makeHttpRequest } from 'utils/http'
 import { useWalletModalToggle } from 'state/application/hooks'
-import { DEI_IOU_TOKEN, DEUS_TOKEN } from 'constants/tokens'
-import { BN_ZERO, toBN } from 'utils/numbers'
+import { DEI_IOU_TOKEN } from 'constants/tokens'
+import { toBN } from 'utils/numbers'
 import { useMintIouDeiCallback } from 'hooks/useReimbursementCallback'
 import { useGetClaimedData, useGetReimburseRatio } from 'hooks/useReimbursementPage'
 import { SupportedChainId } from 'constants/chains'
 import useRpcChangerCallback from 'hooks/useRpcChangerCallback'
 import { ConnectButton, ConnectButtonText, ConnectButtonWrap } from 'components/Web3Status'
-import { Link as LinkIcon } from 'components/Icons'
+// import { Link as LinkIcon } from 'components/Icons'
 import { isAddress } from 'utils/address'
 import InputBox from './InputBox'
 import { useCurrencyBalance } from 'state/wallet/hooks'
@@ -156,14 +155,14 @@ const ErrorWrap = styled(Column)`
     line-height: 25px;
   }
 `
-const ButtonsRow = styled(Row)`
-  ${({ theme }) => theme.mediaWidth.upToSmall`
-    display: flex;
-    flex-flow: column wrap;
-    justify-content: center;
-    gap: 5px;
-  `}
-`
+// const ButtonsRow = styled(Row)`
+//   ${({ theme }) => theme.mediaWidth.upToSmall`
+//     display: flex;
+//     flex-flow: column wrap;
+//     justify-content: center;
+//     gap: 5px;
+//   `}
+// `
 export const ConnectedButton = styled.div`
   display: flex;
   flex-flow: column nowrap;
@@ -183,33 +182,33 @@ export const ConnectedButton = styled.div`
     font-size: 14px;
   `}
 `
-const ButtonWrap = styled.div`
-  display: flex;
-  flex-flow: row wrap;
-  margin-left: auto;
-  gap: 5px;
-`
-const ExternalLinkIcon = styled(LinkIcon)`
-  margin-left: 5px;
-  margin-bottom: 4px;
-  path {
-    fill: #aaaeae;
-  }
-`
-const ExternalItem = styled(RowStart)`
-  border-bottom: 1px solid #aaaeae;
-  &:hover {
-    border-bottom: 1px solid white;
-    & > * {
-      color: ${({ theme }) => theme.white};
-    }
-    svg {
-      path {
-        fill: ${({ theme }) => theme.white};
-      }
-    }
-  }
-`
+// const ButtonWrap = styled.div`
+//   display: flex;
+//   flex-flow: row wrap;
+//   margin-left: auto;
+//   gap: 5px;
+// `
+// const ExternalLinkIcon = styled(LinkIcon)`
+//   margin-left: 5px;
+//   margin-bottom: 4px;
+//   path {
+//     fill: #aaaeae;
+//   }
+// `
+// const ExternalItem = styled(RowStart)`
+//   border-bottom: 1px solid #aaaeae;
+//   &:hover {
+//     border-bottom: 1px solid white;
+//     & > * {
+//       color: ${({ theme }) => theme.white};
+//     }
+//     svg {
+//       path {
+//         fill: ${({ theme }) => theme.white};
+//       }
+//     }
+//   }
+// `
 const DisclaimerWrap = styled.div`
   margin-top: 10px;
   margin-bottom: 20px;
@@ -220,11 +219,11 @@ const DisclaimerWrap = styled.div`
   }
 `
 
-export enum ModalType {
-  USDC,
-  DEI,
-  bDEI,
-}
+// export enum ModalType {
+//   USDC,
+//   DEI,
+//   bDEI,
+// }
 
 export default function Incident() {
   const { account, chainId } = useWeb3React()
@@ -252,7 +251,7 @@ export default function Incident() {
   //   setAmountIn('')
   // }
 
-  const { claimedCollateralAmount, claimableDeiAmount } = useGetClaimedData(walletAddress)
+  const { claimableDeiAmount } = useGetClaimedData(walletAddress)
 
   const findUserLPData = useCallback(async () => {
     if (!walletAddress) return null
@@ -305,12 +304,12 @@ export default function Incident() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [walletAddress])
 
-  const userReimbursableAmountBN = useMemo(() => {
-    if (userReimbursableData?.data)
-      return toBN(formatUnits(userReimbursableData?.data?.usdc.toString(), DEUS_TOKEN.decimals))
-    return BN_ZERO
-  }, [userReimbursableData])
-  const userReimbursableAmount = userReimbursableAmountBN.minus(claimedCollateralAmount ?? BN_ZERO)
+  // const userReimbursableAmountBN = useMemo(() => {
+  //   if (userReimbursableData?.data)
+  //     return toBN(formatUnits(userReimbursableData?.data?.usdc.toString(), DEUS_TOKEN.decimals))
+  //   return BN_ZERO
+  // }, [userReimbursableData])
+  // const userReimbursableAmount = userReimbursableAmountBN.minus(claimedCollateralAmount ?? BN_ZERO)
 
   // const userLongTermReimbursableAmountBN = useMemo(() => {
   //   if (userReimbursableData?.data)
@@ -327,13 +326,19 @@ export default function Incident() {
   // const userDeusAmount = userDeusAmountBN.minus(claimedDeusAmount ?? BN_ZERO)
 
   const { reimburseRatio, deiReimburseRatio } = useGetReimburseRatio()
-  const ratio = Number(reimburseRatio) * 1e-6
-  const USDC_amount = userReimbursableAmount.times(toBN(ratio))
-  const bDEI_amount = userReimbursableAmount.times(toBN(1 - ratio))
+  // console.log(reimburseRatio, deiReimburseRatio)
 
-  const deiRatio = Number(deiReimburseRatio) * 1e-6
-  const bDEI_amount2 = userReimbursableAmount.times(toBN(1 - deiRatio))
-  const left_bDEI_amount = bDEI_amount.minus(bDEI_amount2)
+  // const ratio = Number(reimburseRatio) * 1e-6
+  // const USDC_amount = userReimbursableAmount.times(toBN(ratio))
+  // const bDEI_amount = userReimbursableAmount.times(toBN(1 - ratio))
+
+  // const deiRatio = Number(deiReimburseRatio) * 1e-6
+  // const bDEI_amount2 = userReimbursableAmount.times(toBN(1 - deiRatio))
+  // const left_bDEI_amount = bDEI_amount.minus(bDEI_amount2)
+
+  const baseReimbursableAmount = 1 / deiReimburseRatio
+  const bDEIAmount = (baseReimbursableAmount * (deiReimburseRatio - reimburseRatio)) / 1e6
+  const usdcAmount = (baseReimbursableAmount * reimburseRatio) / 1e18
 
   // const NewDei_amount = userReimbursableAmount.times(toBN(deiRatio))
 
@@ -458,8 +463,8 @@ export default function Incident() {
               <InputBox
                 currency={DEI_IOU_TOKEN}
                 maxValue={DEI_IOU_BalanceDisplay}
-                USDC_amount={USDC_amount}
-                bDEI_amount={left_bDEI_amount}
+                USDC_amount={usdcAmount}
+                bDEI_amount={bDEIAmount}
                 value={amountIn}
                 onChange={(value: string) => setAmountIn(value)}
               />

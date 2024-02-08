@@ -10,8 +10,6 @@ import { NumericalInput } from 'components/Input'
 import { ChevronDown as ChevronDownIcon, DotFlashing } from 'components/Icons'
 import { ClaimButton } from '.'
 import { BDEI_TOKEN, USDC_TOKEN } from 'constants/tokens'
-import BigNumber from 'bignumber.js'
-import { toBN } from 'utils/numbers'
 import { useRedeemIouDeiCallback } from 'hooks/useReimbursementCallback'
 import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
 import { Reimbursement_ADDRESS } from 'constants/addresses'
@@ -106,8 +104,8 @@ export default function InputBox({
   onChange(values: string): void
   disabled?: boolean
   maxValue: string
-  USDC_amount: BigNumber
-  bDEI_amount: BigNumber
+  USDC_amount: number
+  bDEI_amount: number
 }) {
   const { account, chainId } = useWeb3React()
   const isSupportedChainId = useSupportedChainId()
@@ -127,13 +125,16 @@ export default function InputBox({
     onChange(balanceExact)
   }, [balanceExact, onChange])
 
-  const ratio = useMemo(() => {
-    return value ? toBN(value).div(toBN(maxValue)) : 1
-  }, [maxValue, value])
+  // const ratio = useMemo(() => {
+  //   return value ? toBN(value).div(toBN(maxValue)) : 1
+  // }, [maxValue, value])
 
-  const [USDC_amount_div, bDEI_amount_div] = useMemo(() => {
-    return [bDEI_amount.times(ratio), USDC_amount.times(ratio)]
-  }, [USDC_amount, bDEI_amount, ratio])
+  // const [bDEI_amount_div, USDC_amount_div] = useMemo(() => {
+  //   return [bDEI_amount.times(ratio), USDC_amount.times(ratio)]
+  // }, [USDC_amount, bDEI_amount, ratio])
+
+  const bDEI_amount_div = bDEI_amount * Number(value) * 1e6
+  const USDC_amount_div = USDC_amount * Number(value) * 1e18
 
   const [approvalState, approveCallback] = useApproveCallback(currency ?? undefined, spender)
 
