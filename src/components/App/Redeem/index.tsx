@@ -10,17 +10,16 @@ import useWeb3React from 'hooks/useWeb3'
 import { makeHttpRequest } from 'utils/http'
 import { useWalletModalToggle } from 'state/application/hooks'
 import { DEI_IOU_TOKEN } from 'constants/tokens'
-import { toBN } from 'utils/numbers'
 import { useMintIouDeiCallback } from 'hooks/useReimbursementCallback'
 import { useGetClaimedData, useGetReimburseRatio } from 'hooks/useReimbursementPage'
 import { SupportedChainId } from 'constants/chains'
 import useRpcChangerCallback from 'hooks/useRpcChangerCallback'
 import { ConnectButton, ConnectButtonText, ConnectButtonWrap } from 'components/Web3Status'
-// import { Link as LinkIcon } from 'components/Icons'
 import { isAddress } from 'utils/address'
 import InputBox from './InputBox'
 import { useCurrencyBalance } from 'state/wallet/hooks'
 import { maxAmountSpend } from 'utils/currency'
+import toast from 'react-hot-toast'
 
 const Container = styled(MainContainer)`
   min-height: 90vh;
@@ -67,9 +66,7 @@ const OutputContainer = styled(RowBetween)`
   border: 1px solid rgba(75, 73, 73, 0.9);
   margin-bottom: 16px;
 `
-export const Title = styled.span`
-  /* color: #aaaeae; */
-`
+export const Title = styled.span``
 export const LinkTitle = styled(Title)`
   &:hover {
     color: white;
@@ -99,7 +96,6 @@ const Input = styled(InputField)`
 `
 export const ClaimButton = styled(MainButton)`
   background: ${({ theme }) => theme.primary6};
-  /* border: 1px solid ${({ theme }) => theme.text3}; */
   width: 342px;
   height: 48px;
   font-size: 18px;
@@ -155,14 +151,6 @@ const ErrorWrap = styled(Column)`
     line-height: 25px;
   }
 `
-// const ButtonsRow = styled(Row)`
-//   ${({ theme }) => theme.mediaWidth.upToSmall`
-//     display: flex;
-//     flex-flow: column wrap;
-//     justify-content: center;
-//     gap: 5px;
-//   `}
-// `
 export const ConnectedButton = styled.div`
   display: flex;
   flex-flow: column nowrap;
@@ -182,33 +170,6 @@ export const ConnectedButton = styled.div`
     font-size: 14px;
   `}
 `
-// const ButtonWrap = styled.div`
-//   display: flex;
-//   flex-flow: row wrap;
-//   margin-left: auto;
-//   gap: 5px;
-// `
-// const ExternalLinkIcon = styled(LinkIcon)`
-//   margin-left: 5px;
-//   margin-bottom: 4px;
-//   path {
-//     fill: #aaaeae;
-//   }
-// `
-// const ExternalItem = styled(RowStart)`
-//   border-bottom: 1px solid #aaaeae;
-//   &:hover {
-//     border-bottom: 1px solid white;
-//     & > * {
-//       color: ${({ theme }) => theme.white};
-//     }
-//     svg {
-//       path {
-//         fill: ${({ theme }) => theme.white};
-//       }
-//     }
-//   }
-// `
 const DisclaimerWrap = styled.div`
   margin-top: 10px;
   margin-bottom: 20px;
@@ -218,12 +179,6 @@ const DisclaimerWrap = styled.div`
     padding-top: 6px;
   }
 `
-
-// export enum ModalType {
-//   USDC,
-//   DEI,
-//   bDEI,
-// }
 
 export default function Incident() {
   const { account, chainId } = useWeb3React()
@@ -235,21 +190,9 @@ export default function Incident() {
   const [amountIn, setAmountIn] = useState('')
   const [isOpen, setIsOpen] = useState(false)
   const [clickedOnce, setClickedOnce] = useState(false)
-  // const [modalType, setModalType] = useState(ModalType.USDC)
 
   const rpcChangerCallback = useRpcChangerCallback()
   const toggleWalletModal = useWalletModalToggle()
-
-  // const toggleModal = (action?: ModalType) => {
-  //   setIsOpen((prev) => !prev)
-  //   setAmountIn('')
-  //   if (action !== undefined) setModalType(action)
-  // }
-  // const [isDeusModalOpen, setIsDeusModalOpen] = useState(false)
-  // const toggleDeusModal = () => {
-  //   setIsDeusModalOpen((prev) => !prev)
-  //   setAmountIn('')
-  // }
 
   const { claimableDeiAmount } = useGetClaimedData(walletAddress)
 
@@ -301,46 +244,12 @@ export default function Incident() {
       setUserData(null)
       setUserReimbursableData(null)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [walletAddress])
 
-  // const userReimbursableAmountBN = useMemo(() => {
-  //   if (userReimbursableData?.data)
-  //     return toBN(formatUnits(userReimbursableData?.data?.usdc.toString(), DEUS_TOKEN.decimals))
-  //   return BN_ZERO
-  // }, [userReimbursableData])
-  // const userReimbursableAmount = userReimbursableAmountBN.minus(claimedCollateralAmount ?? BN_ZERO)
-
-  // const userLongTermReimbursableAmountBN = useMemo(() => {
-  //   if (userReimbursableData?.data)
-  //     return toBN(formatUnits(userReimbursableData?.data?.arbitrage.toString(), DEUS_TOKEN.decimals))
-  //   return BN_ZERO
-  // }, [userReimbursableData])
-  // const userLongTermReimbursableAmount = userLongTermReimbursableAmountBN.minus(claimedBDeiAmount ?? BN_ZERO)
-
-  // const userDeusAmountBN = useMemo(() => {
-  //   if (userReimbursableData?.data)
-  //     return toBN(formatUnits(userReimbursableData?.data?.deus.toString(), DEUS_TOKEN.decimals))
-  //   return BN_ZERO
-  // }, [userReimbursableData])
-  // const userDeusAmount = userDeusAmountBN.minus(claimedDeusAmount ?? BN_ZERO)
-
   const { reimburseRatio, deiReimburseRatio } = useGetReimburseRatio()
-  // console.log(reimburseRatio, deiReimburseRatio)
-
-  // const ratio = Number(reimburseRatio) * 1e-6
-  // const USDC_amount = userReimbursableAmount.times(toBN(ratio))
-  // const bDEI_amount = userReimbursableAmount.times(toBN(1 - ratio))
-
-  // const deiRatio = Number(deiReimburseRatio) * 1e-6
-  // const bDEI_amount2 = userReimbursableAmount.times(toBN(1 - deiRatio))
-  // const left_bDEI_amount = bDEI_amount.minus(bDEI_amount2)
-
   const baseReimbursableAmount = 1 / deiReimburseRatio
   const bDEIAmount = (baseReimbursableAmount * (deiReimburseRatio - reimburseRatio)) / 1e6
   const usdcAmount = (baseReimbursableAmount * reimburseRatio) / 1e18
-
-  // const NewDei_amount = userReimbursableAmount.times(toBN(deiRatio))
 
   const DEI_IOU_Balance = useCurrencyBalance(account ?? undefined, DEI_IOU_TOKEN)
   const DEI_IOU_BalanceDisplay = maxAmountSpend(DEI_IOU_Balance)?.toExact()
@@ -355,25 +264,27 @@ export default function Incident() {
     console.log('called handleMintIouDei')
     console.log(mintCallbackState, mintCallbackError)
     if (!mintCallback) return
+    if (!amountIn) {
+      toast.error('Please enter amount')
+      return
+    }
     try {
       setAwaitingReimburseConfirmation(true)
       const txHash = await mintCallback()
       setAwaitingReimburseConfirmation(false)
       console.log({ txHash })
       setIsOpen(false)
-      // setIsDeusModalOpen(false)
       setAmountIn('')
     } catch (e) {
       setAwaitingReimburseConfirmation(false)
       setIsOpen(false)
-      // setIsDeusModalOpen(false)
       if (e instanceof Error) {
         console.error(e)
       } else {
         console.error(e)
       }
     }
-  }, [mintCallbackState, mintCallbackError, mintCallback])
+  }, [mintCallbackState, mintCallbackError, mintCallback, amountIn])
 
   const sameWallet = useMemo(() => {
     return walletAddress?.toLowerCase() === account?.toLowerCase()
@@ -431,7 +342,7 @@ export default function Incident() {
           </React.Fragment>
         </WalletAddressInputContainer>
 
-        {walletAddress && clickedOnce && claimableDeiAmount.gt(0) && (
+        {walletAddress && clickedOnce && (
           <OutputContainer>
             <RowBetween>
               <Title>CLAIM {DEI_IOU_TOKEN?.symbol} ERC-20</Title>
@@ -442,7 +353,7 @@ export default function Incident() {
           </OutputContainer>
         )}
 
-        {DEI_IOU_BalanceDisplay && clickedOnce && toBN(DEI_IOU_BalanceDisplay).gt(0) && (
+        {walletAddress && clickedOnce && (
           <DisclaimerWrap>
             <p>Wait for relaunch (do not claim USDC now)</p>
             <p>OR</p>
@@ -450,7 +361,7 @@ export default function Incident() {
           </DisclaimerWrap>
         )}
 
-        {walletAddress && clickedOnce && DEI_IOU_BalanceDisplay && toBN(DEI_IOU_BalanceDisplay).gt(0) && (
+        {walletAddress && clickedOnce && (
           <OutputContainer>
             <RowBetween>
               <Title>{'DEI IOU -> bDEI + USDC'}</Title>
@@ -472,7 +383,7 @@ export default function Incident() {
           </OutputContainer>
         )}
 
-        {!Number(DEI_IOU_BalanceDisplay) && claimableDeiAmount.lte(0) && clickedOnce && (
+        {!Number(DEI_IOU_BalanceDisplay) && claimableDeiAmount.eq(0) && clickedOnce && (
           <>
             <ErrorWrap>
               <p>Wallet Address: {walletAddress}</p>

@@ -103,7 +103,7 @@ export default function InputBox({
   value: string
   onChange(values: string): void
   disabled?: boolean
-  maxValue: string
+  maxValue?: string
   USDC_amount: number
   bDEI_amount: number
 }) {
@@ -124,14 +124,6 @@ export default function InputBox({
     if (!balanceExact || !onChange) return
     onChange(balanceExact)
   }, [balanceExact, onChange])
-
-  // const ratio = useMemo(() => {
-  //   return value ? toBN(value).div(toBN(maxValue)) : 1
-  // }, [maxValue, value])
-
-  // const [bDEI_amount_div, USDC_amount_div] = useMemo(() => {
-  //   return [bDEI_amount.times(ratio), USDC_amount.times(ratio)]
-  // }, [USDC_amount, bDEI_amount, ratio])
 
   const bDEI_amount_div = bDEI_amount * Number(value) * 1e6
   const USDC_amount_div = USDC_amount * Number(value) * 1e18
@@ -168,7 +160,10 @@ export default function InputBox({
     console.log('called handleRedeemIouDei')
     console.log(redeemCallbackState, redeemCallbackError)
     if (!redeemCallback) return
-    if (!value) toast.error('Please enter amount')
+    if (!value) {
+      toast.error('Please enter amount')
+      return
+    }
     try {
       setAwaitingReimburseConfirmation(true)
       const txHash = await redeemCallback()
