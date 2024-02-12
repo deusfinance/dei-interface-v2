@@ -19,7 +19,6 @@ import { isAddress } from 'utils/address'
 import InputBox from './InputBox'
 import { useCurrencyBalance } from 'state/wallet/hooks'
 import { maxAmountSpend } from 'utils/currency'
-import toast from 'react-hot-toast'
 
 const Container = styled(MainContainer)`
   min-height: 90vh;
@@ -264,10 +263,10 @@ export default function Incident() {
     console.log('called handleMintIouDei')
     console.log(mintCallbackState, mintCallbackError)
     if (!mintCallback) return
-    if (!amountIn) {
-      toast.error('Please enter amount')
-      return
-    }
+    // if (!amountIn) {
+    //   toast.error('Please enter amount')
+    //   return
+    // }
     try {
       setAwaitingReimburseConfirmation(true)
       const txHash = await mintCallback()
@@ -284,7 +283,7 @@ export default function Incident() {
         console.error(e)
       }
     }
-  }, [mintCallbackState, mintCallbackError, mintCallback, amountIn])
+  }, [mintCallbackState, mintCallbackError, mintCallback])
 
   const sameWallet = useMemo(() => {
     return walletAddress?.toLowerCase() === account?.toLowerCase()
@@ -355,9 +354,11 @@ export default function Incident() {
 
         {walletAddress && clickedOnce && (
           <DisclaimerWrap>
-            <p>Wait for relaunch (do not claim USDC now)</p>
-            <p>OR</p>
-            <p>Reverse your decision and claim desired amount of USDC and bDEl now</p>
+            <p>Your DEI-IOU ERC-20 will be converted into $BOOST at relaunch</p>
+            <div style={{ paddingTop: '30px' }} />
+            <p>
+              If you wish to reverse your original decision then you can claim the desired amount of USDC and bDEl now
+            </p>
           </DisclaimerWrap>
         )}
 

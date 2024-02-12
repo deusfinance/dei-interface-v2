@@ -212,7 +212,7 @@ export default function InputBox({
     }
     return (
       <ClaimButton onClick={() => handleRedeemIouDei()}>
-        CLAIM {bDEI_amount_div.toFixed(2).toString()} {BDEI_TOKEN?.symbol} {USDC_amount_div.toFixed(2).toString()}{' '}
+        CLAIM {bDEI_amount_div.toFixed(2).toString()} {BDEI_TOKEN?.symbol} + {USDC_amount_div.toFixed(2).toString()}{' '}
         {USDC_TOKEN?.symbol}
       </ClaimButton>
     )
