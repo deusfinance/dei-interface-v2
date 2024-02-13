@@ -11,7 +11,7 @@ import { ChevronDown as ChevronDownIcon, DotFlashing } from 'components/Icons'
 import { ClaimButton } from '.'
 import { BDEI_TOKEN, USDC_TOKEN } from 'constants/tokens'
 import { useRedeemIouDeiCallback } from 'hooks/useReimbursementCallback'
-import useApproveCallback, { ApprovalState } from 'hooks/useApproveCallback'
+import { ApprovalState, useApproveCallbackWithAmount } from 'hooks/useApproveCallback'
 import { Reimbursement_ADDRESS } from 'constants/addresses'
 import { ConnectWallet } from '../StableCoin'
 import { useSupportedChainId } from 'hooks/useSupportedChainId'
@@ -128,7 +128,7 @@ export default function InputBox({
   const bDEI_amount_div = bDEI_amount * Number(value) * 1e6
   const USDC_amount_div = USDC_amount * Number(value) * 1e18
 
-  const [approvalState, approveCallback] = useApproveCallback(currency ?? undefined, spender)
+  const [approvalState, approveCallback] = useApproveCallbackWithAmount(currency ?? undefined, spender, value, true)
 
   const [showApprove, showApproveLoader] = useMemo(() => {
     const show = currency && approvalState !== ApprovalState.APPROVED && !!value
