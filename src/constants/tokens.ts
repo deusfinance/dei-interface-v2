@@ -22,13 +22,12 @@ export const NEW_DEI_TOKEN = new Token(
   'New DEI'
 )
 
-// FIXME: this token is only used in migration page, do we need this?
-export const DEIv2_TOKEN = new Token(
-  SupportedChainId.FANTOM,
-  '0xd358f17774B69A8c06cfAA0d4402D2F604d4a4bF',
+export const DEI_IOU_TOKEN = new Token(
+  SupportedChainId.ARBITRUM,
+  '0x2Ef086d52a78A1b28E599194641d512d9773A362',
   18,
-  'DEI',
-  'DEI'
+  'DEI IOU',
+  'DEI IOU'
 )
 
 export const USDC_TOKEN = new Token(SupportedChainId.FANTOM, USDC_ADDRESS[SupportedChainId.FANTOM], 6, 'USDC', 'USDC')

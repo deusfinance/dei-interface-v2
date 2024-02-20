@@ -155,8 +155,8 @@ export default function Menu() {
               </IconWrapper>
             </Row>
           </Link> */}
-          <Link href="/dei-incident" passHref>
-            <Row active={router.route === '/dei-incident'}>
+          <Link href="/incident" passHref>
+            <Row active={router.route === '/incident'}>
               <div>Incident</div>
             </Row>
           </Link>
@@ -178,14 +178,14 @@ export default function Menu() {
               </ExternalItem>
             </Row>
           </ExternalLink> */}
-          <ExternalLink href="https://app.deus.finance/clqdr">
+          {/* <ExternalLink href="https://app.deus.finance/clqdr">
             <Row onClick={() => toggle()}>
               <ExternalItem>
                 <div>cLQDR</div>
                 <ExternalLinkIcon />
               </ExternalItem>
             </Row>
-          </ExternalLink>
+          </ExternalLink> */}
           <ExternalLink href="https://docs.deus.finance/contracts/disclaimer">
             <Row onClick={() => toggle()}>
               <ExternalItem>
