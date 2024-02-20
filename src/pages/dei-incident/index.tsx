@@ -1,4 +1,4 @@
-import Incident from 'components/App/Incident'
+import Incident from 'components/App/Redeem'
 
 export default function IncidentPage() {
   return <Incident />

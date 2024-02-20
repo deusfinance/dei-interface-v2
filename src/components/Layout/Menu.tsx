@@ -155,8 +155,8 @@ export default function Menu() {
               </IconWrapper>
             </Row>
           </Link> */}
-          <Link href="/incident" passHref>
-            <Row active={router.route === '/incident'}>
+          <Link href="/dei-incident" passHref>
+            <Row active={router.route === '/dei-incident'}>
               <div>Incident</div>
             </Row>
           </Link>
