@@ -1,5 +1,5 @@
-import Incident from 'components/App/Redeem'
+import ShutDownIncident from 'components/App/Incident/ShutDownIncident'
 
 export default function IncidentPage() {
-  return <Incident />
+  return <ShutDownIncident />
 }
