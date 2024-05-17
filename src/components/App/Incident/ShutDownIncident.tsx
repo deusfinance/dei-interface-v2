@@ -16,6 +16,7 @@ const Container = styled(MainContainer)`
   align-items: center;
   position: relative;
   font-family: Inter;
+  line-height: 1.5;
 `
 const FormContainer = styled(ColumnCenter)`
   align-items: flex-start;
@@ -24,8 +25,8 @@ const FormContainer = styled(ColumnCenter)`
   padding: 0 20px;
 `
 const FormHeader = styled.div`
-  margin-top: 50px;
-  margin-bottom: 15px;
+  margin-top: 35px;
+  /* margin-bottom: 15px; */
   font-weight: 500;
   font-size: 32px;
   color: ${({ theme }) => theme.text1};
@@ -226,6 +227,10 @@ export default function ShutDownIncident() {
           APR in cash and proportionally in Ethena Sats and Blast points, as well as BACKED particles (which can later
           be swapped into $BACKED tokens). These earnings will be used to increase the backing of $BOOST from 85% to
           100%. Any additional profits will also be paid out to $BOOST holders.
+        </p>
+        <p>
+          In addition, BACKED particles (which can later be swapped into $BACKED tokens) will directly benefit DEI-IOU
+          holders.
         </p>
         <p>
           If you have more questions about that, join the DEUS discord and, navigate to the #reimbursement-discussion
